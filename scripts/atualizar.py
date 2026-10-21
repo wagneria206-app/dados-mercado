@@ -366,22 +366,47 @@ def anbima_debentures():
 # ---------------------------------------------------------------- Banco Central (SGS)
 
 def sgs(serie, dias):
+    """Série do SGS do Banco Central. Tenta o período por datas e, se a API falhar, os últimos N valores."""
     ini = (HOJE - dt.timedelta(days=dias)).strftime("%d/%m/%Y")
     fim = HOJE.strftime("%d/%m/%Y")
-    r = baixar(URL_SGS.format(serie, ini, fim))
-    return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+    n = max(30, int(dias * 0.75))
+    urls = [URL_SGS.format(serie, ini, fim),
+            f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{serie}/dados/ultimos/{min(n, 20)}?formato=json"]
+    ultimo = None
+    for tentativa in range(3):
+        for url in urls:
+            try:
+                r = S.get(url, timeout=90, headers={"Accept": "application/json"})
+                corpo = r.content.strip()
+                if r.status_code == 200 and corpo[:1] == b"[":
+                    return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+                diag(f"bcb_sgs_{serie}", url, r)
+                ultimo = f"HTTP {r.status_code}, resposta não é JSON"
+            except Exception as e:  # noqa: BLE001
+                ultimo = str(e)
+        time.sleep(10 * (tentativa + 1))
+    raise RuntimeError(f"SGS {serie}: {ultimo}")
 
 
 @fonte("bcb_cdi_selic")
 def bcb(mercado):
-    cdi = sgs(12, 180)          # CDI diário, % ao dia
-    selic = sgs(1178, 30)       # Selic over anualizada, % a.a.
-    selic_m = sgs(4390, 800)    # Selic acumulada no mês, %
+    try:
+        cdi = sgs(12, 180)          # CDI diário, % ao dia
+        selic = sgs(1178, 30)       # Selic over anualizada, % a.a.
+        selic_m = sgs(4390, 800)    # Selic acumulada no mês, %
+    except Exception as e:  # noqa: BLE001
+        # A API do Banco Central às vezes fica fora do ar. Se os dados guardados são recentes,
+        # seguimos com eles e só avisamos; se estão velhos, é erro de verdade.
+        ult = max((mercado.get("cdiDaily") or {"": 0}).keys())
+        if ult and ult >= (HOJE - dt.timedelta(days=5)).isoformat():
+            return {"aviso": f"API do Banco Central indisponível agora; mantidos os dados até {ult}", "detalhe": str(e)[:200]}
+        raise
     if not cdi or not selic:
         raise RuntimeError("séries do Banco Central vieram vazias")
     mercado["cdiDaily"] = {d: v for d, v in cdi if d}
     mercado["selicOver"] = selic[-1][1]
-    mercado["selicMonthly"] = {d[:4] + d[5:7]: v for d, v in selic_m if d}
+    if selic_m:
+        mercado["selicMonthly"] = {d[:4] + d[5:7]: v for d, v in selic_m if d}
     return {"cdi_ate": cdi[-1][0], "selic_over": selic[-1][1]}
 
 
