@@ -901,113 +901,135 @@ def pontuar(d, isin, cod, emissao, serie):
     return p
 
 
+URL_FNET_PAGINA = "https://fnet.bmfbovespa.com.br/fnet/publico/abrirGerenciadorDocumentosCertificadosCVM"
+
+
+def fnet_categorias():
+    """Lê na página de busca de certificados os códigos das categorias de documento."""
+    cats = {}
+    for url in (URL_FNET_PAGINA, URL_FNET_PAGINA.replace("abrir", "pesquisar") + "?paginaCertificados=true"):
+        try:
+            r = S.get(url, timeout=60)
+            diag("fnet_pagina", url, r)
+            for val, nome in re.findall(r'<option[^>]*value="?(\d+)"?[^>]*>([^<]+)</option>', texto(r)):
+                cats[norm(nome)] = int(val)
+            if cats:
+                break
+        except Exception as e:  # noqa: BLE001
+            diag("fnet_pagina", url, erro=e)
+    return cats
+
+
+def ler_descricao(desc):
+    """'OPEA CRI Emissão:362 Série(s):1 (+2) LOG COMMERCIAL 10/2024 BRAPCSCRIQK5' -> partes úteis."""
+    d = norm(desc)
+    m_e = re.search(r"emissao:\s*(\d+)", d)
+    m_s = re.search(r"serie(?:\(s\))?:\s*(\d+)(?:\s*\(\+(\d+)\))?", d)
+    ult = desc.strip().split()[-1].upper() if desc.strip() else ""
+    return {
+        "sec": d.split(" cri ")[0].split(" cra ")[0].split(" cr ")[0].strip(),
+        "emissao": int(m_e.group(1)) if m_e else None,
+        "serie_ini": int(m_s.group(1)) if m_s else None,
+        "serie_fim": (int(m_s.group(1)) + int(m_s.group(2) or 0)) if m_s else None,
+        "codigo": ult if re.fullmatch(r"[A-Z0-9]{10,12}", ult) else "",
+    }
+
+
 @fonte("fundosnet_termos")
 def fundosnet_termos():
     """
-    Monta um índice com o termo de securitização de cada CRI e CRA (Fundos.NET), para o app mostrar
-    o link na hora do cadastro. Varre as securitizadoras aos poucos (limite de tempo por execução)
-    e guarda o que já varreu; em poucos dias de execução o índice cobre todas.
-    Os PDFs só são baixados para os códigos listados em config/cri_cra.txt (opcional).
+    Índice com o termo de securitização (e aditamentos) de cada CRI e CRA, para o app mostrar o link
+    na hora do cadastro. Varre a categoria 'Termo de Securitização' do Fundos.NET; na primeira vez varre
+    tudo (aos poucos, se precisar de mais de uma execução) e depois só os documentos novos.
     """
     os.makedirs(os.path.join(DADOS, "termos"), exist_ok=True)
     estado = ler_json("termos/estado.json", {})
     docs = ler_json("termos/documentos_fnet.json", {})
-    cnpjs = {}
-    for cod, reg in CRI_CRA.items():
-        c = reg.get("cnpjSecuritizadora", "")
-        if len(c) == 14:
-            cnpjs.setdefault(c, []).append(cod)
-    if not cnpjs:
-        raise RuntimeError("sem CNPJs de securitizadoras (o informe da CVM foi lido?)")
+    if estado.get("versao") != 2:
+        estado, docs = {"versao": 2}, {}
 
-    # 1. varredura das securitizadoras, das mais antigas para as mais recentes, por até 7 minutos
-    limite = time.time() + 7 * 60
-    ordem = sorted(cnpjs, key=lambda c: estado.get(c, ""))
-    varridas, primeira = 0, True
-    for cnpj in ordem:
-        if time.time() > limite:
-            break
-        if docs.get(cnpj) and estado.get(cnpj, "") >= (HOJE - dt.timedelta(days=7)).isoformat():
-            continue
-        lista = []
-        try:
-            for pagina in range(30):
-                params = dict(FNET_MODELO[0] or FNET_VARIANTES[0])
-                params.update({"s": pagina * 200, "cnpj": cnpj} if "cnpj" in params else {"s": pagina * 200, "cnpjFundo": cnpj})
-                if FNET_MODELO[0] is None:
-                    dados, total = [], 0
-                    for k, v in enumerate(FNET_VARIANTES):
-                        tent = dict(v)
-                        tent.update({"s": 0, "cnpj": cnpj} if "cnpj" in tent else {"s": 0, "cnpjFundo": cnpj})
-                        try:
-                            dados, total = fnet_busca(tent, f"fnet_variante_{k}")
-                        except Exception as e:  # noqa: BLE001
-                            diag(f"fnet_variante_{k}", URL_FNET_BUSCA, erro=e)
-                            continue
-                        if dados:
-                            FNET_MODELO[0] = v
-                            break
-                    if not dados:
-                        raise RuntimeError("nenhuma variante de busca do Fundos.NET trouxe documentos")
-                else:
-                    dados, total = fnet_busca(params, "fnet_busca_exemplo" if primeira else None)
-                primeira = False
-                lista += [{"id": d.get("id"), "tipo": d.get("tipoDocumento", ""), "categoria": d.get("categoriaDocumento", ""),
-                           "info": d.get("informacoesAdicionais", ""), "descricao": d.get("descricaoFundo", ""),
-                           "entrega": d.get("dataEntrega", ""), "referencia": d.get("dataReferencia", "")}
-                          for d in dados if eh_termo(d)]
-                if len(dados) < 200 or (pagina + 1) * 200 >= (total or 0):
-                    break
-        except Exception as e:  # noqa: BLE001
-            diag("fnet_erro_" + cnpj, URL_FNET_BUSCA, erro=e)
-            continue
-        docs[cnpj] = lista
-        estado[cnpj] = HOJE.isoformat()
-        varridas += 1
+    cats = fnet_categorias()
+    alvo = {k: v for k, v in cats.items() if "termo de securitiza" in k}
+    if not alvo:
+        alvo = {"(sem filtro de categoria)": 0}
+    limite = time.time() + 9 * 60
+    novos = 0
+    for nome_cat, id_cat in alvo.items():
+        chave = f"cat_{id_cat}"
+        st = estado.setdefault(chave, {"completo": False, "proximo": 0})
+        inicio = 0 if st["completo"] else st["proximo"]
+        pagina = inicio // 200
+        total = None
+        while time.time() < limite:
+            params = dict(FNET_VARIANTES[0], s=pagina * 200, idCategoriaDocumento=id_cat)
+            try:
+                dados, total = fnet_busca(params, "fnet_termos_exemplo" if pagina == inicio // 200 else None)
+            except Exception as e:  # noqa: BLE001
+                diag("fnet_erro_" + chave, URL_FNET_BUSCA, erro=e)
+                break
+            conhecidos = 0
+            for d in dados:
+                cat = d.get("categoriaDocumento", "")
+                if "termo de securitiza" not in norm(cat):
+                    continue
+                k = str(d.get("id"))
+                if k in docs:
+                    conhecidos += 1
+                    continue
+                docs[k] = {"desc": d.get("descricaoFundo", ""), "cat": cat, "entrega": d.get("dataEntrega", "")}
+                novos += 1
+            pagina += 1
+            fim = len(dados) < 200 or (total and pagina * 200 >= total)
+            if st["completo"] and dados and conhecidos == len(dados):
+                break          # já completo e esta página só tem documentos conhecidos
+            if fim:
+                st["completo"], st["proximo"] = True, 0
+                break
+            st["proximo"] = pagina * 200
+        st["total_no_site"] = total
     gravar_json("termos/documentos_fnet.json", docs)
     gravar_json("termos/estado.json", estado)
 
-    # 2. liga cada certificado ao termo mais provável
+    # liga cada série ao termo e aos aditamentos
+    por_codigo, por_emissao = {}, {}
+    for k, d in docs.items():
+        info = ler_descricao(d["desc"])
+        item = {"id": int(k), "cat": d["cat"], "entrega": d["entrega"], "desc": d["desc"]}
+        if info["codigo"]:
+            por_codigo.setdefault(info["codigo"], []).append(item)
+        if info["emissao"] is not None:
+            por_emissao.setdefault((info["sec"].split(" ")[0], info["emissao"]), []).append((info, item))
     indice = {}
-    for cnpj, cods in cnpjs.items():
-        for cod in cods:
-            reg = CRI_CRA[cod]
-            isin, emissao, serie = reg.get("isin", ""), reg.get("emissao", ""), reg.get("serie", "")
-            melhor = max(((pontuar(d, isin, cod, emissao, serie), d) for d in docs.get(cnpj, [])),
-                         key=lambda x: x[0], default=(0, None))
-            if melhor[1] and melhor[0] >= 3:
-                d = melhor[1]
-                indice[cod] = {"idFnet": d["id"], "url": f"https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={d['id']}",
-                               "confianca": "alta" if melhor[0] >= 10 else ("media" if melhor[0] >= 5 else "baixa"),
-                               "documento": d.get("tipo", ""), "entrega": d.get("entrega", "")}
-    gravar_json("termos/indice.json", indice)
-
-    # 3. opcional: baixa o PDF dos códigos listados em config/cri_cra.txt
-    baixados = []
-    caminho = os.path.join(CONFIG, "cri_cra.txt")
-    if os.path.exists(caminho):
-        for L in open(caminho, encoding="utf-8"):
-            cod = re.sub(r"\s", "", L.split("#")[0]).upper()
-            if not cod or cod not in indice or os.path.exists(os.path.join(DADOS, "termos", cod + ".pdf")):
-                continue
+    for cod, reg in CRI_CRA.items():
+        cands, conf = list(por_codigo.get(cod, [])) + list(por_codigo.get((reg.get("isin") or "").upper(), [])), "alta"
+        if not cands:
             try:
-                r = baixar(URL_FNET_DOC.format(indice[cod]["idFnet"]), timeout=180)
-                conteudo = r.content
-                if not conteudo.startswith(b"%PDF"):
-                    import base64
-                    try:
-                        conteudo = base64.b64decode(r.text.strip().strip('"'))
-                    except Exception:  # noqa: BLE001
-                        pass
-                if conteudo.startswith(b"%PDF"):
-                    with open(os.path.join(DADOS, "termos", cod + ".pdf"), "wb") as f:
-                        f.write(conteudo)
-                    baixados.append(cod)
-            except Exception as e:  # noqa: BLE001
-                diag("fnet_doc_" + cod, URL_FNET_DOC.format(indice[cod]["idFnet"]), erro=e)
-    cobertas = sum(1 for c in cnpjs if c in estado)
-    return {"securitizadoras": len(cnpjs), "varridas_agora": varridas, "varridas_total": cobertas,
-            "certificados_com_termo": len(indice), "pdfs_baixados": baixados}
+                em, se = int(reg.get("emissao") or -1), int(reg.get("serie") or -1)
+            except ValueError:
+                em, se = -1, -1
+            sec = norm(reg.get("securitizadora", "")).split(" ")[0] if reg.get("securitizadora") else ""
+            for (sec_doc, em_doc), lst in por_emissao.items():
+                if em_doc != em or not sec or not (sec.startswith(sec_doc[:4]) or sec_doc.startswith(sec[:4])):
+                    continue
+                for info, item in lst:
+                    if info["serie_ini"] is None or info["serie_ini"] <= se <= info["serie_fim"]:
+                        cands.append(item)
+            conf = "media"
+        if not cands:
+            continue
+        termos = [c for c in cands if not norm(c["cat"]).startswith("aditamento")]
+        adit = [c for c in cands if norm(c["cat"]).startswith("aditamento")]
+        base = (termos or adit)[0]
+        indice[cod] = {
+            "idFnet": base["id"], "url": f"https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={base['id']}",
+            "confianca": conf, "documento": base["cat"], "entrega": base["entrega"],
+            "aditamentos": [{"id": a["id"], "url": f"https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={a['id']}",
+                             "entrega": a["entrega"]} for a in adit[:10]],
+        }
+    gravar_json("termos/indice.json", indice)
+    completo = all(v.get("completo") for k, v in estado.items() if k.startswith("cat_"))
+    return {"categorias": list(alvo), "documentos_no_indice": len(docs), "novos_agora": novos,
+            "varredura_completa": completo, "series_com_termo": len(indice), "series_total": len(CRI_CRA)}
 
 
 # ---------------------------------------------------------------- principal
