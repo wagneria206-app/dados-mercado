@@ -10,7 +10,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/catalogo_debentures.json  características e agenda de todas as debêntures (SND),
                           no formato de papel do app, com a taxa ANBIMA do dia
   data/cri_cra_cvm.json   dados de todos os CRIs e CRAs do informe mensal da CVM (último mês)
-  data/termos/            termos de securitização (Fundos.NET) dos códigos em config/cri_cra.txt
+  data/termos/indice.json link do termo de securitização (Fundos.NET) de cada CRI e CRA
   data/status.json        resultado de cada fonte (ok / erro) e horário
   data/diag/              amostras das respostas de cada fonte, para conferência
 
@@ -843,91 +843,128 @@ def campo_reg(reg, *partes):
     return ""
 
 
+def fnet_busca(params, nome_diag=None):
+    r = S.get(URL_FNET_BUSCA, params=params, timeout=90,
+              headers={"Referer": "https://fnet.bmfbovespa.com.br/fnet/publico/abrirGerenciadorDocumentosCVM",
+                       "X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
+    if nome_diag:
+        diag(nome_diag, r.url, r)
+    r.raise_for_status()
+    j = r.json()
+    return j.get("data", []), j.get("recordsTotal") or j.get("recordsFiltered") or 0
+
+
+def eh_termo(d):
+    txt = norm(" ".join(str(v) for v in d.values()))
+    return "termo de securitiza" in txt or "termo" in norm(str(d.get("tipoDocumento", "")))
+
+
+def pontuar(d, isin, cod, emissao, serie):
+    txt = norm(" ".join(str(v) for v in d.values()))
+    p = 0
+    for alvo in (isin, cod):
+        if alvo and norm(alvo) in txt:
+            p += 10
+    e = (emissao or "").lstrip("0")
+    s_ = (serie or "").lstrip("0")
+    if e and re.search(rf"\b{re.escape(e)}\s*(a|ª|o|º)?\s*(\(.*?\)\s*)?emiss", txt):
+        p += 3
+    if s_ and re.search(rf"\b{re.escape(s_)}\s*(a|ª)?\s*(\(.*?\)\s*)?s[eé]rie", txt):
+        p += 2
+    return p
+
+
 @fonte("fundosnet_termos")
 def fundosnet_termos():
+    """
+    Monta um índice com o termo de securitização de cada CRI e CRA (Fundos.NET), para o app mostrar
+    o link na hora do cadastro. Varre as securitizadoras aos poucos (limite de tempo por execução)
+    e guarda o que já varreu; em poucos dias de execução o índice cobre todas.
+    Os PDFs só são baixados para os códigos listados em config/cri_cra.txt (opcional).
+    """
+    os.makedirs(os.path.join(DADOS, "termos"), exist_ok=True)
+    estado = ler_json("termos/estado.json", {})
+    docs = ler_json("termos/documentos_fnet.json", {})
+    cnpjs = {}
+    for cod, reg in CRI_CRA.items():
+        c = re.sub(r"\D", "", campo_reg(reg, "cnpj", "securitizadora") or campo_reg(reg, "cnpj"))
+        if len(c) == 14:
+            cnpjs.setdefault(c, []).append(cod)
+    if not cnpjs:
+        raise RuntimeError("sem CNPJs de securitizadoras (o informe da CVM foi lido?)")
+
+    # 1. varredura das securitizadoras, das mais antigas para as mais recentes, por até 7 minutos
+    limite = time.time() + 7 * 60
+    ordem = sorted(cnpjs, key=lambda c: estado.get(c, ""))
+    varridas, primeira = 0, True
+    for cnpj in ordem:
+        if time.time() > limite:
+            break
+        if estado.get(cnpj, "") >= (HOJE - dt.timedelta(days=7)).isoformat():
+            continue
+        lista = []
+        try:
+            for pagina in range(15):
+                params = {"d": 0, "s": pagina * 200, "l": 200, "o[0][dataEntrega]": "desc",
+                          "cnpjFundo": cnpj, "idCategoriaDocumento": 0, "idTipoDocumento": 0, "idEspecieDocumento": 0}
+                dados, total = fnet_busca(params, "fnet_busca_exemplo" if primeira else None)
+                primeira = False
+                lista += [{"id": d.get("id"), "tipo": d.get("tipoDocumento", ""), "categoria": d.get("categoriaDocumento", ""),
+                           "info": d.get("informacoesAdicionais", ""), "descricao": d.get("descricaoFundo", ""),
+                           "entrega": d.get("dataEntrega", ""), "referencia": d.get("dataReferencia", "")}
+                          for d in dados if eh_termo(d)]
+                if len(dados) < 200 or (pagina + 1) * 200 >= (total or 0):
+                    break
+        except Exception as e:  # noqa: BLE001
+            diag("fnet_erro_" + cnpj, URL_FNET_BUSCA, erro=e)
+            continue
+        docs[cnpj] = lista
+        estado[cnpj] = HOJE.isoformat()
+        varridas += 1
+    gravar_json("termos/documentos_fnet.json", docs)
+    gravar_json("termos/estado.json", estado)
+
+    # 2. liga cada certificado ao termo mais provável
+    indice = {}
+    for cnpj, cods in cnpjs.items():
+        for cod in cods:
+            reg = CRI_CRA[cod]
+            isin, emissao, serie = campo_reg(reg, "isin"), campo_reg(reg, "emissao"), campo_reg(reg, "serie")
+            melhor = max(((pontuar(d, isin, cod, emissao, serie), d) for d in docs.get(cnpj, [])),
+                         key=lambda x: x[0], default=(0, None))
+            if melhor[1] and melhor[0] >= 3:
+                d = melhor[1]
+                indice[cod] = {"idFnet": d["id"], "url": f"https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={d['id']}",
+                               "confianca": "alta" if melhor[0] >= 10 else ("media" if melhor[0] >= 5 else "baixa"),
+                               "documento": d.get("tipo", ""), "entrega": d.get("entrega", "")}
+    gravar_json("termos/indice.json", indice)
+
+    # 3. opcional: baixa o PDF dos códigos listados em config/cri_cra.txt
+    baixados = []
     caminho = os.path.join(CONFIG, "cri_cra.txt")
-    codigos = []
     if os.path.exists(caminho):
         for L in open(caminho, encoding="utf-8"):
-            L = L.split("#")[0].strip().upper()
-            if L:
-                codigos.append(re.sub(r"\s", "", L))
-    if not codigos:
-        return {"aviso": "nenhum código em config/cri_cra.txt"}
-    os.makedirs(os.path.join(DADOS, "termos"), exist_ok=True)
-    indice = ler_json("termos/indice.json", {})
-    feitos, faltando = [], []
-    for cod in codigos:
-        if indice.get(cod, {}).get("arquivo") and os.path.exists(os.path.join(DADOS, "termos", indice[cod]["arquivo"])):
-            feitos.append(cod)
-            continue
-        reg = CRI_CRA.get(cod, {})
-        cnpj = re.sub(r"\D", "", campo_reg(reg, "cnpj", "securitizadora") or campo_reg(reg, "cnpj"))
-        isin = campo_reg(reg, "isin")
-        emissao = campo_reg(reg, "emissao")
-        serie = campo_reg(reg, "serie")
-        achado = None
-        for params in (
-            {"d": 0, "s": 0, "l": 200, "o[0][dataEntrega]": "desc", "cnpjFundo": cnpj, "idCategoriaDocumento": 0, "idTipoDocumento": 0, "idEspecieDocumento": 0},
-            {"d": 0, "s": 0, "l": 200, "o[0][dataEntrega]": "desc", "cnpj": cnpj},
-            {"d": 0, "s": 0, "l": 200, "o[0][dataEntrega]": "desc", "palavraChave": isin or cod},
-        ):
-            if not cnpj and "palavraChave" not in params:
+            cod = re.sub(r"\s", "", L.split("#")[0]).upper()
+            if not cod or cod not in indice or os.path.exists(os.path.join(DADOS, "termos", cod + ".pdf")):
                 continue
             try:
-                r = S.get(URL_FNET_BUSCA, params=params, timeout=90,
-                          headers={"Referer": "https://fnet.bmfbovespa.com.br/fnet/publico/abrirGerenciadorDocumentosCVM",
-                                   "X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
-                diag(f"fnet_busca_{cod}", r.url, r)
-                docs = r.json().get("data", [])
+                r = baixar(URL_FNET_DOC.format(indice[cod]["idFnet"]), timeout=180)
+                conteudo = r.content
+                if not conteudo.startswith(b"%PDF"):
+                    import base64
+                    try:
+                        conteudo = base64.b64decode(r.text.strip().strip('"'))
+                    except Exception:  # noqa: BLE001
+                        pass
+                if conteudo.startswith(b"%PDF"):
+                    with open(os.path.join(DADOS, "termos", cod + ".pdf"), "wb") as f:
+                        f.write(conteudo)
+                    baixados.append(cod)
             except Exception as e:  # noqa: BLE001
-                diag(f"fnet_busca_{cod}", URL_FNET_BUSCA, erro=e)
-                continue
-            candidatos = []
-            for d in docs:
-                txt = norm(" ".join(str(v) for v in d.values()))
-                if "termo de securitiza" not in txt and "termo" not in norm(str(d.get("tipoDocumento", ""))):
-                    continue
-                pontos = 0
-                for alvo in (isin, cod):
-                    if alvo and norm(alvo) in txt:
-                        pontos += 5
-                if emissao and re.search(rf"\b0*{re.escape(emissao.lstrip('0') or emissao)}\s*(a|ª|o|º)?\s*emiss", txt):
-                    pontos += 2
-                if serie and re.search(rf"\b0*{re.escape(serie.lstrip('0') or serie)}\s*(a|ª)?\s*s[eé]rie", txt):
-                    pontos += 1
-                candidatos.append((pontos, d))
-            if candidatos:
-                candidatos.sort(key=lambda x: -x[0])
-                if candidatos[0][0] > 0 or len(candidatos) == 1:
-                    achado = candidatos[0][1]
-                    break
-        if not achado:
-            faltando.append(cod)
-            indice[cod] = {"arquivo": None, "tentativa": AGORA.isoformat(timespec="seconds"), "cnpj": cnpj, "isin": isin}
-            continue
-        try:
-            r = baixar(URL_FNET_DOC.format(achado["id"]), timeout=180)
-            conteudo = r.content
-            if not conteudo.startswith(b"%PDF"):
-                import base64
-                try:
-                    conteudo = base64.b64decode(r.text.strip().strip('"'))
-                except Exception:  # noqa: BLE001
-                    pass
-            ext = "pdf" if conteudo.startswith(b"%PDF") else "bin"
-            arq = f"{cod}.{ext}"
-            with open(os.path.join(DADOS, "termos", arq), "wb") as f:
-                f.write(conteudo)
-            indice[cod] = {"arquivo": arq, "idFnet": achado["id"], "documento": str(achado.get("tipoDocumento", "")),
-                           "entrega": achado.get("dataEntrega"), "baixadoEm": AGORA.isoformat(timespec="seconds"),
-                           "cnpj": cnpj, "isin": isin, "fonte": "Fundos.NET (B3/CVM)"}
-            feitos.append(cod)
-        except Exception as e:  # noqa: BLE001
-            diag(f"fnet_doc_{cod}", URL_FNET_DOC.format(achado.get("id")), erro=e)
-            faltando.append(cod)
-    gravar_json("termos/indice.json", indice)
-    return {"termos_ok": feitos, "sem_termo": faltando}
+                diag("fnet_doc_" + cod, URL_FNET_DOC.format(indice[cod]["idFnet"]), erro=e)
+    cobertas = sum(1 for c in cnpjs if c in estado)
+    return {"securitizadoras": len(cnpjs), "varridas_agora": varridas, "varridas_total": cobertas,
+            "certificados_com_termo": len(indice), "pdfs_baixados": baixados}
 
 
 # ---------------------------------------------------------------- principal
