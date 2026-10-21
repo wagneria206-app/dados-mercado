@@ -50,6 +50,7 @@ S.headers.update({
 STATUS = {}
 ANBIMA_DEB = {}          # taxas ANBIMA do dia, por código (preenchido por anbima_debentures)
 ANBIMA_DEB_DATA = [None]
+TD_TRANSPARENTE_FALHOU = [None]
 
 URL_TD = ("https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3"
           "/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/PrecoTaxaTesouroDireto.csv")
@@ -213,10 +214,27 @@ def td_vencimento(tipo, venc):
     return venc
 
 
+URLS_TD = [URL_TD, URL_TD.replace("PrecoTaxaTesouroDireto.csv", "precotaxatesourodireto.csv")]
+
+
 @fonte("tesouro_direto")
 def tesouro_direto(mercado):
-    r = baixar(URL_TD, timeout=300)
-    linhas = csv.reader(io.StringIO(texto(r)), delimiter=";")
+    txt, ultimo = None, None
+    for url in URLS_TD:
+        try:
+            r = baixar(url, timeout=300)
+            t = texto(r)
+            if t.lstrip()[:1] != "<" and ";" in t[:500]:
+                txt = t
+                break
+            diag("tesouro_transparente", url, r)
+            ultimo = "o site devolveu uma página em vez do arquivo CSV"
+        except Exception as e:  # noqa: BLE001
+            ultimo = str(e)
+    if txt is None:
+        TD_TRANSPARENTE_FALHOU[0] = ultimo
+        return {"aviso": f"Tesouro Transparente indisponível ({ultimo}); usado o site do Tesouro Direto"}
+    linhas = csv.reader(io.StringIO(txt), delimiter=";")
     cab = [norm(c) for c in next(linhas)]
 
     def col(*nomes):
@@ -497,8 +515,8 @@ def td_dos_csv():
             raise RuntimeError(f"CSV {nome}: cabeçalho não encontrado")
         cab = [norm(c) for c in linhas[cab_i]]
         c_nome = next(i for i, c in enumerate(cab) if "titulo" in c)
-        c_taxa = next((i for i, c in enumerate(cab) if "rentabilidade" in c or "taxa" in c), None)
-        c_pu = next((i for i, c in enumerate(cab) if "preco" in c or "pu" == c or "valor" in c), None)
+        c_taxa = next((i for i, c in enumerate(cab) if i != c_nome and ("rendimento" in c or "rentabilidade" in c or "taxa" in c)), None)
+        c_pu = next((i for i, c in enumerate(cab) if "preco" in c or "pu" == c), None)
         c_venc = next((i for i, c in enumerate(cab) if "vencimento" in c), None)
         dados = {}
         for L in linhas[cab_i + 1:]:
@@ -544,6 +562,8 @@ def tesouro_direto_site(mercado):
             erros.append(f"{nome}: só {len(linhas)} títulos")
         except Exception as e:  # noqa: BLE001
             erros.append(f"{nome}: {str(e)[:200]}")
+    if TD_TRANSPARENTE_FALHOU[0]:
+        raise RuntimeError("nenhuma fonte do Tesouro Direto respondeu: " + "; ".join(erros))
     # Não é erro grave: o Tesouro Transparente já preencheu os dados.
     return {"aviso": "site do Tesouro Direto indisponível; mantidos os dados do Tesouro Transparente", "detalhe": erros}
 
@@ -763,70 +783,72 @@ URL_CVM_SEC = "https://dados.cvm.gov.br/dados/SECURIT/DOC/INF_MENSAL_{tipo}/DADO
 CRI_CRA = {}   # código -> campos do informe mensal (preenchido por cvm_cri_cra)
 
 
-def chave_certificado(cab):
-    for i, c in enumerate(cab):
-        n = norm(c)
-        if "codigo" in n and ("certificado" in n or "_if" in n or n.endswith(" if") or "ativo" in n):
-            return i
-    return None
+def indice_cri_cra(txt):
+    """Interpreta o texto livre da taxa ('IPCA + 7,5%', 'CDI + 1,2% a.a.', '100% CDI', '12,5% a.a.')."""
+    t = norm(txt).replace(",", ".")
+    nums = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", t)]
+    if "ipca" in t:
+        return "IPCA", (nums[-1] if nums else None)
+    if "cdi" in t or re.search(r"\bdi\b", t) or "selic" in t:
+        m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(do\s*)?(cdi|di)", t)
+        if m and "+" not in t:
+            return "DI_PCT", float(m.group(1))
+        return "DI_SPREAD", (nums[-1] if nums else 0.0)
+    if any(x in t for x in ("igp", "incc", "tr ", "dolar", "usd", "tjlp")):
+        return "OUTRO", (nums[-1] if nums else None)
+    if nums:
+        return "PRE", nums[-1]
+    return "OUTRO", None
 
 
 @fonte("cvm_cri_cra")
 def cvm_cri_cra():
+    """Uma linha por série (código B3 = Codigo_CETIP), com os dados gerais da emissão."""
     resumo = {}
-    colunas = {}
     for tipo in ("CRI", "CRA"):
         conteudo = None
         for ano in (HOJE.year, HOJE.year - 1):
             url = URL_CVM_SEC.format(tipo=tipo, t=tipo.lower(), ano=ano)
             r = baixar(url, aceita_404=True, timeout=300)
             if r is not None:
-                conteudo, url_usada = r.content, url
+                conteudo = r.content
                 break
         if conteudo is None:
             raise RuntimeError(f"informe mensal de {tipo} não encontrado na CVM")
-        n_tipo = 0
+        geral, classes = {}, {}
         with zipfile.ZipFile(io.BytesIO(conteudo)) as z:
             for nome in z.namelist():
-                if not nome.lower().endswith(".csv"):
+                n = nome.lower()
+                if not (n.endswith(".csv") and ("_geral_" in n or "_classe_" in n)):
                     continue
-                quadro = re.sub(r"^inf_mensal_(cri|cra)_?|_?\d{4}\.csv$", "", nome.lower()) or "geral"
                 with z.open(nome) as f:
-                    leitor = csv.reader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
-                    try:
-                        cab = next(leitor)
-                    except StopIteration:
-                        continue
-                    colunas[f"{tipo}/{nome}"] = cab
-                    c_cod = chave_certificado(cab)
-                    c_comp = next((i for i, c in enumerate(cab) if "competencia" in norm(c) or norm(c).startswith("data_ref")), None)
-                    if c_cod is None:
-                        continue
-                    for L in leitor:
-                        if len(L) <= c_cod:
-                            continue
-                        cod = re.sub(r"\s", "", L[c_cod]).upper()
-                        if not cod:
-                            continue
-                        comp = L[c_comp].strip() if c_comp is not None and c_comp < len(L) else ""
-                        comp = data_ymd(comp) or comp
-                        reg = CRI_CRA.setdefault(cod, {"tipo": tipo, "competencia": "", "quadros": {}})
-                        if comp and comp < reg["competencia"]:
-                            continue
-                        if comp > reg["competencia"]:
-                            reg["competencia"] = comp
-                            reg["quadros"] = {k: v for k, v in reg["quadros"].items() if v.get("_comp") == comp}
-                        q = reg["quadros"].setdefault(quadro, {"_comp": comp})
-                        for k, v in zip(cab, L):
-                            v = v.strip()
-                            if v and k not in q:
-                                q[k] = v
-                        n_tipo += 1
-        diag("cvm_" + tipo.lower(), url_usada, erro=f"lido; {n_tipo} linhas")
-        resumo[tipo] = sum(1 for v in CRI_CRA.values() if v["tipo"] == tipo)
-    gravar_json("diag/cvm_cri_cra_colunas.json", colunas)
+                    for L in csv.DictReader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";"):
+                        cid, ref = L.get("Codigo_Identificacao_Certificado", ""), L.get("Data_Referencia", "")
+                        if "_geral_" in n:
+                            if ref >= geral.get(cid, {}).get("Data_Referencia", ""):
+                                geral[cid] = L
+                        else:
+                            cod = re.sub(r"\s", "", L.get("Codigo_CETIP", "") or "").upper()
+                            if cod and ref >= classes.get(cod, {}).get("Data_Referencia", ""):
+                                classes[cod] = L
+        for cod, c in classes.items():
+            g = geral.get(c.get("Codigo_Identificacao_Certificado", ""), {})
+            taxa_txt = c.get("Taxa_Juros", "") or c.get("Taxas_Indexadores", "")
+            idx, taxa = indice_cri_cra(taxa_txt)
+            CRI_CRA[cod] = {
+                "code": cod, "type": tipo, "securitizadora": g.get("Companhia_Emissora", ""),
+                "cnpjSecuritizadora": re.sub(r"\D", "", c.get("CNPJ_Emissora", "") or g.get("CNPJ_Emissora", "")),
+                "emissao": g.get("Numero_Emissao", ""), "nomeEmissao": g.get("Nome_Emissao", ""),
+                "dataEmissao": g.get("Data_Emissao", ""), "serie": c.get("Numero_Serie", ""), "classe": c.get("Classe", ""),
+                "isin": c.get("Codigo_ISIN", ""), "vencimento": c.get("Data_Vencimento", ""),
+                "taxaTexto": taxa_txt, "index": idx, "rate": taxa,
+                "periodicidade": c.get("Pagamento_Periodicidade", ""), "amortizacao": c.get("Periodicidade_Amortizacao", ""),
+                "situacao": c.get("Situacao", ""), "lastro": g.get("Tipo_Lastro", ""),
+                "competencia": c.get("Data_Referencia", ""), "fonte": "CVM – informe mensal de " + tipo,
+            }
+        resumo[tipo] = len(classes)
     gravar_json("cri_cra_cvm.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "certificados": CRI_CRA})
-    return {"certificados": resumo}
+    return {"series": resumo}
 
 
 # ---------------------------------------------------------------- Fundos.NET: termos de securitização
@@ -835,12 +857,17 @@ URL_FNET_BUSCA = "https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciad
 URL_FNET_DOC = "https://fnet.bmfbovespa.com.br/fnet/publico/downloadDocumento?id={}"
 
 
-def campo_reg(reg, *partes):
-    for q in reg.get("quadros", {}).values():
-        for k, v in q.items():
-            if all(p in norm(k) for p in partes):
-                return v
-    return ""
+
+
+_FNET_BASE = {"d": 0, "s": 0, "l": 200, "o[0][dataEntrega]": "desc", "idCategoriaDocumento": 0,
+              "idTipoDocumento": 0, "idEspecieDocumento": 0}
+FNET_VARIANTES = [
+    dict(_FNET_BASE, paginaCertificados="true", cnpj="", tipoFundo="", situacao="", palavraChave="", administrador=""),
+    dict(_FNET_BASE, paginaCertificados="true", cnpj=""),
+    dict(_FNET_BASE, cnpj=""),
+    dict(_FNET_BASE, cnpjFundo=""),
+]
+FNET_MODELO = [None]
 
 
 def fnet_busca(params, nome_diag=None):
@@ -887,7 +914,7 @@ def fundosnet_termos():
     docs = ler_json("termos/documentos_fnet.json", {})
     cnpjs = {}
     for cod, reg in CRI_CRA.items():
-        c = re.sub(r"\D", "", campo_reg(reg, "cnpj", "securitizadora") or campo_reg(reg, "cnpj"))
+        c = reg.get("cnpjSecuritizadora", "")
         if len(c) == 14:
             cnpjs.setdefault(c, []).append(cod)
     if not cnpjs:
@@ -900,14 +927,30 @@ def fundosnet_termos():
     for cnpj in ordem:
         if time.time() > limite:
             break
-        if estado.get(cnpj, "") >= (HOJE - dt.timedelta(days=7)).isoformat():
+        if docs.get(cnpj) and estado.get(cnpj, "") >= (HOJE - dt.timedelta(days=7)).isoformat():
             continue
         lista = []
         try:
-            for pagina in range(15):
-                params = {"d": 0, "s": pagina * 200, "l": 200, "o[0][dataEntrega]": "desc",
-                          "cnpjFundo": cnpj, "idCategoriaDocumento": 0, "idTipoDocumento": 0, "idEspecieDocumento": 0}
-                dados, total = fnet_busca(params, "fnet_busca_exemplo" if primeira else None)
+            for pagina in range(30):
+                params = dict(FNET_MODELO[0] or FNET_VARIANTES[0])
+                params.update({"s": pagina * 200, "cnpj": cnpj} if "cnpj" in params else {"s": pagina * 200, "cnpjFundo": cnpj})
+                if FNET_MODELO[0] is None:
+                    dados, total = [], 0
+                    for k, v in enumerate(FNET_VARIANTES):
+                        tent = dict(v)
+                        tent.update({"s": 0, "cnpj": cnpj} if "cnpj" in tent else {"s": 0, "cnpjFundo": cnpj})
+                        try:
+                            dados, total = fnet_busca(tent, f"fnet_variante_{k}")
+                        except Exception as e:  # noqa: BLE001
+                            diag(f"fnet_variante_{k}", URL_FNET_BUSCA, erro=e)
+                            continue
+                        if dados:
+                            FNET_MODELO[0] = v
+                            break
+                    if not dados:
+                        raise RuntimeError("nenhuma variante de busca do Fundos.NET trouxe documentos")
+                else:
+                    dados, total = fnet_busca(params, "fnet_busca_exemplo" if primeira else None)
                 primeira = False
                 lista += [{"id": d.get("id"), "tipo": d.get("tipoDocumento", ""), "categoria": d.get("categoriaDocumento", ""),
                            "info": d.get("informacoesAdicionais", ""), "descricao": d.get("descricaoFundo", ""),
@@ -929,7 +972,7 @@ def fundosnet_termos():
     for cnpj, cods in cnpjs.items():
         for cod in cods:
             reg = CRI_CRA[cod]
-            isin, emissao, serie = campo_reg(reg, "isin"), campo_reg(reg, "emissao"), campo_reg(reg, "serie")
+            isin, emissao, serie = reg.get("isin", ""), reg.get("emissao", ""), reg.get("serie", "")
             melhor = max(((pontuar(d, isin, cod, emissao, serie), d) for d in docs.get(cnpj, [])),
                          key=lambda x: x[0], default=(0, None))
             if melhor[1] and melhor[0] >= 3:
