@@ -1,5 +1,5 @@
 url: https://www.tesourodireto.com.br/documents/d/guest/rendimento-investir-csv?download=true
-em: 2026-10-21T16:57:56-03:00
+em: 2026-10-21T17:08:56-03:00
 status: 200
 tipo: text/csv
 bytes: 2835
