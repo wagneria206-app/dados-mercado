@@ -862,7 +862,8 @@ URL_FNET_DOC = "https://fnet.bmfbovespa.com.br/fnet/publico/downloadDocumento?id
 _FNET_BASE = {"d": 0, "s": 0, "l": 200, "o[0][dataEntrega]": "desc", "idCategoriaDocumento": 0,
               "idTipoDocumento": 0, "idEspecieDocumento": 0}
 FNET_VARIANTES = [
-    dict(_FNET_BASE, paginaCertificados="true", cnpj="", tipoFundo="", situacao="", palavraChave="", administrador=""),
+    dict(_FNET_BASE, paginaCertificados="true", cnpj="", tipoFundo="", situacao="", palavraChave="", administrador="",
+         dataInicial="01/01/2000", dataFinal=HOJE.strftime("%d/%m/%Y")),
     dict(_FNET_BASE, paginaCertificados="true", cnpj=""),
     dict(_FNET_BASE, cnpj=""),
     dict(_FNET_BASE, cnpjFundo=""),
@@ -905,11 +906,13 @@ URL_FNET_PAGINA = "https://fnet.bmfbovespa.com.br/fnet/publico/abrirGerenciadorD
 
 
 def fnet_categorias():
-    """Lê na página de busca de certificados os códigos das categorias de documento."""
-    cats = {}
+    """Códigos das categorias de documento: lê da página de busca ou, se ela não responder, descobre testando."""
+    cats = ler_json("termos/categorias.json", {})
+    if any("termo de securitiza" in k for k in cats):
+        return cats
     for url in (URL_FNET_PAGINA, URL_FNET_PAGINA.replace("abrir", "pesquisar") + "?paginaCertificados=true"):
         try:
-            r = S.get(url, timeout=60)
+            r = S.get(url, timeout=150)
             diag("fnet_pagina", url, r)
             for val, nome in re.findall(r'<option[^>]*value="?(\d+)"?[^>]*>([^<]+)</option>', texto(r)):
                 cats[norm(nome)] = int(val)
@@ -917,6 +920,20 @@ def fnet_categorias():
                 break
         except Exception as e:  # noqa: BLE001
             diag("fnet_pagina", url, erro=e)
+    if not any("termo de securitiza" in k for k in cats):
+        # descoberta: pede 1 documento de cada código de categoria e lê o nome que volta
+        for cid in range(1, 121):
+            try:
+                dados, _ = fnet_busca(dict(FNET_VARIANTES[0], l=1, idCategoriaDocumento=cid))
+            except Exception:  # noqa: BLE001
+                continue
+            if dados:
+                nome = norm(dados[0].get("categoriaDocumento", ""))
+                if nome and nome not in cats:
+                    cats[nome] = cid
+            if sum(1 for k in cats if "termo de securitiza" in k) >= 2:
+                break
+    gravar_json("termos/categorias.json", cats)
     return cats
 
 
@@ -945,8 +962,8 @@ def fundosnet_termos():
     os.makedirs(os.path.join(DADOS, "termos"), exist_ok=True)
     estado = ler_json("termos/estado.json", {})
     docs = ler_json("termos/documentos_fnet.json", {})
-    if estado.get("versao") != 2:
-        estado, docs = {"versao": 2}, {}
+    if estado.get("versao") != 3:
+        estado, docs = {"versao": 3}, {}
 
     cats = fnet_categorias()
     alvo = {k: v for k, v in cats.items() if "termo de securitiza" in k}
