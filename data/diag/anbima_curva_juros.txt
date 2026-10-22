@@ -1,5 +1,5 @@
 url: https://www.anbima.com.br/informacoes/est-termo/CZ-down.asp (POST 2026-10-21)
-em: 2026-10-21T19:58:26-03:00
+em: 2026-10-22T08:28:41-03:00
 status: 200
 tipo: text/csv
 bytes: 2905

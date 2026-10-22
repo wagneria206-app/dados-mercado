@@ -1,5 +1,5 @@
 url: https://www.tesourodireto.com.br/documents/d/guest/rendimento-resgatar-csv?download=true
-em: 2026-10-21T19:58:26-03:00
+em: 2026-10-22T08:28:41-03:00
 status: 200
 tipo: text/csv
 bytes: 3935
@@ -63,4 +63,4 @@ Tesouro Educa+ 2042;IPCA + 6,83%;R$ 1.499,43;15/12/2046
 Tesouro Educa+ 2043;IPCA + 6,83%;R$ 1.404,29;15/12/2047
 Tesouro Educa+ 2044;IPCA + 6,83%;R$ 1.315,19;15/12/2048
 Tesouro IGPM+ com Juros Semestrais 2031;IGP-M + 7,83%;R$ 7.921,61;01/01/2031
-Tesouro Reserva 2036;SELIC;R$ 11,129519;01/01/2036
+Tesouro Reserva 2036;SELIC;R$ 11,135172;01/01/2036

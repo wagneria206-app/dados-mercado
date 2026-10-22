@@ -1,10 +1,10 @@
 url: https://www.debentures.com.br/exploreosnd/consultaadados/eventosfinanceiros/agenda_e.asp
-em: 2026-10-21T19:58:26-03:00
+em: 2026-10-22T08:28:41-03:00
 status: 200
 tipo: application/vnd.ms-excel
 bytes: 9217073
 
-Agenda de Eventos Financeiros - Gerado em 21/10/2026 19:58:45
+Agenda de Eventos Financeiros - Gerado em 22/10/2026 08:28:57
 
 Data do Evento	Data do Pagamento	Emissor	Ativo	Evento	Tipo	Taxa/Percentual	Liquidação
 22/10/2026	22/10/2026	AMERICANAS S.A. - EM RECUPERACAO JUDICIAL	AMERE2    	AMORTIZACAO EXTRAORDINARIA	--	0,0000		
