@@ -1,5 +1,5 @@
 url: https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosDados?d=0&s=0&l=200&o%5B0%5D%5BdataEntrega%5D=desc&idCategoriaDocumento=17&idTipoDocumento=0&idEspecieDocumento=0&paginaCertificados=true&cnpj=&tipoFundo=&situacao=&palavraChave=&administrador=&dataInicial=01%2F01%2F2000&dataFinal=22%2F10%2F2026
-em: 2026-10-22T19:22:53-03:00
+em: 2026-10-22T19:58:59-03:00
 status: 200
 tipo: application/json; charset=UTF-8
 bytes: 196987
