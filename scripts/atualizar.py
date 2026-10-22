@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# VERSAO: 2026-10-22 (fundos da CVM, agenda passada das debentures, correcao do Banco Central)
 """
 Robô de dados de mercado.
 
@@ -9,6 +10,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/fundos.json        cotas da CVM dos fundos listados em config/fundos.txt
   data/catalogo_debentures.json  características e agenda de todas as debêntures (SND),
                           no formato de papel do app, com a taxa ANBIMA do dia
+  data/fundos_catalogo.json todos os fundos da CVM (nome, tipo, cotas recentes)
   data/cri_cra_cvm.json   dados de todos os CRIs e CRAs do informe mensal da CVM (último mês)
   data/termos/indice.json link do termo de securitização (Fundos.NET) de cada CRI e CRA
   data/status.json        resultado de cada fonte (ok / erro) e horário
@@ -376,7 +378,10 @@ def sgs(serie, dias):
     for tentativa in range(3):
         for url in urls:
             try:
-                r = S.get(url, timeout=90, headers={"Accept": "application/json"})
+                # O firewall do Banco Central recusa identificação de navegador vinda de servidores;
+                # com a identificação simples de robô ele responde normalmente.
+                r = requests.get(url, timeout=90, headers={"User-Agent": "robo-dados-mercado/1.0 (GitHub Actions)",
+                                                           "Accept": "application/json"})
                 corpo = r.content.strip()
                 if r.status_code == 200 and corpo[:1] == b"[":
                     return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
@@ -694,6 +699,8 @@ def snd_catalogo():
             "novo_venc": coluna(cab, "novo vencimento"),
             "inicio_rent": coluna(cab, "inicio da rentabilidade"),
             "vne": coluna(cab, "nominal na emissao"),
+            "vna": coluna(cab, "valor nominal atual"),
+            "vna_data": coluna(cab, "data ult. vna"),
             "indice": coluna(cab, "indice") if coluna(cab, "indice", evitar=("referencia", "criterio")) is not None else coluna(cab, "remuneracao"),
             "mult": coluna(cab, "multiplicador"),
             "juros": coluna(cab, "juros", "taxa") if coluna(cab, "juros", "taxa") is not None else coluna(cab, "spread"),
@@ -711,27 +718,48 @@ def snd_catalogo():
     if not carac:
         raise RuntimeError("SND: nenhuma característica lida (ver data/diag/snd_caracteristicas_*.txt)")
 
-    # 2. agenda de eventos (todas as debêntures)
-    agenda = {}
-    try:
-        r = baixar(URL_SND_AGENDA, timeout=300)
-        diag("snd_agenda", URL_SND_AGENDA, r)
+    # 2. agenda de eventos (todas as debêntures): futura + passada (pedida por períodos)
+    agenda, vistos = {}, set()
+
+    def ler_agenda(url, nome_diag):
+        r = baixar(url, timeout=400)
+        diag(nome_diag, url, r)
         cab, linhas = tabela_tab(texto(r))
         c_ativo = coluna(cab, "ativo")
         c_evento = coluna(cab, "evento", evitar=("data",))
         c_data_ev = coluna(cab, "data do evento")
         c_data_pg = coluna(cab, "pagamento") if coluna(cab, "pagamento") is not None else coluna(cab, "liquidacao")
         c_taxa = coluna(cab, "taxa") if coluna(cab, "taxa") is not None else coluna(cab, "perc")
+        n = 0
         for L in linhas:
             cod = pega(L, c_ativo).upper()
             ev = norm(pega(L, c_evento))
             dpg = data_dmy(pega(L, c_data_pg)) or data_dmy(pega(L, c_data_ev))
-            if not cod or not dpg:
+            tx = num(pega(L, c_taxa))
+            if not cod or not dpg or (cod, dpg, ev, tx) in vistos:
                 continue
-            agenda.setdefault(cod, []).append((dpg, ev, num(pega(L, c_taxa))))
+            vistos.add((cod, dpg, ev, tx))
+            agenda.setdefault(cod, []).append((dpg, ev, tx))
+            n += 1
+        return n
+
+    passado_ok = []
+    try:
+        ler_agenda(URL_SND_AGENDA, "snd_agenda")
     except Exception as e:  # noqa: BLE001
         diag("snd_agenda", URL_SND_AGENDA, erro=e)
         STATUS["snd_agenda"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:500]}
+    # eventos já ocorridos, em blocos de 4 anos (desde 2006)
+    for ini in range(2006, HOJE.year + 1, 4):
+        fim = min(dt.date(ini + 3, 12, 31), HOJE)
+        url = (URL_SND_AGENDA + "?emissor=&ativo=&evento=&dt_ini=" + f"01/01/{ini}" + "&dt_fim=" + fim.strftime("%d/%m/%Y")
+               + "&dt_pgto_ini=&dt_pgto_fim=")
+        try:
+            n = ler_agenda(url, f"snd_agenda_{ini}")
+            passado_ok.append(f"{ini}-{fim.year}: {n}")
+        except Exception as e:  # noqa: BLE001
+            diag(f"snd_agenda_{ini}", url, erro=e)
+    tem_passado = any(int(x.split(": ")[1]) > 0 for x in passado_ok)
 
     # 3. monta cada papel no formato do app
     catalogo, sem_formula = {}, 0
@@ -753,8 +781,8 @@ def snd_catalogo():
                 e[0] = 1
             if ev.startswith("amortiza") and tx:
                 e[1] += tx
-            if ev.startswith("vencimento"):
-                e[1] = -1  # marca: resgate do saldo no vencimento
+            if ev.startswith("vencimento") or (ev.startswith("resgate") and "parcial" not in ev):
+                e[1] = -1  # marca: resgate de todo o saldo (vencimento ou resgate antecipado total)
         sched, acum = [], 0.0
         for d in sorted(eventos):
             j, a = eventos[d]
@@ -775,8 +803,12 @@ def snd_catalogo():
             "maturity": venc, "basis": basis, "schedule": sched,
             "official": True, "sources": ["SND – debentures.com.br (características e agenda de eventos)"],
             "status": "ok" if idx and taxa is not None and sched else "incompleto",
+            "agendaParcial": not tem_passado or not any(d < HOJE.isoformat() for d, _, _ in agenda.get(cod, [])),
             "updatedAt": AGORA.isoformat(timespec="seconds"), "notes": "",
         }
+        if num(x.get("vna")):
+            papel["vnaAtual"] = num(x.get("vna"))
+            papel["vnaData"] = data_dmy(x.get("vna_data", "")) or x.get("vna_data", "")
         dia_ref = num(x.get("dia_ref"))
         if idx == "IPCA" and dia_ref:
             papel["annivDay"] = int(dia_ref)
@@ -799,7 +831,8 @@ def snd_catalogo():
     com_agenda = sum(1 for p in catalogo.values() if len(p["schedule"]) > 1)
     com_anbima = sum(1 for p in catalogo.values() if "anbima" in p)
     return {"papeis": len(catalogo), "com_agenda": com_agenda, "com_taxa_anbima": com_anbima,
-            "incompletos": sem_formula, "caracteristicas_lidas": len(carac), "ativos_na_agenda": len(agenda)}
+            "incompletos": sem_formula, "caracteristicas_lidas": len(carac), "ativos_na_agenda": len(agenda),
+            "agenda_passada": passado_ok}
 
 
 # ---------------------------------------------------------------- CVM: informes mensais de CRI e CRA
@@ -1074,6 +1107,120 @@ def fundosnet_termos():
             "varredura_completa": completo, "series_com_termo": len(indice), "series_total": len(CRI_CRA)}
 
 
+# ---------------------------------------------------------------- CVM: catálogo de todos os fundos
+
+URL_CVM_CAD_175 = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/registro_fundo_classe.zip"
+URL_CVM_CAD_FI = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/cad_fi.csv"
+
+
+def ler_cadastro_fundos():
+    """CNPJ -> {nome, tipo, admin}. Usa o cadastro novo (RCVM 175) e o antigo (cad_fi)."""
+    cad = {}
+    colunas = {}
+
+    def absorver(linhas, origem):
+        cab = None
+        for L in linhas:
+            if cab is None:
+                cab = [norm(c) for c in L]
+                colunas[origem] = cab
+                c_cnpj = [i for i, c in enumerate(cab) if "cnpj" in c and not any(x in c for x in ("admin", "gestor", "auditor", "custod", "controlad"))]
+                c_nome = next((i for i, c in enumerate(cab) if "denominacao" in c or c == "denom_social"), None)
+                c_tipo = next((i for i, c in enumerate(cab) if c in ("tipo_classe", "classe", "classe_anbima", "tp_fundo", "tipo_fundo")
+                               or "classificacao" in c), None)
+                c_adm = next((i for i, c in enumerate(cab) if c in ("admin", "administrador") or ("admin" in c and "cnpj" not in c)), None)
+                c_sit = next((i for i, c in enumerate(cab) if c in ("sit", "situacao")), None)
+                continue
+            if c_nome is None:
+                return
+            if c_sit is not None and c_sit < len(L) and "cancel" in norm(L[c_sit]):
+                continue
+            for ci in c_cnpj[:1]:
+                if ci < len(L):
+                    k = re.sub(r"[^0-9A-Z]", "", L[ci].upper())
+                    if len(k) == 14:
+                        reg = cad.setdefault(k, {})
+                        reg.setdefault("n", L[c_nome].strip()[:120])
+                        if c_tipo is not None and c_tipo < len(L) and L[c_tipo].strip():
+                            reg.setdefault("t", L[c_tipo].strip()[:60])
+                        if c_adm is not None and c_adm < len(L) and L[c_adm].strip():
+                            reg.setdefault("a", L[c_adm].strip()[:80])
+
+    try:
+        r = baixar(URL_CVM_CAD_175, timeout=300)
+        with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+            for nome in sorted(z.namelist(), key=lambda n: ("subclasse" in n, "fundo" in n)):
+                if nome.lower().endswith(".csv"):
+                    with z.open(nome) as f:
+                        absorver(csv.reader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";"), nome)
+    except Exception as e:  # noqa: BLE001
+        diag("cvm_cadastro_175", URL_CVM_CAD_175, erro=e)
+    try:
+        r = baixar(URL_CVM_CAD_FI, timeout=300)
+        absorver(csv.reader(io.StringIO(texto(r)), delimiter=";"), "cad_fi.csv")
+    except Exception as e:  # noqa: BLE001
+        diag("cvm_cad_fi", URL_CVM_CAD_FI, erro=e)
+    gravar_json("diag/cvm_cadastro_colunas.json", colunas)
+    return cad
+
+
+@fonte("cvm_catalogo_fundos")
+def cvm_catalogo_fundos():
+    """Todos os fundos com cota diária na CVM: nome, tipo, última cota e cotas de fim de mês."""
+    anterior = ler_json("fundos_catalogo.json", {}).get("funds", {})
+    serie = {}   # cnpj -> {data: cota}
+    pl = {}
+    meses = [(HOJE.replace(day=1) - dt.timedelta(days=1)).strftime("%Y%m"), HOJE.strftime("%Y%m")]
+    lidos = 0
+    for mes in meses:
+        r = baixar(URL_CVM.format(mes), aceita_404=True, timeout=300)
+        if r is None:
+            continue
+        with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+            for nome in z.namelist():
+                with z.open(nome) as f:
+                    leitor = csv.reader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
+                    cab = next(leitor)
+                    c_cnpj = next(i for i, c in enumerate(cab) if c.startswith("CNPJ_FUNDO"))
+                    c_sub = cab.index("ID_SUBCLASSE") if "ID_SUBCLASSE" in cab else None
+                    c_data, c_cota = cab.index("DT_COMPTC"), cab.index("VL_QUOTA")
+                    c_pl = cab.index("VL_PATRIM_LIQ") if "VL_PATRIM_LIQ" in cab else None
+                    for L in leitor:
+                        if c_sub is not None and c_sub < len(L) and L[c_sub].strip():
+                            continue   # subclasses: fica a cota da classe
+                        k = re.sub(r"[^0-9A-Z]", "", L[c_cnpj].upper())
+                        cota = num(L[c_cota])
+                        if len(k) != 14 or not cota:
+                            continue
+                        serie.setdefault(k, {})[L[c_data]] = cota
+                        if c_pl is not None:
+                            pl[k] = (L[c_data], num(L[c_pl]))
+                        lidos += 1
+    if not serie:
+        raise RuntimeError("informe diário da CVM sem dados")
+    cad = ler_cadastro_fundos()
+    funds = {}
+    for k, s_ in serie.items():
+        datas = sorted(s_)
+        fim_mes = {}
+        for d in datas:
+            fim_mes[d[:7]] = d
+        pontos = sorted(set(list(fim_mes.values()) + datas[-5:]))
+        q = [[d, s_[d]] for d in pontos]
+        velho = anterior.get(k, {}).get("q", [])
+        junt = {d: c for d, c in velho}
+        junt.update({d: c for d, c in q})
+        q = [[d, junt[d]] for d in sorted(junt)][-30:]
+        reg = {"q": q}
+        reg.update(cad.get(k, {}))
+        if k in pl and pl[k][1]:
+            reg["pl"] = round(pl[k][1])
+        funds[k] = reg
+    gravar_json("fundos_catalogo.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "source": "CVM – informe diário e cadastro de fundos", "funds": funds})
+    com_nome = sum(1 for v in funds.values() if v.get("n"))
+    return {"fundos": len(funds), "com_nome": com_nome, "linhas": lidos}
+
+
 # ---------------------------------------------------------------- principal
 
 def main():
@@ -1089,6 +1236,7 @@ def main():
     cvm_cri_cra()
     fundosnet_termos()
     cvm_fundos()
+    cvm_catalogo_fundos()
 
     if mercado:
         mercado["updatedAt"] = AGORA.isoformat(timespec="seconds")
