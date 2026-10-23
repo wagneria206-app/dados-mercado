@@ -1,5 +1,5 @@
 url: https://www.tesourodireto.com.br/documents/d/guest/rendimento-investir-csv?download=true
-em: 2026-10-22T19:58:59-03:00
+em: 2026-10-23T08:27:59-03:00
 status: 200
 tipo: text/csv
 bytes: 2835
@@ -41,4 +41,4 @@ Tesouro Educa+ 2041;IPCA + 6,53%;R$ 16,77;R$ 1.677,54;15/12/2045
 Tesouro Educa+ 2042;IPCA + 6,52%;R$ 15,77;R$ 1.577,95;15/12/2046
 Tesouro Educa+ 2043;IPCA + 6,52%;R$ 14,82;R$ 1.482,10;15/12/2047
 Tesouro Educa+ 2044;IPCA + 6,51%;R$ 13,94;R$ 1.394,62;15/12/2048
-Tesouro Reserva 2036;SELIC;R$ 1,00;R$ 11,135172;01/01/2036
+Tesouro Reserva 2036;SELIC;R$ 1,00;R$ 11,140827;01/01/2036

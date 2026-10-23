@@ -1,5 +1,5 @@
-url: https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json&dataInicial=13/08/2024&dataFinal=22/10/2026
-em: 2026-10-22T19:58:59-03:00
+url: https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json&dataInicial=14/08/2024&dataFinal=23/10/2026
+em: 2026-10-23T08:27:59-03:00
 status: 200
 tipo: text/html; charset=utf-8
 bytes: 6255
@@ -108,4 +108,4 @@ bytes: 6255
 	<td></td>
 	<td colspan="4" style="border-top-color:#003d79;border-top-width:1;border-top-style:solid;">
 		<font size="2" color="red" face="Verdana, Arial, Helvetica, sans-serif">
-			A sua requisição foi rejeitada. <br>O código de erro é: 14273271137629860882<br><br>Caso necessite de ajuda entre em contato com a Central de Atendimento do Banco Central: +55 61 3414-2156.<br><br><a href='javascript:history.back();'>[Go Ba
+			A sua requisição foi rejeitada. <br>O código de erro é: 14273271137609190275<br><br>Caso necessite de ajuda entre em contato com a Central de Atendimento do Banco Central: +55 61 3414-2156.<br><br><a href='javascript:history.back();'>[Go Ba

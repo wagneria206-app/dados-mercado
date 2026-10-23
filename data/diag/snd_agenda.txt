@@ -1,10 +1,10 @@
 url: https://www.debentures.com.br/exploreosnd/consultaadados/eventosfinanceiros/agenda_e.asp
-em: 2026-10-22T19:58:59-03:00
+em: 2026-10-23T08:27:59-03:00
 status: 200
 tipo: application/vnd.ms-excel
 bytes: 9215820
 
-Agenda de Eventos Financeiros - Gerado em 22/10/2026 20:00:27
+Agenda de Eventos Financeiros - Gerado em 23/10/2026 08:28:50
 
 Data do Evento	Data do Pagamento	Emissor	Ativo	Evento	Tipo	Taxa/Percentual	Liquidação
 23/10/2026	23/10/2026	TRUE  SECURITIZADORA S/A	APCS13    	Juros	DIDI	1,8353		
