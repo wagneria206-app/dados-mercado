@@ -1,10 +1,10 @@
 url: https://www.debentures.com.br/exploreosnd/consultaadados/eventosfinanceiros/agenda_e.asp
-em: 2026-10-26T08:36:26-03:00
+em: 2026-10-26T10:08:38-03:00
 status: 200
 tipo: application/vnd.ms-excel
 bytes: 9207495
 
-Agenda de Eventos Financeiros - Gerado em 26/10/2026 08:36:45
+Agenda de Eventos Financeiros - Gerado em 26/10/2026 10:09:11
 
 Data do Evento	Data do Pagamento	Emissor	Ativo	Evento	Tipo	Taxa/Percentual	Liquidação
 27/10/2026	27/10/2026	ADMINISTRADORA GERAL DE ESTACIONAMENTOS S.A.	ADGE15    	Juros	DIDI	1,4300		
