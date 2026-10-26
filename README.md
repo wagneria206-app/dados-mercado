@@ -1,6 +1,6 @@
 # dados-mercado
 
-Robô que busca, todo dia útil, dados públicos oficiais para o app **Gestão de Carteiras**
+Robô que busca, todo dia útil, dados públicos oficiais para o app **Mercado e Títulos**
 e grava os arquivos prontos na pasta `data/`.
 
 | Arquivo | Conteúdo | Fonte |
@@ -13,7 +13,7 @@ e grava os arquivos prontos na pasta `data/`.
 
 **Quando roda:** coleta completa às 19h30 (dias úteis) e 8h (segunda a sábado); Tesouro Direto a cada 30 minutos, das 9h às 18h30 nos dias úteis (horário de Brasília).
 
-**App:** a página `index.html` (Mercado, Simular e Calcular título) é publicada pelo GitHub Pages e lê os arquivos de `data/` a cada 30 minutos. Ela não guarda dados de clientes.
+**App:** a página `index.html` (Mercado e Títulos: Mercado, Simular e Calcular título) é publicada pelo GitHub Pages e lê os arquivos de `data/` a cada 30 minutos. Ela não guarda dados de clientes.
 Para rodar na hora: aba **Actions** → *Atualizar dados de mercado* → **Run workflow**.
 
 **Importante:** este repositório é público. Aqui ficam só dados de mercado.
