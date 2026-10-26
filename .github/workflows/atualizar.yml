@@ -16,7 +16,7 @@ concurrency:
 jobs:
   atualizar:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v5
 
@@ -25,7 +25,9 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar dependências
-        run: pip install requests
+        run: |
+          (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils) >/dev/null 2>&1 || echo "poppler indisponível; usando pypdf"
+          pip install requests pypdf
 
       - name: Buscar dados
         run: python scripts/atualizar.py

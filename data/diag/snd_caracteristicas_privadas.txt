@@ -1,12 +1,12 @@
 url: https://www.debentures.com.br/exploreosnd/consultaadados/emissoesdedebentures/caracteristicas_e.asp?tip_deb=privadas&op_exc=False
-em: 2026-10-26T10:06:12-03:00
+em: 2026-10-26T10:19:29-03:00
 status: 200
 tipo: application/vnd.ms-excel
 bytes: 264089
 
 PARA CONSULTAR CARACTERISTICAS E DOCUMENTOS DE DEBENTURES, ACESSE DATA.ANBIMA.COM.BR. EM CASO DE DUVIDAS, ENTRE EM CONTATO VIA FALE CONOSCO.
 
-Empresas com Registro no SND (*)- Gerado em 26/10/2026 10:06:30
+Empresas com Registro no SND (*)- Gerado em 26/10/2026 10:21:00
 
 Codigo do Ativo	Empresa        	Serie	Emissao	IPO	Situacao	ISIN	Registro CVM da Emissao	Data de Registro CVM da Emissao	Registro CVM do Programa	Data de Registro CVM do Programa	Data de Emissao	 Data de Vencimento	Motivo de Saida 	Data de Saida / Novo Vencimento	 Data do Inicio da Rentabilidade	Data do Inicio da Distribuicao	Data da Proxima Repactuacao	Ato Societario (1)	Data do Ato (1)	Ato Societario (2)	Data do Ato (2)	Forma	Garantia/Especie	Classe	Quantidade Emitida	Artigo 14	Artigo 24	Quantidade em Mercado	Quantidade em Tesouraria	Quantidade Resgatada	Quantidade  Cancelada	Quantidade Convertida no SND	Quantidade Convertida fora do SND	Quantidade Permutada no SND	Quantidade Permutada fora do SND	Unidade Monetaria	Valor Nominal na Emissao	Unidade Monetaria	Valor Nominal Atual	Data Ult. VNA	indice	Tipo	Criterio de Calculo	Dia de Referencia para indice de Precos	Criterio para indice	Corrige a cada	Percentual Multiplicador/Rentabilidade	Limite da TJLP	Tipo de Tratamento do Limite da TJLP	Juros Criterio Antigo do SND	Premios Criterio Antigo do SND	Amortizacao - Taxa	Amortizacao - Cada	Amortizacao - Unidade	Amortizacao - Carencia	Amortizacao - Criterio	Tipo de Amortizacao	Juros Criterio Novo - Taxa	Juros Criterio Novo - Prazo	Juros Criterio Novo - Cada	Juros Criterio Novo - Unidade	Juros Criterio Novo - Carencia	Juros Criterio Novo - Criterio	Juros Criterio Novo - Tipo	Premio Criterio Novo - Taxa	Premio Criterio Novo - Prazo	Premio Criterio Novo - Cada	Premio Criterio Novo - Unidade	Premio Criterio Novo - Carencia	Premio Criterio Novo - Criterio	Premio Criterio Novo - Tipo	Participacao - Taxa	Participacao - Cada	Participacao - Unidade	Participacao - Carencia	Participacao - Descricao	Banco Mandatario	Agente Fiduciario	Instituicao Depositaria	Coordenador Lider	CNPJ	Deb. Incent. (Lei 12.431)	Escritura Padronizada	Resgate Antecipado
 ABSA11    	AB 014 SECURITIZADORA S.A.	 UNI	 001	 -	Registrado	BRABSADBS007	PRIVADA	27/11/2025			27/11/2025	29/11/2030		29/11/2030	12/01/2026	12/01/2026	 -	AGE	29/10/2025			Escritural	Quirografária	Simples	10000			000000010000	000000000000	000000000000			000000000000		000000000000	R$	1000	R$	1000	26/10/2026	DI		Padrão - SND		-		100	0	 - 	 -		 - 	 - 		 - 	 -	Percentual variável sobre o valor nominal atualizado em períodos não uniformes	5,45	252	0001	DIA	08/03/2026	Útil	Exponencial		-				 - 	 -	0		 -				VORTX DTVM LTDA.			58071694000138	N		S

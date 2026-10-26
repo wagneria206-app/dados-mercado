@@ -1,0 +1,6 @@
+url: https://fnet.bmfbovespa.com.br/fnet/publico/downloadDocumento?id=740727
+em: 2026-10-26T10:19:29-03:00
+status: 200
+tipo: application/pdf; charset=UTF-8
+bytes: 0
+
