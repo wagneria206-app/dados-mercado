@@ -1470,7 +1470,35 @@ def cvm_catalogo_fundos():
 
 # ---------------------------------------------------------------- principal
 
+def rapido():
+    """Execução intradiária (a cada 30 min): só o Tesouro Direto, que muda durante o dia."""
+    mercado = ler_json("mercado.json", {})
+    antes = (mercado.get("td") or {}).get("ALL")
+    tesouro_direto_site(mercado)
+    st = ler_json("status.json", {"fontes": {}})
+    st.setdefault("fontes", {}).update(STATUS)
+    st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
+    td = mercado.get("td") or {}
+    if STATUS.get("tesouro_direto_site", {}).get("ok") and td.get("ALL"):
+        td["hora"] = AGORA.strftime("%H:%M")
+        td["coletadoEm"] = AGORA.isoformat(timespec="seconds")
+        mercado["updatedAt"] = AGORA.isoformat(timespec="seconds")
+        gravar_json("mercado.json", mercado)
+        # série do dia: um ponto por coleta, só quando alguma taxa mudou
+        dia = ler_json("td_intradiario.json", {})
+        if dia.get("data") != HOJE.isoformat():
+            dia = {"data": HOJE.isoformat(), "pontos": []}
+        if not dia["pontos"] or dia["pontos"][-1]["linhas"] != td["ALL"]:
+            dia["pontos"].append({"hora": td["hora"], "linhas": td["ALL"]})
+        gravar_json("td_intradiario.json", dia)
+        st["intradiario_mudou"] = antes != td["ALL"]
+    gravar_json("status.json", st)
+    print("Intradiário:", STATUS.get("tesouro_direto_site"))
+
+
 def main():
+    if "--rapido" in sys.argv:
+        return rapido()
     mercado = ler_json("mercado.json", {})
     anbima_publicos(mercado)
     tesouro_direto(mercado)        # Tesouro Transparente: histórico (pode atrasar alguns dias)

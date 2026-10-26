@@ -42,5 +42,5 @@ jobs:
             echo "Nada mudou."
           else
             git commit -m "Dados de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
-            git push
+            git pull -q --rebase -X theirs origin main && git push
           fi
