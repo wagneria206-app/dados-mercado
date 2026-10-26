@@ -11,7 +11,9 @@ e grava os arquivos prontos na pasta `data/`.
 | `data/fundos.json` | Cotas dos fundos listados em `config/fundos.txt` | CVM |
 | `data/status.json` | Resultado de cada fonte na última execução | — |
 
-**Quando roda:** 19h30 (dias úteis) e 8h (segunda a sábado), horário de Brasília.
+**Quando roda:** coleta completa às 19h30 (dias úteis) e 8h (segunda a sábado); Tesouro Direto a cada 30 minutos, das 9h às 18h30 nos dias úteis (horário de Brasília).
+
+**App:** a página `index.html` (Mercado, Simular e Calcular título) é publicada pelo GitHub Pages e lê os arquivos de `data/` a cada 30 minutos. Ela não guarda dados de clientes.
 Para rodar na hora: aba **Actions** → *Atualizar dados de mercado* → **Run workflow**.
 
 **Importante:** este repositório é público. Aqui ficam só dados de mercado.
