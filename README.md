@@ -1,20 +1,28 @@
 # dados-mercado
 
-Robô que busca, todo dia útil, dados públicos oficiais para o app **Mercado e Títulos**
-e grava os arquivos prontos na pasta `data/`.
+Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Mercado e Títulos**
+(GitHub Pages: https://wagneria206-app.github.io/dados-mercado/).
 
-| Arquivo | Conteúdo | Fonte |
+## Onde ficam os dados
+
+- **Ramo `site`** (reescrito a cada coleta, sem histórico): os arquivos que o app lê, em `data/`.
+- **Ramo `main`**: o código, o app (`index.html`) e o estado que o robô precisa guardar entre execuções
+  (índice dos termos de securitização, cronogramas de CRI/CRA lidos, histórico mensal de cotas de fundos).
+
+| Arquivo (ramo site) | Conteúdo | Fonte |
 |---|---|---|
-| `data/mercado.json` | Retrato do dia (títulos públicos, Tesouro Direto, CDI, Selic, IPCA) | ANBIMA, Tesouro Transparente, Banco Central, IBGE |
-| `data/td_historico.json` | Preços e taxas do Tesouro Direto dos últimos 90 dias | Tesouro Transparente |
-| `data/debentures.json` | Taxa indicativa e PU de todas as debêntures | ANBIMA |
-| `data/fundos.json` | Cotas dos fundos listados em `config/fundos.txt` | CVM |
-| `data/status.json` | Resultado de cada fonte na última execução | — |
+| `mercado.json` | Títulos públicos, Tesouro Direto, curva de juros, CDI, Selic, IPCA | ANBIMA, Tesouro Direto, Banco Central, IBGE |
+| `td_historico.json`, `td_intradiario.json` | Tesouro Direto: 90 dias e coletas do dia | Tesouro Direto |
+| `debentures.json`, `cri_cra_anbima.json`, `taxas_hist.json` | Taxas indicativas e PU (e 60 dias de histórico) | ANBIMA |
+| `catalogo_debentures.json` | Características e agenda de todas as debêntures | SND (debentures.com.br) |
+| `cri_cra_cvm.json` | Dados de todos os CRI e CRA | CVM – informes mensais |
+| `cri_cra_cronogramas.json` | Cronograma de pagamentos lido de cada termo de securitização | Fundos.NET |
+| `fundos/XX.json` | Cotas e cadastro de todos os fundos (por início do CNPJ) | CVM – informe diário |
+| `status.json` | Resultado de cada fonte na última execução | — |
 
-**Quando roda:** coleta completa às 19h30 (dias úteis) e 8h (segunda a sábado); Tesouro Direto a cada 30 minutos, das 9h às 18h30 nos dias úteis (horário de Brasília).
-
-**App:** a página `index.html` (Mercado e Títulos: Mercado, Simular e Calcular título) é publicada pelo GitHub Pages e lê os arquivos de `data/` a cada 30 minutos. Ela não guarda dados de clientes.
-Para rodar na hora: aba **Actions** → *Atualizar dados de mercado* → **Run workflow**.
+**Quando roda:** coleta completa às 19h30 (dias úteis) e 8h (segunda a sábado); Tesouro Direto a cada
+30 minutos, das 9h às 18h30 nos dias úteis (horário de Brasília). Para rodar na hora: aba **Actions** →
+escolha o fluxo → **Run workflow**.
 
 **Importante:** este repositório é público. Aqui ficam só dados de mercado.
 Nada de nomes de clientes, posições ou valores de carteira.

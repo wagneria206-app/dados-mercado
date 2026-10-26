@@ -24,6 +24,7 @@ anterior daquela fonte é mantido. O script termina com erro (código 1)
 quando alguma fonte falha, para o GitHub avisar por e-mail.
 """
 import csv
+import glob
 import datetime as dt
 import io
 import json
@@ -36,6 +37,9 @@ import unicodedata
 import zipfile
 
 import requests
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cronograma  # noqa: E402
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DADOS = os.path.join(RAIZ, "data")
@@ -166,6 +170,18 @@ def ler_json(nome, padrao):
             return json.load(f)
     except Exception:  # noqa: BLE001
         return padrao
+
+
+def hist_taxas(papeis, ref_padrao):
+    """Guarda as taxas indicativas dos últimos 60 dias úteis por código (painel Mercado: variação em 5 e 30 dias)."""
+    h = ler_json("taxas_hist.json", {})
+    for cod, v in papeis.items():
+        tx, d = v.get("taxa"), v.get("data") or ref_padrao
+        if tx is None or not d:
+            continue
+        L = [x for x in h.get(cod, []) if x[0] != d] + [[d, tx]]
+        h[cod] = sorted(L)[-60:]
+    gravar_json("taxas_hist.json", h)
 
 
 def _sem_carimbo(o):
@@ -376,6 +392,7 @@ def anbima_debentures():
             gravar_json("debentures.json", {"refDate": dia.isoformat(),
                                             "source": "ANBIMA – taxas indicativas de debêntures",
                                             "papers": papeis})
+            hist_taxas(papeis, dia.isoformat())
             return {"data": dia.isoformat(), "papeis": len(papeis)}
     raise RuntimeError("nenhum arquivo ANBIMA de debêntures nos últimos 8 dias úteis")
 
@@ -1261,6 +1278,7 @@ def anbima_cri_cra():
             gravar_json("cri_cra_anbima.json", {"refDate": ref, "source": "ANBIMA – taxas de CRI e CRA",
                                                 "geradoEm": AGORA.isoformat(timespec="seconds"), "papers": papeis})
             sem = sum(1 for v in papeis.values() if v["taxa"] is None)
+            hist_taxas(papeis, ref)
             return {"data": ref, "papeis": len(papeis), "sem_taxa": sem}
         erros.append(f"{url}: nenhuma tabela com coluna Código ({len(p.tabelas)} tabelas na página)")
     raise RuntimeError("; ".join(erros))
@@ -1346,30 +1364,67 @@ def fundosnet_textos():
     por(sorted(indice, key=lambda c: -indice[c]["idFnet"]), 2)
 
     pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and feitos.get(str(i), {}).get("tentativas", 0) < 3]
-    limite = time.time() + 12 * 60
+    limite = time.time() + 10 * 60
     novos, erros = 0, 0
     os.makedirs(os.path.join(DADOS, "termos", "texto"), exist_ok=True)
     from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
 
+    # documento -> séries que ele cobre (o mesmo termo costuma valer para várias séries)
+    por_doc = {}
+    for cod, ix in indice.items():
+        for i in [ix["idFnet"]] + [a["id"] for a in ix.get("aditamentos", [])]:
+            por_doc.setdefault(i, []).append(cod)
+    guardar = {i for cod in pedidos for i in ids(cod)}
+    cronos = ler_json("cri_cra_cronogramas.json", {})
+    cvm = CRI_CRA or ler_json("cri_cra_cvm.json", {}).get("certificados", {})
+
+    def extrair_cronogramas(i, txt):
+        """Lê a tabela de pagamentos do termo para cada série do documento; o aditamento mais novo prevalece."""
+        n = 0
+        for cod in por_doc.get(i, []):
+            s = dict(cvm.get(cod) or {})
+            if not s:
+                continue
+            a = anb.get(cod) or {}
+            s["vencAnbima"] = a.get("venc")
+            try:
+                r = cronograma.extrair(txt, s)
+            except Exception:  # noqa: BLE001
+                r = None
+            if not r or "schedule" not in r:
+                continue
+            velho = cronos.get(cod)
+            if velho and velho.get("docId", 0) > i:
+                continue
+            r.update({"docId": i, "entrega": (indice.get(cod) or {}).get("entrega", ""),
+                      "url": f"https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={i}",
+                      "extraidoEm": AGORA.isoformat(timespec="seconds")})
+            cronos[cod] = r
+            n += 1
+        return n
+
     def um(i):
         if time.time() > limite:
-            return i, None
+            return i, None, None
         try:
             txt = pdf_para_texto(fnet_pdf(i))
             if len(txt.strip()) < 500:
                 raise RuntimeError("PDF sem texto (provavelmente escaneado)")
-            with gzip.open(os.path.join(DADOS, "termos", "texto", f"{i}.txt.gz"), "wt", encoding="utf-8") as f:
-                f.write(txt)
-            return i, {"ok": True, "paginas": txt.count("\f") + 1, "caracteres": len(txt)}
+            if i in guardar:   # só guarda o texto integral dos papéis pedidos em config/papeis.txt
+                with gzip.open(os.path.join(DADOS, "termos", "texto", f"{i}.txt.gz"), "wt", encoding="utf-8") as f:
+                    f.write(txt)
+            return i, {"ok": True, "paginas": txt.count("\f") + 1, "caracteres": len(txt)}, txt
         except Exception as e:  # noqa: BLE001
-            return i, {"ok": False, "erro": str(e)[:200]}
+            return i, {"ok": False, "erro": str(e)[:200]}, None
 
     # 4 downloads ao mesmo tempo (o Fundos.NET aguenta bem; cada documento leva alguns segundos)
     lote = [i for _, i in pend][:1200]
     with ThreadPoolExecutor(max_workers=4) as ex:
-        for i, res in ex.map(um, lote):
+        for i, res, txt in ex.map(um, lote):
             if res is None:
                 continue
+            if txt:
+                res["cronogramas"] = extrair_cronogramas(i, txt)
             reg = feitos.setdefault(str(i), {})
             if res["ok"]:
                 reg.update(res, em=AGORA.isoformat(timespec="seconds"))
@@ -1379,11 +1434,12 @@ def fundosnet_textos():
                 reg.update(ok=False, erro=res["erro"], tentativas=reg.get("tentativas", 0) + 1)
                 erros += 1
     gravar_json("termos/textos.json", feitos)
+    gravar_json("cri_cra_cronogramas.json", cronos)
     total_ok = sum(1 for v in feitos.values() if v.get("ok"))
     pedidos_ok = sum(1 for c in pedidos if ids(c) and all(feitos.get(str(i), {}).get("ok") for i in ids(c)))
     if pend and novos == 0 and erros:
         raise RuntimeError(f"nenhum termo baixado; último erro: {next(v['erro'] for v in feitos.values() if not v.get('ok'))}")
-    return {"novos_agora": novos, "erros_agora": erros, "textos_total": total_ok, "documentos_na_fila": len(fila),
+    return {"novos_agora": novos, "erros_agora": erros, "textos_total": total_ok, "series_com_cronograma": len(cronos), "documentos_na_fila": len(fila),
             "pendentes": max(0, len(pend) - novos), "papeis_pedidos": len(pedidos), "papeis_pedidos_completos": pedidos_ok}
 
 # ---------------------------------------------------------------- CVM: catálogo de todos os fundos
@@ -1496,13 +1552,79 @@ def cvm_catalogo_fundos():
             reg["pl"] = round(pl[k][1])
         funds[k] = reg
     gravar_json("fundos_catalogo.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "source": "CVM – informe diário e cadastro de fundos", "funds": funds})
+    # histórico de fins de mês (estado guardado no main; só meses completos) + carga inicial desde 2021
+    hist = {}
+    for f in glob.glob(os.path.join(DADOS, "fundos_hist", "*.json")):
+        if not f.endswith("estado.json"):
+            hist.update(ler_json(os.path.relpath(f, DADOS), {}))
+    estado = ler_json("fundos_hist/estado.json", {"feitos": []})
+    mes_atual = HOJE.strftime("%Y%m")
+
+    def absorver_mes(series, mes):
+        for k, s_ in series.items():
+            ds = sorted(d for d in s_ if d.replace("-", "")[:6] == mes)
+            if ds:
+                hist.setdefault(k, {})[mes] = [ds[-1], s_[ds[-1]]]
+
+    for mes in meses:
+        if mes < mes_atual:
+            absorver_mes(serie, mes)
+            if mes not in estado["feitos"]:
+                estado["feitos"].append(mes)
+    pend, m = [], dt.date(2021, 1, 1)
+    while m.strftime("%Y%m") < mes_atual:
+        if m.strftime("%Y%m") not in estado["feitos"]:
+            pend.append(m.strftime("%Y%m"))
+        m = (m.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
+    limite_hist = time.time() + 6 * 60
+    for mes in sorted(pend, reverse=True)[:10]:
+        if time.time() > limite_hist:
+            break
+        try:
+            r = baixar(URL_CVM.format(mes), aceita_404=True, timeout=300)
+            if r is None:
+                estado["feitos"].append(mes)     # mês sem arquivo mensal na CVM
+                continue
+            s_mes = {}
+            with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+                for nome in z.namelist():
+                    with z.open(nome) as f:
+                        leitor = csv.reader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
+                        cab = next(leitor)
+                        c_cnpj = next(i for i, c in enumerate(cab) if c.startswith("CNPJ_FUNDO"))
+                        c_sub = cab.index("ID_SUBCLASSE") if "ID_SUBCLASSE" in cab else None
+                        c_data, c_cota = cab.index("DT_COMPTC"), cab.index("VL_QUOTA")
+                        for L in leitor:
+                            if c_sub is not None and c_sub < len(L) and L[c_sub].strip():
+                                continue
+                            k = re.sub(r"[^0-9A-Z]", "", L[c_cnpj].upper())
+                            cota = num(L[c_cota])
+                            if len(k) == 14 and cota:
+                                s_mes.setdefault(k, {})[L[c_data]] = cota
+            absorver_mes(s_mes, mes)
+            estado["feitos"].append(mes)
+        except Exception as e:  # noqa: BLE001
+            diag("cvm_hist_" + mes, URL_CVM.format(mes), erro=e)
+    hist_fatias = {}
+    for k, v in hist.items():
+        hist_fatias.setdefault(k[:2], {})[k] = dict(sorted(v.items()))
+    for pre, dados in hist_fatias.items():
+        gravar_json(f"fundos_hist/{pre}.json", dados)
+    estado["feitos"] = sorted(set(estado["feitos"]))
+    gravar_json("fundos_hist/estado.json", estado)
+
     fatias = {}
     for k, v in funds.items():
+        h = [x for _, x in sorted((hist.get(k) or {}).items())]
+        q = {d: c for d, c in h}
+        q.update({d: c for d, c in v.get("q", [])})
+        v = dict(v, q=[[d, q[d]] for d in sorted(q)])
         fatias.setdefault(k[:2], {})[k] = v
     for pre, dados in fatias.items():
         gravar_json(f"fundos/{pre}.json", {"source": "CVM – informe diário e cadastro de fundos", "funds": dados})
     com_nome = sum(1 for v in funds.values() if v.get("n"))
-    return {"fundos": len(funds), "com_nome": com_nome, "linhas": lidos}
+    return {"fundos": len(funds), "com_nome": com_nome, "linhas": lidos,
+            "historico_meses": len(estado["feitos"]), "historico_pendente": max(0, len(pend) - 10)}
 
 
 # ---------------------------------------------------------------- principal

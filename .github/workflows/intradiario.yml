@@ -22,18 +22,24 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -q requests
-      - name: Buscar e gravar (com nova tentativa se o repositório mudou)
+      - name: Restaurar os dados da última coleta (ramo "site")
         run: |
+          if git fetch -q --depth=1 origin site; then git restore --source=FETCH_HEAD --worktree -- data 2>/dev/null || git checkout FETCH_HEAD -- data && git reset -q; fi
+          git restore --source=HEAD --worktree -- data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json 2>/dev/null || true
+      - name: Buscar Tesouro Direto
+        run: python scripts/atualizar.py --rapido
+      - name: Publicar os dados do dia no ramo "site"
+        if: always()
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/site && mkdir -p /tmp/site/data
+          cp -r data/. /tmp/site/data/
+          rm -rf /tmp/site/data/termos/texto
+          cd /tmp/site
+          git init -q -b site
           git config user.name "robo-dados"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for tentativa in 1 2 3; do
-            git fetch -q --depth=1 origin main && git reset -q --hard origin/main
-            python scripts/atualizar.py --rapido
-            git add data/mercado.json data/td_intradiario.json data/td_historico.json data/status.json
-            if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
-            git commit -q -m "Tesouro Direto $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
-            if git push origin HEAD:main; then exit 0; fi
-            echo "Push recusado (tentativa $tentativa); recomeçando sobre a versão mais nova."
-            sleep 10
-          done
-          exit 1
+          git add -A
+          git commit -q -m "Dados de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" site

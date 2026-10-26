@@ -1,3 +1,0 @@
-url: https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosDados
-em: 2026-10-22T19:58:59-03:00
-erro: 520 Server Error: <none> for url: https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosDados?d=0&s=0&l=200&o%5B0%5D%5BdataEntrega%5D=desc&idCategoriaDocumento=18&idTipoDocumento=0&idEspecieDocumento=0&paginaCertificados=true&cnpj=&tipoFundo=&situacao=&palavraChave=&administrador=&dataInicial=01%2F01%2F2000&dataFinal=22%2F10%2F2026

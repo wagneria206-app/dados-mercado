@@ -1,9 +1,0 @@
-url: https://www.tesourodireto.com.br/documents/d/guest/rendimento-investir-csv?download=true
-em: 2026-10-26T13:46:15-03:00
-status: 200
-tipo: text/csv
-bytes: 256
-
-T�tulo;Rendimento anual do t�tulo;Investimento m�nimo;Pre�o unit�rio de investimento;Vencimento do T�tulo
-Tesouro Selic 2031;SELIC + 0,0992%;R$ 200,84;R$ 20.084,44;01/03/2031
-Tesouro Reserva 2036;SELIC;R$ 1,00;R$ 11,146485;01/01/2036

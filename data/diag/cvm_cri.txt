@@ -1,3 +1,0 @@
-url: https://dados.cvm.gov.br/dados/SECURIT/DOC/INF_MENSAL_CRI/DADOS/inf_mensal_cri_2026.zip
-em: 2026-10-21T16:42:55-03:00
-erro: lido; 44328 linhas
