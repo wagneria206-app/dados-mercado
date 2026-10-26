@@ -1146,7 +1146,16 @@ function vnaSelic(t){
   }
   return trunc(VNA_LFT/f,6);
 }
-function vnaFor(kind,t){const K=KIND[kind];return !K.idx?null:K.fam==="selic"?vnaSelic(t):vnaIpca(t)}
+function vnaFor(kind,t){const K=KIND[kind];if(!K.idx)return null;
+  if(t>VAL)return K.fam==="selic"?trunc(VNA_LFT*Math.pow(1+SELIC_OVER/100,du(VAL,t)/252),6):vnaIpcaFwd(t);
+  return K.fam==="selic"?vnaSelic(t):vnaIpca(t)}
+function vnaIpcaFwd(t){ // mesmo mês de aniversário: segue a taxa implícita no VNA da ANBIMA; depois, projeção de IPCA
+  const d=new Date(VAL);let y=d.getUTCFullYear(),m=d.getUTCMonth();if(d.getUTCDate()<15){m--;if(m<0){m=11;y--}}
+  const b=utc(y,m,15),nb=addMonths(b,1),iPrev=IPCA[y*12+m-1];
+  if(iPrev!=null&&isFinite(VNA_B)&&t<nb){const base=1000*iPrev/BASE_IDX,iCur=IPCA[y*12+m];
+    if(iCur!=null)return trunc(base*Math.pow(iCur/iPrev,(t-b)/DAY/((nb-b)/DAY)),6);
+    if(VAL>b)return trunc(base*Math.pow(VNA_B/base,(t-b)/DAY/((VAL-b)/DAY)),6)}
+  return trunc(VNA_B*piFactor(t),6)}
 
 /* ---------- precificação ---------- */
 function matOf(kind,d){const K=KIND[kind],t=parseDate(d);return K.b1?addMonths(t,K.b1-1):t}
@@ -1208,7 +1217,7 @@ function applyData(d){
   return true;
 }
 /* ---------- conferência: cada taxa baixada precisa reproduzir o preço publicado ---------- */
-let CHECK={},CHK={ok:0,n:0,bad:[]},TD_DATE=null;
+let CHECK={},CHK={ok:0,n:0,bad:[]},TD_DATE=null,TD_DATE_K={};
 function runChecks(){
   CHECK={};CHK={ok:0,n:0,bad:[]};
   const mark=(k,d,ok,pre)=>{CHECK[(pre||"")+k+"|"+d]=ok;CHK.n++;if(ok)CHK.ok++;else CHK.bad.push(KIND[k].td+" "+new Date(parseDate(d)).getUTCFullYear()+(pre?" (Tesouro Direto)":""))};
@@ -1218,8 +1227,11 @@ function runChecks(){
   const calcAt=(t,[k,d,r])=>{const K=KIND[k],v=K.idx?vnaFor(k,t):null;if(K.idx&&!isFinite(v))return NaN;const fl=flowsFrom(k,t,d);return fl.length?price(k,fl,r,v).pu:NaN};
   let best=null,bestN=-1,t=VAL;{const tq=parseDate(DATA_INFO.tdDate||"");if(isFinite(tq)&&tq>VAL){t=tq;let k=0;do{t+=DAY}while(!isBiz(t)&&++k<6)}}
   for(let i=0;i<10&&rows.length;i++){const n=rows.filter(x=>Math.abs(calcAt(t,x)-x[3])<=x[3]*0.0002).length;if(n>bestN){bestN=n;best=t}if(n===rows.length)break;do{t-=DAY}while(!isBiz(t))}
-  TD_DATE=rows.length?best:null;
-  for(const x of rows)mark(x[0],x[1],Math.abs(calcAt(TD_DATE,x)-x[3])<=x[3]*0.0002,"TD|");
+  TD_DATE=rows.length?best:null;TD_DATE_K={};
+  for(const k of [...new Set(rows.map(x=>x[0]))]){const R=rows.filter(x=>x[0]===k);let bk=TD_DATE,bn=R.filter(x=>Math.abs(calcAt(TD_DATE,x)-x[3])<=x[3]*0.0002).length,tt=TD_DATE+5*DAY;
+    if(bn<R.length)for(let i=0;i<10;i++){const n=R.filter(x=>Math.abs(calcAt(tt,x)-x[3])<=x[3]*0.0002).length;if(n>bn){bn=n;bk=tt}do{tt-=DAY}while(!isBiz(tt))}
+    TD_DATE_K[k]=bk}
+  for(const x of rows)mark(x[0],x[1],Math.abs(calcAt(TD_DATE_K[x[0]]||TD_DATE,x)-x[3])<=x[3]*0.0002,"TD|");
 }
 function checkLine(){
   if(!CHK.n)return "";
@@ -1270,6 +1282,7 @@ function tagFor(isMan,src){return isMan?'<span class="tag man">informada</span>'
 function calc(){
   if(activeMod!=='pub')return;
   const c=cur(),{kind,d,mat,K,F}=c;
+  const VD=(c.base==="TD"&&!manual&&(TD_DATE_K[kind]||TD_DATE)>VAL)?(TD_DATE_K[kind]||TD_DATE):VAL;
   const buy=parseDate($("buy").value),rc=num($("rate").value),rm=num($("mrate").value);
   const q=num($("qty").value),paid=num($("paid").value);
   const isMan=manual&&Math.abs(rm-c.mrate)>1e-9,srcName=c.base==="TD"?"Tesouro Direto":"ANBIMA",ckey=(c.base==="TD"?"TD|":"")+kind+"|"+d;
@@ -1278,7 +1291,7 @@ function calc(){
   const errs=[],bw=$("buyWarn");bw.hidden=true;
   if(isNaN(buy))errs.push("Informe a data da compra.");
   else if(buy<utc(2005,1,15))errs.push("A calculadora cobre compras a partir de 15/02/2005.");
-  else if(buy>VAL)errs.push("A compra precisa ser até "+fdate(VAL)+", a data dos dados de mercado.");
+  else if(buy>VD)errs.push("A compra precisa ser até "+fdate(VD)+", a data dos dados de mercado.");
   else if(buy>=mat)errs.push("A compra precisa ser anterior ao último pagamento do título.");
   else if(!isBiz(buy)){bw.textContent="Essa data não é dia útil. Confira a data de liquidação na nota da corretora.";bw.hidden=false}
   if(!isFinite(rc)||rc<=-50||rc>60)errs.push("Informe a taxa contratada em % ao ano, por exemplo "+F.ex+".");
@@ -1286,10 +1299,11 @@ function calc(){
   if(!(q>0))errs.push("Informe a quantidade de títulos (maior que zero).");
   if($("paid").value.trim()&&!(paid>0))errs.push("O preço pago precisa ser um valor em reais, por exemplo 4.383,91.");
   let vnaV,vnaBuy;
-  if(!errs.length&&K.idx){vnaV=vnaFor(kind,VAL);vnaBuy=vnaFor(kind,buy);if(!isFinite(vnaV)||!isFinite(vnaBuy))errs.push("Não há dados de índice para essa data de compra.")}
+  if(!errs.length&&K.idx){vnaV=vnaFor(kind,VD);vnaBuy=vnaFor(kind,buy);if(!isFinite(vnaV)||!isFinite(vnaBuy))errs.push("Não há dados de índice para essa data de compra.")}
   if(errs.length){LAST.pub=null;$("out").innerHTML='<span class="label">Resultado</span><p class="err">'+errs.join("<br>")+"</p>";$("flow").innerHTML="";$("chart").innerHTML="";$("flowSub").textContent="";$("readout").textContent="";state=null;return}
 
-  const fl=flowsFrom(kind,VAL,d),pm=price(kind,fl,rm,vnaV),pc=price(kind,fl,rc,vnaV);
+  const fl=flowsFrom(kind,VD,d),pm=price(kind,fl,rm,vnaV),pc=price(kind,fl,rc,vnaV);
+  {const off=isMan?0:c.base==="TD"?(tdRow(kind,d)||{}).price:(((MKT[kind]||[]).find(x=>x[0]===d))||[])[2];if(off>0&&CHECK[ckey]===true&&Math.abs(off/pm.pu-1)<0.001)pm.pu=off} // preço oficial publicado
   const diff=pm.pu-pc.pu,diffT=diff*q;
   const pb=price(kind,flowsFrom(kind,buy,d),rc,vnaBuy),usePaid=paid>0,inv=(usePaid?paid:pb.pu)*q;
   const past=pastPayments(kind,d,buy);
@@ -1297,7 +1311,7 @@ function calc(){
   const resM=pm.pu*q+recv-inv,resC=pc.pu*q+recv-inv;
   const yr=new Date(parseDate(d)).getUTCFullYear();
   const reg=t=>pubRegime(kind,t,mat),scn=pubScenario(kind,d,K,buy);
-  const txNow=taxCalc(reg(VAL),inv,q,buy,past,VAL,pm.pu);
+  const txNow=taxCalc(reg(VD),inv,q,buy,past,VD,pm.pu);
   const hv=holdVsSell({reg,inv,q,buy,past,future:scn.cashBetween(mat).filter(c=>c.t>VAL),puNow:pm.pu,end:mat,piBase:piProj(),isIpca:K.fam==="ipca"});
 
   const cl=Math.abs(diff)<0.005?"flat":diff>0?"gain":"loss",word=cl==="flat"?"Na curva":cl==="gain"?"Ágio":"Deságio";
@@ -1306,7 +1320,7 @@ function calc(){
   h+='<p class="sub">'+signed(diff,brl)+' por título ('+signed(diff/pc.pu*100,x=>fx(x,K.fam==="selic"?3:2))+'%). '+(cl==="gain"?"O mercado paga mais do que o título vale na sua taxa contratada.":cl==="loss"?"O mercado paga menos do que o título vale na sua taxa contratada. Levando até o fim, você recebe a taxa contratada.":"O preço de mercado coincide com o da sua curva.")+'</p>';
   h+='<div class="cmp"><div><span class="n">Taxa contratada</span><span class="v">'+fr(K.fam,rc)+'</span></div><div><span class="n">Taxa de mercado '+tagFor(isMan,srcName)+'</span><span class="v">'+fr(K.fam,rm)+'</span></div></div>';
   h+='<dl>';
-  h+='<div class="row head"><dt>'+K.td+' '+yr+' em '+fdate(VAL)+'</dt><dd></dd></div>';
+  h+='<div class="row head"><dt>'+K.td+' '+yr+' em '+fdate(VD)+(VD!==VAL?' (preço do Tesouro Direto)':'')+'</dt><dd></dd></div>';
   h+='<div class="row"><dt>PU a mercado</dt><dd>R$ '+fx(pm.pu,K.b1?2:6)+'</dd></div>';
   h+='<div class="row"><dt>PU na taxa contratada (curva)</dt><dd>R$ '+fx(pc.pu,K.b1?2:6)+'</dd></div>';
   h+='<div class="row"><dt>'+(K.idx?'Cotação a mercado / na curva':'Preço em % do valor de face')+'</dt><dd>'+fx(pm.cot,4)+'% / '+fx(pc.cot,4)+'%</dd></div>';
@@ -1731,6 +1745,7 @@ document.addEventListener("click",e=>{const o=e.target.closest("[data-pcopen]");
 async function pcFetch(){
   const code=codeClean($("pcCode").value);
   if(!code){setStat("Digite o código do papel.","bad");return}
+  if(PAGES&&!pcDb)return pcRoboFetch(code);
   if(!pcDb||!mcpNs){$("pcInfo").innerHTML='<p class="err">A busca funciona com a calculadora aberta no Claude (claude.ai no navegador ou app).</p>';return}
   const btnF=$("pcFetch");btnF.disabled=true;
   try{
@@ -4035,6 +4050,7 @@ function fdCalc(){
 }
 async function fdFetch(){
   const c=cnpjNorm($("fdCnpj").value),info=$("fdInfo");if(!cnpjValid(c)){info.innerHTML=fdInfoHtml(c);return}
+  if(PAGES&&!DB)return fdRoboFetch(c);
   if(!DB||!mcpNs){info.insertAdjacentHTML("beforeend",'<p class="err">A busca funciona com o aplicativo aberto no Claude.</p>');return}
   const b=$("fdFetch");b.disabled=true;
   try{const old=FUNDS[c]||{};await DB.doc("funds/"+c).set(Object.assign({},old,{cnpj:c,status:"pending",requestedAt:new Date().toISOString(),quotes:old.quotes||[]}));
@@ -5931,6 +5947,24 @@ setMod(["pub","pc","bank","fund","sc","sim","cart","tx","mk"].includes(m0)?m0:"c
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
+/* ---------- debêntures do catálogo do SND: o SND só publica a agenda futura ----------
+   Reconstrói as datas de juros já pagas pela periodicidade e acerta o saldo pelo valor nominal
+   atualizado que o SND publica (vnaAtual). O preço de hoje fica exato; o caminho do saldo antes da
+   última data de juros é aproximado. */
+function pcRebase(P0){
+  if(!P0||!P0.agendaParcial||!(P0.vnaAtual>0)||!P0.schedule||!P0.start)return P0;
+  const P=JSON.parse(JSON.stringify(P0)),S=P.schedule.map(r=>[r[0],+r[1],+r[2]]).sort((a,b)=>a[0].localeCompare(b[0])),J=S.filter(r=>r[1]);
+  const st=parseDate(P.start),vd=parseDate(P.vnaData)||VAL,past=[];
+  if(J.length>=2){const t1=parseDate(J[0][0]),t2=parseDate(J[1][0]),m=Math.round((t2-t1)/DAY/30.4375);
+    if(m>=1&&m<=24)for(let k=1;k<400;k++){let c=addMonths(t1,-m*k);if(c<=st)break;while(!isBiz(c))c+=DAY;if(c<vd)past.unshift([new Date(c).toISOString().slice(0,10),1,0])}}
+  P.schedule=past.concat(S.filter(r=>!past.some(x=>x[0]===r[0])));P.basis=P.basis||"SALDO";
+  // saldo: o que falta para o valor nominal atualizado publicado vira uma amortização na última data de juros passada
+  const vne=+P.vne||1000;let bal=P.vnaAtual/vne;
+  if(P.index==="IPCA"){const f=ipcaFactor(P,vd);if(isFinite(f)&&f>0)bal=P.vnaAtual/(vne*f)}
+  if(past.length&&bal<0.9999&&bal>0){const L=past[past.length-1];L[2]=+((1-bal)*100).toFixed(6);P.notes=((P.notes||"")+" Amortizações já pagas reconstruídas pelo saldo atual do SND (a agenda passada não é publicada).").trim()}
+  P.rebased=true;delete P.agendaParcial;return P;
+}
+
 /* ---------- dados do robô (GitHub) lidos direto pela página ---------- */
 const PAGES=/github\.io$/.test(location.hostname)||!(window.claude&&typeof window.claude.use==="function");
 const ROBO=/github\.io$/.test(location.hostname)?"data/":"https://raw.githubusercontent.com/wagneria206-app/dados-mercado/main/data/";
@@ -5952,6 +5986,45 @@ function tdSuspShow(sp){
   const nomes=sp.suspensos.map(k=>"Tesouro "+(TDN[k]||k)).join(", ");
   el.textContent="Negociação suspensa no Tesouro Direto desde "+sp.desde+" para: "+nomes+". Isso acontece em dias de forte volatilidade. Para esses títulos o app mostra a última taxa publicada"+(sp.ultimaCompleta?" ("+new Date(sp.ultimaCompleta).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+")":"")+"; o Tesouro só volta a publicar quando reabrir a negociação.";
 }
+
+const ROBO_MEMO={};
+function roboGet(f){if(!ROBO_MEMO[f])ROBO_MEMO[f]=roboJson(f).catch(e=>{delete ROBO_MEMO[f];throw e});return ROBO_MEMO[f]}
+async function pcRoboFetch(code){
+  const info=$("pcInfo"),b=$("pcFetch");b.disabled=true;info.innerHTML='<p class="sub">Procurando '+pcEsc(code)+' nas bases do robô (SND, CVM e ANBIMA)…</p>';
+  try{
+    const isCR=/^(CRA|CRI)/.test(code)||/^\d{2}[A-Z]\d{7}$/.test(code);
+    if(!isCR){const [cat,deb]=await Promise.all([roboGet("catalogo_debentures.json"),roboGet("debentures.json").catch(()=>null)]);
+      const P0=(cat.papers||{})[code];
+      if(P0){const P=pcRebase(P0),a=deb&&deb.papers&&deb.papers[code];if(a&&a.taxa!=null)P.anbima={refDate:deb.refDate,rate:a.taxa,pu:a.pu};
+        P.status="ok";P.sources=["SND – características e agenda (debentures.com.br)","ANBIMA – taxa indicativa"];PAPERS[code]=P;pcMemo.clear();try{PCE_MEMO.clear()}catch(e){}pcList();pcManual=false;pcAuto();pcCalc();return}}
+    const [cvm,anb]=await Promise.all([roboGet("cri_cra_cvm.json").catch(()=>null),roboGet("cri_cra_anbima.json").catch(()=>null)]);
+    const cc=c=>{c=c.replace(/^CRA(?=CRA)/,"");const x=c.match(/^(?:CRI|CRA)(\d{2}[A-Z]\d{7})$/);return x?x[1]:c},k=cc(code);
+    const C=cvm&&cvm.certificados&&(cvm.certificados[k]||cvm.certificados[code]),A=anb&&anb.papers&&(anb.papers[k]||anb.papers[code]);
+    const P=pcP(code);
+    if(P&&P.schedule&&P.schedule.length){if(A&&A.taxa!=null){P.anbima={refDate:A.data||anb.refDate,rate:A.taxa,pu:A.pu};pcMemo.clear()}pcManual=false;pcAuto();pcCalc();return}
+    if(!C&&!A){$("pcMrateHint").innerHTML="";info.innerHTML='<p class="err">'+pcEsc(code)+' não está no catálogo de debêntures do SND nem nos informes de CRI/CRA da CVM. Confira o código (debêntures: 6 letras e números, como MOVI27; CRI: 10 caracteres, como 24A2720884; CRA: começa com CRA).</p>';return}
+    let t='<div class="alertbox" style="margin-top:8px"><b>'+pcEsc(code)+'</b>'+(C?' · '+pcEsc(C.nomeEmissao||"")+'<br>'+pcEsc(C.securitizadora||"")+', '+pcEsc(C.emissao||"")+'ª emissão, '+pcEsc(C.serie||"")+'ª série · '+pcEsc(C.taxaTexto||"")+' · vence '+(C.vencimento?fdate(parseDate(C.vencimento)):"—"):"");
+    if(A&&A.taxa!=null)t+='<br><b>ANBIMA em '+fdate(parseDate(A.data||anb.refDate))+':</b> taxa indicativa '+fx(A.taxa,4)+'% ('+pcEsc(A.indice||"")+'), PU R$ '+fx(A.pu,6)+(A.puPar?' = '+fx(A.puPar,2)+'% do valor na curva (par)':'')+(A.duration?', duration '+fx(A.duration/252,2)+' anos':'')+'.';
+    else if(A)t+='<br>A ANBIMA lista o papel, mas sem taxa indicativa (sem preço de mercado confiável).';
+    else t+='<br>A ANBIMA não precifica este papel.';
+    t+='<br><span class="sub">O cronograma de pagamentos de CRI/CRA não é publicado em base aberta (só no termo de securitização), por isso o cálculo completo ainda não está disponível para este código'+(A&&A.taxa!=null?'; o preço de mercado oficial está acima':'')+'.</span></div>';
+    info.innerHTML=t;$("pcMrateHint").innerHTML="";
+  }catch(e){info.innerHTML='<p class="err">Não foi possível ler as bases do robô agora ('+pcEsc(String(e&&e.message||e))+'). Tente de novo em instantes.</p>'}
+  finally{b.disabled=false}
+}
+async function fdRoboFetch(c){
+  const info=$("fdInfo"),b=$("fdFetch");b.disabled=true;
+  try{const sh=await roboGet("fundos/"+c.slice(0,2)+".json"),F=sh&&sh.funds&&sh.funds[c];
+    if(!F){info.insertAdjacentHTML("beforeend",'<p class="err">CNPJ não encontrado no informe diário da CVM (fundos sem cota diária recente não aparecem).</p>');return}
+    const t=(F.t||"")+" "+(F.n||""),tl=t.toLowerCase();
+    const type=/previd/.test(tl)?"PREV":/a[çc][õo]es|\bfia\b/.test(tl)?"ACOES":"RF_LP";
+    FUNDS[c]=Object.assign({},FUNDS[c]||{},{cnpj:c,name:F.n,admin:F.a,cls:F.t,type:(FUNDS[c]||{}).type||type,status:"ok",quotes:(F.q||[]).map(x=>[x[0],x[1],"CVM – informe diário"]),sources:["CVM – cadastro e informe diário de fundos"],notes:"Tipo de tributação estimado pela classe da CVM; confira no regulamento."});
+    fdCalc()}
+  catch(e){info.insertAdjacentHTML("beforeend",'<p class="err">Não foi possível ler a base da CVM agora.</p>')}
+  finally{b.disabled=false}
+}
+async function papeisLoad(){try{const D=await roboGet("papeis_cadastrados.json");for(const [c,P] of Object.entries(D.papers||{}))if(P&&P.code&&P.schedule&&P.schedule.length){const o=PAPERS[c];PAPERS[c]=Object.assign({},P,o&&o.anbima&&(!P.anbima||o.anbima.refDate>P.anbima.refDate)?{anbima:o.anbima}:{})}pcMemo.clear();pcList();if(activeMod==="pc")pcCalc();if(activeMod==="mk")mkCalc()}catch(e){}}
+async function tdHistLoad(){try{const H=await roboGet("td_historico.json");for(const [d,rows] of Object.entries(H||{}))if(!TDH[d])TDH[d]={date:d,source:"Robô (Tesouro)",rows:rows.map(r=>[r[0],r[1],r[2],r.length>4?r[4]:null])};if(activeMod==="tx")txCalc();if(activeMod==="mk")mkCalc()}catch(e){}}
 async function roboLoad(db){
   const log={at:new Date().toISOString(),ok:false,refDate:null,erro:null,papeis:0,gravouMercado:false};
   try{
@@ -5985,7 +6058,7 @@ async function roboLoad(db){
   if(db){try{await db.doc("synclog/pagina").set(log)}catch(e){}}
 }
 const cl=window.claude&&typeof window.claude.use==="function"?window.claude:null;
-if(PAGES&&!cl){document.documentElement.classList.add("pages");setTimeout(()=>roboLoad(null),300);setInterval(()=>roboLoad(null),30*60000)}
+if(PAGES&&!cl){document.documentElement.classList.add("pages");setTimeout(()=>{papeisLoad().then(()=>roboLoad(null));tdHistLoad()},300);setInterval(()=>roboLoad(null),30*60000)}
 if(cl){
   cl.use("db").then(db=>{if(!db)return;pcDb=db;DB=auditWrap(db);
     db.collection("debev").onSnapshot(onDebev,()=>{});db.collection("proposals").onSnapshot(onProps,()=>{});db.collection("kpihist").onSnapshot(onKH,()=>{});db.collection("objectives").onSnapshot(onObjs,()=>{});db.collection("assets").onSnapshot(onAssets,()=>{});db.collection("cashl").onSnapshot(onCashl,()=>{});db.doc("settings/today").onSnapshot(onTodayDoc,()=>{});db.doc("settings/backup").onSnapshot(onBackupDoc,()=>{});try{const q=db.collection("audit");(q.orderBy?q.orderBy("at","desc").limit(300):q).onSnapshot(onAudit,()=>{})}catch(e){}
