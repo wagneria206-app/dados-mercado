@@ -168,9 +168,21 @@ def ler_json(nome, padrao):
         return padrao
 
 
+def _sem_carimbo(o):
+    if isinstance(o, dict):
+        return {k: _sem_carimbo(v) for k, v in o.items() if k not in ("geradoEm",)}
+    return o
+
+
 def gravar_json(nome, obj):
     caminho = os.path.join(DADOS, nome)
     os.makedirs(os.path.dirname(caminho), exist_ok=True)
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            if _sem_carimbo(json.load(f)) == _sem_carimbo(obj):
+                return          # conteúdo igual: não gera alteração no repositório
+    except Exception:  # noqa: BLE001
+        pass
     tmp = caminho + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
@@ -1484,6 +1496,11 @@ def cvm_catalogo_fundos():
             reg["pl"] = round(pl[k][1])
         funds[k] = reg
     gravar_json("fundos_catalogo.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "source": "CVM – informe diário e cadastro de fundos", "funds": funds})
+    fatias = {}
+    for k, v in funds.items():
+        fatias.setdefault(k[:2], {})[k] = v
+    for pre, dados in fatias.items():
+        gravar_json(f"fundos/{pre}.json", {"source": "CVM – informe diário e cadastro de fundos", "funds": dados})
     com_nome = sum(1 for v in funds.values() if v.get("n"))
     return {"fundos": len(funds), "com_nome": com_nome, "linhas": lidos}
 
