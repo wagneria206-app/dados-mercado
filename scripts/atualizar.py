@@ -757,16 +757,38 @@ def snd_catalogo():
     except Exception as e:  # noqa: BLE001
         diag("snd_agenda", URL_SND_AGENDA, erro=e)
         STATUS["snd_agenda"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:500]}
-    # eventos já ocorridos, em blocos de 4 anos (desde 2006)
-    for ini in range(2006, HOJE.year + 1, 4):
-        fim = min(dt.date(ini + 3, 12, 31), HOJE)
-        url = (URL_SND_AGENDA + "?emissor=&ativo=&evento=&dt_ini=" + f"01/01/{ini}" + "&dt_fim=" + fim.strftime("%d/%m/%Y")
-               + "&dt_pgto_ini=&dt_pgto_fim=")
+    # eventos já ocorridos. A consulta por data do evento respondeu "Não existe consulta" em blocos de
+    # 4 anos; descobre qual formato de pedido o SND aceita testando um ano recente, e usa esse formato.
+    def url_passado(var, ini, fim):
+        d1, d2 = ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")
+        if var == "evento":
+            q = f"emissor=&ativo=&evento=&dt_ini={d1}&dt_fim={d2}&dt_pgto_ini=&dt_pgto_fim="
+        elif var == "pagamento":
+            q = f"emissor=&ativo=&evento=&dt_ini=&dt_fim=&dt_pgto_ini={d1}&dt_pgto_fim={d2}"
+        else:
+            q = f"tip_deb=publicas&op_exc=Nada&emissor=&ativo=&evento=&dt_ini={d1}&dt_fim={d2}&dt_pgto_ini=&dt_pgto_fim="
+        return URL_SND_AGENDA + "?" + q
+    teste_ini, teste_fim = dt.date(HOJE.year - 1, 1, 1), dt.date(HOJE.year - 1, 3, 31)
+    formato = None
+    for var in ("pagamento", "evento", "publicas"):
         try:
-            n = ler_agenda(url, f"snd_agenda_{ini}")
-            passado_ok.append(f"{ini}-{fim.year}: {n}")
+            if ler_agenda(url_passado(var, teste_ini, teste_fim), f"snd_agenda_teste_{var}") > 0:
+                formato = var
+                break
         except Exception as e:  # noqa: BLE001
-            diag(f"snd_agenda_{ini}", url, erro=e)
+            diag(f"snd_agenda_teste_{var}", URL_SND_AGENDA, erro=e)
+    if formato:
+        # blocos de 1 ano (o SND parece limitar o tamanho da consulta)
+        for ano in range(2006, HOJE.year + 1):
+            ini, fim = dt.date(ano, 1, 1), min(dt.date(ano, 12, 31), HOJE)
+            try:
+                n = ler_agenda(url_passado(formato, ini, fim), "snd_agenda_ano")
+                passado_ok.append(f"{ano}-{ano}: {n}")
+            except Exception as e:  # noqa: BLE001
+                diag(f"snd_agenda_{ano}", URL_SND_AGENDA, erro=e)
+                passado_ok.append(f"{ano}-{ano}: 0")
+    else:
+        passado_ok.append("formato não encontrado: 0")
     tem_passado = any(int(x.split(": ")[1]) > 0 for x in passado_ok)
 
     # 3. monta cada papel no formato do app
@@ -1292,27 +1314,38 @@ def fundosnet_textos():
     por(sorted(indice, key=lambda c: -indice[c]["idFnet"]), 2)
 
     pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and feitos.get(str(i), {}).get("tentativas", 0) < 3]
-    limite = time.time() + 8 * 60
+    limite = time.time() + 12 * 60
     novos, erros = 0, 0
     os.makedirs(os.path.join(DADOS, "termos", "texto"), exist_ok=True)
-    for prio, i in pend:
-        if time.time() > limite or novos >= 400:
-            break
-        reg = feitos.setdefault(str(i), {})
+    from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
+
+    def um(i):
+        if time.time() > limite:
+            return i, None
         try:
             txt = pdf_para_texto(fnet_pdf(i))
-            paginas = txt.count("\f") + 1
             if len(txt.strip()) < 500:
                 raise RuntimeError("PDF sem texto (provavelmente escaneado)")
             with gzip.open(os.path.join(DADOS, "termos", "texto", f"{i}.txt.gz"), "wt", encoding="utf-8") as f:
                 f.write(txt)
-            reg.update({"ok": True, "paginas": paginas, "caracteres": len(txt), "em": AGORA.isoformat(timespec="seconds")})
-            reg.pop("erro", None)
-            novos += 1
+            return i, {"ok": True, "paginas": txt.count("\f") + 1, "caracteres": len(txt)}
         except Exception as e:  # noqa: BLE001
-            reg.update({"ok": False, "erro": str(e)[:200], "tentativas": reg.get("tentativas", 0) + 1})
-            erros += 1
-        time.sleep(0.5)
+            return i, {"ok": False, "erro": str(e)[:200]}
+
+    # 4 downloads ao mesmo tempo (o Fundos.NET aguenta bem; cada documento leva alguns segundos)
+    lote = [i for _, i in pend][:1200]
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        for i, res in ex.map(um, lote):
+            if res is None:
+                continue
+            reg = feitos.setdefault(str(i), {})
+            if res["ok"]:
+                reg.update(res, em=AGORA.isoformat(timespec="seconds"))
+                reg.pop("erro", None)
+                novos += 1
+            else:
+                reg.update(ok=False, erro=res["erro"], tentativas=reg.get("tentativas", 0) + 1)
+                erros += 1
     gravar_json("termos/textos.json", feitos)
     total_ok = sum(1 for v in feitos.values() if v.get("ok"))
     pedidos_ok = sum(1 for c in pedidos if ids(c) and all(feitos.get(str(i), {}).get("ok") for i in ids(c)))
