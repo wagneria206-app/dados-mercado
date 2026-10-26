@@ -1,5 +1,5 @@
 url: https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=26/09/2026&dataFinal=26/10/2026
-em: 2026-10-26T10:08:38-03:00
+em: 2026-10-26T10:19:29-03:00
 status: 502
 tipo: text/html
 bytes: 5015
