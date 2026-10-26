@@ -1,10 +1,10 @@
 url: https://www.debentures.com.br/exploreosnd/consultaadados/eventosfinanceiros/agenda_e.asp?emissor=&ativo=&evento=&dt_ini=&dt_fim=&dt_pgto_ini=01/01/2025&dt_pgto_fim=31/03/2025
-em: 2026-10-26T10:19:29-03:00
+em: 2026-10-26T13:46:15-03:00
 status: 200
 tipo: application/vnd.ms-excel
 bytes: 201
 
-Agenda de Eventos Financeiros - Gerado em 26/10/2026 10:21:22
+Agenda de Eventos Financeiros - Gerado em 26/10/2026 13:47:00
 
 Data do Evento	Data do Pagamento	Emissor	Ativo	Evento	Tipo	Taxa/Percentual	Liquidação
 
