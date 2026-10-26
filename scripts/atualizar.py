@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# VERSAO: 2026-10-22 (fundos da CVM, agenda passada das debentures, correcao do Banco Central)
+# VERSAO: 2026-10-26 (precos ANBIMA de CRI/CRA, texto integral dos termos, CSV do Tesouro Direto)
 """
 Robô de dados de mercado.
 
@@ -13,6 +13,9 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/fundos_catalogo.json todos os fundos da CVM (nome, tipo, cotas recentes)
   data/cri_cra_cvm.json   dados de todos os CRIs e CRAs do informe mensal da CVM (último mês)
   data/termos/indice.json link do termo de securitização (Fundos.NET) de cada CRI e CRA
+  data/cri_cra_anbima.json taxas indicativas e PU da ANBIMA de todos os CRIs e CRAs precificados
+  data/termos/texto/<id>.txt.gz texto integral (todas as páginas) de cada termo e aditamento
+  data/termos/textos.json  situação da extração de cada documento
   data/status.json        resultado de cada fonte (ok / erro) e horário
   data/diag/              amostras das respostas de cada fonte, para conferência
 
@@ -540,10 +543,15 @@ def td_dos_csv():
         txt = texto(r)
         sep = ";" if txt.count(";") > txt.count(",") else ","
         linhas = list(csv.reader(io.StringIO(txt), delimiter=sep))
-        cab_i = next((i for i, L in enumerate(linhas) if any("titulo" in norm(c) for c in L)), None)
+        # O site manda o cabeçalho com acentos quebrados ("T\ufffdtulo", "Pre\ufffdo"):
+        # normaliza trocando o caractere inválido por "i"/"c" conforme a palavra.
+        def ncab(c):
+            c = norm(c.replace("\ufffd", "#"))
+            return c.replace("t#tulo", "titulo").replace("pre#o", "preco").replace("unit#rio", "unitario").replace("#", "")
+        cab_i = next((i for i, L in enumerate(linhas) if any("titulo" in ncab(c) for c in L)), None)
         if cab_i is None:
             raise RuntimeError(f"CSV {nome}: cabeçalho não encontrado")
-        cab = [norm(c) for c in linhas[cab_i]]
+        cab = [ncab(c) for c in linhas[cab_i]]
         c_nome = next(i for i, c in enumerate(cab) if "titulo" in c)
         c_taxa = next((i for i, c in enumerate(cab) if i != c_nome and ("rendimento" in c or "rentabilidade" in c or "taxa" in c)), None)
         c_pu = next((i for i, c in enumerate(cab) if "preco" in c or "pu" == c), None)
@@ -1107,6 +1115,212 @@ def fundosnet_termos():
             "varredura_completa": completo, "series_com_termo": len(indice), "series_total": len(CRI_CRA)}
 
 
+
+# ---------------------------------------------------------------- ANBIMA: CRI e CRA (taxas indicativas)
+
+from html.parser import HTMLParser
+
+URLS_ANBIMA_CRI = [
+    "https://www.anbima.com.br/pt_br/informar/precos-e-indices/precos/taxas-de-cri-e-cra.htm",
+    "https://www.anbima.com.br/pt_br/informar/precos-e-indices/precos/taxas-de-cri-e-cra/taxas-de-cri-e-cra.htm",
+]
+
+
+class _Tabelas(HTMLParser):
+    """Junta todas as tabelas da página como listas de linhas de texto."""
+    def __init__(self):
+        super().__init__()
+        self.tabelas, self._t, self._l, self._c = [], None, None, None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "table":
+            self._t = []
+        elif tag == "tr" and self._t is not None:
+            self._l = []
+        elif tag in ("td", "th") and self._l is not None:
+            self._c = []
+
+    def handle_endtag(self, tag):
+        if tag in ("td", "th") and self._c is not None and self._l is not None:
+            self._l.append(re.sub(r"\s+", " ", "".join(self._c)).strip())
+            self._c = None
+        elif tag == "tr" and self._l is not None and self._t is not None:
+            if self._l:
+                self._t.append(self._l)
+            self._l = None
+        elif tag == "table" and self._t is not None:
+            self.tabelas.append(self._t)
+            self._t = None
+
+    def handle_data(self, data):
+        if self._c is not None:
+            self._c.append(data)
+
+
+def cod_cri(c):
+    """Código B3: CRI tem 10 caracteres (24A2720884); CRA começa com CRA (CRA0220060P).
+    Tira só prefixos acrescentados à mão ("CRI 24A2720884", "CRA-CRA0220060P")."""
+    c = re.sub(r"[^A-Z0-9]", "", (c or "").upper())
+    c = re.sub(r"^CRA(?=CRA)", "", c)
+    m = re.fullmatch(r"(?:CRI|CRA)(\d{2}[A-Z]\d{7})", c)
+    return m.group(1) if m else c
+
+
+@fonte("anbima_cri_cra")
+def anbima_cri_cra():
+    erros = []
+    for url in URLS_ANBIMA_CRI:
+        try:
+            r = baixar(url, tentativas=2, timeout=180)
+        except Exception as e:  # noqa: BLE001
+            erros.append(str(e)[:200])
+            continue
+        diag("anbima_cri_cra", url, r)
+        p = _Tabelas()
+        p.feed(texto(r))
+        papeis, ref = {}, None
+        for t in p.tabelas:
+            cab_i = next((i for i, L in enumerate(t[:5]) if any(norm(c) == "codigo" for c in L)), None)
+            if cab_i is None:
+                continue
+            cab = [norm(c) for c in t[cab_i]]
+
+            def ci(*nomes):
+                return next((i for i, c in enumerate(cab) if any(n in c for n in nomes)), None)
+            c_cod, c_ind, c_pu = cab.index("codigo"), ci("indicativa"), ci("pu") if "pu" in cab else None
+            c_pu = cab.index("pu") if "pu" in cab else c_pu
+            c_data, c_venc, c_idx = ci("data de referencia", "referencia"), ci("vencimento"), ci("indice", "correcao")
+            c_par, c_dur, c_emi, c_risco = ci("% pu par", "pu par"), ci("duration"), ci("emissor"), ci("risco")
+            for L in t[cab_i + 1:]:
+                if len(L) <= c_cod:
+                    continue
+                cod = cod_cri(L[c_cod])
+                if not cod:
+                    continue
+                g = lambda i: L[i] if i is not None and i < len(L) else ""  # noqa: E731
+                d = data_dmy(g(c_data)) if g(c_data) else None
+                ref = max(ref or "", d or "") or ref
+                papeis[cod] = {"taxa": num(g(c_ind)), "pu": num(g(c_pu)), "puPar": num(g(c_par)),
+                               "duration": num(g(c_dur)), "indice": g(c_idx), "venc": data_dmy(g(c_venc)) if g(c_venc) else None,
+                               "emissor": g(c_emi), "risco": g(c_risco), "data": d, "codigoAnbima": L[c_cod]}
+        if papeis:
+            gravar_json("cri_cra_anbima.json", {"refDate": ref, "source": "ANBIMA – taxas de CRI e CRA",
+                                                "geradoEm": AGORA.isoformat(timespec="seconds"), "papers": papeis})
+            sem = sum(1 for v in papeis.values() if v["taxa"] is None)
+            return {"data": ref, "papeis": len(papeis), "sem_taxa": sem}
+        erros.append(f"{url}: nenhuma tabela com coluna Código ({len(p.tabelas)} tabelas na página)")
+    raise RuntimeError("; ".join(erros))
+
+
+# ---------------------------------------------------------------- Fundos.NET: texto integral dos termos
+
+import base64
+import gzip
+import shutil
+import subprocess
+import tempfile
+
+
+def pdf_para_texto(conteudo):
+    """Texto de todas as páginas, separadas por '\f'. Usa pdftotext (poppler); se faltar, pypdf."""
+    with tempfile.TemporaryDirectory() as d:
+        pdf = os.path.join(d, "doc.pdf")
+        with open(pdf, "wb") as f:
+            f.write(conteudo)
+        if shutil.which("pdftotext"):
+            subprocess.run(["pdftotext", "-layout", "-enc", "UTF-8", pdf, os.path.join(d, "doc.txt")],
+                           check=True, timeout=180, capture_output=True)
+            with open(os.path.join(d, "doc.txt"), encoding="utf-8", errors="replace") as f:
+                return f.read()
+        from pypdf import PdfReader  # noqa: PLC0415
+        return "\f".join((pg.extract_text() or "") for pg in PdfReader(pdf).pages)
+
+
+def fnet_pdf(id_doc):
+    """O Fundos.NET às vezes entrega o PDF direto e às vezes em base64 (com ou sem aspas)."""
+    r = baixar(URL_FNET_DOC.format(id_doc), tentativas=2, timeout=180,
+               headers={"Referer": "https://fnet.bmfbovespa.com.br/fnet/publico/abrirGerenciadorDocumentosCVM"})
+    c = r.content
+    if c[:5] == b"%PDF-":
+        return c
+    t = c.strip().strip(b'"')
+    try:
+        b = base64.b64decode(t, validate=False)
+        if b[:5] == b"%PDF-":
+            return b
+    except Exception:  # noqa: BLE001
+        pass
+    diag("fnet_documento_inesperado", URL_FNET_DOC.format(id_doc), r)
+    raise RuntimeError(f"documento {id_doc} não é PDF ({r.headers.get('content-type', '')}, {len(c)} bytes)")
+
+
+def ler_codigos(nome):
+    try:
+        with open(os.path.join(CONFIG, nome), encoding="utf-8") as f:
+            return [cod_cri(L.split("#")[0]) for L in f if L.split("#")[0].strip()]
+    except FileNotFoundError:
+        return []
+
+
+@fonte("fundosnet_textos")
+def fundosnet_textos():
+    """
+    Baixa cada termo de securitização (e aditamentos) e guarda o texto integral, compactado.
+    Ordem: códigos de config/papeis.txt, depois os CRI/CRA precificados pela ANBIMA, depois os demais
+    (mais recentes primeiro). Cada execução trabalha por no máximo ~8 minutos; o resto fica para a próxima.
+    """
+    indice = ler_json("termos/indice.json", {})
+    feitos = ler_json("termos/textos.json", {})
+    anb = ler_json("cri_cra_anbima.json", {}).get("papers", {})
+    pedidos = ler_codigos("papeis.txt")
+
+    def ids(cod):
+        i = indice.get(cod) or indice.get(cod_cri(cod))
+        if not i:
+            return []
+        return [i["idFnet"]] + [a["id"] for a in i.get("aditamentos", [])]
+
+    fila, vistos = [], set()
+    def por(lista, prio):
+        for cod in lista:
+            for i in ids(cod):
+                if str(i) not in vistos:
+                    vistos.add(str(i))
+                    fila.append((prio, i))
+    por(pedidos, 0)
+    por(sorted(anb), 1)
+    por(sorted(indice, key=lambda c: -indice[c]["idFnet"]), 2)
+
+    pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and feitos.get(str(i), {}).get("tentativas", 0) < 3]
+    limite = time.time() + 8 * 60
+    novos, erros = 0, 0
+    os.makedirs(os.path.join(DADOS, "termos", "texto"), exist_ok=True)
+    for prio, i in pend:
+        if time.time() > limite or novos >= 400:
+            break
+        reg = feitos.setdefault(str(i), {})
+        try:
+            txt = pdf_para_texto(fnet_pdf(i))
+            paginas = txt.count("\f") + 1
+            if len(txt.strip()) < 500:
+                raise RuntimeError("PDF sem texto (provavelmente escaneado)")
+            with gzip.open(os.path.join(DADOS, "termos", "texto", f"{i}.txt.gz"), "wt", encoding="utf-8") as f:
+                f.write(txt)
+            reg.update({"ok": True, "paginas": paginas, "caracteres": len(txt), "em": AGORA.isoformat(timespec="seconds")})
+            reg.pop("erro", None)
+            novos += 1
+        except Exception as e:  # noqa: BLE001
+            reg.update({"ok": False, "erro": str(e)[:200], "tentativas": reg.get("tentativas", 0) + 1})
+            erros += 1
+        time.sleep(0.5)
+    gravar_json("termos/textos.json", feitos)
+    total_ok = sum(1 for v in feitos.values() if v.get("ok"))
+    pedidos_ok = sum(1 for c in pedidos if ids(c) and all(feitos.get(str(i), {}).get("ok") for i in ids(c)))
+    if pend and novos == 0 and erros:
+        raise RuntimeError(f"nenhum termo baixado; último erro: {next(v['erro'] for v in feitos.values() if not v.get('ok'))}")
+    return {"novos_agora": novos, "erros_agora": erros, "textos_total": total_ok, "documentos_na_fila": len(fila),
+            "pendentes": max(0, len(pend) - novos), "papeis_pedidos": len(pedidos), "papeis_pedidos_completos": pedidos_ok}
+
 # ---------------------------------------------------------------- CVM: catálogo de todos os fundos
 
 URL_CVM_CAD_175 = "https://dados.cvm.gov.br/dados/FI/CAD/DADOS/registro_fundo_classe.zip"
@@ -1233,10 +1447,12 @@ def main():
     ipca(mercado)
     anbima_debentures()
     snd_catalogo()
+    anbima_cri_cra()
     cvm_cri_cra()
     fundosnet_termos()
     cvm_fundos()
     cvm_catalogo_fundos()
+    fundosnet_textos()             # por último: usa o tempo que sobrar
 
     if mercado:
         mercado["updatedAt"] = AGORA.isoformat(timespec="seconds")
