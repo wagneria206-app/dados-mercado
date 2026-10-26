@@ -590,9 +590,29 @@ def tesouro_direto_site(mercado):
     for nome, func in (("json", td_do_json), ("csv", td_dos_csv)):
         try:
             data, linhas = func()
+            if 1 <= len(linhas) < 10 and nome == "csv":
+                # negociação suspensa (dias de volatilidade): o site publica só alguns títulos.
+                # Atualiza os que vieram e marca os demais como suspensos, com a hora da última cotação.
+                td = mercado.get("td") or {}
+                velho = {(r[0], r[1]): r for r in td.get("ALL", [])}
+                for r in linhas:
+                    velho[(r[0], r[1])] = r
+                tipos_ok = sorted({r[0] for r in linhas})
+                tipos_todos = sorted({k[0] for k in velho})
+                td["ALL"] = sorted(velho.values())
+                ant = td.get("suspenso") if (td.get("suspenso") or {}).get("data") == HOJE.isoformat() else {}
+                td["suspenso"] = {"desde": ant.get("desde") or AGORA.strftime("%H:%M"),
+                                  "data": HOJE.isoformat(), "disponiveis": tipos_ok,
+                                  "suspensos": [k for k in tipos_todos if k not in tipos_ok],
+                                  "ultimaCompleta": td.get("ultimaCompleta") or td.get("coletadoEm")}
+                td["date"] = data or HOJE.isoformat()
+                mercado["td"] = td
+                return {"via": "csv-parcial", "data": td["date"], "titulos": len(linhas),
+                        "aviso": "Tesouro Direto com negociação suspensa para " + ", ".join(td["suspenso"]["suspensos"])}
             if len(linhas) >= 10:
                 linhas.sort()
-                mercado["td"] = {"source": "Tesouro Direto (site oficial)", "date": data or HOJE.isoformat(), "ALL": linhas}
+                mercado["td"] = {"source": "Tesouro Direto (site oficial)", "date": data or HOJE.isoformat(), "ALL": linhas,
+                                 "ultimaCompleta": AGORA.isoformat(timespec="seconds")}
                 hist = ler_json("td_historico.json", {})
                 hist[mercado["td"]["date"]] = linhas
                 gravar_json("td_historico.json", {d: hist[d] for d in sorted(hist)[-90:]})
@@ -1479,7 +1499,7 @@ def rapido():
     st.setdefault("fontes", {}).update(STATUS)
     st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
     td = mercado.get("td") or {}
-    if STATUS.get("tesouro_direto_site", {}).get("ok") and td.get("ALL"):
+    if STATUS.get("tesouro_direto_site", {}).get("via") and td.get("ALL"):
         td["hora"] = AGORA.strftime("%H:%M")
         td["coletadoEm"] = AGORA.isoformat(timespec="seconds")
         mercado["updatedAt"] = AGORA.isoformat(timespec="seconds")
