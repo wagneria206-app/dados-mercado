@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Gestão de Carteiras</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
@@ -574,12 +574,15 @@ body.meet .wrap.desk>.areas{display:none!important}
 .exrow{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.exchart svg text{font-family:inherit}@media (max-width:900px){.exrow{grid-template-columns:1fr}}.ctab .c-del{width:34px;padding-left:2px;padding-right:2px;text-align:center}.rowdel{background:none;border:0;cursor:pointer;opacity:.35;font-size:1rem;padding:4px;border-radius:6px}.crow:hover .rowdel,.rowdel:focus{opacity:.9}.rowdel:hover{background:var(--loss-bg,rgba(200,40,40,.1));opacity:1}.confb{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:600;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted);vertical-align:middle;white-space:nowrap;cursor:help}.confb i{width:7px;height:7px;border-radius:50%;display:inline-block}.confb-conf i{background:var(--gain)}.confb-parc i{background:#C98A1B}.confb-est i{background:var(--loss)}.tdlink{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:12px 16px;margin-bottom:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.tdlink div{display:flex;flex-direction:column;gap:2px;min-width:0}.tdlink span{font-size:.84rem;color:var(--muted)}.tdlink a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--primary);color:var(--on-primary);text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}.tdlink a:hover{filter:brightness(1.08)}.tdlink a svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tdsusp{margin:-8px 0 18px;padding:10px 14px;border-radius:10px;border:1px solid var(--loss);background:var(--loss-bg);color:var(--ink);font-size:.88rem;line-height:1.45}
 html.pages button[data-area="cart"],html.pages button[data-mod="cart"]{display:none!important}
+html.pages .saverow:has(#savePos),html.pages .saverow:has(#pcSavePos),html.pages .saverow:has(#bkSavePos),html.pages .saverow:has(#fdSavePos),
+html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),html.pages #aiFab,html.pages #notaBox,html.pages #expRow,html.pages #pcTermo,html.pages #pcBatchBox,
+html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .pctab th:nth-child(7),html.pages .pctab td:nth-child(7){display:none!important}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
     <div class="brandrow">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
-      <div class="brand"><h1>Gestão de Carteiras</h1><span>Renda fixa, fundos, previdência e patrimônio com dados oficiais</span></div>
+      <div class="brand"><h1>Mercado e Títulos</h1><span>Taxas oficiais, cálculo e simulação de títulos de renda fixa</span></div>
       <div class="hstat"><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
     </div>
     <div class="mktbar"><div id="mkt"></div></div>
@@ -3732,7 +3735,7 @@ function credHtml(){
   const hd=Object.keys(HIST).sort(),rateOn=(code,days)=>{const lim=VAL-days*DAY;let v=null;for(const d of hd){const t=parseDate(d);if(t<=lim&&HIST[d].deb&&isFinite(HIST[d].deb[code]))v=+HIST[d].deb[code]}return v};
   const held=code=>{const ids=Object.keys(POS).filter(id=>POS[id].mod==="pc"&&POS[id].key===code&&cartRes[id]&&!cartRes[id].err&&!cartRes[id].closed);return {n:new Set(ids.map(id=>posClient(POS[id]))).size,v:ids.reduce((a,id)=>a+cartRes[id].valM,0)}};
   const W=Object.values(WATCH).filter(w=>w.kind==="DEB");
-  let h='<span class="label">Crédito privado: papéis cadastrados</span><p class="sub" style="margin:4px 0 10px">Taxa indicativa da ANBIMA de cada debênture e quanto ela mudou. Taxa subindo = spread abrindo = o mercado vê mais risco no emissor (e o preço cai).</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Papel</th><th>ANBIMA hoje</th><th class="c-ph">5 dias</th><th class="c-ph">30 dias</th><th class="c-ph">Spread s/ NTN-B</th><th class="c-ph">Clientes</th><th></th></tr></thead><tbody>';
+  let h='<span class="label">Crédito privado: papéis cadastrados</span><p class="sub" style="margin:4px 0 10px">Taxa indicativa da ANBIMA de cada debênture e quanto ela mudou. Taxa subindo = spread abrindo = o mercado vê mais risco no emissor (e o preço cai).</p><div class="tablewrap" style="max-height:none"><table class="ctab pctab"><thead><tr><th style="text-align:left">Papel</th><th>ANBIMA hoje</th><th class="c-ph">5 dias</th><th class="c-ph">30 dias</th><th class="c-ph">Spread s/ NTN-B</th><th class="c-ph">Clientes</th><th></th></tr></thead><tbody>';
   L.sort((a,b)=>a.code.localeCompare(b.code)).forEach(P=>{const a=P.anbima&&isFinite(P.anbima.rate)?+P.anbima.rate:NaN,r5=rateOn(P.code,5),r30=rateOn(P.code,30),H=held(P.code),mt=paperMat(P);
     const pre=P.index==="IPCA"?"IPCA + ":P.index==="DI_SPREAD"?"CDI + ":"",suf=P.index==="DI_PCT"?"% CDI":"%";
     const ch=v=>v==null||!isFinite(a)?"—":'<span class="'+(a-v>0.004?"neg":a-v<-0.004?"pos":"")+'">'+signed((a-v)*100,x=>fx(x,0))+' bps</span>';
