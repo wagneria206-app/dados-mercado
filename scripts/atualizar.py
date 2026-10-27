@@ -17,6 +17,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/fundos/XX.json, data/fundos_hist/ cotas dos fundos (dias recentes e fins de mês)
   data/dolar.json          dólar PTAX do Banco Central: fechamento diário desde 1995 e boletins do dia
   data/dolar_futuro.json   dólar futuro da B3: ajuste de cada vencimento do DOL, dia a dia (400 dias)
+  data/dolar_fundamentos.json inflação dos EUA, dólar global, commodities, juros dos EUA e risco-país (mensal)
   data/curvas_hist.json    ETTJ da ANBIMA dia a dia (parâmetros), últimos 400 dias
   data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
@@ -882,6 +883,79 @@ def b3_dolar_futuro(max_novos=60):
         raise RuntimeError(f"{suspeitos} dias não batem com o ajuste do dia anterior (a página pode ter ignorado a data)")
     return {"dias": len(h["dias"]), "novos_agora": novos, "sem_dado_agora": sem, "mais_antigo": min(h["dias"]),
             "ultimo": max(h["dias"]), "dias_que_nao_batem": suspeitos}
+
+
+
+# ---------------------------------------------------------------- Fundamentos do dólar (para o "dólar justo")
+
+URL_FRED = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
+URL_IPEA = "http://www.ipeadata.gov.br/api/odata4/ValoresSerie(SERCODIGO='{}')"
+FRED_SERIES = {
+    "cpi_eua": "CPIAUCNS",        # inflação ao consumidor dos EUA (CPI-U, sem ajuste sazonal), mensal
+    "dolar_global": "DTWEXBGS",   # índice amplo do dólar contra 26 moedas (Federal Reserve), diário
+    "commodities": "PALLFNFINDEXM",  # índice global de preços de commodities (FMI), mensal
+    "juro_eua": "SOFR",           # juro overnight dos EUA (SOFR), diário
+    "juro_real_eua_10a": "DFII10",   # juro real de 10 anos dos EUA (TIPS), diário
+}
+
+
+def fred(serie):
+    r = baixar(URL_FRED.format(serie), tentativas=3, timeout=120)
+    out = {}
+    for L in texto(r).splitlines()[1:]:
+        p = L.split(",")
+        if len(p) == 2 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", p[0]):
+            try:
+                out[p[0]] = float(p[1])
+            except ValueError:
+                pass          # "." = sem valor no dia
+    if len(out) < 20:
+        diag("fred_" + serie, URL_FRED.format(serie), r)
+        raise RuntimeError(f"FRED {serie}: resposta sem dados")
+    return out
+
+
+def mensal(d, como="media"):
+    """Série diária -> mensal (média do mês ou último valor)."""
+    g = {}
+    for k in sorted(d):
+        g.setdefault(k[:7], []).append(d[k])
+    return {m: round(sum(v) / len(v), 6) if como == "media" else v[-1] for m, v in g.items()}
+
+
+@fonte("dolar_fundamentos")
+def dolar_fundamentos():
+    """Séries usadas no cálculo do dólar justo (paridade do poder de compra, modelo de fundamentos e paridade de juros)."""
+    out = {"fonte": "Federal Reserve (FRED): CPI dos EUA, índice amplo do dólar, SOFR e juro real de 10 anos; FMI (via FRED): "
+                    "commodities; Ipeadata (J.P. Morgan): EMBI+ Brasil", "mensal": {}, "ultimo": {}}
+    falhas = []
+    for nome, cod in FRED_SERIES.items():
+        try:
+            d = fred(cod)
+        except Exception as e:  # noqa: BLE001
+            falhas.append(f"{cod}: {str(e)[:120]}")
+            continue
+        diaria = len(d) > 3000
+        out["mensal"][nome] = mensal(d) if diaria else {k[:7]: v for k, v in d.items()}
+        k = max(d)
+        out["ultimo"][nome] = {"data": k, "valor": d[k]}
+    try:   # risco-país (opcional: a série pode parar de ser atualizada)
+        r = requests.get(URL_IPEA.format("JPM366_EMBI366"), timeout=120, headers={"Accept": "application/json"})
+        V = r.json().get("value", [])
+        d = {x["VALDATA"][:10]: float(x["VALVALOR"]) for x in V if x.get("VALVALOR") is not None}
+        if d:
+            out["mensal"]["embi"] = mensal(d)
+            k = max(d)
+            out["ultimo"]["embi"] = {"data": k, "valor": d[k]}
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"EMBI: {str(e)[:120]}")
+    out["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    if falhas:
+        out["falhas"] = falhas
+    if not out["mensal"].get("cpi_eua"):
+        raise RuntimeError("sem a inflação dos EUA: " + "; ".join(falhas))
+    gravar_json("dolar_fundamentos.json", out)
+    return {"series": {k: len(v) for k, v in out["mensal"].items()}, "ultimo": out["ultimo"], "falhas": falhas}
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
 
@@ -1791,6 +1865,8 @@ def rapido():
             STATUS["bcb_dolar_ptax"] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"), "boletins": len((dolar.get("boletins") or {}).get("lista", []))}
     except Exception as e:  # noqa: BLE001
         STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
+    if not os.path.exists(os.path.join(DADOS, "dolar_fundamentos.json")):
+        dolar_fundamentos()
     if not os.path.exists(os.path.join(DADOS, "dolar_futuro.json")):
         b3_dolar_futuro(max_novos=8)        # primeira vez: começa o histórico sem esperar a coleta da noite
     elif AGORA.hour * 60 + AGORA.minute >= 18 * 60 + 30 and HOJE.weekday() < 5:
@@ -1821,6 +1897,7 @@ def main():
     bcb(mercado)
     bcb_dolar(mercado)
     b3_dolar_futuro()
+    dolar_fundamentos()
     ipca(mercado)
     anbima_debentures()
     snd_catalogo()
