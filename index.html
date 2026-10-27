@@ -1781,7 +1781,7 @@ let SC_PI_SHIFT=0,SC_DI_SHIFT=0; // deslocamentos dos cenários levados ao venci
 const scUserDate={pub:null,pc:null};
 function dfScen(d){return dfCurve(d)*Math.pow(1+SC_DI_SHIFT/100,d/252)}
 function ipca12(){const lk=Math.max(...Object.keys(IPCA).map(Number));return (IPCA[lk]/IPCA[lk-12]-1)*100}
-let PI_MODE="impl";try{PI_MODE=localStorage.getItem("piMode2")||"impl"}catch(e){}
+let PI_MODE="impl";try{PI_MODE=localStorage.getItem("piMode2")||"impl"}catch(e){}if(PI_MODE!=="m12")PI_MODE="impl";
 const PIF_CACHE=new Map();
 function piProj(t){if(PI_PROJ!=null)return PI_PROJ+SC_PI_SHIFT;if(t>VAL+30*DAY&&PI_MODE!=="m12"){const y=(t-VAL)/DAY/365.25,f=piFactor(t);if(isFinite(f)&&f>0)return (Math.pow(f,1/y)-1)*100}if(PI_MODE==="m12")return ipca12()+SC_PI_SHIFT;try{const t=addMonths(VAL,36),f=piFactor(t),v=(Math.pow(f,1/((t-VAL)/DAY/365.25))-1)*100;return isFinite(v)?v:ipca12()+SC_PI_SHIFT}catch(e){return ipca12()+SC_PI_SHIFT}}
 function vnaBFwd(t){return t<=VAL?vnaIpca(t):VNA_B*piFactor(t)}
@@ -1835,7 +1835,7 @@ function scCalc(){
   $("scPiField").hidden=!L.sc.usesIpca;
   const piHor=t=>{const y=(t-VAL)/DAY/365.25;if(!(y>0.02))return ipca12();const s=SC_PI_SHIFT,pp=PI_PROJ;SC_PI_SHIFT=0;PI_PROJ=null;const f=piFactor(t);SC_PI_SHIFT=s;PI_PROJ=pp;return (Math.pow(f,1/y)-1)*100};
   const piDef=piHor(H);
-  if(L.sc.usesIpca){$("scPi").placeholder=fx(piDef,2);$("scPiHint").textContent="Vazio = "+(PI_MODE==="impl"?"inflação implícita do mercado até "+fdate(H):PI_MODE==="focus"?"Focus informado":"média dos últimos 12 meses")+" ("+fx(piDef,2)+"% a.a.). Troque em Mercado › Inflação implícita."}
+  if(L.sc.usesIpca){$("scPi").placeholder=fx(piDef,2);$("scPiHint").textContent="Vazio = "+(PI_MODE==="impl"?"inflação implícita do mercado até "+fdate(H):"média dos últimos 12 meses")+" ("+fx(piDef,2)+"% a.a.). Troque em Mercado › Inflação implícita."}
   const piIn=num($("scPi").value);PI_PROJ=isFinite(piIn)&&$("scPi").value.trim()?piIn:null;
   const step=+$("scStep").value,span=+$("scSpan").value,atEnd=H>=L.end,drv=L.sc.driver;
   const unitInv=L.inv/L.q;
@@ -2016,7 +2016,7 @@ let DB=null,POS={},HIST={},SILENT=false;
 /* ================= Carteiras (várias) e planilha ================= */
 let cartRes={};
 
-let CLIENTS={},MOVES={},COMMITS={},SETTINGS={},CUR_CLIENT="c0",MV_YEAR="all",IR_YEAR=null;
+
 
 const RAWC=new Map();
 
@@ -2624,27 +2624,21 @@ function simBind(){
 
 
 
-/* ================= Projeção de inflação: média 12m, implícita (ANBIMA) ou Focus informado ================= */
+/* ================= Projeção de inflação: implícita (ANBIMA) ou média dos últimos 12 meses ================= */
 function zeroPre(d){d=Math.max(1,d);return (Math.pow(dfCurve(d),252/d)-1)*100}
 function ntnbCurve(){return (MKT.NTNB||[]).map(r=>[parseDate(r[0]),+r[1]]).filter(r=>isFinite(r[0])&&isFinite(r[1])&&r[0]>VAL+20*DAY).sort((a,b)=>a[0]-b[0])}
 function realAt(t){const L=ntnbCurve();if(!L.length)return NaN;if(t<=L[0][0])return L[0][1];for(let i=1;i<L.length;i++)if(t<=L[i][0]){const [t0,r0]=L[i-1],[t1,r1]=L[i];return r0+(r1-r0)*(t-t0)/(t1-t0)}return L[L.length-1][1]}
 function implAt(t){const r=realAt(t);if(!isFinite(r))return NaN;const n=zeroPre(du(VAL,Math.max(t,VAL+DAY)));return ((1+n/100)/(1+r/100)-1)*100}
-function ytdIpca(){const lk=Math.max(...Object.keys(IPCA).map(Number)),y=Math.floor(lk/100),dec=(y-1)*100+12;return IPCA[dec]?IPCA[lk]/IPCA[dec]-1:0}
-function focusRate(y){const F=SETTINGS.focus||{};const ks=Object.keys(F).map(Number).filter(k=>isFinite(num(F[k]))).sort();if(!ks.length)return NaN;if(isFinite(num(F[y])))return num(F[y]);const last=ks.filter(k=>k<=y).pop();return num(F[last!=null?last:ks[0]])}
+
 function piFactor(t){
-  if(t<=VAL)return 1;const yrs=(t-VAL)/DAY/365.25,k=t+"|"+PI_MODE+"|"+PI_PROJ+"|"+SC_PI_SHIFT+"|"+JSON.stringify(SETTINGS.focus||{});
+  if(t<=VAL)return 1;const yrs=(t-VAL)/DAY/365.25,k=t+"|"+PI_MODE+"|"+PI_PROJ+"|"+SC_PI_SHIFT;
   if(PIF_CACHE.has(k))return PIF_CACHE.get(k);let f;
   if(PI_PROJ!=null)f=Math.pow(1+(PI_PROJ+SC_PI_SHIFT)/100,yrs);
   else if(PI_MODE==="impl"&&isFinite(implAt(t)))f=Math.pow(1+(implAt(t)+SC_PI_SHIFT)/100,yrs);
-  else if(PI_MODE==="focus"&&isFinite(focusRate(new Date(VAL).getUTCFullYear()))){
-    f=1;const y0=new Date(VAL).getUTCFullYear(),y1=new Date(t).getUTCFullYear();
-    for(let y=y0;y<=y1;y++){const s=Math.max(VAL,utc(y,0,1)),e=Math.min(t,utc(y+1,0,1)),fy=focusRate(y)/100;if(e<=s)continue;
-      if(y===y0){const rem=Math.max(1e-6,(1+fy)/(1+ytdIpca())-1),span=utc(y+1,0,1)-VAL;f*=Math.pow(1+rem,(e-s)/span)}else f*=Math.pow(1+fy,(e-s)/(utc(y+1,0,1)-utc(y,0,1)))}
-    f*=Math.pow(1+SC_PI_SHIFT/100,yrs)}
   else f=Math.pow(1+(ipca12()+SC_PI_SHIFT)/100,yrs);
   PIF_CACHE.set(k,f);return f;
 }
-function piModeName(){return PI_PROJ!=null?"informada nos cenários":PI_MODE==="impl"?"inflação implícita do mercado (ANBIMA), por prazo":PI_MODE==="focus"?"Focus (informado)":"média dos últimos 12 meses"}
+function piModeName(){return PI_PROJ!=null?"informada nos cenários":PI_MODE==="impl"?"inflação implícita do mercado (ANBIMA), por prazo":"média dos últimos 12 meses"}
 
 /* ================= Rentabilidade real: TWR mensal e TIR da carteira ================= */
 
@@ -2682,18 +2676,16 @@ function oppHtml(){
   return h+'</tbody></table></div>'+(L.length>10?'<p style="margin-top:8px"><button type="button" class="link" id="oppMore">Mostrar todos os '+L.length+' títulos</button></p>':'')+'<p class="sub" style="font-size:.82rem;margin-top:6px">Histórico oficial do Tesouro Transparente. "vs ANBIMA": taxa de compra do Tesouro menos a taxa indicativa da ANBIMA para o mesmo vencimento (positivo = o Tesouro vende mais barato que a referência de mercado). Taxa historicamente alta não é garantia de ganho: é o ponto de partida da análise.</p>';
 }
 function inflHtml(){
-  const L=ntnbCurve(),y0=new Date(VAL).getUTCFullYear(),F=SETTINGS.focus||{};
-  let h='<span class="label">Inflação implícita e projeção usada no aplicativo</span><div class="scctl" style="margin-top:8px"><div class="field"><label for="piMode">Projeção de IPCA</label><select id="piMode"><option value="impl">Inflação implícita do mercado, por prazo (ANBIMA) — recomendado</option><option value="m12">Média dos últimos 12 meses ('+fx(ipca12(),2)+'%)</option><option value="focus">Boletim Focus (informado abaixo)</option></select></div>';
-  for(let y=y0;y<=y0+3;y++)h+='<div class="field"><label for="fc'+y+'">Focus '+(y===y0+3?y+' em diante':y)+'</label><div class="affix s"><input id="fc'+y+'" inputmode="decimal" value="'+esc(F[y]||"")+'" placeholder="IPCA %"><span class="suf">%</span></div></div>';
+  const L=ntnbCurve();
+  let h='<span class="label">Inflação implícita e projeção usada no aplicativo</span><div class="scctl" style="margin-top:8px"><div class="field"><label for="piMode">Projeção de IPCA</label><select id="piMode"><option value="impl">Inflação implícita do mercado, por prazo (ANBIMA) — recomendado</option><option value="m12">Média dos últimos 12 meses ('+fx(ipca12(),2)+'%)</option></select></div>';
   h+='</div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="piSave">Salvar projeção</button><span class="sub" id="piMsg">Hoje: '+piModeName()+'.</span></div>';
-  h+='<p class="sub" style="font-size:.82rem;margin-top:6px">A projeção vale para todo o aplicativo: valor futuro dos títulos IPCA+, cenários, metas, escada e análise de troca. O Focus não pode ser lido automaticamente daqui; copie as medianas do boletim semanal do Banco Central.</p>';
-  if(L.length){h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab"><thead><tr><th style="text-align:left">Vencimento NTN-B</th><th>Juro real</th><th>Prefixado (curva)</th><th>Inflação implícita</th>'+(Object.keys(F).length?'<th class="c-ph">Focus médio</th>':'')+'</tr></thead><tbody>';
-    L.forEach(([t,r])=>{const n=zeroPre(du(VAL,t)),ii=((1+n/100)/(1+r/100)-1)*100;let fc="";if(Object.keys(F).length){const m=PI_MODE;PI_MODE="focus";const pp=PI_PROJ;PI_PROJ=null;const f=piFactor(t);PI_MODE=m;PI_PROJ=pp;fc='<td class="c-ph">'+fx((Math.pow(f,1/((t-VAL)/DAY/365.25))-1)*100,2)+'%</td>'}
-      h+='<tr><td style="text-align:left">'+fdate(t)+'</td><td>'+fx(r,2)+'%</td><td>'+fx(n,2)+'%</td><td><b>'+fx(ii,2)+'%</b></td>'+fc+'</tr>'});
+  h+='<p class="sub" style="font-size:.82rem;margin-top:6px">A projeção vale para todo o aplicativo: valor futuro dos títulos IPCA+, cenários, escada e análise de troca.</p>';
+  if(L.length){h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab"><thead><tr><th style="text-align:left">Vencimento NTN-B</th><th>Juro real</th><th>Prefixado (curva)</th><th>Inflação implícita</th></tr></thead><tbody>';
+    L.forEach(([t,r])=>{const n=zeroPre(du(VAL,t)),ii=((1+n/100)/(1+r/100)-1)*100;
+      h+='<tr><td style="text-align:left">'+fdate(t)+'</td><td>'+fx(r,2)+'%</td><td>'+fx(n,2)+'%</td><td><b>'+fx(ii,2)+'%</b></td></tr>'});
     {const RR=L.map(([t,r])=>{const n=zeroPre(du(VAL,t));return {t,r,n,ii:((1+n/100)/(1+r/100)-1)*100,a:(t-VAL)/DAY/365.25}});
-     const fcCol=Object.keys(F).length?'<td class="c-ph">—</td>':'';
      const med=(lab,S,forte)=>{if(!S.length)return "";const m=k=>S.reduce((s,x)=>s+x[k],0)/S.length;
-       return '<tr class="'+(forte?'mtot':'msub')+'"><td style="text-align:left">'+lab+' <small>('+S.length+' venc.)</small></td><td>'+fx(m("r"),2)+'%</td><td>'+fx(m("n"),2)+'%</td><td><b>'+fx(m("ii"),2)+'%</b></td>'+fcCol+'</tr>'};
+       return '<tr class="'+(forte?'mtot':'msub')+'"><td style="text-align:left">'+lab+' <small>('+S.length+' venc.)</small></td><td>'+fx(m("r"),2)+'%</td><td>'+fx(m("n"),2)+'%</td><td><b>'+fx(m("ii"),2)+'%</b></td></tr>'};
      h+='</tbody><tfoot>'+med("Média — até 5 anos",RR.filter(x=>x.a<=5))+med("Média — de 5 a 10 anos",RR.filter(x=>x.a>5&&x.a<=10))+med("Média — acima de 10 anos",RR.filter(x=>x.a>10))+med("Média de todos os vencimentos",RR,true)+'</tfoot>'}
     h+='</table></div><p class="sub" style="font-size:.82rem;margin-top:6px">Médias simples dos vencimentos de cada faixa (prazo contado a partir de hoje). Inflação implícita = (1 + taxa prefixada da curva ANBIMA) ÷ (1 + juro real da NTN-B) − 1, para cada prazo. Se o IPCA ficar acima dela, o IPCA+ rende mais que o prefixado de mesmo prazo; abaixo, o prefixado vence. IPCA dos últimos 12 meses: '+fx(ipca12(),2)+'%.</p>'}
   return h;
