@@ -1,5 +1,0 @@
-# CNPJs dos fundos cujas cotas o robô deve buscar na CVM (um por linha).
-# Pode escrever com ou sem pontuação. Linhas com # são ignoradas.
-# NÃO coloque nomes de clientes aqui: este repositório é público.
-# Exemplo:
-# 00.000.000/0000-00

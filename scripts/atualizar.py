@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# VERSAO: 2026-10-26 (precos ANBIMA de CRI/CRA, texto integral dos termos, CSV do Tesouro Direto)
+# VERSAO: 2026-10-27 (limpeza: só o que o app Mercado e Títulos usa)
 """
 Robô de dados de mercado.
 
@@ -7,14 +7,15 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/mercado.json       retrato do dia, no mesmo formato que o app usa (market/current)
   data/td_historico.json  preços e taxas do Tesouro Direto dos últimos 90 dias úteis
   data/debentures.json    taxas indicativas ANBIMA de todas as debêntures
-  data/fundos.json        cotas da CVM dos fundos listados em config/fundos.txt
   data/catalogo_debentures.json  características e agenda de todas as debêntures (SND),
                           no formato de papel do app, com a taxa ANBIMA do dia
   data/fundos_catalogo.json todos os fundos da CVM (nome, tipo, cotas recentes)
   data/cri_cra_cvm.json   dados de todos os CRIs e CRAs do informe mensal da CVM (último mês)
   data/termos/indice.json link do termo de securitização (Fundos.NET) de cada CRI e CRA
   data/cri_cra_anbima.json taxas indicativas e PU da ANBIMA de todos os CRIs e CRAs precificados
-  data/termos/texto/<id>.txt.gz texto integral (todas as páginas) de cada termo e aditamento
+  data/cri_cra_cronogramas.json cronograma de pagamentos lido de cada termo de securitização
+  data/fundos/XX.json, data/fundos_hist/ cotas dos fundos (dias recentes e fins de mês)
+  data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
   data/status.json        resultado de cada fonte (ok / erro) e horário
   data/diag/              amostras das respostas de cada fonte, para conferência
@@ -43,7 +44,6 @@ import cronograma  # noqa: E402
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DADOS = os.path.join(RAIZ, "data")
-CONFIG = os.path.join(RAIZ, "config")
 BRT = dt.timezone(dt.timedelta(hours=-3))
 AGORA = dt.datetime.now(BRT)
 HOJE = AGORA.date()
@@ -467,57 +467,6 @@ def ipca(mercado):
 
 # ---------------------------------------------------------------- CVM (cotas de fundos)
 
-def so_cnpj(s):
-    return re.sub(r"[^0-9A-Z]", "", s.upper())
-
-
-@fonte("cvm_fundos")
-def cvm_fundos():
-    caminho = os.path.join(CONFIG, "fundos.txt")
-    alvo = set()
-    if os.path.exists(caminho):
-        for L in open(caminho, encoding="utf-8"):
-            L = L.split("#")[0].strip()
-            if L:
-                alvo.add(so_cnpj(L))
-    if not alvo:
-        return {"aviso": "nenhum CNPJ em config/fundos.txt"}
-
-    anterior = ler_json("fundos.json", {}).get("funds", {})
-    series = {c: dict(anterior.get(c, {}).get("serie", {})) for c in alvo}
-    meses = [HOJE.strftime("%Y%m"), (HOJE.replace(day=1) - dt.timedelta(days=1)).strftime("%Y%m")]
-    lidos = 0
-    for mes in meses:
-        r = baixar(URL_CVM.format(mes), aceita_404=True, timeout=300)
-        if r is None:
-            continue
-        with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-            for nome in z.namelist():
-                with z.open(nome) as f:
-                    leitor = csv.reader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
-                    cab = next(leitor)
-                    c_cnpj = next(i for i, c in enumerate(cab) if c.startswith("CNPJ_FUNDO"))
-                    c_data = cab.index("DT_COMPTC")
-                    c_cota = cab.index("VL_QUOTA")
-                    c_pl = cab.index("VL_PATRIM_LIQ") if "VL_PATRIM_LIQ" in cab else None
-                    for L in leitor:
-                        c = so_cnpj(L[c_cnpj])
-                        if c in alvo:
-                            cota = num(L[c_cota])
-                            if cota:
-                                series[c][L[c_data]] = [cota, num(L[c_pl]) if c_pl is not None else None]
-                                lidos += 1
-    saida = {}
-    for c, s in series.items():
-        datas = sorted(s)[-120:]
-        if datas:
-            saida[c] = {"serie": {d: s[d] for d in datas},
-                        "ultima": {"data": datas[-1], "cota": s[datas[-1]][0], "pl": s[datas[-1]][1]}}
-    gravar_json("fundos.json", {"source": "CVM – informe diário", "funds": saida})
-    faltando = sorted(alvo - set(saida))
-    return {"fundos": len(saida), "linhas": lidos, "sem_dados": faltando}
-
-
 # ---------------------------------------------------------------- Tesouro Direto: site oficial (dados do dia)
 
 URL_TD_JSON = "https://www.tesourodireto.com.br/json/br/com/b3/tesourodireto/service/api/treasurybondsinfo.json"
@@ -775,7 +724,7 @@ def snd_catalogo():
     if not carac:
         raise RuntimeError("SND: nenhuma característica lida (ver data/diag/snd_caracteristicas_*.txt)")
 
-    # 2. agenda de eventos (todas as debêntures): futura + passada (pedida por períodos)
+    # 2. agenda de eventos (todas as debêntures)
     agenda, vistos = {}, set()
 
     def ler_agenda(url, nome_diag):
@@ -800,45 +749,13 @@ def snd_catalogo():
             n += 1
         return n
 
-    passado_ok = []
     try:
         ler_agenda(URL_SND_AGENDA, "snd_agenda")
     except Exception as e:  # noqa: BLE001
         diag("snd_agenda", URL_SND_AGENDA, erro=e)
         STATUS["snd_agenda"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:500]}
-    # eventos já ocorridos. A consulta por data do evento respondeu "Não existe consulta" em blocos de
-    # 4 anos; descobre qual formato de pedido o SND aceita testando um ano recente, e usa esse formato.
-    def url_passado(var, ini, fim):
-        d1, d2 = ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")
-        if var == "evento":
-            q = f"emissor=&ativo=&evento=&dt_ini={d1}&dt_fim={d2}&dt_pgto_ini=&dt_pgto_fim="
-        elif var == "pagamento":
-            q = f"emissor=&ativo=&evento=&dt_ini=&dt_fim=&dt_pgto_ini={d1}&dt_pgto_fim={d2}"
-        else:
-            q = f"tip_deb=publicas&op_exc=Nada&emissor=&ativo=&evento=&dt_ini={d1}&dt_fim={d2}&dt_pgto_ini=&dt_pgto_fim="
-        return URL_SND_AGENDA + "?" + q
-    teste_ini, teste_fim = dt.date(HOJE.year - 1, 1, 1), dt.date(HOJE.year - 1, 3, 31)
-    formato = None
-    for var in ("pagamento", "evento", "publicas"):
-        try:
-            if ler_agenda(url_passado(var, teste_ini, teste_fim), f"snd_agenda_teste_{var}") > 0:
-                formato = var
-                break
-        except Exception as e:  # noqa: BLE001
-            diag(f"snd_agenda_teste_{var}", URL_SND_AGENDA, erro=e)
-    if formato:
-        # blocos de 1 ano (o SND parece limitar o tamanho da consulta)
-        for ano in range(2006, HOJE.year + 1):
-            ini, fim = dt.date(ano, 1, 1), min(dt.date(ano, 12, 31), HOJE)
-            try:
-                n = ler_agenda(url_passado(formato, ini, fim), "snd_agenda_ano")
-                passado_ok.append(f"{ano}-{ano}: {n}")
-            except Exception as e:  # noqa: BLE001
-                diag(f"snd_agenda_{ano}", URL_SND_AGENDA, erro=e)
-                passado_ok.append(f"{ano}-{ano}: 0")
-    else:
-        passado_ok.append("formato não encontrado: 0")
-    tem_passado = any(int(x.split(": ")[1]) > 0 for x in passado_ok)
+    # o SND só devolve os eventos futuros: os pagamentos já feitos o app reconstrói pelo saldo atual
+    tem_passado = False
 
     # 3. monta cada papel no formato do app
     catalogo, sem_formula = {}, 0
@@ -910,8 +827,7 @@ def snd_catalogo():
     com_agenda = sum(1 for p in catalogo.values() if len(p["schedule"]) > 1)
     com_anbima = sum(1 for p in catalogo.values() if "anbima" in p)
     return {"papeis": len(catalogo), "com_agenda": com_agenda, "com_taxa_anbima": com_anbima,
-            "incompletos": sem_formula, "caracteristicas_lidas": len(carac), "ativos_na_agenda": len(agenda),
-            "agenda_passada": passado_ok}
+            "incompletos": sem_formula, "caracteristicas_lidas": len(carac), "ativos_na_agenda": len(agenda)}
 
 
 # ---------------------------------------------------------------- CVM: informes mensais de CRI e CRA
@@ -1287,7 +1203,6 @@ def anbima_cri_cra():
 # ---------------------------------------------------------------- Fundos.NET: texto integral dos termos
 
 import base64
-import gzip
 import shutil
 import subprocess
 import tempfile
@@ -1326,25 +1241,16 @@ def fnet_pdf(id_doc):
     raise RuntimeError(f"documento {id_doc} não é PDF ({r.headers.get('content-type', '')}, {len(c)} bytes)")
 
 
-def ler_codigos(nome):
-    try:
-        with open(os.path.join(CONFIG, nome), encoding="utf-8") as f:
-            return [cod_cri(L.split("#")[0]) for L in f if L.split("#")[0].strip()]
-    except FileNotFoundError:
-        return []
-
-
 @fonte("fundosnet_textos")
 def fundosnet_textos():
     """
-    Baixa cada termo de securitização (e aditamentos) e guarda o texto integral, compactado.
-    Ordem: códigos de config/papeis.txt, depois os CRI/CRA precificados pela ANBIMA, depois os demais
+    Baixa cada termo de securitização (e aditamentos) e lê o cronograma de pagamentos (o texto não é guardado).
+    Ordem: os CRI/CRA precificados pela ANBIMA, depois os demais
     (mais recentes primeiro). Cada execução trabalha por no máximo ~8 minutos; o resto fica para a próxima.
     """
     indice = ler_json("termos/indice.json", {})
     feitos = ler_json("termos/textos.json", {})
     anb = ler_json("cri_cra_anbima.json", {}).get("papers", {})
-    pedidos = ler_codigos("papeis.txt")
 
     def ids(cod):
         i = indice.get(cod) or indice.get(cod_cri(cod))
@@ -1359,14 +1265,12 @@ def fundosnet_textos():
                 if str(i) not in vistos:
                     vistos.add(str(i))
                     fila.append((prio, i))
-    por(pedidos, 0)
     por(sorted(anb), 1)
     por(sorted(indice, key=lambda c: -indice[c]["idFnet"]), 2)
 
     pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and feitos.get(str(i), {}).get("tentativas", 0) < 3]
     limite = time.time() + 10 * 60
     novos, erros = 0, 0
-    os.makedirs(os.path.join(DADOS, "termos", "texto"), exist_ok=True)
     from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
 
     # documento -> séries que ele cobre (o mesmo termo costuma valer para várias séries)
@@ -1374,7 +1278,6 @@ def fundosnet_textos():
     for cod, ix in indice.items():
         for i in [ix["idFnet"]] + [a["id"] for a in ix.get("aditamentos", [])]:
             por_doc.setdefault(i, []).append(cod)
-    guardar = {i for cod in pedidos for i in ids(cod)}
     cronos = ler_json("cri_cra_cronogramas.json", {})
     cvm = CRI_CRA or ler_json("cri_cra_cvm.json", {}).get("certificados", {})
 
@@ -1410,9 +1313,6 @@ def fundosnet_textos():
             txt = pdf_para_texto(fnet_pdf(i))
             if len(txt.strip()) < 500:
                 raise RuntimeError("PDF sem texto (provavelmente escaneado)")
-            if i in guardar:   # só guarda o texto integral dos papéis pedidos em config/papeis.txt
-                with gzip.open(os.path.join(DADOS, "termos", "texto", f"{i}.txt.gz"), "wt", encoding="utf-8") as f:
-                    f.write(txt)
             return i, {"ok": True, "paginas": txt.count("\f") + 1, "caracteres": len(txt)}, txt
         except Exception as e:  # noqa: BLE001
             return i, {"ok": False, "erro": str(e)[:200]}, None
@@ -1436,11 +1336,10 @@ def fundosnet_textos():
     gravar_json("termos/textos.json", feitos)
     gravar_json("cri_cra_cronogramas.json", cronos)
     total_ok = sum(1 for v in feitos.values() if v.get("ok"))
-    pedidos_ok = sum(1 for c in pedidos if ids(c) and all(feitos.get(str(i), {}).get("ok") for i in ids(c)))
     if pend and novos == 0 and erros:
         raise RuntimeError(f"nenhum termo baixado; último erro: {next(v['erro'] for v in feitos.values() if not v.get('ok'))}")
     return {"novos_agora": novos, "erros_agora": erros, "textos_total": total_ok, "series_com_cronograma": len(cronos), "documentos_na_fila": len(fila),
-            "pendentes": max(0, len(pend) - novos), "papeis_pedidos": len(pedidos), "papeis_pedidos_completos": pedidos_ok}
+            "pendentes": max(0, len(pend) - novos)}
 
 # ---------------------------------------------------------------- CVM: catálogo de todos os fundos
 
@@ -1643,13 +1542,6 @@ def rapido():
         td["coletadoEm"] = AGORA.isoformat(timespec="seconds")
         mercado["updatedAt"] = AGORA.isoformat(timespec="seconds")
         gravar_json("mercado.json", mercado)
-        # série do dia: um ponto por coleta, só quando alguma taxa mudou
-        dia = ler_json("td_intradiario.json", {})
-        if dia.get("data") != HOJE.isoformat():
-            dia = {"data": HOJE.isoformat(), "pontos": []}
-        if not dia["pontos"] or dia["pontos"][-1]["linhas"] != td["ALL"]:
-            dia["pontos"].append({"hora": td["hora"], "linhas": td["ALL"]})
-        gravar_json("td_intradiario.json", dia)
         st["intradiario_mudou"] = antes != td["ALL"]
     gravar_json("status.json", st)
     print("Intradiário:", STATUS.get("tesouro_direto_site"))
@@ -1670,7 +1562,6 @@ def main():
     anbima_cri_cra()
     cvm_cri_cra()
     fundosnet_termos()
-    cvm_fundos()
     cvm_catalogo_fundos()
     fundosnet_textos()             # por último: usa o tempo que sobrar
 
