@@ -842,6 +842,12 @@ def b3_ajustes(dia, timeout=90, tentativas=2):
                 out["DI1"].append([venc, round(atu, 2), round(ant, 2) if ant else None])
     if not out["DOL"] and not out["DI1"]:
         diag("b3_ajustes", URL_B3_AJUSTES + " (POST " + dia.isoformat() + ")", r)
+        try:
+            os.makedirs(os.path.join(DADOS, "diag"), exist_ok=True)
+            with open(os.path.join(DADOS, "diag", "b3_ajustes_pagina.html"), "w", encoding="utf-8") as f:
+                f.write(texto(r)[:400000])
+        except Exception:  # noqa: BLE001
+            pass
     return out
 
 
@@ -944,26 +950,124 @@ def mensal(d, como="media"):
     return {m: round(sum(v) / len(v), 6) if como == "media" else v[-1] for m, v in g.items()}
 
 
+URL_BLS = "https://api.bls.gov/publicAPI/v1/timeseries/data/"
+URL_UST = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{ano}/all?type={tipo}&field_tdr_date_value={ano}&page&_format=csv"
+URL_NYFED = "https://markets.newyorkfed.org/api/rates/{}/last/{}.json"
+DXY_PESOS = {"EUR": -0.576, "JPY": 0.136, "GBP": -0.119, "CAD": 0.091, "SEK": 0.042, "CHF": 0.036}   # fórmula pública do índice DXY (ICE)
+UA_WEB = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
+
+
+def bls_cpi():
+    """CPI-U dos EUA (sem ajuste sazonal, CUUR0000SA0) mensal desde 1995, pela API pública do BLS (até 10 anos por pedido)."""
+    out = {}
+    for a in range(1995, HOJE.year + 1, 10):
+        r = requests.post(URL_BLS, json={"seriesid": ["CUUR0000SA0"], "startyear": str(a), "endyear": str(min(a + 9, HOJE.year))},
+                          timeout=(10, 60), headers=UA_WEB)
+        J = r.json()
+        for x in (J.get("Results", {}).get("series") or [{}])[0].get("data", []):
+            if x.get("period", "").startswith("M") and x["period"] != "M13":
+                out[f"{x['year']}-{x['period'][1:]}"] = float(x["value"])
+        time.sleep(1)
+    if len(out) < 300:
+        raise RuntimeError(f"BLS: só {len(out)} meses")
+    return out
+
+
+def tesouro_eua(tipo, cols):
+    """Taxas diárias do Tesouro americano (ano atual e anterior): {nome: {data: taxa}}."""
+    out = {c: {} for c in cols.values()}
+    for ano in (HOJE.year - 1, HOJE.year):
+        r = requests.get(URL_UST.format(ano=ano, tipo=tipo), timeout=(10, 60), headers=UA_WEB)
+        L = list(csv.reader(io.StringIO(r.text)))
+        if not L:
+            continue
+        cab = [c.strip() for c in L[0]]
+        for row in L[1:]:
+            d = data_ymd(row[0]) if "-" in row[0] else None
+            if not d:
+                try:
+                    m_, d_, y_ = row[0].split("/")
+                    d = f"{y_}-{int(m_):02d}-{int(d_):02d}"
+                except ValueError:
+                    continue
+            for c, nome in cols.items():
+                if c in cab and row[cab.index(c)].strip():
+                    try:
+                        out[nome][d] = float(row[cab.index(c)])
+                    except ValueError:
+                        pass
+    return out
+
+
+def nyfed(tipo):
+    r = requests.get(URL_NYFED.format(tipo, 60), timeout=(10, 40), headers=UA_WEB)
+    return {x["effectiveDate"]: float(x["percentRate"]) for x in r.json().get("refRates", [])}
+
+
+def dxy_ptax():
+    """Índice do dólar (fórmula do DXY) com as paridades oficiais do Banco Central, média mensal desde 2006."""
+    pars = {}
+    for m, w in DXY_PESOS.items():
+        L = olinda("CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda='" + m
+                   + "'&@dataInicial='01-01-2006'&@dataFinalCotacao='" + HOJE.strftime("%m-%d-%Y")
+                   + "'&$format=json&$select=paridadeVenda,dataHoraCotacao,tipoBoletim")
+        pars[m] = {x["dataHoraCotacao"][:10]: x["paridadeVenda"] for x in L
+                   if x.get("paridadeVenda") and str(x.get("tipoBoletim", "")).lower().startswith("fech")}
+    dias = sorted(set.intersection(*[set(v) for v in pars.values()]))
+    idx = {}
+    for d in dias:
+        v = 50.14348112
+        for m, w in DXY_PESOS.items():
+            p = pars[m][d]
+            # paridade do BC: moedas tipo B (EUR, GBP) vêm em US$ por unidade; as demais, unidades por US$
+            usd_por = p if m in ("EUR", "GBP") else 1 / p
+            v *= usd_por ** (w if m in ("EUR", "GBP") else -w)
+        idx[d] = round(v, 4)
+    if len(idx) < 1000:
+        raise RuntimeError(f"DXY: só {len(idx)} dias")
+    return idx
+
+
 @fonte("dolar_fundamentos")
 def dolar_fundamentos():
-    """Séries usadas no cálculo do dólar justo (paridade do poder de compra, modelo de fundamentos e paridade de juros)."""
-    out = {"fonte": "Federal Reserve (FRED): CPI dos EUA, índice amplo do dólar, SOFR e juro real de 10 anos; FMI (via FRED): "
-                    "commodities; Ipeadata (J.P. Morgan): EMBI+ Brasil", "mensal": {}, "ultimo": {}}
+    """Séries do dólar justo e dos juros dos EUA, só de fontes oficiais: BLS (CPI), Tesouro americano (Treasuries),
+    Fed de Nova York (SOFR, juro do Fed), Banco Central (paridades para o índice do dólar) e Ipeadata (EMBI+)."""
+    out = {"fonte": "BLS (CPI dos EUA), Tesouro americano (Treasuries e juro real), Fed de Nova York (SOFR e juro do Fed), "
+                    "Banco Central (paridades PTAX para o índice do dólar, fórmula do DXY), Ipeadata/J.P. Morgan (EMBI+ Brasil)",
+           "mensal": {}, "ultimo": {}}
     falhas = []
-    limite = time.time() + 3 * 60
-    for nome, cod in FRED_SERIES.items():
-        if time.time() > limite:
-            falhas.append(f"{cod}: sem tempo nesta execução")
-            continue
-        try:
-            d = fred(cod)
-        except Exception as e:  # noqa: BLE001
-            falhas.append(f"{cod}: {str(e)[:120]}")
-            continue
-        diaria = len(d) > 3000
-        out["mensal"][nome] = mensal(d) if diaria else {k[:7]: v for k, v in d.items()}
+    def guarda(nome, d, diaria=True):
+        if not d:
+            return
+        out["mensal"][nome] = mensal(d) if diaria else d
         k = max(d)
-        out["ultimo"][nome] = {"data": k, "valor": d[k]}
+        out["ultimo"][nome] = {"data": k if len(k) > 7 else k + "-01", "valor": d[k]}
+    for nome, f, diaria in (("cpi_eua", bls_cpi, False), ("dolar_global", dxy_ptax, True)):
+        try:
+            guarda(nome, f(), diaria)
+        except Exception as e:  # noqa: BLE001
+            falhas.append(f"{nome}: {str(e)[:150]}")
+    try:
+        T = tesouro_eua("daily_treasury_yield_curve", {"2 Yr": "treasury_2a", "10 Yr": "treasury_10a"})
+        for k, v in T.items():
+            guarda(k, v)
+        R = tesouro_eua("daily_treasury_real_yield_curve", {"10 YR": "juro_real_eua_10a"})
+        for k, v in R.items():
+            guarda(k, v)
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"Tesouro EUA: {str(e)[:150]}")
+    for nome, tipo in (("juro_eua", "secured/sofr"), ("fed_funds", "unsecured/effr")):
+        try:
+            guarda(nome, nyfed(tipo))
+        except Exception as e:  # noqa: BLE001
+            falhas.append(f"{nome}: {str(e)[:150]}")
+    try:   # commodities pelo FRED/FMI (opcional; o FRED costuma recusar servidores)
+        d = fred("PALLFNFINDEXM")
+        out["mensal"]["commodities"] = {k[:7]: v for k, v in d.items()}
+        k = max(d)
+        out["ultimo"]["commodities"] = {"data": k, "valor": d[k]}
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"commodities (FRED): {str(e)[:100]}")
     try:   # IPCA mensal desde 1995 (SGS 433), para a paridade do poder de compra de longo prazo
         r = requests.get(URL_SGS.format(433, "01/01/1995", HOJE.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
         V = r.json() if r.content.strip()[:1] == b"[" else []
@@ -989,6 +1093,8 @@ def dolar_fundamentos():
         out["falhas"] = falhas
     if not out["mensal"].get("cpi_eua"):
         raise RuntimeError("sem a inflação dos EUA: " + "; ".join(falhas))
+    for k in [k for k in out["ultimo"] if k not in out["mensal"]]:
+        out["ultimo"].pop(k)
     gravar_json("dolar_fundamentos.json", out)
     return {"series": {k: len(v) for k, v in out["mensal"].items()}, "ultimo": out["ultimo"], "falhas": falhas}
 
@@ -1003,11 +1109,19 @@ URL_SIDRA = "https://apisidra.ibge.gov.br/values/t/{}/n1/all/v/{}/p/last%2014/c3
 
 def sgs_periodo(serie, ini, fim=None):
     fim = fim or HOJE
-    r = requests.get(URL_SGS.format(serie, ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
-    if r.status_code != 200 or r.content.strip()[:1] != b"[":
-        diag(f"bcb_sgs_{serie}", r.url, r)
-        raise RuntimeError(f"SGS {serie}: HTTP {r.status_code}")
-    return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+    ultimo = None
+    for tentativa in range(4):
+        try:
+            r = requests.get(URL_SGS.format(serie, ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
+            if r.status_code == 200 and r.content.strip()[:1] == b"[":
+                time.sleep(1.5)
+                return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+            ultimo = f"HTTP {r.status_code} ({r.content[:60]!r})"
+            diag(f"bcb_sgs_{serie}", r.url, r)
+        except Exception as e:  # noqa: BLE001
+            ultimo = str(e)[:120]
+        time.sleep(6 * (tentativa + 1))
+    raise RuntimeError(f"SGS {serie}: {ultimo}")
 
 
 def sidra(tabela, variaveis, categorias):
@@ -1068,40 +1182,48 @@ URL_IMA = "https://www.anbima.com.br/informacoes/ima/arqs/ima_completo.txt"
 
 @fonte("anbima_ima")
 def anbima_ima():
-    """Índices de renda fixa da ANBIMA (IRF-M, IMA-B, IMA-S...): número-índice, variações, duration e yield. Guarda o histórico."""
+    """Índices de renda fixa da ANBIMA (IRF-M, IMA-B, IMA-S...): número-índice, variações, duration e taxa. Guarda o histórico."""
     r = baixar(URL_IMA, tentativas=2, timeout=(10, 60))
     txt = texto(r)
-    linhas = [L.split(";") for L in txt.splitlines() if ";" in L]
-    cab = next((L for L in linhas if any("ndice" in c for c in L) and any("Data" in c for c in L)), None)
+    sep = "@" if txt.count("@") > txt.count(";") else ";"
+    linhas = [[c.strip() for c in L.split(sep)] for L in txt.splitlines() if sep in L]
+    cab = next((L for L in linhas if any(norm(c) == "indice" for c in L) and any("data de refer" in norm(c) for c in L)), None)
     if not cab:
         diag("anbima_ima", URL_IMA, r)
         raise RuntimeError("IMA: cabeçalho não encontrado")
-    cab = [c.strip() for c in cab]
+    pos = {norm(c): k for k, c in enumerate(cab)}
+    def col(*partes):
+        return next((k for c, k in pos.items() if all(p in c for p in partes)), None)
+    C = {"nome": col("indice"), "data": col("data de refer"), "numero": col("numero indice"), "dia": col("variacao diaria"),
+         "mes": col("variacao mensal"), "ano": col("variacao anual"), "m12": col("12 meses"), "m24": col("24 meses"),
+         "duration": col("duration"), "peso": col("peso"), "taxa": col("redemption yield"), "yield": col("yield")}
+    if C["yield"] == C["taxa"]:
+        C["yield"] = next((k for c, k in pos.items() if c == "yield"), None)
     rows = []
     for L in linhas:
-        if L is cab or len(L) < len(cab) - 2:
+        if L is cab or len(L) < len(cab) - 3 or C["nome"] is None or C["nome"] >= len(L):
             continue
-        x = dict(zip(cab, [c.strip() for c in L]))
-        nome = x.get(cab[0], "")
+        nome = L[C["nome"]]
         if not re.match(r"^(IRF|IMA)", nome.upper()):
             continue
+        x = {"nome": nome}
+        for k, c in C.items():
+            if k != "nome" and c is not None and c < len(L):
+                x[k] = L[c] if k == "data" else num(L[c])
         rows.append(x)
     if not rows:
         diag("anbima_ima", URL_IMA, r)
         raise RuntimeError("IMA: nenhum índice lido")
-    col_data = next(c for c in cab if "Data" in c)
-    data = data_dmy(rows[0][col_data]) or rows[0][col_data]
-    col_num = next((c for c in cab if "mero" in c and "ndice" in c), None)
+    data = data_dmy(rows[0].get("data", "")) or HOJE.isoformat()
     h = ler_json("ima.json", {"fonte": "ANBIMA – IMA (resultados diários)", "historico": {}})
-    h["cabecalho"], h["data"], h["indices"] = cab, data, rows
-    if col_num:
-        dia = {x[cab[0]]: num(x[col_num]) for x in rows if num(x[col_num])}
-        h.setdefault("historico", {})[data] = dia
-        corte = (HOJE - dt.timedelta(days=800)).isoformat()
-        h["historico"] = {k: v for k, v in sorted(h["historico"].items()) if k >= corte}
+    h["data"], h["indices"] = data, rows
+    h.pop("cabecalho", None)
+    h.setdefault("historico", {})[data] = {x["nome"]: x.get("numero") for x in rows if x.get("numero")}
+    corte = (HOJE - dt.timedelta(days=800)).isoformat()
+    h["historico"] = {k: v for k, v in sorted(h["historico"].items()) if k >= corte}
     h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
     gravar_json("ima.json", h)
-    return {"data": data, "indices": len(rows), "historico_dias": len(h.get("historico", {}))}
+    return {"data": data, "indices": len(rows), "exemplo": rows[0], "historico_dias": len(h["historico"])}
 
 
 # ---------------------------------------------------------------- Crédito privado: spread e histórico das taxas públicas
