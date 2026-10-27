@@ -2003,7 +2003,7 @@ function defaultBase(kind,d){return tdRow(kind,d)?"TD":"ANBIMA"}
 /* ================= Banco de dados: carteira e histórico ================= */
 let DB=null,POS={},HIST={},SILENT=false;
 
-
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 
 
 
@@ -2016,7 +2016,7 @@ let DB=null,POS={},HIST={},SILENT=false;
 /* ================= Carteiras (várias) e planilha ================= */
 let cartRes={};
 
-
+let CLIENTS={},MOVES={},COMMITS={},SETTINGS={},CUR_CLIENT="c0",MV_YEAR="all",IR_YEAR=null;
 
 const RAWC=new Map();
 
@@ -2678,7 +2678,7 @@ function oppHtml(){
 function inflHtml(){
   const L=ntnbCurve();
   let h='<span class="label">Inflação implícita e projeção usada no aplicativo</span><div class="scctl" style="margin-top:8px"><div class="field"><label for="piMode">Projeção de IPCA</label><select id="piMode"><option value="impl">Inflação implícita do mercado, por prazo (ANBIMA) — recomendado</option><option value="m12">Média dos últimos 12 meses ('+fx(ipca12(),2)+'%)</option></select></div>';
-  h+='</div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="piSave">Salvar projeção</button><span class="sub" id="piMsg">Hoje: '+piModeName()+'.</span></div>';
+  h+='</div><p class="sub" id="piMsg" style="margin-top:8px">Em uso: '+piModeName()+'.</p>';
   h+='<p class="sub" style="font-size:.82rem;margin-top:6px">A projeção vale para todo o aplicativo: valor futuro dos títulos IPCA+, cenários, escada e análise de troca.</p>';
   if(L.length){h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab"><thead><tr><th style="text-align:left">Vencimento NTN-B</th><th>Juro real</th><th>Prefixado (curva)</th><th>Inflação implícita</th></tr></thead><tbody>';
     L.forEach(([t,r])=>{const n=zeroPre(du(VAL,t)),ii=((1+n/100)/(1+r/100)-1)*100;
@@ -2693,7 +2693,18 @@ function inflHtml(){
 
 
 function mkCalc(){const o=$("mkOut");if(!o)return;o.innerHTML='<section class="panel">'+oppHtml()+'</section><section class="panel">'+inflHtml()+'</section><section class="panel">'+curvHtml()+'</section>';const s=$("piMode");if(s)s.value=PI_MODE}
-
+async function mkClick(e){
+  if(e.target.id==="oppMore"){const b=document.querySelector("#mkOut .oppmore");if(b){b.hidden=!b.hidden;e.target.textContent=b.hidden?"Mostrar todos os títulos":"Mostrar só os 10 primeiros"}return}
+  if(e.target.id==="piSave"){
+    PI_MODE=$("piMode").value;if(PI_MODE!=="m12")PI_MODE="impl";
+    try{localStorage.setItem("piMode2",PI_MODE)}catch(x){}SETTINGS.piMode=PI_MODE;PIF_CACHE.clear();RAWC.clear();
+    if(DB){try{await DB.doc("settings/main").set(Object.assign({},SETTINGS,{id:"main",updatedAt:new Date().toISOString()}))}catch(x){}}
+    mkCalc();$("piMsg").textContent="Em uso: "+piModeName()+". Vale para todo o aplicativo.";return}
+  const b=e.target.closest("[data-dw]");if(b){const r=document.querySelector('[data-dwr="'+b.dataset.dw+'"]');r.hidden=!r.hidden;if(!r.hidden){const P=PAPERS[b.dataset.dw];r.firstChild.innerHTML='<div class="watchrow">Avisar no celular quando a taxa ANBIMA de <b>'+P.code+'</b> <select data-dwf="dir"><option value="ge">subir até</option><option value="le">cair até</option></select> <div class="affix s" style="width:130px"><input data-dwf="rate" inputmode="decimal" value="'+fx((+P.anbima.rate)+(P.index==="DI_PCT"?5:0.5),2)+'"><span class="suf">%</span></div> <button type="button" class="btn" data-dwsave="'+P.code+'">Criar alerta</button></div>'}return}
+  const s=e.target.closest("[data-dwsave]");if(s){const code=s.dataset.dwsave,row=s.closest("tr"),dir=row.querySelector('[data-dwf="dir"]').value,rate=num(row.querySelector('[data-dwf="rate"]').value);if(!isFinite(rate)||!DB)return;
+    const id="w"+newId(),desc="Debênture "+code+" · taxa ANBIMA "+(dir==="ge"?"≥ ":"≤ ")+fx(rate,2)+"%";try{await DB.doc("watch/"+id).set({id,kind:"DEB",code,d:"",side:"anbima",dir,rate,desc,active:true,setAt:new Date().toISOString(),lastFired:""})}catch(x){}return}
+  const d=e.target.closest("[data-dwdel]");if(d){try{await DB.doc("watch/"+d.dataset.dwdel).delete()}catch(x){}}
+}
 
 /* ================= Teste de estresse ================= */
 
@@ -3417,6 +3428,7 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
   const tip=box.querySelector(".cvtip");tip.innerHTML='<b>'+fx(t,2).replace(/,00$/,"").replace(/0$/,"")+(t===1?' ano':' anos')+'</b>'+M.S.map(s=>{const p=s.pts.find(q=>Math.abs(q[0]-t)<1e-6);return '<span><i style="background:'+s.col+'"></i>'+esc(s.lab)+': '+(p?fx(p[1],2)+'%':'—')+'</span>'}).join("");
   tip.hidden=false;const bx=box.getBoundingClientRect(),left=X*sx+12;tip.style.top="8px";tip.style.left=(left+tip.offsetWidth>bx.width?Math.max(0,X*sx-tip.offsetWidth-12):left)+"px"});
 
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkClick({target:{id:"piSave",closest:()=>null}})});
 applyData(DATA0);
 buildOptions();applyFam();renderMkt();
 pcBind();pcList();
