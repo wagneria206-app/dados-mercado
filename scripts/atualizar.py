@@ -761,8 +761,23 @@ def ptax_boletins(dolar):
     return 0
 
 
+def dolar_resumo(dolar):
+    """Resumo pequeno para o mercado.json (barra do app): último fechamento, o anterior e o último boletim."""
+    ser = dolar.get("serie") or []
+    out = {}
+    if ser:
+        out = {"data": ser[-1][0], "compra": ser[-1][1], "venda": ser[-1][2]}
+        if len(ser) > 1:
+            out["anterior"] = {"data": ser[-2][0], "venda": ser[-2][2]}
+    b = dolar.get("boletins") or {}
+    if b.get("lista"):
+        u = b["lista"][-1]
+        out["boletim"] = {"data": b["data"], "hora": u["hora"], "tipo": u["tipo"], "compra": u["compra"], "venda": u["venda"]}
+    return out
+
+
 @fonte("bcb_dolar_ptax")
-def bcb_dolar():
+def bcb_dolar(mercado):
     """
     Dólar PTAX do Banco Central: série diária de fechamento (compra e venda) desde 1995 e os boletins do dia.
     Na primeira vez baixa tudo; depois, só os últimos 40 dias (o Banco Central pode corrigir dias recentes).
@@ -784,6 +799,7 @@ def bcb_dolar():
     n = ptax_boletins(dolar)
     dolar["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
     gravar_json("dolar.json", dolar)
+    mercado["dolar"] = dolar_resumo(dolar)
     return {"dias": len(dolar["serie"]), "ultimo": dolar["serie"][-1], "boletins_hoje": n}
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
@@ -1689,6 +1705,8 @@ def rapido():
             if json.dumps(dolar.get("boletins")) != antes_b:
                 dolar["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
                 gravar_json("dolar.json", dolar)
+                mercado["dolar"] = dolar_resumo(dolar)
+                gravar_json("mercado.json", mercado)
             STATUS["bcb_dolar_ptax"] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"), "boletins": len((dolar.get("boletins") or {}).get("lista", []))}
     except Exception as e:  # noqa: BLE001
         STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
@@ -1716,7 +1734,7 @@ def main():
     anbima_curva(mercado)
     anbima_curva_hist()
     bcb(mercado)
-    bcb_dolar()
+    bcb_dolar(mercado)
     ipca(mercado)
     anbima_debentures()
     snd_catalogo()
