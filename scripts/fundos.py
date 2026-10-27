@@ -321,7 +321,13 @@ def cadastro(ativos):
         d = info.setdefault(k, {})
         for a, b in kv.items():
             b = (b or "").strip() if isinstance(b, str) else b
-            if b not in (None, "", "-") and a not in d:
+            if b in (None, "", "-"):
+                continue
+            if a == "ini":
+                b = b[:10]
+                if re.match(r"\d{4}-\d\d-\d\d$", b) and (a not in d or b < d[a]):
+                    d[a] = b
+            elif a not in d:
                 d[a] = b
     try:
         r = baixar(URL_CAD_175)
@@ -696,6 +702,13 @@ def classe_cvm(c, tipo):
     return {"FIDC": "FIDC", "FII": "FII", "FIP": "FIP", "FIAGRO": "Fiagro", "ETF": "ETF"}.get(tipo, tipo if tipo != "FIF" else "Outros")
 
 
+def anbima_nome(a):
+    a = re.sub(r"\s+", " ", (a or "").strip())
+    if a and a == a.upper():
+        a = " ".join(w if w in ("FIDC", "FII", "FIP", "FGTS", "FMP", "ESG", "&") else w.capitalize() for w in a.lower().upper().split(" "))
+    return a
+
+
 def principal():
     ent, sai = sys.argv[1], sys.argv[2]
     estado = carregar_estado(ent)
@@ -798,6 +811,8 @@ def principal():
         i0, q0, r = codificar(f)
         meses = sorted(f.m)
         reg = {"c": k, "n": inf.get("n") or inf.get("nf") or "", "tipo": tipo}
+        if inf.get("anb"):
+            inf["anb"] = anbima_nome(inf["anb"])
         for a in ("fan", "cls", "anb", "bm", "pub", "exc", "lp", "cond", "ini", "fic", "aud", "cus", "ges", "adm", "cnf", "nf",
                   "tadm", "tperf", "itperf", "amin", "dcot", "dpag", "tsai", "car", "obj", "pol", "risco", "rsk"):
             if inf.get(a) not in (None, ""):
@@ -825,7 +840,7 @@ def principal():
             flags |= 16
         prim = meses[0]
         linhas.append([k, reg["n"][:90], ix(tip_l, tipo), ix(cls_l, classe_cvm(inf.get("cls"), tipo)),
-                       ix(anb_l, (inf.get("anb") or "").strip()), ix(gestores, (inf.get("ges") or "").strip()[:60]),
+                       ix(anb_l, anbima_nome(inf.get("anb"))), ix(gestores, (inf.get("ges") or "").strip()[:60]),
                        round(u[2] or 0), u[3] or 0, r2(mt.get("rm")), r2(mt.get("ra")), r2(mt.get("r12")), r2(mt.get("r24")),
                        r2(mt.get("r36")), r2(mt.get("r60")), r2(mt.get("v12")), r2(mt.get("sh")), r2(mt.get("dd")),
                        round(mt.get("cap", 0)), f"{prim[:4]}-{prim[4:]}", flags, inf.get("tadm"),

@@ -687,6 +687,133 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 .debq{display:flex;gap:8px;flex-wrap:wrap;align-items:end;max-width:520px}
 
 .debq .field{flex:1;min-width:180px}
+
+.wrap[data-area="fnd"] .tabs button[data-mod="fa"],.wrap[data-area="fnd"] .tabs button[data-mod="fr"],.wrap[data-area="fnd"] .tabs button[data-mod="fc"]{display:inline-flex;align-items:center}
+
+#modFn .panel{margin-bottom:16px}
+
+#modFn h3{margin:0 0 4px}
+
+.fnqbox{position:relative;margin-top:6px}
+
+.fnqbox input{width:100%;font-size:1rem}
+
+.fnres{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);max-height:420px;overflow:auto}
+
+.fnri{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 12px;color:var(--ink);cursor:pointer;font:inherit}
+
+.fnri:last-child{border-bottom:0}
+
+.fnri:hover,.fnri:focus-visible{background:var(--sunk)}
+
+.fnri b{font-size:.9rem;font-weight:600;line-height:1.3}
+
+.fnri small{color:var(--muted);font-size:.78rem}
+
+.fnlist{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:6px}
+
+.fnlist .fnri{padding:8px 2px}
+
+.fnh1{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+
+.fnh1 h3{font-size:1.15rem;line-height:1.3}
+
+.fnsub{color:var(--muted);font-size:.84rem;margin-top:2px}
+
+.fntags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+
+.fntag{font-size:.74rem;padding:3px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+
+.fntag.strong{color:var(--accent);font-weight:600}
+
+.fnacts{display:flex;gap:8px;flex-wrap:wrap}
+
+.fnkpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+
+.fnkp{background:var(--sunk);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+
+.fnkp span{font-size:.74rem;color:var(--muted)}
+
+.fnkp b{font-size:1.08rem;font-variant-numeric:tabular-nums}
+
+.fnkp small{font-size:.74rem;color:var(--muted)}
+
+.fninfo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 18px;margin:12px 0 0}
+
+.fninfo div{display:block;min-width:0;border-bottom:1px solid var(--line);padding-bottom:6px}
+
+.fninfo dt{font-size:.74rem;color:var(--muted)}
+
+.fninfo dt small{display:block;font-size:.7rem}
+
+.fninfo dd{text-align:left;font-weight:500;margin:2px 0 0;font-size:.88rem;overflow-wrap:anywhere}
+
+.fnrisk{grid-template-columns:repeat(4,1fr)}
+
+.fnseg{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 6px}
+
+.fnseg button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:.8rem;cursor:pointer}
+
+.fnseg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+
+.fnbm{display:flex!important;flex-wrap:wrap;gap:6px 16px;margin:4px 0 8px}
+
+.fnmon td,.fnmon th{padding:5px 5px;font-size:.8rem}
+
+.fnmon tr.fnmb td{border-top:0;padding-top:0;color:var(--muted)}
+
+.fnmon tr.fnmf td{border-bottom:0}
+
+.fnq{display:inline-block;min-width:30px;text-align:center;border-radius:6px;padding:2px 6px;font-weight:700;font-size:.78rem}
+
+.fnq.fnq1{background:color-mix(in srgb,var(--gain) 22%,transparent);color:var(--gain)}
+
+.fnq.fnq2{background:color-mix(in srgb,var(--gain) 10%,transparent);color:var(--gain)}
+
+.fnq.fnq3{background:color-mix(in srgb,var(--loss) 10%,transparent);color:var(--loss)}
+
+.fnq.fnq4{background:color-mix(in srgb,var(--loss) 22%,transparent);color:var(--loss)}
+
+.fncomp{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+
+.fncr{display:grid;grid-template-columns:minmax(120px,240px) 1fr 64px;gap:10px;align-items:center;font-size:.85rem}
+
+.fncr span{overflow-wrap:anywhere}
+
+.fncr b{text-align:right;font-variant-numeric:tabular-nums}
+
+.fncb{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+
+.fncb i{display:block;height:100%;border-radius:5px}
+
+.fnfilt{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px;margin-top:10px}
+
+.fnrk td small{display:block;color:var(--muted);font-size:.72rem;white-space:normal}
+
+.fnrk .fnnm{text-align:left;font-weight:600;font-size:.84rem;line-height:1.3}
+
+.fnchips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+
+.fnchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 10px;font-size:.82rem;max-width:100%}
+
+.fnchip i,.fndot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none;margin-right:4px;vertical-align:baseline}
+
+.fnchip .link{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
+
+.fnx{border:0;background:var(--sunk);color:var(--muted);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1}
+
+.fncmp th{white-space:normal;min-width:110px;vertical-align:bottom}
+
+.fncor{display:inline-block;padding:2px 6px;border-radius:5px;background:color-mix(in srgb,var(--accent) calc(var(--a)*40%),transparent)}
+
+.fnmsg{position:sticky;top:8px;z-index:40;background:var(--warn);color:var(--surface);padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:.88rem}
+
+.fnchart{position:relative}
+@media (max-width:760px){.fnkpis{grid-template-columns:1fr 1fr}.fnkpis .fnkp:last-child{grid-column:1/-1}.fninfo,.fnrisk{grid-template-columns:1fr 1fr}.fnfilt{grid-template-columns:1fr 1fr}.fnlist{grid-template-columns:1fr}.fncr{grid-template-columns:110px 1fr 52px;font-size:.8rem}.fnh1 h3{font-size:1.02rem}}
+
+.fnkp b span{font-size:inherit;font-weight:inherit}
+
+.fninfo dt{text-align:left}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -703,11 +830,12 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
     
     <button type="button" role="tab" data-area="calc" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/></svg><span class="lgL">Calcular título</span><span class="lgS">Calcular</span></button>
     <button type="button" role="tab" data-area="mkt" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 15l4.5-5 3.5 3.5L20 6"/><path d="M15 6h5v5"/></svg><span>Mercado</span></button>
+    <button type="button" role="tab" data-area="fnd" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Fundos</span></button>
     <button type="button" role="tab" data-area="simu" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Simular</span></button>
   </nav>
   <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -883,6 +1011,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
     </section>
   </section>
 
+  <section id="modFn" hidden aria-label="Fundos"><div id="fnOut"></div></section>
   <section id="modMk" hidden aria-label="Mercado"><div id="mkOut" style="display:flex;flex-direction:column;gap:18px"></div></section>
   <section class="panel" id="modTx" hidden aria-label="Tesouro Direto"><div class="tdlink"><div><b>Taxas do Tesouro Direto agora</b><span>Preços e taxas de compra e resgate atualizados durante o dia, no site oficial.</span></div><a href="https://www.tesourodireto.com.br/titulos/precos-e-taxas.htm" target="_blank" rel="noopener noreferrer">Consultar no Tesouro Direto <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div><div id="txOpp" style="margin:14px 0 18px"></div>
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -1794,18 +1923,18 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart"};
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa"};
 const MKM=new Set(["rs","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
   if($("areaTitle"))$("areaTitle").textContent=AREA_T[ar];
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mod===m?"true":"false"));
-  $("modPub").hidden=m!=="pub";$("modPc").hidden=m!=="pc";$("modBank").hidden=m!=="bank";$("notesBank").hidden=m!=="bank";$("modFund").hidden=m!=="fund";$("notesFund").hidden=m!=="fund";$("modSim").hidden=m!=="sim";$("notesSim").hidden=m!=="sim";$("modSc").hidden=m!=="sc";$("notesPub").hidden=m!=="pub";$("notesPc").hidden=m!=="pc";$("notesSc").hidden=m!=="sc";$("modTx").hidden=m!=="tx";$("modFx").hidden=m!=="fx";$("modMk").hidden=!MKM.has(m);$("notesTx").hidden=m!=="tx";
-  $("secChart").hidden=m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";$("secFlow").hidden=m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";
+  $("modPub").hidden=m!=="pub";$("modPc").hidden=m!=="pc";$("modBank").hidden=m!=="bank";$("notesBank").hidden=m!=="bank";$("modFund").hidden=m!=="fund";$("notesFund").hidden=m!=="fund";$("modSim").hidden=m!=="sim";$("notesSim").hidden=m!=="sim";$("modSc").hidden=m!=="sc";$("notesPub").hidden=m!=="pub";$("notesPc").hidden=m!=="pc";$("notesSc").hidden=m!=="sc";$("modTx").hidden=m!=="tx";$("modFx").hidden=m!=="fx";$("modMk").hidden=!MKM.has(m);$("modFn").hidden=!FNM.has(m);$("notesTx").hidden=m!=="tx";
+  $("secChart").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";$("secFlow").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";
   if(m==="fx"){$("secChart").hidden=true;$("secFlow").hidden=true}
   try{localStorage.setItem("mod2",m)}catch(e){}
-  if(MKM.has(m))mkCalc();else if(m==="pub")calc();else if(m==="pc")pcCalc();else if(m==="bank")bkCalc();else if(m==="fund")fdCalc();else if(m==="sim")simCalc();else if(m==="tx"){oppRender();txCalc()}else if(m==="fx")fxCalc();else{scRefreshSources();if(!LAST.pub&&LAST.pc)$("scSrc").value="pc";scCalc()}
+  if(FNM.has(m))fnCalc(m);else if(MKM.has(m))mkCalc();else if(m==="pub")calc();else if(m==="pc")pcCalc();else if(m==="bank")bkCalc();else if(m==="fund")fdCalc();else if(m==="sim")simCalc();else if(m==="tx"){oppRender();txCalc()}else if(m==="fx")fxCalc();else{scRefreshSources();if(!LAST.pub&&LAST.pc)$("scSrc").value="pc";scCalc()}
 }
 function pcBind(){
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setMod(b.dataset.mod)));
@@ -3518,6 +3647,454 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkClick({target:{id:"piSave",closest:()=>null}})});
 let FX_TOP=null;
+/* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
+const FN_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/";
+const FNM=new Set(["fa","fr","fc"]);
+const FN_BM={cdi:{lab:"CDI",col:"var(--flat)",dash:"5 4"},ibov:{lab:"Ibovespa",col:"var(--s3)"},ipca:{lab:"IPCA",col:"var(--s2)"},usd:{lab:"Dólar",col:"var(--s4)"},ifix:{lab:"IFIX",col:"var(--gold)"}};
+const FN_COLS=["var(--accent)","var(--loss)","var(--s4)","var(--s3)","var(--s2)","var(--gold)"];
+const FN_PER=[["mes","No mês"],["ano","No ano"],["6","6 meses"],["12","12 meses"],["24","24 meses"],["36","36 meses"],["60","60 meses"],["tudo","Desde o início"]];
+const FN={idx:null,C:null,sk:null,T:null,cal:null,B:null,L:null,files:new Map(),load:null,err:null,view:null,cur:null,per:"12",bm:{cdi:1,ibov:0,ipca:0,usd:0,ifix:0},tabCmp:"pcdi",rper:"12",
+  rk:{tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50},cmp:[],cper:"12",q:""};
+try{const c=JSON.parse(localStorage.getItem("fnCmp")||"[]");if(Array.isArray(c))FN.cmp=c.slice(0,6)}catch(e){}
+try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="object")Object.assign(FN.rk,r,{n:50})}catch(e){}
+try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
+function fnSave(){try{localStorage.setItem("fnCmp",JSON.stringify(FN.cmp));localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
+const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
+async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const fnCnpjF=k=>k&&k.length===14?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
+function fnMoney(v){if(v==null||!isFinite(v))return "—";const a=Math.abs(v),s=v<0?"−":"";return a>=1e9?s+"R$ "+fx(a/1e9,2)+" bi":a>=1e6?s+"R$ "+fx(a/1e6,1)+" mi":a>=1e3?s+"R$ "+fx(a/1e3,0)+" mil":s+"R$ "+fx(a,0)}
+function fnPct(v,d){if(v==null||!isFinite(v))return "—";d=d==null?2:d;return '<span class="'+(v>0?"pos":v<0?"neg":"")+'">'+(v<0?"−":"")+fx(Math.abs(v),d)+"%</span>"}
+const fnPctT=(v,d)=>v==null||!isFinite(v)?"—":(v<0?"−":"")+fx(Math.abs(v),d==null?2:d)+"%";
+function fnInt(v){return v==null||!isFinite(v)?"—":fx(v,0)}
+
+/* ---------- carga */
+function fnBoot(){
+  if(FN.idx||FN.load)return FN.load;
+  FN.err=null;
+  FN.load=Promise.all([fnGet("idx.json"),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
+    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);
+    FN.sk=i.rows.map(r=>fnNorm(r[1]+" "+r[0]+" "+(i.gestores[r[FN.C.gestor]]||"")));
+    FN.cal=c.d;FN.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));FN.B=b;fnLevels();
+    FN.load=null;fnHash();fnCalc();
+  }).catch(e=>{FN.err=e;FN.load=null;fnCalc()});
+  return FN.load;
+}
+function fnLevels(){ // níveis acumulados dos índices: diários (alinhados ao calendário) e de fim de mês
+  const B=FN.B||{d:{},m:{}},n=FN.cal.length,L={d:{},m:{}},mk=d=>+d.slice(0,4)*12+(+d.slice(4,6))-1;
+  const mm=(o)=>{const r={};Object.keys(o||{}).forEach(k=>r[mk(k)]=o[k]);return r};
+  const cdiM=mm(B.m.cdi),ipcaM=mm(B.m.ipca);
+  const keys=Object.keys(cdiM).map(Number).sort((a,b)=>a-b);
+  const acc=(src)=>{const ks=Object.keys(src).map(Number).sort((a,b)=>a-b);const o={};if(!ks.length)return o;let v=1;o[ks[0]-1]=1;for(let k=ks[0];k<=ks[ks.length-1];k++){if(src[k]==null){o[k]=v;continue}v*=1+src[k]/100;o[k]=v}return o};
+  L.m.cdi=acc(cdiM);L.m.ipca=acc(ipcaM);L.ipcaLast=Math.max(...Object.keys(ipcaM).map(Number));
+  ["ibov","ifix","usd"].forEach(b=>{const o={};Object.keys(B.m[b]||{}).forEach(k=>o[mk(k)]=B.m[b][k]);L.m[b]=o});
+  const k0=n?mk(FN.cal[0].slice(0,4)+FN.cal[0].slice(5,7)):0;
+  // CDI diário encadeado a partir do fim do mês anterior ao calendário
+  if(B.d.cdi&&n){const a=new Array(n);let v=L.m.cdi[k0-1]||1;for(let i=0;i<n;i++){v*=1+(B.d.cdi[i]||0)/100;a[i]=v}L.d.cdi=a}
+  // IPCA diário: rateado pelos dias úteis de cada mês
+  if(n){const a=new Array(n),byM={};FN.cal.forEach((d,i)=>{const k=mk(d.slice(0,4)+d.slice(5,7));(byM[k]=byM[k]||[]).push(i)});
+    Object.keys(byM).map(Number).sort((x,y)=>x-y).forEach(k=>{const ids=byM[k],base=L.m.ipca[k-1]!=null?L.m.ipca[k-1]:null,v=ipcaM[k];ids.forEach((i,j)=>{a[i]=base==null?null:v==null?base:base*Math.pow(1+v/100,(j+1)/ids.length)})});L.d.ipca=a}
+  ["ibov","ifix","usd"].forEach(b=>{if(B.d[b])L.d[b]=B.d[b]});
+  FN.L=L;
+}
+async function fnFund(k){
+  if(FN.files.has(k))return FN.files.get(k);
+  const j=await fnGet("f/"+k+".json");const F=fnDecode(j);FN.files.set(k,F);return F;
+}
+function fnDecode(j){
+  const I=[],Q=[];
+  if(j.i0!=null&&j.q0){let q=j.q0;I.push(j.i0);Q.push(q);(j.r||[]).forEach((r,n)=>{if(r==null)return;q*=1+r/1e6;I.push(j.i0+1+n);Q.push(q)})}
+  const M=new Map();
+  if(j.m0){const k0=+j.m0.slice(0,4)*12+(+j.m0.slice(4))-1,d0=j.d0?+j.d0.slice(0,4)*12+(+j.d0.slice(4))-1:null;
+    (j.mq||[]).forEach((q,n)=>{if(q==null)return;const k=k0+n,o=d0!=null?k-d0:-1,g=a=>a&&o>=0&&o<a.length?a[o]:null;
+      M.set(k,{q,pl:j.mpl&&j.mpl[n]!=null?j.mpl[n]*1e3:null,cot:g(j.mc),ca:g(j.mca)!=null?g(j.mca)*1e3:null,re:g(j.mre)!=null?g(j.mre)*1e3:null})})}
+  const MK=[...M.keys()].sort((a,b)=>a-b);
+  return Object.assign(j,{I,Q,M,MK});
+}
+const fnMk=t=>{const d=new Date(t);return d.getUTCFullYear()*12+d.getUTCMonth()};
+const fnMt=k=>Date.UTC(Math.floor(k/12),k%12+1,0);
+
+/* ---------- séries e retornos */
+function fnLast(F){if(F.I.length)return {t:FN.T[F.I[F.I.length-1]],i:F.I[F.I.length-1],k:fnMk(FN.T[F.I[F.I.length-1]]),q:F.Q[F.Q.length-1]};const k=F.MK[F.MK.length-1];return k==null?null:{t:fnMt(k),i:null,k,q:F.M.get(k).q}}
+function fnPtAt(F,t){ // último ponto do fundo com data <= t (diário quando houver; senão fim de mês)
+  if(F.I.length&&t>=FN.T[F.I[0]]){let lo=0,hi=F.I.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(FN.T[F.I[m]]<=t)lo=m;else hi=m-1}return {t:FN.T[F.I[lo]],i:F.I[lo],k:fnMk(FN.T[F.I[lo]]),q:F.Q[lo]}}
+  let best=null;for(const k of F.MK){if(fnMt(k)<=t+3*DAY)best=k;else break}
+  if(best==null)return null;return {t:fnMt(best),i:null,k:best,q:F.M.get(best).q};
+}
+function fnFirst(F){const k=F.MK[0];if(k!=null&&(!F.I.length||fnMt(k)<FN.T[F.I[0]]))return {t:fnMt(k),i:null,k,q:F.M.get(k).q};if(F.I.length)return {t:FN.T[F.I[0]],i:F.I[0],k:fnMk(FN.T[F.I[0]]),q:F.Q[0]};return null}
+function fnLev(b,p){const L=FN.L;if(!L)return null;if(p.i!=null&&L.d[b]){const v=L.d[b][p.i];if(v!=null)return v}const m=L.m[b];if(!m)return null;for(let k=p.k;k>=p.k-2;k--){if(m[k]!=null&&(p.i==null||k<p.k))return m[k]}return m[p.k]!=null?m[p.k]:null}
+function fnBmRet(b,p0,p1){const a=fnLev(b,p0),c=fnLev(b,p1);return a&&c?(c/a-1)*100:null}
+function fnStart(F,per){ // ponto-base de cada janela
+  const l=fnLast(F);if(!l)return null;const d=new Date(l.t);
+  if(per==="mes"){const k=l.k-1;return F.M.has(k)?{t:fnMt(k),i:fnCalIdx(fnMt(k)),k,q:F.M.get(k).q}:null}
+  if(per==="ano"){const k=d.getUTCFullYear()*12-1;return F.M.has(k)?{t:fnMt(k),i:fnCalIdx(fnMt(k)),k,q:F.M.get(k).q}:null}
+  if(per==="tudo")return fnFirst(F);
+  const n=+per,y=d.getUTCFullYear(),m=d.getUTCMonth()-n;const t=Date.UTC(y,m,Math.min(d.getUTCDate(),new Date(Date.UTC(y,m+1,0)).getUTCDate()));
+  const f=fnFirst(F);if(!f||f.t>t+5*DAY)return null;return fnPtAt(F,t);
+}
+function fnCalIdx(t){const T=FN.T;if(!T||!T.length||t<T[0])return null;let lo=0,hi=T.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(T[m]<=t)lo=m;else hi=m-1}return lo}
+function fnRet(F,per){const p0=fnStart(F,per),p1=fnLast(F);if(!p0||!p1||p0.t>=p1.t)return null;return {p0,p1,r:(p1.q/p0.q-1)*100}}
+function fnSeries(F,p0){ // pontos [t,valor relativo] a partir de p0
+  const out=[];if(!p0)return out;const l=fnLast(F);
+  const dStart=F.I.length?FN.T[F.I[0]]:Infinity;
+  if(p0.t<dStart){for(const k of F.MK){const t=fnMt(k);if(t<p0.t-DAY)continue;if(t>=dStart)break;out.push({t,i:null,k,q:F.M.get(k).q})}}
+  if(F.I.length){for(let j=0;j<F.I.length;j++){const t=FN.T[F.I[j]];if(t<p0.t)continue;out.push({t,i:F.I[j],k:fnMk(t),q:F.Q[j]})}}
+  if(!out.length||out[0].t>p0.t)out.unshift(p0);
+  if(l&&out[out.length-1].t<l.t)out.push(l);
+  return out;
+}
+function fnThin(P,max){if(P.length<=max)return P;const s=P.length/max,o=[];for(let k=0;k<max;k++)o.push(P[Math.floor(k*s)]);o.push(P[P.length-1]);return o}
+
+/* ---------- indicadores de risco */
+function fnRisk(F,p0){
+  const P=fnSeries(F,p0).filter(p=>p.i!=null);if(P.length<40)return null;
+  const L=FN.L,R=[],X=[],Y=[],Ex=[];
+  for(let j=1;j<P.length;j++){const r=P[j].q/P[j-1].q-1;R.push(r);
+    const c0=L.d.cdi?L.d.cdi[P[j-1].i]:null,c1=L.d.cdi?L.d.cdi[P[j].i]:null;Ex.push(c0&&c1?r-(c1/c0-1):r);
+    const b0=L.d.ibov?L.d.ibov[P[j-1].i]:null,b1=L.d.ibov?L.d.ibov[P[j].i]:null;if(b0&&b1&&P[j].i-P[j-1].i<=3){X.push(b1/b0-1);Y.push(r)}}
+  const n=R.length,mu=R.reduce((a,x)=>a+x,0)/n,sd=Math.sqrt(R.reduce((a,x)=>a+(x-mu)*(x-mu),0)/(n-1)),vol=sd*Math.sqrt(252);
+  const nd=P[P.length-1].i-P[0].i,tot=P[P.length-1].q/P[0].q-1,ann=Math.pow(1+tot,252/Math.max(1,nd))-1;
+  const cdiTot=L.d.cdi?L.d.cdi[P[P.length-1].i]/L.d.cdi[P[0].i]-1:null,cdiAnn=cdiTot!=null?Math.pow(1+cdiTot,252/Math.max(1,nd))-1:null;
+  const dn=Math.sqrt(Ex.reduce((a,x)=>a+(x<0?x*x:0),0)/n)*Math.sqrt(252);
+  // perda máxima e recuperação
+  let pk=P[0].q,pkT=P[0].t,dd=0,ddT=null,ddPk=null,rec=null,cur=0,curPk=null;
+  P.forEach(p=>{if(p.q>=pk){pk=p.q;pkT=p.t}else{const x=p.q/pk-1;if(x<dd){dd=x;ddT=p.t;ddPk=pkT}}});
+  if(ddT!=null){const pkV=fnPtAt(F,ddPk).q;for(const p of P)if(p.t>ddT&&p.q>=pkV){rec=p.t;break}}
+  {const l=P[P.length-1];let mx=0;P.forEach(p=>mx=Math.max(mx,p.q));cur=l.q/mx-1}
+  let beta=null,cor=null;if(X.length>40){const mx=X.reduce((a,x)=>a+x,0)/X.length,my=Y.reduce((a,x)=>a+x,0)/Y.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<X.length;j++){sxy+=(X[j]-mx)*(Y[j]-my);sxx+=(X[j]-mx)**2;syy+=(Y[j]-my)**2}beta=sxx?sxy/sxx:null;cor=sxx&&syy?sxy/Math.sqrt(sxx*syy):null}
+  const srt=R.slice().sort((a,b)=>a-b),var95=srt[Math.floor(0.05*n)];
+  return {n,vol:vol*100,ann:ann*100,tot:tot*100,cdiAnn:cdiAnn!=null?cdiAnn*100:null,sharpe:cdiAnn!=null&&vol>1e-6?(ann-cdiAnn)/vol:null,sortino:cdiAnn!=null&&dn>1e-6?(ann-cdiAnn)/dn:null,
+    dd:dd*100,ddT,ddPk,rec,cur:cur*100,beta,cor,var95:var95*100,best:srt[n-1]*100,worst:srt[0]*100,P};
+}
+function fnMonthly(F){ // retornos mensais do fundo
+  const o=new Map();let prev=null;
+  F.MK.forEach(k=>{const q=F.M.get(k).q;if(prev!=null&&prev.k===k-1)o.set(k,(q/prev.q-1)*100);
+    else if(prev==null&&F.I.length&&fnMk(FN.T[F.I[0]])===k&&F.Q[0])o.set(k,(q/F.Q[0]-1)*100);prev={k,q}});
+  return o;
+}
+function fnBmMonth(b,k){const m=FN.L&&FN.L.m[b];if(!m||m[k]==null||m[k-1]==null)return null;return (m[k]/m[k-1]-1)*100}
+
+/* ---------- gráficos */
+function fnChart(S,opt){
+  opt=opt||{};const NW=window.innerWidth<640,W=NW?420:760,H=opt.h||(NW?260:230),PL=NW?50:58,PR=10,PT=12,PB=26;
+  S=S.filter(s=>s.pts&&s.pts.length);let lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;
+  S.forEach(s=>s.pts.forEach(([t,v])=>{if(v==null||!isFinite(v))return;lo=Math.min(lo,v);hi=Math.max(hi,v);t0=Math.min(t0,t);t1=Math.max(t1,t)}));
+  if(!isFinite(lo))return '<p class="sub">Sem dados para o período.</p>';
+  if(opt.zero){lo=Math.min(lo,0);hi=Math.max(hi,0)}
+  const pad=(hi-lo)*0.06||Math.abs(hi)*0.05||1;lo-=pad;hi+=pad;const st=niceStep((hi-lo)/5);lo=Math.floor(lo/st)*st;hi=Math.ceil(hi/st)*st;
+  if(opt.bars){t0-=15*DAY;t1+=15*DAY}
+  const X=t=>PL+(t-t0)/Math.max(1,t1-t0)*(W-PL-PR),Y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
+  const fv=v=>opt.fmt==="money"?fnMoney(v).replace("R$ ",""):opt.fmt==="int"?fx(v,0):fx(v,st>=1?0:st>=0.1?1:2)+(opt.fmt==="pct"?"%":"");
+  let g='';for(let v=lo;v<=hi+st/2;v+=st){const y=Y(v);g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="var(--line)"'+(Math.abs(v)<st/1e6?'':' stroke-dasharray="2 4"')+'/><text x="'+(PL-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+fv(Math.abs(v)<st/1e6?0:v)+'</text>'}
+  const ny=(t1-t0)/DAY/365.25,ticks=[];
+  if(ny<0.4){const nd=Math.max(1,Math.round((t1-t0)/DAY/(NW?4:7)));for(let t=t0;t<=t1;t+=nd*DAY)ticks.push([t,fdate(t).slice(0,5)])}
+  else if(ny<3){const d=new Date(t0);let k=d.getUTCFullYear()*12+d.getUTCMonth()+1;const sm=Math.max(1,Math.ceil(ny*12/(NW?4:8)));for(;;k+=sm){const t=Date.UTC(Math.floor(k/12),k%12,1);if(t>t1)break;ticks.push([t,mname(k)])}}
+  else{const sy=ny>16?4:ny>8?2:1;for(let y=Math.ceil(new Date(t0).getUTCFullYear()/sy)*sy;y<=new Date(t1).getUTCFullYear();y+=sy){const t=Date.UTC(y,0,1);if(t>=t0)ticks.push([t,String(y)])}}
+  ticks.forEach(([t,l])=>{g+='<text x="'+X(t).toFixed(1)+'" y="'+(H-PB+16)+'" text-anchor="middle">'+l+'</text>'});
+  if(opt.bars){const s=S[0],bw=Math.max(2,Math.min(18,(W-PL-PR)/Math.max(1,s.pts.length)*0.7));s.pts.forEach(([t,v])=>{if(v==null)return;const y0=Y(0),y=Y(v);g+='<rect x="'+(X(t)-bw/2).toFixed(1)+'" y="'+Math.min(y,y0).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,Math.abs(y-y0)).toFixed(1)+'" fill="'+(v>=0?"var(--gain)":"var(--loss)")+'" opacity=".85"/>'})}
+  else S.slice().reverse().forEach(s=>{let d='',pen=false;s.pts.forEach(([t,v])=>{if(v==null||!isFinite(v)){pen=false;return}d+=(pen?'L':'M')+X(t).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true});
+    if(opt.fill&&s===S[0]){const f=s.pts.filter(p=>p[1]!=null);if(f.length)g+='<path d="'+d+'L'+X(f[f.length-1][0]).toFixed(1)+' '+Y(0).toFixed(1)+' L'+X(f[0][0]).toFixed(1)+' '+Y(0).toFixed(1)+' Z" fill="'+s.col+'" opacity=".14"/>'}
+    g+='<path d="'+d+'" fill="none" stroke="'+s.col+'" stroke-width="'+(s.w||1.8)+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+' stroke-linejoin="round"/>'});
+  g+='<line class="cvx" x1="0" x2="0" y1="'+PT+'" y2="'+(H-PB)+'" stroke="var(--ink)" stroke-width="1" opacity="0"/>';
+  const meta={W,PL,PR,t0,t1,f:opt.fmt||"pct",m:!!opt.months,S:S.map(s=>({l:s.lab,c:s.col,p:s.pts.filter(p=>p[1]!=null&&isFinite(p[1])).map(p=>[p[0],+p[1].toFixed(opt.fmt==="money"||opt.fmt==="int"?0:3)])}))};
+  return '<div class="fnchart" data-fnc=\''+JSON.stringify(meta).replace(/'/g,"&#39;")+'\'><svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opt.aria||"Gráfico")+'">'+g+'<rect x="'+PL+'" y="'+PT+'" width="'+(W-PL-PR)+'" height="'+(H-PT-PB)+'" fill="transparent"/></svg><div class="cvtip" hidden></div></div>'+(S.length>1||opt.legend?'<div class="legend">'+S.map(s=>'<span><i style="background:'+s.col+'"></i>'+esc(s.lab)+'</span>').join("")+'</div>':'');
+}
+function fnTip(e){
+  const box=e.target.closest&&e.target.closest(".fnchart");
+  document.querySelectorAll(".fnchart").forEach(b=>{if(b!==box){const t=b.querySelector(".cvtip");if(t&&!t.hidden)t.hidden=true;const l=b.querySelector(".cvx");if(l)l.setAttribute("opacity","0")}});
+  if(!box)return;let M;try{M=JSON.parse(box.dataset.fnc)}catch(x){return}
+  const svg=box.querySelector("svg"),R=svg.getBoundingClientRect(),sx=R.width/M.W,cx=(e.touches?e.touches[0].clientX:e.clientX),px=(cx-R.left)/sx,t=M.t0+(px-M.PL)/(M.W-M.PL-M.PR)*(M.t1-M.t0);
+  let bt=null;M.S.forEach(s=>s.p.forEach(p=>{if(bt==null||Math.abs(p[0]-t)<Math.abs(bt-t))bt=p[0]}));if(bt==null)return;
+  const X=M.PL+(bt-M.t0)/Math.max(1,M.t1-M.t0)*(M.W-M.PL-M.PR),ln=box.querySelector(".cvx");ln.setAttribute("x1",X);ln.setAttribute("x2",X);ln.setAttribute("opacity",".35");
+  const F=v=>M.f==="money"?fnMoney(v):M.f==="int"?fx(v,0):(v<0?"−":"")+fx(Math.abs(v),2)+"%";
+  const tip=box.querySelector(".cvtip");tip.innerHTML='<b>'+(M.m?mname(new Date(bt).getUTCFullYear()*12+new Date(bt).getUTCMonth()):fdate(bt))+'</b>'+M.S.map(s=>{let q=null;s.p.forEach(p=>{if(q==null||Math.abs(p[0]-bt)<Math.abs(q[0]-bt))q=p});return q&&Math.abs(q[0]-bt)<20*DAY?'<span><i style="background:'+s.c+'"></i>'+esc(s.l)+': '+F(q[1])+'</span>':''}).join("");
+  tip.hidden=false;const bx=box.getBoundingClientRect(),left=X*sx+12;tip.style.top="8px";tip.style.left=(left+tip.offsetWidth>bx.width?Math.max(0,X*sx-tip.offsetWidth-12):left)+"px";
+}
+document.addEventListener("mousemove",fnTip);document.addEventListener("touchstart",fnTip,{passive:true});
+
+/* ---------- telas */
+function fnSeg(name,list,cur){return '<div class="fnseg" role="group">'+list.map(([v,l])=>'<button type="button" data-'+name+'="'+v+'" aria-pressed="'+(String(cur)===String(v)?"true":"false")+'">'+l+'</button>').join("")+'</div>'}
+function fnShell(m){
+  const o=$("fnOut");if(!o)return null;
+  if(FN.view!==m){FN.view=m;
+    if(m==="fa")o.innerHTML='<section class="panel fnsrch"><label class="label" for="fnQ">Buscar fundo</label><div class="fnqbox"><input id="fnQ" autocomplete="off" placeholder="Nome, CNPJ ou gestora" value="'+esc(FN.q)+'"><div id="fnRes" class="fnres" hidden></div></div><p class="sub" style="margin-top:6px;font-size:.82rem">Todos os fundos com cota diária informada à CVM. Dados oficiais da CVM (informe diário, cadastro, lâmina e carteira), CDI e IPCA do Banco Central e índices da B3.</p></section><div id="fnBody"></div>';
+    else if(m==="fr")o.innerHTML='<section class="panel"><h3>Ranking de fundos</h3><p class="sub">Compare fundos da mesma categoria. Clique numa coluna para ordenar e no fundo para abrir a análise.</p><div id="fnRkF"></div><div id="fnRkT"></div></section>';
+    else o.innerHTML='<section class="panel"><h3>Comparar fundos</h3><p class="sub">Escolha até 6 fundos para comparar rentabilidade, risco e características no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="fnCq" autocomplete="off" placeholder="Adicionar fundo: nome ou CNPJ"><div id="fnCres" class="fnres" hidden></div></div><div id="fnCbody"></div></section>';
+  }
+  return o;
+}
+function fnCalc(m){
+  m=m||(FNM.has(activeMod)?activeMod:"fa");const o=fnShell(m);if(!o)return;
+  const body=m==="fa"?$("fnBody"):m==="fr"?$("fnRkT"):$("fnCbody");
+  if(!FN.idx){
+    if(FN.err){const h='<section class="panel"><p class="warn">A base de fundos ainda não está disponível ('+esc(FN.err.message||FN.err)+'). Na primeira vez o robô leva cerca de uma hora para montar o histórico de todos os fundos da CVM. Tente de novo em alguns minutos.</p><button type="button" class="btn sec" data-fnretry="1">Tentar de novo</button></section>';if(body)body.innerHTML=h;else o.innerHTML=h}
+    else{if(body)body.innerHTML='<section class="panel"><p class="sub">Carregando a base de fundos da CVM…</p></section>';fnBoot()}
+    return;
+  }
+  if(m==="fa")fnFa();else if(m==="fr")fnRk();else fnCmp();
+}
+function fnSearch(q,max){
+  const t=fnNorm(q).split(/\s+/).filter(Boolean),dig=q.replace(/\D/g,"");if(!t.length)return [];
+  const C=FN.C,R=FN.idx.rows,out=[];
+  for(let j=0;j<R.length;j++){const s=FN.sk[j];if(dig.length>=6&&R[j][0].startsWith(dig)){out.push(j);continue}if(t.every(w=>s.includes(w)))out.push(j)}
+  out.sort((a,b)=>(R[b][C.pl]||0)-(R[a][C.pl]||0));return out.slice(0,max||12);
+}
+function fnResHtml(js){const R=FN.idx.rows,C=FN.C;if(!js.length)return '<div class="fnri"><small>Nenhum fundo encontrado.</small></div>';
+  return js.map(j=>{const r=R[j];return '<button type="button" class="fnri" data-fnopen="'+r[0]+'"><b>'+esc(r[1])+'</b><small>'+fnCnpjF(r[0])+' · '+esc(FN.idx.classes[r[C.classe]]||"")+' · PL '+fnMoney(r[C.pl])+' · 12m '+fnPctT(r[C.r12])+'</small></button>'}).join("")}
+function fnRow(k){const R=FN.idx.rows;for(let j=0;j<R.length;j++)if(R[j][0]===k)return R[j];return null}
+function fnHash(){const m=/fundo=(\d{14})/.exec(location.hash||"");if(m&&FN.cur!==m[1]){FN.cur=m[1];FN.q="";const q=$("fnQ");if(q)q.value="";const r=$("fnRes");if(r)r.hidden=true;if(!FNM.has(activeMod))setMod("fa")}}
+function fnOpen(k){FN.cur=k;FN.q="";try{history.replaceState(null,"","#fundo="+k)}catch(e){}
+  try{const h=JSON.parse(localStorage.getItem("fnHist")||"[]").filter(x=>x!==k);h.unshift(k);localStorage.setItem("fnHist",JSON.stringify(h.slice(0,8)))}catch(e){}
+  if(activeMod!=="fa")setMod("fa");else{const q=$("fnQ");if(q)q.value="";const r=$("fnRes");if(r)r.hidden=true;fnFa()}
+  try{$("fnOut").scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}}
+
+/* análise de um fundo */
+function fnFa(){
+  const b=$("fnBody");if(!b)return;
+  if(!FN.cur){b.innerHTML=fnHome();return}
+  const k=FN.cur;
+  if(!FN.files.has(k)){b.innerHTML='<section class="panel"><p class="sub">Carregando o fundo '+fnCnpjF(k)+'…</p></section>';
+    fnFund(k).then(()=>{if(FN.cur===k&&activeMod==="fa")fnFa()}).catch(e=>{if(FN.cur===k)b.innerHTML='<section class="panel"><p class="warn">Não encontrei o fundo '+fnCnpjF(k)+' na base da CVM ('+esc(e.message)+'). Ele pode estar encerrado ou não informar cota diária.</p></section>'});return}
+  const F=FN.files.get(k);
+  try{b.innerHTML=fnHead(F)+fnPerfHtml(F)+fnWinHtml(F)+fnMonHtml(F)+fnRiskHtml(F)+fnPeerHtml(F)+fnPlHtml(F)+fnCartHtml(F)+fnSrcHtml(F)}
+  catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
+}
+function fnHome(){
+  const R=FN.idx.rows,C=FN.C;let h='';
+  let hist=[];try{hist=JSON.parse(localStorage.getItem("fnHist")||"[]")}catch(e){}
+  const rows=hist.map(fnRow).filter(Boolean);
+  const list=(t,arr,f)=>'<section class="panel"><div class="label">'+t+'</div><div class="fnlist">'+arr.map(r=>'<button type="button" class="fnri" data-fnopen="'+r[0]+'"><b>'+esc(r[1])+'</b><small>'+esc(FN.idx.classes[r[C.classe]]||"")+' · '+f(r)+'</small></button>').join("")+'</div></section>';
+  if(rows.length)h+=list("Vistos recentemente",rows,r=>'12m '+fnPctT(r[C.r12])+' · PL '+fnMoney(r[C.pl]));
+  const ok=r=>!(r[C.flags]&1)&&!(r[C.flags]&4)&&r[C.cotistas]>=500;
+  h+=list("Maiores captações líquidas em 12 meses",R.filter(ok).sort((a,b)=>(b[C.capt12]||0)-(a[C.capt12]||0)).slice(0,8),r=>'captação '+fnMoney(r[C.capt12])+' · PL '+fnMoney(r[C.pl]));
+  h+=list("Maiores fundos abertos ao público",R.filter(r=>ok(r)&&!(r[C.flags]&2)).sort((a,b)=>(b[C.pl]||0)-(a[C.pl]||0)).slice(0,8),r=>'PL '+fnMoney(r[C.pl])+' · '+fnInt(r[C.cotistas])+' cotistas');
+  return h;
+}
+function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
+function fnHead(F){
+  const r=fnRow(F.c),C=FN.C,l=fnLast(F),r12=fnRet(F,"12"),ra=fnRet(F,"ano"),cd12=r12?fnBmRet("cdi",r12.p0,r12.p1):null,rk=fnRisk(F,fnStart(F,"12"));
+  const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
+  let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(nm)+'</h3><div class="fnsub">'+fnCnpjF(F.c)+(F.fan&&F.fan!==F.n?' · '+esc(F.fan):'')+'</div>';
+  h+='<div class="fntags">'+[F.tipo,FN.idx.classes[r?r[C.classe]:-1],F.anb].filter(Boolean).map(x=>'<span class="fntag strong">'+esc(x)+'</span>').join("")+fnTags(r,F).map(x=>'<span class="fntag">'+esc(x)+'</span>').join("")+'</div></div>';
+  h+='<div class="fnacts"><button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button></div></div>';
+  const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
+  h+='<div class="fnkpis">'+kp("Rentabilidade 12 meses",r12?fnPct(r12.r):"—",cd12&&r12?fx(r12.r/cd12*100,0)+"% do CDI":"")+kp("No ano",ra?fnPct(ra.r):"—",ra&&fnBmRet("cdi",ra.p0,ra.p1)?fx(ra.r/fnBmRet("cdi",ra.p0,ra.p1)*100,0)+"% do CDI":"")
+    +kp("Patrimônio líquido",fnMoney(u.pl),u.cot!=null?fnInt(u.cot)+" cotistas":"")+kp("Volatilidade 12m",rk?fx(rk.vol,2)+"%":"—",rk&&rk.sharpe!=null?"Sharpe "+fx(rk.sharpe,2):"")
+    +kp("Última cota",l?fx(l.q,6):"—",l?fdate(l.t):"")+'</div>';
+  const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
+  add("Gestora",esc(F.ges||""));add("Administradora",esc(F.adm||""));add("Custodiante",esc(F.cus||""));add("Auditoria",esc(F.aud||""));
+  add("Início das atividades",F.ini?fdate(Date.parse(F.ini.slice(0,10)+"T00:00:00Z")):"");add("Índice de referência",esc(F.bm||""));
+  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a.":"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
+  add("Aplicação mínima",F.amin!=null?(F.amin?brl(F.amin):"Sem mínimo"):"");
+  add("Resgate",F.dcot!=null||F.dpag!=null?(F.dcot!=null?"cotização D+"+fx(F.dcot,0):"")+(F.dpag!=null?" · pagamento D+"+fx(F.dpag,0):""):"");
+  add("Taxa de saída",F.tsai?fx(F.tsai,2)+"%":"");add("Carência",F.car?fx(F.car,0)+" dias":"");
+  add("Tributação",/^s/i.test(F.lp||"")?"Longo prazo (come-cotas 15%)":/^n/i.test(F.lp||"")?"Não é longo prazo":"");
+  add("Risco (lâmina)",F.risco?fx(F.risco,0)+" de 5":"");
+  if(it.length)h+='<dl class="fninfo">'+it.join("")+'</dl>';
+  if(F.obj||F.pol)h+='<details class="nota" style="margin-top:8px"><summary>Objetivo e política de investimento (lâmina)</summary>'+(F.obj?'<p><b>Objetivo:</b> '+esc(F.obj)+'</p>':'')+(F.pol?'<p><b>Política:</b> '+esc(F.pol)+'</p>':'')+'</details>';
+  return h+'</section>';
+}
+function fnBmSel(){return '<div class="cvsel fnbm" role="group" aria-label="Índices">'+Object.keys(FN_BM).filter(b=>FN.L&&(FN.L.d[b]||FN.L.m[b])).map(b=>'<label><input type="checkbox" data-fnbm="'+b+'"'+(FN.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'</div>'}
+function fnPerfHtml(F){
+  const per=FN.per,p0=fnStart(F,per);
+  let h='<section class="panel"><h3>Rentabilidade acumulada</h3>'+fnSeg("fnper",FN_PER.filter(x=>x[0]!=="mes"),per)+fnBmSel();
+  if(!p0)return h+'<p class="sub">O fundo não tem histórico para esse período.</p></section>';
+  const P=fnThin(fnSeries(F,p0),700),S=[{lab:F.fan||F.n||"Fundo",col:FN_COLS[0],w:2.4,pts:P.map(p=>[p.t,(p.q/p0.q-1)*100])}];
+  Object.keys(FN_BM).forEach(b=>{if(!FN.bm[b])return;const b0=fnLev(b,p0);if(!b0)return;S.push({lab:FN_BM[b].lab,col:FN_BM[b].col,dash:FN_BM[b].dash,pts:P.map(p=>{const v=fnLev(b,p);return [p.t,v?(v/b0-1)*100:null]})})});
+  h+=fnChart(S,{fmt:"pct",zero:true,aria:"Rentabilidade acumulada"});
+  const l=fnLast(F);h+='<p class="sub" style="font-size:.8rem">De '+fdate(p0.t)+' a '+fdate(l.t)+'. '+(p0.i==null||P.some(p=>p.i==null)?'Antes de 2019 a série usa as cotas de fim de mês. ':'')+(FN.bm.ipca&&FN.L.ipcaLast<l.k?'O IPCA vai até o último índice divulgado ('+mname(FN.L.ipcaLast)+'). ':'')+'</p>';
+  return h+'</section>';
+}
+function fnWinHtml(F){
+  const W=[["mes","No mês"],["ano","No ano"],["3","3 meses"],["6","6 meses"],["12","12 meses"],["24","24 meses"],["36","36 meses"],["48","48 meses"],["60","60 meses"],["tudo","Desde o início"]];
+  let h='<section class="panel"><h3>Rentabilidade por período</h3><div class="tablewrap" style="max-height:none"><table class="ctab fnwin"><thead><tr><th style="text-align:left">Período</th><th>Fundo</th><th>CDI</th><th>% do CDI</th><th>Ibovespa</th><th>IPCA</th><th class="c-ph">Dólar</th></tr></thead><tbody>';
+  W.forEach(([p,lab])=>{const r=fnRet(F,p);if(!r)return;const c=fnBmRet("cdi",r.p0,r.p1),ib=fnBmRet("ibov",r.p0,r.p1),ip=fnBmRet("ipca",r.p0,r.p1),us=fnBmRet("usd",r.p0,r.p1);
+    h+='<tr><td style="text-align:left">'+lab+(p==="tudo"?' <small>desde '+fdate(r.p0.t)+'</small>':'')+'</td><td><b>'+fnPct(r.r)+'</b></td><td>'+fnPctT(c)+'</td><td>'+(c&&c>0?fx(r.r/c*100,0)+'%':'—')+'</td><td>'+fnPct(ib)+'</td><td>'+fnPctT(ip)+'</td><td class="c-ph">'+fnPct(us)+'</td></tr>'});
+  return h+'</tbody></table></div></section>';
+}
+function fnMonHtml(F){
+  const mo=fnMonthly(F);if(!mo.size)return "";
+  const cmp=FN.tabCmp,ys=[...new Set([...mo.keys()].map(k=>Math.floor(k/12)))].sort((a,b)=>b-a);
+  const opts=[["pcdi","% do CDI"],["cdi","CDI"],["ibov","Ibovespa"],["ipca","IPCA"]];
+  let h='<section class="panel"><h3>Rentabilidade mês a mês</h3><div class="fnrow">'+fnSeg("fntab",opts,cmp)+'</div><div class="tablewrap" style="max-height:560px"><table class="ctab fnmon"><thead><tr><th style="text-align:left">Ano</th>'+["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"].map(x=>'<th>'+x+'</th>').join("")+'<th>Ano</th><th>Acum.</th></tr></thead><tbody>';
+  // acumulado desde o primeiro mês com retorno
+  const ks=[...mo.keys()].sort((a,b)=>a-b);const acc={};let a=1,ac=1;ks.forEach(k=>{a*=1+mo.get(k)/100;acc[k]=a});
+  const bmY=(b,y,last)=>{let v=1,ok=false;for(let m=0;m<12;m++){const k=y*12+m;if(!mo.has(k)||k>last)continue;const x=fnBmMonth(b,k);if(x==null)continue;v*=1+x/100;ok=true}return ok?(v-1)*100:null};
+  ys.forEach(y=>{let fy=1,ok=false,lastK=null;let r1='<tr class="fnmf"><td style="text-align:left"><b>'+y+'</b></td>',r2='<tr class="fnmb"><td style="text-align:left"><small>'+opts.find(o=>o[0]===cmp)[1]+'</small></td>';
+    for(let m=0;m<12;m++){const k=y*12+m,v=mo.get(k);if(v==null){r1+='<td></td>';r2+='<td></td>';continue}fy*=1+v/100;ok=true;lastK=k;
+      const bm=cmp==="pcdi"?fnBmMonth("cdi",k):fnBmMonth(cmp,k);r1+='<td>'+fnPct(v)+'</td>';r2+='<td><small>'+(bm==null?'—':cmp==="pcdi"?(bm>0&&v>0?fx(v/bm*100,0)+'%':'—'):fnPctT(bm))+'</small></td>'}
+    const fyr=(fy-1)*100,by=cmp==="pcdi"?bmY("cdi",y,lastK):bmY(cmp,y,lastK);
+    r1+='<td><b>'+(ok?fnPct(fyr):'')+'</b></td><td>'+(lastK!=null?fnPct((acc[lastK]-1)*100):'')+'</td></tr>';
+    r2+='<td><small>'+(by==null?'—':cmp==="pcdi"?(by>0&&fyr>0?fx(fyr/by*100,0)+'%':'—'):fnPctT(by))+'</small></td><td></td></tr>';h+=r1+r2});
+  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Calculada com as cotas oficiais de fim de mês informadas à CVM. O mês corrente vai até a última cota ('+fdate(fnLast(F).t)+').</p></section>';
+  return h;
+}
+function fnRiskHtml(F){
+  const per=FN.rper,p0=fnStart(F,per);
+  let h='<section class="panel"><h3>Risco e retorno</h3>'+fnSeg("fnrper",[["12","12 meses"],["24","24 meses"],["36","36 meses"],["60","60 meses"],["tudo","Desde 2019"]],per);
+  const rk=p0?fnRisk(F,p0):null;if(!rk)return h+'<p class="sub">Histórico diário insuficiente para esse período.</p></section>';
+  const it=(a,b,c)=>'<div><dt>'+a+(c?' <small>'+c+'</small>':'')+'</dt><dd>'+b+'</dd></div>';
+  const mo=fnMonthly(F),ks=[...mo.keys()].filter(k=>fnMt(k)>p0.t+5*DAY);let pos=0,ab=0,nab=0,best=null,worst=null;
+  ks.forEach(k=>{const v=mo.get(k);if(v>0)pos++;const c=fnBmMonth("cdi",k);if(c!=null){nab++;if(v>c)ab++}if(best==null||v>best[1])best=[k,v];if(worst==null||v<worst[1])worst=[k,v]});
+  h+='<dl class="fninfo fnrisk">'+it("Retorno anualizado",fnPct(rk.ann),rk.cdiAnn!=null?"CDI "+fnPctT(rk.cdiAnn):"")+it("Volatilidade anualizada",fx(rk.vol,2)+"%")
+    +it("Índice de Sharpe",rk.sharpe!=null?fx(rk.sharpe,2):"—","excesso sobre o CDI ÷ volatilidade")+it("Índice de Sortino",rk.sortino!=null?fx(rk.sortino,2):"—","só as quedas contam como risco")
+    +it("Perda máxima",fnPct(rk.dd),rk.ddT?"de "+fdate(rk.ddPk)+" a "+fdate(rk.ddT):"")+it("Recuperação",rk.ddT?(rk.rec?Math.round((rk.rec-rk.ddT)/DAY)+" dias corridos <small>(em "+fdate(rk.rec)+")</small>":"ainda não recuperou"):"—")
+    +it("Distância do pico",fnPct(rk.cur))+it("VaR diário 95%",fnPct(rk.var95),"perda superada em 5% dos dias")
+    +it("Melhor e pior dia",fnPct(rk.best)+" / "+fnPct(rk.worst))+(rk.beta!=null?it("Beta e correlação com o Ibovespa",fx(rk.beta,2)+" / "+fx(rk.cor,2)):"")
+    +(ks.length?it("Meses positivos",pos+" de "+ks.length+" ("+fx(pos/ks.length*100,0)+"%)")+it("Meses acima do CDI",nab?ab+" de "+nab+" ("+fx(ab/nab*100,0)+"%)":"—")+it("Melhor e pior mês",fnPct(best[1])+" <small>"+mname(best[0])+"</small> / "+fnPct(worst[1])+" <small>"+mname(worst[0])+"</small>"):"")+'</dl>';
+  // gráficos: perda a partir do pico e volatilidade móvel de 12 meses
+  const P=rk.P;let pk=0;const dd=P.map(p=>{pk=Math.max(pk,p.q);return [p.t,(p.q/pk-1)*100]});
+  h+='<div class="label" style="margin-top:12px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:180,aria:"Drawdown"});
+  const all=fnSeries(F,fnFirst(F)).filter(p=>p.i!=null),vs=[];const w=252;
+  if(all.length>w+20){const R=[];for(let j=1;j<all.length;j++)R.push(all[j].q/all[j-1].q-1);let s=0,s2=0;for(let j=0;j<R.length;j++){s+=R[j];s2+=R[j]*R[j];if(j>=w){s-=R[j-w];s2-=R[j-w]*R[j-w]}if(j>=w-1&&all[j+1].t>=p0.t){const m=s/w,v=Math.sqrt(Math.max(0,(s2-w*m*m)/(w-1)))*Math.sqrt(252)*100;vs.push({t:all[j+1].t,v})}}}
+  if(vs.length>5)h+='<div class="label" style="margin-top:12px">Volatilidade móvel de 12 meses</div>'+fnChart([{lab:"Volatilidade 12m",col:FN_COLS[0],pts:fnThin(vs,600).map(x=>[x.t,x.v])}],{fmt:"pct",h:170,aria:"Volatilidade móvel"});
+  h+='<p class="sub" style="font-size:.8rem">Calculado com as cotas diárias desde '+fdate(P[0].t)+' ('+rk.n+' dias úteis). Sharpe e Sortino usam o CDI do mesmo período.</p>';
+  return h+'</section>';
+}
+function fnPeerHtml(F){
+  const C=FN.C,R=FN.idx.rows,me=fnRow(F.c);if(!me)return "";
+  const anb=me[C.anbima],useA=anb!=null&&FN.idx.anbima[anb],grp=R.filter(r=>(useA?r[C.anbima]===anb:r[C.classe]===me[C.classe])&&r[C.tipo]===me[C.tipo]&&!(r[C.flags]&1));
+  if(grp.length<5)return "";
+  const cat=useA?FN.idx.anbima[anb]:FN.idx.classes[me[C.classe]];
+  const pos=(col,hiBetter)=>{const v=me[C[col]];if(v==null)return null;const vals=grp.map(r=>r[C[col]]).filter(x=>x!=null);const n=vals.length,better=vals.filter(x=>hiBetter?x>v:x<v).length;const q=Math.min(4,Math.floor(better/n*4)+1);const med=vals.slice().sort((a,b)=>a-b)[Math.floor(n/2)];return {rk:better+1,n,q,med,v}};
+  const rows=[["Rentabilidade 12 meses","r12",true,1],["Rentabilidade 36 meses","r36",true,1],["Volatilidade 12 meses","v12",false,0],["Sharpe 12 meses","sharpe",true,2],["Perda máxima 36 meses","dd36",true,1]];
+  let h='<section class="panel"><h3>Comparação com a categoria</h3><p class="sub">'+esc(cat)+' · '+grp.length+' fundos (sem exclusivos). 1º quartil = entre os 25% melhores.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Indicador</th><th>Fundo</th><th>Mediana da categoria</th><th>Posição</th><th>Quartil</th></tr></thead><tbody>';
+  rows.forEach(([lab,col,hb,kind])=>{const p=pos(col,hb);if(!p)return;const f=v=>kind===2?fx(v,2):kind===0?fx(v,2)+"%":fnPctT(v);
+    h+='<tr><td style="text-align:left">'+lab+'</td><td><b>'+f(p.v)+'</b></td><td>'+f(p.med)+'</td><td>'+p.rk+'º de '+p.n+'</td><td><span class="fnq '+["","fnq1","fnq2","fnq3","fnq4"][p.q]+'">'+p.q+'º</span></td></tr>'});
+  h+='</tbody></table></div><button type="button" class="link" data-fnrkcat="'+(useA?'a'+anb:'c'+me[C.classe])+'|'+me[C.tipo]+'">Ver o ranking da categoria ›</button></section>';
+  return h;
+}
+function fnPlHtml(F){
+  const ks=F.MK.slice(-120);if(ks.length<2)return "";
+  let h='<section class="panel"><h3>Patrimônio, cotistas e captação</h3><div class="label">Patrimônio líquido</div>'+fnChart([{lab:"Patrimônio líquido",col:FN_COLS[0],pts:ks.map(k=>[fnMt(k),F.M.get(k).pl])}],{fmt:"money",h:180,months:true,aria:"Patrimônio"});
+  const kc=ks.filter(k=>F.M.get(k).cot!=null);if(kc.length>1)h+='<div class="label" style="margin-top:10px">Número de cotistas</div>'+fnChart([{lab:"Cotistas",col:FN_COLS[2],pts:kc.map(k=>[fnMt(k),F.M.get(k).cot])}],{fmt:"int",h:160,months:true,aria:"Cotistas"});
+  const kf=F.MK.filter(k=>F.M.get(k).ca!=null).slice(-36);
+  if(kf.length>1){h+='<div class="label" style="margin-top:10px">Captação líquida mensal (aplicações − resgates)</div>'+fnChart([{lab:"Captação líquida",col:"var(--gain)",pts:kf.map(k=>[Date.UTC(Math.floor(k/12),k%12,15),(F.M.get(k).ca||0)-(F.M.get(k).re||0)])}],{fmt:"money",bars:true,zero:true,h:170,months:true,aria:"Captação líquida"});
+    const s12=kf.slice(-12).reduce((a,k)=>a+(F.M.get(k).ca||0)-(F.M.get(k).re||0),0);h+='<p class="sub" style="font-size:.82rem">Captação líquida em 12 meses: <b>'+fnMoney(s12)+'</b>.</p>'}
+  return h+'</section>';
+}
+function fnCartHtml(F){
+  const c=F.cart;if(!c)return '<section class="panel"><h3>Carteira</h3><p class="sub">A CVM ainda não divulgou a composição da carteira deste fundo nos últimos meses (as posições podem ficar em sigilo por até 90 dias).</p></section>';
+  const [y,m]=c.dt.split("-");let h='<section class="panel"><h3>Carteira</h3><p class="sub">Composição informada à CVM em '+m+'/'+y+' (% do patrimônio líquido).</p><div class="fncomp">';
+  const mx=Math.max(...c.comp.map(x=>Math.abs(x[1])),1);
+  c.comp.slice(0,12).forEach(([t,p])=>{h+='<div class="fncr"><span>'+esc(t)+'</span><div class="fncb"><i style="width:'+Math.min(100,Math.abs(p)/mx*100).toFixed(1)+'%;background:'+(p<0?"var(--loss)":"var(--accent)")+'"></i></div><b>'+fnPctT(p,1)+'</b></div>'});
+  h+='</div>';
+  if(c.top&&c.top.length){h+='<div class="label" style="margin-top:12px">Maiores posições</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ativo</th><th class="c-ph" style="text-align:left">Tipo</th><th>% do PL</th></tr></thead><tbody>';
+    c.top.forEach(([n,p,cn,tp])=>{h+='<tr><td style="text-align:left" class="tw">'+(cn?'<button type="button" class="link" data-fnopen="'+cn+'">'+esc(n)+'</button>':esc(n))+'</td><td class="c-ph tw" style="text-align:left"><small>'+esc(tp||"")+'</small></td><td>'+fnPctT(p,1)+'</td></tr>'});
+    h+='</tbody></table></div>';if(c.top.some(x=>x[2]))h+='<p class="sub" style="font-size:.8rem">Os fundos investidos são clicáveis.</p>'}
+  return h+'</section>';
+}
+function fnSrcHtml(F){return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: CVM (informe diário, cadastro, extrato, lâmina e composição da carteira), Banco Central (CDI, IPCA e dólar PTAX) e B3 (Ibovespa e IFIX). Rentabilidade passada não garante rentabilidade futura. Base atualizada até '+(FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
+
+/* ranking */
+function fnRk(){
+  const f=$("fnRkF"),t=$("fnRkT");if(!f||!t)return;const I=FN.idx,C=FN.C,rk=FN.rk;
+  const tipos=I.tipos.map((x,j)=>[j,x]).filter(x=>x[1]),cls=I.classes.map((x,j)=>[j,x]).filter(x=>x[1]);
+  const anbs=new Map();I.rows.forEach(r=>{if((rk.tipo===""||r[C.tipo]===+rk.tipo)&&(rk.cls===""||r[C.classe]===+rk.cls)&&I.anbima[r[C.anbima]])anbs.set(r[C.anbima],(anbs.get(r[C.anbima])||0)+1)});
+  const sel=(id,lab,opts,v)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-fnrk="'+id+'">'+opts.map(([a,b])=>'<option value="'+a+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>';
+  if(!f.dataset.on){f.dataset.on=1}
+  f.innerHTML='<div class="fnfilt">'+sel("rkTipo","Tipo",[["","Todos"]].concat(tipos),rk.tipo)+sel("rkCls","Classe CVM",[["","Todas"]].concat(cls),rk.cls)
+    +sel("rkAnb","Categoria ANBIMA",[["","Todas"]].concat([...anbs.entries()].sort((a,b)=>I.anbima[a[0]].localeCompare(I.anbima[b[0]])).map(([j,n])=>[j,I.anbima[j]+" ("+n+")"])),rk.anb)
+    +sel("rkPl","Patrimônio mínimo",[[0,"Qualquer"],[1e6,"R$ 1 mi"],[10e6,"R$ 10 mi"],[50e6,"R$ 50 mi"],[100e6,"R$ 100 mi"],[500e6,"R$ 500 mi"],[1e9,"R$ 1 bi"]],rk.pl)
+    +sel("rkCot","Cotistas mínimos",[[0,"Qualquer"],[10,"10"],[100,"100"],[1000,"1.000"],[10000,"10.000"]],rk.cot)
+    +'<div class="field"><label for="rkTxt">Nome ou gestora</label><input id="rkTxt" data-fnrk="rkTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>'
+    +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>';
+  fnRkTable();
+}
+function fnRkList(){
+  const I=FN.idx,C=FN.C,rk=FN.rk,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
+  const L=[];I.rows.forEach((r,j)=>{if(rk.tipo!==""&&r[C.tipo]!==+rk.tipo)return;if(rk.cls!==""&&r[C.classe]!==+rk.cls)return;if(rk.anb!==""&&r[C.anbima]!==+rk.anb)return;
+    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags];if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return;
+    if(tx.length&&!tx.every(w=>FN.sk[j].includes(w)))return;L.push(r)});
+  const k=C[rk.sort],d=rk.dir;L.sort((a,b)=>{const x=a[k],y=b[k];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return typeof x==="string"?d*x.localeCompare(y):d*(x-y)});
+  return L;
+}
+function fnRkTable(){
+  const t=$("fnRkT");if(!t)return;const C=FN.C,rk=FN.rk,L=fnRkList();
+  const cols=[["nome","Fundo",""],["pl","PL",""],["cotistas","Cotistas","c-ph"],["rm","Mês","c-ph"],["ra","Ano",""],["r12","12m",""],["r24","24m","c-ph"],["r36","36m",""],["v12","Vol. 12m","c-ph"],["sharpe","Sharpe 12m","c-ph"],["dd36","Perda máx. 36m","c-ph"],["capt12","Captação 12m","c-ph"],["tadm","Taxa adm.","c-ph"]];
+  let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' fundos. CDI em 12 meses: '+fnPctT(FN.idx.cdi12)+'.</p><div class="tablewrap" style="max-height:none"><table class="ctab fnrk"><thead><tr><th>#</th>'+cols.map(([c,l,cl])=>'<th data-fnsort="'+c+'" class="'+cl+'"'+(c==="nome"?' style="text-align:left"':'')+'>'+l+(rk.sort===c?(rk.dir<0?' ▾':' ▴'):'')+'</th>').join("")+'<th></th></tr></thead><tbody>';
+  L.slice(0,rk.n).forEach((r,j)=>{h+='<tr><td><small>'+(j+1)+'</small></td><td class="tw" style="text-align:left;min-width:180px"><button type="button" class="link fnnm" data-fnopen="'+r[0]+'">'+esc(r[1])+'</button><small>'+esc(FN.idx.gestores[r[C.gestor]]||"")+(FN.idx.anbima[r[C.anbima]]?' · '+esc(FN.idx.anbima[r[C.anbima]]):'')+'</small></td>'
+    +'<td>'+fnMoney(r[C.pl])+'</td><td class="c-ph">'+fnInt(r[C.cotistas])+'</td><td class="c-ph">'+fnPct(r[C.rm])+'</td><td>'+fnPct(r[C.ra])+'</td><td><b>'+fnPct(r[C.r12])+'</b></td><td class="c-ph">'+fnPct(r[C.r24])+'</td><td>'+fnPct(r[C.r36])+'</td>'
+    +'<td class="c-ph">'+(r[C.v12]!=null?fx(r[C.v12],2)+'%':'—')+'</td><td class="c-ph">'+(r[C.sharpe]!=null?fx(r[C.sharpe],2):'—')+'</td><td class="c-ph">'+fnPct(r[C.dd36])+'</td><td class="c-ph">'+fnMoney(r[C.capt12])+'</td><td class="c-ph">'+(r[C.tadm]!=null?fx(r[C.tadm],2)+'%':'—')+'</td>'
+    +'<td><button type="button" class="link" data-fncmp="'+r[0]+'" title="Adicionar ao comparador">'+(FN.cmp.includes(r[0])?'✓':'+')+'</button></td></tr>'});
+  h+='</tbody></table></div>'+(L.length>rk.n?'<button type="button" class="btn sec" data-fnmore="1" style="margin-top:10px">Mostrar mais 50</button>':'');
+  t.innerHTML=h;
+}
+
+/* comparador */
+function fnCmp(){
+  const b=$("fnCbody");if(!b)return;
+  if(!FN.cmp.length){b.innerHTML='<p class="sub" style="margin-top:12px">Nenhum fundo escolhido ainda. Busque acima ou use o botão + no ranking e na análise do fundo.</p>';return}
+  const miss=FN.cmp.filter(k=>!FN.files.has(k));
+  if(miss.length){b.innerHTML='<p class="sub" style="margin-top:12px">Carregando '+miss.length+' fundo(s)…</p>';Promise.all(miss.map(k=>fnFund(k).catch(()=>{FN.cmp=FN.cmp.filter(x=>x!==k);fnSave()}))).then(()=>{if(activeMod==="fc")fnCmp()});return}
+  const Fs=FN.cmp.map(k=>FN.files.get(k)).filter(Boolean),per=FN.cper;
+  let h='<div class="fnchips">'+Fs.map((F,j)=>'<span class="fnchip"><i style="background:'+FN_COLS[j]+'"></i><button type="button" class="link" data-fnopen="'+F.c+'">'+esc((F.fan||F.n||F.c).slice(0,60))+'</button><button type="button" class="fnx" data-fnrm="'+F.c+'" aria-label="Remover">×</button></span>').join("")+'</div>';
+  h+=fnSeg("fncper",FN_PER.filter(x=>x[0]!=="mes"),per)+fnBmSel();
+  // período comum: começa no início mais recente entre os fundos
+  const starts=Fs.map(F=>fnStart(F,per)).filter(Boolean);const ends=Fs.map(fnLast).filter(Boolean);
+  if(!starts.length){b.innerHTML=h+'<p class="sub">Sem histórico para esse período.</p>';return}
+  const t0=Math.max(...starts.map(p=>p.t)),t1=Math.min(...ends.map(p=>p.t));
+  const S=[];let base=null;
+  Fs.forEach((F,j)=>{const p0=fnPtAt(F,t0);if(!p0)return;if(!base||p0.i!=null)base=p0;const P=fnThin(fnSeries(F,p0).filter(p=>p.t<=t1),700);S.push({lab:(F.fan||F.n||F.c).slice(0,40),col:FN_COLS[j],w:2,pts:P.map(p=>[p.t,(p.q/p0.q-1)*100])})});
+  const ref=fnSeries(Fs[0],fnPtAt(Fs[0],t0)).filter(p=>p.t<=t1),ref2=fnThin(ref,700);
+  Object.keys(FN_BM).forEach(b2=>{if(!FN.bm[b2]||!ref.length)return;const b0=fnLev(b2,ref[0]);if(!b0)return;S.push({lab:FN_BM[b2].lab,col:FN_BM[b2].col,dash:FN_BM[b2].dash||"4 4",w:1.4,pts:ref2.map(p=>{const v=fnLev(b2,p);return [p.t,v?(v/b0-1)*100:null]})})});
+  h+='<div class="label" style="margin-top:8px">Rentabilidade acumulada de '+fdate(t0)+' a '+fdate(t1)+'</div>'+fnChart(S,{fmt:"pct",zero:true,aria:"Comparação"});
+  // tabela
+  const R=Fs.map(F=>{const p0=fnPtAt(F,t0),p1=fnPtAt(F,t1),rk=p0?fnRisk(F,p0):null,u=F.M.get(F.MK[F.MK.length-1])||{};return {F,r:p0&&p1?(p1.q/p0.q-1)*100:null,cdi:p0&&p1?fnBmRet("cdi",p0,p1):null,rk,u,r12:fnRet(F,"12"),ra:fnRet(F,"ano")}});
+  const row=(lab,f)=>'<tr><td style="text-align:left">'+lab+'</td>'+R.map(f).map(x=>'<td>'+x+'</td>').join("")+'</tr>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab fncmp"><thead><tr><th style="text-align:left">Indicador</th>'+R.map((x,j)=>'<th><i class="fndot" style="background:'+FN_COLS[j]+'"></i>'+esc((x.F.fan||x.F.n||"").slice(0,26))+'</th>').join("")+'</tr></thead><tbody>'
+    +row("Rentabilidade no período",x=>'<b>'+fnPct(x.r)+'</b>')+row("% do CDI no período",x=>x.r!=null&&x.cdi>0?fx(x.r/x.cdi*100,0)+'%':'—')+row("No ano",x=>fnPct(x.ra&&x.ra.r))+row("12 meses",x=>fnPct(x.r12&&x.r12.r))
+    +row("Volatilidade anualizada",x=>x.rk?fx(x.rk.vol,2)+'%':'—')+row("Sharpe",x=>x.rk&&x.rk.sharpe!=null?fx(x.rk.sharpe,2):'—')+row("Perda máxima",x=>x.rk?fnPct(x.rk.dd):'—')+row("Beta com o Ibovespa",x=>x.rk&&x.rk.beta!=null?fx(x.rk.beta,2):'—')
+    +row("Patrimônio líquido",x=>fnMoney(x.u.pl))+row("Cotistas",x=>fnInt(x.u.cot))+row("Taxa de administração",x=>x.F.tadm!=null?fx(x.F.tadm,2)+'%':'—')+row("Taxa de performance",x=>x.F.tperf!=null?(x.F.tperf?fx(x.F.tperf,0)+'%':'não cobra'):'—')
+    +row("Aplicação mínima",x=>x.F.amin!=null?(x.F.amin?brl(x.F.amin):'sem mínimo'):'—')+row("Resgate (cotização)",x=>x.F.dcot!=null?'D+'+fx(x.F.dcot,0):'—')+row("Classe",x=>'<small>'+esc(x.F.anb||x.F.cls||x.F.tipo||"")+'</small>')
+    +'</tbody></table></div>';
+  // correlação
+  if(Fs.length>1){const D=Fs.map(F=>{const m=new Map(),P=fnSeries(F,fnPtAt(F,t0)).filter(p=>p.i!=null&&p.t<=t1);for(let j=1;j<P.length;j++)if(P[j].i-P[j-1].i===1)m.set(P[j].i,P[j].q/P[j-1].q-1);return m});
+    const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,k)=>{if(b.has(k)){xs.push(v);ys.push(b.get(k))}});if(xs.length<30)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
+    h+='<div class="label" style="margin-top:12px">Correlação dos retornos diários</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th></th>'+Fs.map((F,j)=>'<th><i class="fndot" style="background:'+FN_COLS[j]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>'
+      +Fs.map((F,i)=>'<tr><td style="text-align:left"><i class="fndot" style="background:'+FN_COLS[i]+'"></i>'+(i+1)+' '+esc((F.fan||F.n||"").slice(0,30))+'</td>'+Fs.map((G,j)=>{if(i===j)return '<td>1</td>';const c=cor(D[i],D[j]);return '<td>'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>'}).join("")+'</tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Perto de 1: andam juntos; perto de 0: sem relação; negativo: movimentos opostos. Fundos pouco correlacionados diversificam melhor a carteira.</p>'}
+  b.innerHTML=h;
+}
+function fnCmpToggle(k){const i=FN.cmp.indexOf(k);if(i>=0)FN.cmp.splice(i,1);else{if(FN.cmp.length>=6){alertLite("O comparador aceita até 6 fundos. Remova um para incluir outro.");return}FN.cmp.push(k)}fnSave()}
+function alertLite(msg){const o=$("fnOut");if(!o)return;let d=document.querySelector(".fnmsg");if(!d){d=document.createElement("div");d.className="fnmsg";o.prepend(d)}d.textContent=msg;clearTimeout(alertLite.t);alertLite.t=setTimeout(()=>d.remove(),4000)}
+
+/* eventos */
+document.addEventListener("click",e=>{
+  const root=e.target.closest&&e.target.closest("#modFn");if(!root)return;
+  const g=(a)=>e.target.closest("["+a+"]");let x;
+  if((x=g("data-fnopen"))){fnOpen(x.dataset.fnopen);return}
+  if((x=g("data-fnretry"))){FN.err=null;fnCalc();return}
+  if((x=g("data-fnper"))){FN.per=x.dataset.fnper;fnFa();return}
+  if((x=g("data-fnrper"))){FN.rper=x.dataset.fnrper;fnFa();return}
+  if((x=g("data-fntab"))){FN.tabCmp=x.dataset.fntab;fnFa();return}
+  if((x=g("data-fncper"))){FN.cper=x.dataset.fncper;fnCmp();return}
+  if((x=g("data-fncmp"))){fnCmpToggle(x.dataset.fncmp);if(activeMod==="fa")fnFa();else if(activeMod==="fr")fnRkTable();else fnCmp();return}
+  if((x=g("data-fnrm"))){fnCmpToggle(x.dataset.fnrm);fnCmp();return}
+  if((x=g("data-fnsort"))){const c=x.dataset.fnsort;if(FN.rk.sort===c)FN.rk.dir*=-1;else{FN.rk.sort=c;FN.rk.dir=c==="nome"||c==="v12"||c==="tadm"?1:-1}FN.rk.n=50;fnSave();fnRkTable();return}
+  if((x=g("data-fnmore"))){FN.rk.n+=50;fnRkTable();return}
+  if((x=g("data-fnrkcat"))){const [a,t]=x.dataset.fnrkcat.split("|");Object.assign(FN.rk,{tipo:t,cls:"",anb:"",txt:"",n:50,sort:"r12",dir:-1});if(a[0]==="a")FN.rk.anb=a.slice(1);else FN.rk.cls=a.slice(1);fnSave();setMod("fr");return}
+  if((x=g("data-fncalc"))){const k=x.dataset.fncalc;setMod("fund");setTimeout(()=>{const i=$("fdCnpj");if(i){i.value=fnCnpjF(k);i.dispatchEvent(new Event("input",{bubbles:true}));const bt=$("fdFetch");if(bt)bt.click()}try{window.scrollTo({top:0,behavior:"smooth"})}catch(y){}},0);return}
+  if(!e.target.closest(".fnqbox"))document.querySelectorAll("#modFn .fnres").forEach(r=>r.hidden=true);
+});
+document.addEventListener("click",e=>{if(!(e.target.closest&&e.target.closest("#modFn")))document.querySelectorAll("#modFn .fnres").forEach(r=>r.hidden=true)});
+document.addEventListener("change",e=>{
+  const t=e.target;if(!(t.closest&&t.closest("#modFn")))return;
+  if(t.dataset.fnbm){FN.bm[t.dataset.fnbm]=t.checked?1:0;fnSave();if(activeMod==="fa")fnFa();else fnCmp();return}
+  if(t.dataset.fnrkc){FN.rk[t.dataset.fnrkc]=t.checked?1:0;FN.rk.n=50;fnSave();fnRkTable();return}
+  if(t.dataset.fnrk&&t.tagName==="SELECT"){const m={rkTipo:"tipo",rkCls:"cls",rkAnb:"anb",rkPl:"pl",rkCot:"cot"}[t.id];FN.rk[m]=t.value;if(m==="tipo"||m==="cls")FN.rk.anb="";FN.rk.n=50;fnSave();if(m==="tipo"||m==="cls")fnRk();else fnRkTable()}
+});
+let FN_QT=null;
+document.addEventListener("input",e=>{
+  const t=e.target;if(!t||!FN.idx)return;
+  if(t.id==="fnQ"||t.id==="fnCq"){FN.q=t.id==="fnQ"?t.value:FN.q;const box=$(t.id==="fnQ"?"fnRes":"fnCres");clearTimeout(FN_QT);FN_QT=setTimeout(()=>{const v=t.value.trim();if(v.length<2){box.hidden=true;return}
+    const js=fnSearch(v,12);box.innerHTML=t.id==="fnQ"?fnResHtml(js):js.map(j=>{const r=FN.idx.rows[j];return '<button type="button" class="fnri" data-fnadd="'+r[0]+'"><b>'+esc(r[1])+'</b><small>'+fnCnpjF(r[0])+' · PL '+fnMoney(r[FN.C.pl])+'</small></button>'}).join("")||'<div class="fnri"><small>Nenhum fundo encontrado.</small></div>';box.hidden=false},120);return}
+  if(t.id==="rkTxt"){FN.rk.txt=t.value;FN.rk.n=50;clearTimeout(FN_QT);FN_QT=setTimeout(()=>{fnSave();fnRkTable()},200)}
+});
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-fnadd]");if(!x)return;const k=x.dataset.fnadd;if(!FN.cmp.includes(k))fnCmpToggle(k);const q=$("fnCq");if(q)q.value="";$("fnCres").hidden=true;fnCmp()});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="fnQ"&&FN.idx){const js=fnSearch(e.target.value,1);if(js.length){e.preventDefault();fnOpen(FN.idx.rows[js[0]][0])}}});
+window.addEventListener("hashchange",()=>{if(FN.idx)fnHash();if(FNM.has(activeMod))fnCalc()});
+
+{const m=/fundo=(\d{14})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}}
 
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
 const MK={di:null,inf:null,ima:null,cred:null,tit:null,deb:null,loaded:0,loading:false};
@@ -3870,7 +4447,7 @@ scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc"].includes(m0)?m0:"rs");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
