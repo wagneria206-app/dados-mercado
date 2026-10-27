@@ -813,55 +813,89 @@ def bcb_dolar(mercado):
 
 # ---------------------------------------------------------------- B3: dólar futuro (preços de ajuste)
 
-URL_B3_AJUSTES = "https://www2.bmf.com.br/pages/portal/bmfbovespa/lumis/lum-ajustes-do-pregao-ptBR.asp"
+URL_B3_ARQ = "https://arquivos.b3.com.br/api/download"
+HDR_B3 = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Accept": "application/json, text/plain, */*",
+          "Referer": "https://arquivos.b3.com.br/"}
+_B3S = None
 
 
-def b3_ajustes(dia, timeout=90, tentativas=2):
-    """Preços de ajuste da B3 do dia: {"DOL": [[código, ajuste R$/US$, ajuste anterior]], "DI1": [[código, PU, PU anterior]]}."""
-    r = baixar(URL_B3_AJUSTES, dados={"dData1": dia.strftime("%d/%m/%Y")}, tentativas=tentativas, timeout=timeout)
-    p = _Tabelas()
-    p.feed(texto(r))
-    out, merc = {"DOL": [], "DI1": []}, ""
-    for t in p.tabelas:
-        for L in t:
-            if len(L) < 4:
-                continue
-            if L[0].strip():
-                merc = norm(L[0])
-            chave = "DOL" if merc.startswith("dol") else "DI1" if merc.startswith("di1") else None
-            venc = L[1].strip().upper()
-            if not chave or not re.fullmatch(r"[FGHJKMNQUVXZ]\d{2}", venc):
-                continue
-            ant, atu = num(L[2]), num(L[3])
-            if not atu:
-                continue
-            if chave == "DOL":
-                k = 1000 if atu > 100 else 1          # cotado em R$ por US$ 1.000
-                out["DOL"].append([venc, round(atu / k, 6), round(ant / k, 6) if ant else None])
-            else:
-                out["DI1"].append([venc, round(atu, 2), round(ant, 2) if ant else None])
-    if not out["DOL"] and not out["DI1"]:
-        diag("b3_ajustes", URL_B3_AJUSTES + " (POST " + dia.isoformat() + ")", r)
+def b3_sessao():
+    """Sessão com os cookies do site de arquivos da B3 (sem eles a B3 costuma devolver uma página de erro)."""
+    global _B3S
+    if _B3S is None:
+        _B3S = requests.Session()
+        _B3S.headers.update(HDR_B3)
         try:
-            os.makedirs(os.path.join(DADOS, "diag"), exist_ok=True)
-            with open(os.path.join(DADOS, "diag", "b3_ajustes_pagina.html"), "w", encoding="utf-8") as f:
-                f.write(texto(r)[:400000])
+            _B3S.get("https://arquivos.b3.com.br/", timeout=(10, 30))
         except Exception:  # noqa: BLE001
             pass
+    return _B3S
+
+
+def b3_ajustes(dia, timeout=(10, 90), tentativas=2):
+    """
+    Preços de ajuste do dia pelo arquivo consolidado de negócios da B3 (TradeInformationConsolidatedFile):
+    {"DOL": [[vencimento, ajuste R$/US$, None]], "DI1": [[vencimento, PU de ajuste, None, taxa de ajuste % a.a.]]}.
+    Sem arquivo para a data (feriado ou fim de semana) devolve listas vazias.
+    """
+    sess, ultimo = b3_sessao(), None
+    for t in range(tentativas):
+        try:
+            r = sess.get(URL_B3_ARQ + "/requestname", params={"fileName": "TradeInformationConsolidatedFile", "date": dia.isoformat()},
+                         timeout=timeout)
+            if "json" not in r.headers.get("Content-Type", "").lower():
+                raise RuntimeError(f"resposta não JSON ({r.status_code})")
+            url = (r.json() or {}).get("redirectUrl") or ""
+            if "token=" not in url:
+                return {"DOL": [], "DI1": []}          # não há arquivo para o dia
+            r2 = sess.get(URL_B3_ARQ, params={"token": url.split("token=")[-1]}, timeout=timeout)
+            c = r2.content or b""
+            if b"TckrSymb" not in c[:3000]:
+                raise RuntimeError(f"arquivo sem o cabeçalho esperado ({len(c)} bytes)")
+            break
+        except Exception as e:  # noqa: BLE001
+            ultimo = e
+            time.sleep(3 * (t + 1))
+    else:
+        raise RuntimeError(f"B3 {dia}: {ultimo}")
+    linhas = c.decode("latin-1").splitlines()
+    cab_i = next(k for k, L in enumerate(linhas[:5]) if "TckrSymb" in L)
+    cab = [x.strip() for x in linhas[cab_i].split(";")]
+    ix = {n: cab.index(n) for n in ("RptDt", "TckrSymb", "AdjstdQt", "AdjstdQtTax", "FinInstrmQty") if n in cab}
+    out = {"DOL": [], "DI1": []}
+    for L in linhas[cab_i + 1:]:
+        p = L.split(";")
+        if len(p) < len(cab) - 1:
+            continue
+        m = re.fullmatch(r"(DOL|DI1)([FGHJKMNQUVXZ]\d{2})", p[ix["TckrSymb"]].strip())
+        if not m:
+            continue
+        if "RptDt" in ix and p[ix["RptDt"]][:10] not in (dia.isoformat(), dia.strftime("%d/%m/%Y")):
+            continue
+        aj = num(p[ix["AdjstdQt"]]) if "AdjstdQt" in ix else None
+        if not aj:
+            continue
+        if m.group(1) == "DOL":
+            out["DOL"].append([m.group(2), round(aj / 1000 if aj > 100 else aj, 6), None])
+        else:
+            tx = num(p[ix["AdjstdQtTax"]]) if "AdjstdQtTax" in ix else None
+            out["DI1"].append([m.group(2), round(aj, 2), None, tx])
     return out
 
 
 @fonte("b3_futuros")
-def b3_futuros(max_novos=25, timeout=(10, 45), tentativas=1):
+def b3_futuros(max_novos=30, timeout=(10, 90), tentativas=2):
     """
-    Dólar futuro (DOL) e juros futuros (DI1) da B3: preço de ajuste de todos os vencimentos, dia a dia (até 400 dias).
-    Confere cada dia pela regra da B3: o "ajuste anterior" de um dia é o ajuste do dia útil anterior.
+    Dólar futuro (DOL) e juros futuros (DI1) da B3: preço de ajuste de todos os vencimentos, dia a dia (até 400 dias),
+    pelo arquivo consolidado diário da B3.
     """
     arqs = {"DOL": "dolar_futuro.json", "DI1": "di_futuro.json"}
-    fontes = {"DOL": "B3 – preços de ajuste do pregão (contrato DOL, R$ por US$)",
-              "DI1": "B3 – preços de ajuste do pregão (contrato DI1, PU com valor de face de R$ 100.000)"}
+    fontes = {"DOL": "B3 – arquivo consolidado de negócios: preço de ajuste do DOL (R$ por US$)",
+              "DI1": "B3 – arquivo consolidado de negócios: PU e taxa de ajuste do DI1 (valor de face R$ 100.000)"}
     H = {k: ler_json(a, {"fonte": fontes[k], "dias": {}, "vazios": {}}) for k, a in arqs.items()}
-    for h in H.values():
+    for k, h in H.items():
+        if "consolidado" not in h.get("fonte", ""):      # arquivos da página antiga da B3: recomeça
+            h.update({"fonte": fontes[k], "dias": {}, "vazios": {}})
         h.setdefault("dias", {})
         h.setdefault("vazios", {})
     feito = lambda k: k in H["DOL"]["dias"] and k in H["DI1"]["dias"]
@@ -2198,7 +2232,7 @@ def rapido():
     except Exception as e:  # noqa: BLE001
         STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
     if AGORA.hour * 60 + AGORA.minute >= 18 * 60 + 30 and HOJE.weekday() < 5:
-        b3_futuros(max_novos=1, timeout=40, tentativas=1)      # ajustes do dia (saem no fim da tarde)
+        b3_futuros(max_novos=1, timeout=(10, 60), tentativas=1)      # ajustes do dia (saem no fim da tarde)
     st = ler_json("status.json", {"fontes": {}})
     st.setdefault("fontes", {}).update(STATUS)
     st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
