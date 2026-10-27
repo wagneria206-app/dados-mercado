@@ -1,0 +1,51 @@
+name: Atualizar ativos (B3 e CVM)
+
+on:
+  schedule:
+    - cron: "37 10 * * 2-6"     # 7h37 de Brasília (cotações do pregão anterior)
+    - cron: "7 23 * * 1-5"   # 20h07 de Brasília
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: "Tempo máximo de coleta (min)"
+        required: false
+        default: "48"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-ativos
+  cancel-in-progress: false
+
+jobs:
+  ativos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests
+      - name: Restaurar a última publicação (ramo "ativos")
+        run: |
+          mkdir -p /tmp/ent /tmp/sai
+          if git fetch -q --depth=1 origin ativos; then git --work-tree=/tmp/ent checkout FETCH_HEAD -- . && git reset -q; fi
+          ls /tmp/ent | head
+      - name: Coletar
+        env:
+          MINUTOS: ${{ github.event.inputs.minutos || '48' }}
+        run: python scripts/ativos.py /tmp/ent /tmp/sai
+      - name: Publicar no ramo "ativos"
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          cd /tmp/sai
+          du -sh . ; ls a | wc -l
+          git init -q -b ativos
+          git config user.name "robo-dados"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Ativos de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" ativos
