@@ -18,6 +18,11 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/dolar.json          dólar PTAX do Banco Central: fechamento diário desde 1995 e boletins do dia
   data/dolar_futuro.json   dólar futuro da B3: ajuste de cada vencimento do DOL, dia a dia (400 dias)
   data/dolar_fundamentos.json inflação dos EUA, dólar global, commodities, juros dos EUA e risco-país (mensal)
+  data/di_futuro.json      juros futuros da B3: PU de ajuste de cada vencimento do DI1, dia a dia
+  data/inflacao.json       meta da Selic, IPCA, núcleos, serviços, livres, monitorados, grupos e IPCA-15
+  data/ima.json            índices IMA da ANBIMA e histórico do número-índice
+  data/credito_hist.json   spread das debêntures DI+ e IPCA+ (mediana e quartis), dia a dia
+  data/titulos_hist.json   taxas indicativas da ANBIMA dos títulos públicos, dia a dia
   data/curvas_hist.json    ETTJ da ANBIMA dia a dia (parâmetros), últimos 400 dias
   data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
@@ -811,79 +816,92 @@ def bcb_dolar(mercado):
 URL_B3_AJUSTES = "https://www2.bmf.com.br/pages/portal/bmfbovespa/lumis/lum-ajustes-do-pregao-ptBR.asp"
 
 
-def b3_ajustes_dol(dia):
-    """Preços de ajuste do contrato DOL (dólar comercial) de cada vencimento: [[código, ajuste, ajuste anterior], ...]."""
-    r = baixar(URL_B3_AJUSTES, dados={"dData1": dia.strftime("%d/%m/%Y")}, tentativas=2, timeout=90)
-    txt = texto(r)
+def b3_ajustes(dia, timeout=90, tentativas=2):
+    """Preços de ajuste da B3 do dia: {"DOL": [[código, ajuste R$/US$, ajuste anterior]], "DI1": [[código, PU, PU anterior]]}."""
+    r = baixar(URL_B3_AJUSTES, dados={"dData1": dia.strftime("%d/%m/%Y")}, tentativas=tentativas, timeout=timeout)
     p = _Tabelas()
-    p.feed(txt)
-    out, merc = [], ""
+    p.feed(texto(r))
+    out, merc = {"DOL": [], "DI1": []}, ""
     for t in p.tabelas:
         for L in t:
             if len(L) < 4:
                 continue
             if L[0].strip():
-                merc = L[0]
-            if not norm(merc).startswith("dol"):
-                continue
+                merc = norm(L[0])
+            chave = "DOL" if merc.startswith("dol") else "DI1" if merc.startswith("di1") else None
             venc = L[1].strip().upper()
-            if not re.fullmatch(r"[FGHJKMNQUVXZ]\d{2}", venc):
+            if not chave or not re.fullmatch(r"[FGHJKMNQUVXZ]\d{2}", venc):
                 continue
             ant, atu = num(L[2]), num(L[3])
             if not atu:
                 continue
-            k = 1000 if atu > 100 else 1          # cotado em R$ por US$ 1.000
-            out.append([venc, round(atu / k, 6), round(ant / k, 6) if ant else None])
-    if not out:
+            if chave == "DOL":
+                k = 1000 if atu > 100 else 1          # cotado em R$ por US$ 1.000
+                out["DOL"].append([venc, round(atu / k, 6), round(ant / k, 6) if ant else None])
+            else:
+                out["DI1"].append([venc, round(atu, 2), round(ant, 2) if ant else None])
+    if not out["DOL"] and not out["DI1"]:
         diag("b3_ajustes", URL_B3_AJUSTES + " (POST " + dia.isoformat() + ")", r)
     return out
 
 
-@fonte("b3_dolar_futuro")
-def b3_dolar_futuro(max_novos=60):
+@fonte("b3_futuros")
+def b3_futuros(max_novos=60, timeout=90, tentativas=2):
     """
-    Dólar futuro da B3: preço de ajuste de todos os vencimentos do contrato DOL, dia a dia (até 400 dias).
+    Dólar futuro (DOL) e juros futuros (DI1) da B3: preço de ajuste de todos os vencimentos, dia a dia (até 400 dias).
     Confere cada dia pela regra da B3: o "ajuste anterior" de um dia é o ajuste do dia útil anterior.
     """
-    h = ler_json("dolar_futuro.json", {"fonte": "B3 – preços de ajuste do pregão (contrato DOL)", "dias": {}, "vazios": {}})
-    dias, vazios = h.setdefault("dias", {}), h.setdefault("vazios", {})
+    arqs = {"DOL": "dolar_futuro.json", "DI1": "di_futuro.json"}
+    fontes = {"DOL": "B3 – preços de ajuste do pregão (contrato DOL, R$ por US$)",
+              "DI1": "B3 – preços de ajuste do pregão (contrato DI1, PU com valor de face de R$ 100.000)"}
+    H = {k: ler_json(a, {"fonte": fontes[k], "dias": {}, "vazios": {}}) for k, a in arqs.items()}
+    for h in H.values():
+        h.setdefault("dias", {})
+        h.setdefault("vazios", {})
+    feito = lambda k: k in H["DOL"]["dias"] and k in H["DI1"]["dias"]
+    vaz = H["DOL"]["vazios"]
     fila = [HOJE - dt.timedelta(days=k) for k in range(0, 401)]
-    fila = [d for d in fila if d.weekday() < 5 and d.isoformat() not in dias and vazios.get(d.isoformat(), 0) < 2]
-    limite, novos, sem, suspeitos = time.time() + 4 * 60, 0, 0, 0
+    fila = [d for d in fila if d.weekday() < 5 and not feito(d.isoformat()) and vaz.get(d.isoformat(), 0) < 2]
+    limite, novos, sem = time.time() + 4 * 60, 0, 0
     for d in fila[:max_novos]:
         if time.time() > limite:
             break
         k = d.isoformat()
         try:
-            L = b3_ajustes_dol(d)
+            A = b3_ajustes(d, timeout=timeout, tentativas=tentativas)
         except Exception:  # noqa: BLE001
-            L = []
-        if L:
-            dias[k] = L
-            vazios.pop(k, None)
+            A = {"DOL": [], "DI1": []}
+        if A["DOL"] or A["DI1"]:
+            for c in ("DOL", "DI1"):
+                if A[c]:
+                    H[c]["dias"][k] = A[c]
+            vaz.pop(k, None)
             novos += 1
         else:
-            vazios[k] = vazios.get(k, 0) + 1
+            vaz[k] = vaz.get(k, 0) + 1
             sem += 1
-    # conferência: ajuste anterior de cada dia = ajuste do dia útil anterior guardado (mesmo vencimento)
-    ks = sorted(dias)
-    for a, b in zip(ks, ks[1:]):
-        pa = {x[0]: x[1] for x in dias[a]}
-        ok = [abs(x[2] - pa[x[0]]) < 0.0006 for x in dias[b] if x[2] and x[0] in pa]
-        if ok and not any(ok) and (dt.date.fromisoformat(b) - dt.date.fromisoformat(a)).days <= 4:
-            suspeitos += 1
     corte = (HOJE - dt.timedelta(days=420)).isoformat()
-    h["dias"] = {k: v for k, v in sorted(dias.items()) if k >= corte}
-    h["vazios"] = {k: v for k, v in sorted(vazios.items()) if k >= corte}
-    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
-    gravar_json("dolar_futuro.json", h)
-    if not h["dias"]:
-        raise RuntimeError("a B3 não devolveu preços de ajuste do dólar")
-    if suspeitos > 3:
-        raise RuntimeError(f"{suspeitos} dias não batem com o ajuste do dia anterior (a página pode ter ignorado a data)")
-    return {"dias": len(h["dias"]), "novos_agora": novos, "sem_dado_agora": sem, "mais_antigo": min(h["dias"]),
-            "ultimo": max(h["dias"]), "dias_que_nao_batem": suspeitos}
-
+    res = {"novos_agora": novos, "sem_dado_agora": sem}
+    for c, h in H.items():
+        dias = h["dias"]
+        ks = sorted(dias)
+        susp = 0
+        for a, b in zip(ks, ks[1:]):
+            pa = {x[0]: x[1] for x in dias[a]}
+            tol = 0.0006 if c == "DOL" else 0.6
+            ok = [abs(x[2] - pa[x[0]]) < tol for x in dias[b] if x[2] and x[0] in pa]
+            if ok and not any(ok) and (dt.date.fromisoformat(b) - dt.date.fromisoformat(a)).days <= 4:
+                susp += 1
+        h["dias"] = {k: v for k, v in sorted(dias.items()) if k >= corte}
+        h["vazios"] = {k: v for k, v in sorted(vaz.items()) if k >= corte}
+        h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+        gravar_json(arqs[c], h)
+        res[c] = {"dias": len(h["dias"]), "ultimo": max(h["dias"]) if h["dias"] else None, "nao_batem": susp}
+        if susp > 3:
+            raise RuntimeError(f"{c}: {susp} dias não batem com o ajuste do dia anterior (a página pode ter ignorado a data)")
+    if not H["DOL"]["dias"] and not H["DI1"]["dias"]:
+        raise RuntimeError("a B3 não devolveu preços de ajuste")
+    return res
 
 
 # ---------------------------------------------------------------- Fundamentos do dólar (para o "dólar justo")
@@ -896,6 +914,9 @@ FRED_SERIES = {
     "commodities": "PALLFNFINDEXM",  # índice global de preços de commodities (FMI), mensal
     "juro_eua": "SOFR",           # juro overnight dos EUA (SOFR), diário
     "juro_real_eua_10a": "DFII10",   # juro real de 10 anos dos EUA (TIPS), diário
+    "treasury_2a": "DGS2",        # Treasury de 2 anos, diário
+    "treasury_10a": "DGS10",      # Treasury de 10 anos, diário
+    "fed_funds": "DFF",           # juro efetivo do Fed (fed funds), diário
 }
 
 
@@ -966,6 +987,179 @@ def dolar_fundamentos():
         raise RuntimeError("sem a inflação dos EUA: " + "; ".join(falhas))
     gravar_json("dolar_fundamentos.json", out)
     return {"series": {k: len(v) for k, v in out["mensal"].items()}, "ultimo": out["ultimo"], "falhas": falhas}
+
+
+
+# ---------------------------------------------------------------- Banco Central e IBGE: Selic e inflação em detalhe
+
+SGS_INFLACAO = {"ipca": 433, "nucleo_ms": 4466, "nucleo_dp": 16122, "servicos": 10844, "livres": 11428,
+                "monitorados": 4449, "comercializaveis": 4447}
+URL_SIDRA = "https://apisidra.ibge.gov.br/values/t/{}/n1/all/v/{}/p/last%2014/c315/{}"
+
+
+def sgs_periodo(serie, ini, fim=None):
+    fim = fim or HOJE
+    r = requests.get(URL_SGS.format(serie, ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")), timeout=120, headers=UA_BCB)
+    if r.status_code != 200 or r.content.strip()[:1] != b"[":
+        diag(f"bcb_sgs_{serie}", r.url, r)
+        raise RuntimeError(f"SGS {serie}: HTTP {r.status_code}")
+    return [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+
+
+def sidra(tabela, variaveis, categorias):
+    """Tabela do SIDRA (IBGE) -> {AAAAMM: {nome da categoria: {variável: valor}}}."""
+    r = requests.get(URL_SIDRA.format(tabela, variaveis, categorias), timeout=180, headers={"Accept": "application/json"})
+    L = r.json() if r.content.strip()[:1] == b"[" else []
+    if len(L) < 2:
+        diag(f"sidra_{tabela}", r.url, r)
+        raise RuntimeError(f"SIDRA {tabela}: sem dados")
+    cab = L[0]
+    k_mes = next(k for k, v in cab.items() if k.endswith("C") and "Mês" in v)
+    k_cat = next(k for k, v in cab.items() if k.endswith("N") and ("grupo" in v.lower() or "geral" in v.lower()))
+    k_var = next(k for k, v in cab.items() if k.endswith("N") and v.strip() == "Variável")
+    out = {}
+    for x in L[1:]:
+        v = num(x.get("V", ""))
+        if v is None:
+            continue
+        out.setdefault(x[k_mes], {}).setdefault(x[k_cat], {})[x[k_var]] = v
+    return out
+
+
+@fonte("bcb_ibge_inflacao")
+def inflacao_detalhe():
+    """Meta da Selic, IPCA (mês e 12 meses), núcleos, serviços, livres e monitorados (Banco Central), grupos e IPCA-15 (IBGE)."""
+    out = {"fonte": "Banco Central (SGS) e IBGE (SIDRA)", "sgs": {}, "falhas": []}
+    try:
+        L = sgs_periodo(432, HOJE - dt.timedelta(days=800))
+        out["selic_meta"] = {"data": L[-1][0], "valor": L[-1][1], "historico": [x for i, x in enumerate(L) if i == 0 or x[1] != L[i - 1][1]][-12:]}
+    except Exception as e:  # noqa: BLE001
+        out["falhas"].append(f"Selic meta: {str(e)[:120]}")
+    for nome, cod in SGS_INFLACAO.items():
+        try:
+            out["sgs"][nome] = [[d[:7], v] for d, v in sgs_periodo(cod, HOJE - dt.timedelta(days=3 * 366))]
+        except Exception as e:  # noqa: BLE001
+            out["falhas"].append(f"SGS {cod}: {str(e)[:120]}")
+    try:   # IPCA por grupo: variação no mês, acumulada em 12 meses e peso
+        out["grupos"] = sidra(7060, "63,2265,66", "all")
+        out["grupos"] = {m: {c: v for c, v in g.items() if re.match(r"^(Índice geral|\d\.)", c)} for m, g in out["grupos"].items()}
+    except Exception as e:  # noqa: BLE001
+        out["falhas"].append(f"SIDRA 7060: {str(e)[:120]}")
+    try:   # IPCA-15: mês e 12 meses
+        out["ipca15"] = sidra(7062, "355,1120", "7169")
+    except Exception as e:  # noqa: BLE001
+        out["falhas"].append(f"SIDRA 7062: {str(e)[:120]}")
+    out["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    if not out["sgs"].get("ipca"):
+        raise RuntimeError("sem IPCA: " + "; ".join(out["falhas"]))
+    gravar_json("inflacao.json", out)
+    return {"series": {k: len(v) for k, v in out["sgs"].items()}, "grupos_meses": len(out.get("grupos") or {}),
+            "ipca15_meses": len(out.get("ipca15") or {}), "selic_meta": out.get("selic_meta", {}).get("valor"), "falhas": out["falhas"]}
+
+
+# ---------------------------------------------------------------- ANBIMA: índices IMA
+
+URL_IMA = "https://www.anbima.com.br/informacoes/ima/arqs/ima_completo.txt"
+
+
+@fonte("anbima_ima")
+def anbima_ima():
+    """Índices de renda fixa da ANBIMA (IRF-M, IMA-B, IMA-S...): número-índice, variações, duration e yield. Guarda o histórico."""
+    r = baixar(URL_IMA, tentativas=3, timeout=120)
+    txt = texto(r)
+    linhas = [L.split(";") for L in txt.splitlines() if ";" in L]
+    cab = next((L for L in linhas if any("ndice" in c for c in L) and any("Data" in c for c in L)), None)
+    if not cab:
+        diag("anbima_ima", URL_IMA, r)
+        raise RuntimeError("IMA: cabeçalho não encontrado")
+    cab = [c.strip() for c in cab]
+    rows = []
+    for L in linhas:
+        if L is cab or len(L) < len(cab) - 2:
+            continue
+        x = dict(zip(cab, [c.strip() for c in L]))
+        nome = x.get(cab[0], "")
+        if not re.match(r"^(IRF|IMA)", nome.upper()):
+            continue
+        rows.append(x)
+    if not rows:
+        diag("anbima_ima", URL_IMA, r)
+        raise RuntimeError("IMA: nenhum índice lido")
+    col_data = next(c for c in cab if "Data" in c)
+    data = data_dmy(rows[0][col_data]) or rows[0][col_data]
+    col_num = next((c for c in cab if "mero" in c and "ndice" in c), None)
+    h = ler_json("ima.json", {"fonte": "ANBIMA – IMA (resultados diários)", "historico": {}})
+    h["cabecalho"], h["data"], h["indices"] = cab, data, rows
+    if col_num:
+        dia = {x[cab[0]]: num(x[col_num]) for x in rows if num(x[col_num])}
+        h.setdefault("historico", {})[data] = dia
+        corte = (HOJE - dt.timedelta(days=800)).isoformat()
+        h["historico"] = {k: v for k, v in sorted(h["historico"].items()) if k >= corte}
+    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("ima.json", h)
+    return {"data": data, "indices": len(rows), "historico_dias": len(h.get("historico", {}))}
+
+
+# ---------------------------------------------------------------- Crédito privado: spread e histórico das taxas públicas
+
+def _interp(pts, x):
+    pts = sorted(pts)
+    if not pts:
+        return None
+    if x <= pts[0][0]:
+        return pts[0][1]
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        if x <= x1:
+            return y0 + (y1 - y0) * (x - x0) / (x1 - x0)
+    return pts[-1][1]
+
+
+def _quantis(v):
+    v = sorted(v)
+    if not v:
+        return None
+    q = lambda p: round(v[min(len(v) - 1, int(p * (len(v) - 1) + 0.5))], 4)
+    return {"n": len(v), "p25": q(0.25), "mediana": q(0.5), "p75": q(0.75)}
+
+
+@fonte("credito_spreads")
+def credito_spreads():
+    """
+    Spread das debêntures (taxas indicativas da ANBIMA): DI+ (spread sobre o CDI) e IPCA+ (taxa menos a NTN-B de mesmo
+    vencimento). Guarda mediana e quartis por dia, e o histórico diário das taxas indicativas dos títulos públicos.
+    """
+    deb = ler_json("debentures.json", {})
+    m = ler_json("mercado.json", {})
+    a = m.get("anbima") or {}
+    ref = deb.get("refDate") or m.get("refDate")
+    ntnb = [(dt.date.fromisoformat(r[0]).toordinal(), r[1]) for r in a.get("NTNB", []) if r and r[1] is not None]
+    di, ip, inc = [], [], []
+    for cod, p in (deb.get("papers") or {}).items():
+        ind, tx, v = norm(p.get("indice", "")), p.get("taxa"), p.get("venc")
+        if tx is None or not v:
+            continue
+        if ind.startswith("di +") or ind.startswith("di+"):
+            di.append(tx)
+        elif ind.startswith("ipca") and ntnb:
+            b = _interp(ntnb, dt.date.fromisoformat(v).toordinal())
+            if b is not None:
+                ip.append(tx - b)
+                if "(*)" in (p.get("nome") or ""):
+                    inc.append(tx - b)
+    h = ler_json("credito_hist.json", {"fonte": "ANBIMA – taxas indicativas de debêntures; spread IPCA+ sobre a NTN-B de mesmo vencimento", "dias": {}})
+    if ref and (di or ip):
+        h["dias"][ref] = {"di": _quantis(di), "ipca": _quantis(ip), "ipca_incentivadas": _quantis(inc)}
+    corte = (HOJE - dt.timedelta(days=800)).isoformat()
+    h["dias"] = {k: v for k, v in sorted(h["dias"].items()) if k >= corte}
+    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("credito_hist.json", h)
+    # taxas indicativas dos títulos públicos, dia a dia
+    t = ler_json("titulos_hist.json", {"fonte": "ANBIMA – taxas indicativas dos títulos públicos", "dias": {}})
+    if m.get("refDate") and a:
+        t["dias"][m["refDate"]] = {k: [[r[0], r[1]] for r in v if r and r[1] is not None] for k, v in a.items() if isinstance(v, list)}
+    t["dias"] = {k: v for k, v in sorted(t["dias"].items()) if k >= corte}
+    gravar_json("titulos_hist.json", t)
+    return {"ref": ref, "di": _quantis(di), "ipca": _quantis(ip), "dias_credito": len(h["dias"]), "dias_titulos": len(t["dias"])}
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
 
@@ -1875,12 +2069,8 @@ def rapido():
             STATUS["bcb_dolar_ptax"] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"), "boletins": len((dolar.get("boletins") or {}).get("lista", []))}
     except Exception as e:  # noqa: BLE001
         STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
-    if not os.path.exists(os.path.join(DADOS, "dolar_fundamentos.json")):
-        dolar_fundamentos()
-    if not os.path.exists(os.path.join(DADOS, "dolar_futuro.json")):
-        b3_dolar_futuro(max_novos=8)        # primeira vez: começa o histórico sem esperar a coleta da noite
-    elif AGORA.hour * 60 + AGORA.minute >= 18 * 60 + 30 and HOJE.weekday() < 5:
-        b3_dolar_futuro(max_novos=1)
+    if AGORA.hour * 60 + AGORA.minute >= 18 * 60 + 30 and HOJE.weekday() < 5:
+        b3_futuros(max_novos=1, timeout=40, tentativas=1)      # ajustes do dia (saem no fim da tarde)
     st = ler_json("status.json", {"fontes": {}})
     st.setdefault("fontes", {}).update(STATUS)
     st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
@@ -1895,9 +2085,34 @@ def rapido():
     print("Intradiário:", STATUS.get("tesouro_direto_site"))
 
 
+FONTES_AVULSAS = {"b3_futuros": lambda m: b3_futuros(), "dolar_fundamentos": lambda m: dolar_fundamentos(),
+                  "bcb_dolar": lambda m: bcb_dolar(m), "inflacao": lambda m: inflacao_detalhe(), "ima": lambda m: anbima_ima(),
+                  "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist()}
+
+
+def avulsas(nomes):
+    """Roda só as fontes indicadas (ex.: --so b3_futuros,ima) e junta o resultado ao status.json."""
+    mercado = ler_json("mercado.json", {})
+    for n in nomes:
+        if n in FONTES_AVULSAS:
+            FONTES_AVULSAS[n](mercado)
+        else:
+            print("fonte desconhecida:", n)
+    if mercado:
+        gravar_json("mercado.json", mercado)
+    st = ler_json("status.json", {"fontes": {}})
+    st.setdefault("fontes", {}).update(STATUS)
+    st["avulsas_em"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("status.json", st)
+    for k, v in STATUS.items():
+        print(k, json.dumps(v, ensure_ascii=False)[:600])
+
+
 def main():
     if "--rapido" in sys.argv:
         return rapido()
+    if "--so" in sys.argv:
+        return avulsas(sys.argv[sys.argv.index("--so") + 1].split(","))
     mercado = ler_json("mercado.json", {})
     anbima_publicos(mercado)
     tesouro_direto(mercado)        # Tesouro Transparente: histórico (pode atrasar alguns dias)
@@ -1906,10 +2121,13 @@ def main():
     anbima_curva_hist()
     bcb(mercado)
     bcb_dolar(mercado)
-    b3_dolar_futuro()
+    b3_futuros()
     dolar_fundamentos()
     ipca(mercado)
     anbima_debentures()
+    credito_spreads()
+    inflacao_detalhe()
+    anbima_ima()
     snd_catalogo()
     anbima_cri_cra()
     cvm_cri_cra()
