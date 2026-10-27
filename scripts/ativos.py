@@ -909,8 +909,11 @@ def principal():
                     todos = FU.ym_seq(ms2[0], ms2[-1])
                     reg["fii"]["m"] = [a.fii["m"].get(m) for m in todos]
                     u = a.fii["m"][ms2[-1]]
-                    cotas = a.fii.get("cotas") or info.get("cotas")
-                    extra = {"vpc": u[0], "pvp": a.c[-1] / u[0] if u[0] else None, "plf": u[1], "cot": u[2],
+                    cotas = info.get("cotas") or a.fii.get("cotas")      # B3 primeiro; o informe pode vir defasado
+                    pvp = a.c[-1] / u[0] if u[0] else None
+                    if pvp is not None and not 0.2 < pvp < 5:      # informe inconsistente com a cotação
+                        pvp = None
+                    extra = {"vpc": u[0] if pvp else None, "pvp": pvp, "plf": u[1], "cot": u[2] if (u[2] or 0) > 1 else None,
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
                 setor = "ETF" if tp == "ETF" else ""
