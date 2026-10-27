@@ -1004,7 +1004,7 @@ html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .
     <div>
       <h3>Premissas</h3>
       <ul>
-        <li>Venda em data futura: o IPCA até lá segue a projeção informada (padrão: média dos últimos 12 meses), e a Selic e o CDI seguem a curva de juros da ANBIMA. Os pagamentos recebidos até a venda não são reinvestidos.</li>
+        <li>Venda em data futura: o IPCA até lá segue a projeção escolhida em Mercado (padrão: inflação implícita do mercado para cada prazo, calculada pela ANBIMA), e a Selic e o CDI seguem a curva de juros da ANBIMA. Os pagamentos recebidos até a venda não são reinvestidos.</li>
         <li>Nos papéis pós-fixados (Tesouro Selic, CDI + spread, % do CDI), a variação é aplicada ao spread ou ao percentual negociado, que é o que move o preço. A alta ou queda da própria Selic quase não altera o preço desses títulos.</li>
         <li>Rentabilidade ao ano = taxa interna de retorno (TIR) do seu investimento, considerando a data de cada pagamento, em dias corridos. Pode diferir um pouco da taxa contratada, que usa dias úteis.</li>
         <li>Valores líquidos (padrão) descontam IR, IOF e custódia; a opção Brutos mostra antes desses descontos. Taxas de corretora não são consideradas.</li>
@@ -1313,7 +1313,7 @@ function calc(){
   const yr=new Date(parseDate(d)).getUTCFullYear();
   const reg=t=>pubRegime(kind,t,mat),scn=pubScenario(kind,d,K,buy);
   const txNow=taxCalc(reg(VD),inv,q,buy,past,VD,pm.pu);
-  const hv=holdVsSell({reg,inv,q,buy,past,future:scn.cashBetween(mat).filter(c=>c.t>VAL),puNow:pm.pu,end:mat,piBase:piProj(),isIpca:K.fam==="ipca"});
+  const hv=holdVsSell({reg,inv,q,buy,past,future:scn.cashBetween(mat).filter(c=>c.t>VAL),puNow:pm.pu,end:mat,piBase:piProj(mat),isIpca:K.fam==="ipca"});
 
   const cl=Math.abs(diff)<0.005?"flat":diff>0?"gain":"loss",word=cl==="flat"?"Na curva":cl==="gain"?"Ágio":"Deságio";
   let h='<div class="verdict"><span class="label">Venda hoje, '+fx(q,q%1?2:0)+(q===1?' título':' títulos')+'</span><span class="chip '+cl+'">'+word+'</span></div>';
@@ -1341,7 +1341,7 @@ function calc(){
   h+='<div class="row"><dt>Dias úteis até o último pagamento</dt><dd>'+fl[fl.length-1].du+'</dd></div>';
   h+='</dl>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+taxNote(reg(VAL))+' Estimativa; o IR dos cupons já recebidos foi retido na fonte.</p>';
-  h+=holdHtml(hv,{end:mat,piBase:piProj()});
+  h+=holdHtml(hv,{end:mat,piBase:piProj(mat)});
   $("out").innerHTML=h;
 
   state={kind,fam:K.fam,fl,rc,rm,q,puC:pc.pu,vna:vnaV,F,fmt:r=>fr(K.fam,r),n:K.b1?100:160,priceAt:r=>price(kind,fl,r,vnaV).pu};
@@ -1663,7 +1663,7 @@ function pcCalc(){
   const diff=pm.pu-pc.pu,diffT=diff*q,resM=pm.pu*q+recv-inv,resC=pc.pu*q+recv-inv;
   const reg=()=>pcRegime(P),scn=pcScenario(P,rm,buy);
   const txNow=taxCalc(reg(),inv,q,buy,past,VAL,pm.pu);
-  const hv=holdVsSell({reg,inv,q,buy,past,future:scn.cashBetween(end).filter(c=>c.t>VAL),puNow:pm.pu,end,piBase:piProj(),isIpca:P.index==="IPCA"});
+  const hv=holdVsSell({reg,inv,q,buy,past,future:scn.cashBetween(end).filter(c=>c.t>VAL),puNow:pm.pu,end,piBase:piProj(end),isIpca:P.index==="IPCA"});
   const cl=Math.abs(diff)<0.005?"flat":diff>0?"gain":"loss",word=cl==="flat"?"Na curva":cl==="gain"?"Ágio":"Deságio";
   const mtag=auto&&!pcManual?'<span class="tag">ANBIMA</span>':isEst?'<span class="tag est">estimada</span>':noMkt?'<span class="tag man">na curva</span>':'<span class="tag man">informada</span>';
   let h='<div class="verdict"><span class="label">Venda hoje, '+fx(q,q%1?2:0)+(q===1?' título':' títulos')+'</span><span class="chip '+cl+'">'+word+'</span></div>';
@@ -1691,7 +1691,7 @@ function pcCalc(){
   h+='<div class="row"><dt>Dias úteis até o último pagamento</dt><dd>'+pm.rows[pm.rows.length-1].du+'</dd></div>';
   h+='</dl>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+taxNote(reg())+(P.type==="DEB"&&P.incentivada==null?' Confira se a debênture é incentivada (Lei 12.431): se for, é isenta.':'')+' Estimativa.</p>';
-  h+=holdHtml(hv,{end,piBase:piProj()});
+  h+=holdHtml(hv,{end,piBase:piProj(end)});
   if(isDI)h+='<p class="sub" style="font-size:.82rem;margin-top:10px">CDI futuro projetado pela curva de juros da ANBIMA. Na data da compra, o preço é estimado com o CDI da época.</p>';
   $("pcOut").innerHTML=h;
 
@@ -1799,14 +1799,14 @@ function pcOnPapers(qs){
 
 /* ================= Cenários de juros ================= */
 const LAST={pub:null,pc:null,bank:null,fund:null};
-let PI_PROJ=null; // IPCA projetado (% a.a.) para datas futuras; null = média dos últimos 12 meses
+let PI_PROJ=null; // IPCA projetado (% a.a.) para datas futuras; null = projeção escolhida (padrão: inflação implícita por prazo)
 let SC_PI_SHIFT=0,SC_DI_SHIFT=0; // deslocamentos dos cenários levados ao vencimento
 const scUserDate={pub:null,pc:null};
 function dfScen(d){return dfCurve(d)*Math.pow(1+SC_DI_SHIFT/100,d/252)}
 function ipca12(){const lk=Math.max(...Object.keys(IPCA).map(Number));return (IPCA[lk]/IPCA[lk-12]-1)*100}
-let PI_MODE="m12";try{PI_MODE=localStorage.getItem("piMode")||"m12"}catch(e){}
+let PI_MODE="impl";try{PI_MODE=localStorage.getItem("piMode2")||"impl"}catch(e){}
 const PIF_CACHE=new Map();
-function piProj(){if(PI_PROJ!=null)return PI_PROJ+SC_PI_SHIFT;if(PI_MODE==="m12")return ipca12()+SC_PI_SHIFT;try{const t=addMonths(VAL,36),f=piFactor(t),v=(Math.pow(f,1/((t-VAL)/DAY/365.25))-1)*100;return isFinite(v)?v:ipca12()+SC_PI_SHIFT}catch(e){return ipca12()+SC_PI_SHIFT}}
+function piProj(t){if(PI_PROJ!=null)return PI_PROJ+SC_PI_SHIFT;if(t>VAL+30*DAY&&PI_MODE!=="m12"){const y=(t-VAL)/DAY/365.25,f=piFactor(t);if(isFinite(f)&&f>0)return (Math.pow(f,1/y)-1)*100}if(PI_MODE==="m12")return ipca12()+SC_PI_SHIFT;try{const t=addMonths(VAL,36),f=piFactor(t),v=(Math.pow(f,1/((t-VAL)/DAY/365.25))-1)*100;return isFinite(v)?v:ipca12()+SC_PI_SHIFT}catch(e){return ipca12()+SC_PI_SHIFT}}
 function vnaBFwd(t){return t<=VAL?vnaIpca(t):VNA_B*piFactor(t)}
 function vnaLftFwd(t){return t<=VAL?vnaSelic(t):VNA_LFT*dfScen(du(VAL,t))}
 function setLastPub(o){LAST.pub=o}
@@ -1851,11 +1851,13 @@ function scCalc(){
   $("scDateHint").innerHTML=H===L.end?'Vencimento do título (padrão).':'Venda antes do vencimento. <button type="button" class="link" id="scToEnd">Usar o vencimento</button>';
   const te=$("scToEnd");if(te)te.onclick=()=>{scUserDate[src]=null;scCalc()};
   $("scPiField").hidden=!L.sc.usesIpca;
-  if(L.sc.usesIpca)$("scPi").placeholder=fx(ipca12(),2);$("scPiHint").textContent="Vazio = média dos últimos 12 meses ("+fx(ipca12(),2)+"%).";
+  const piHor=t=>{const y=(t-VAL)/DAY/365.25;if(!(y>0.02))return ipca12();const s=SC_PI_SHIFT,pp=PI_PROJ;SC_PI_SHIFT=0;PI_PROJ=null;const f=piFactor(t);SC_PI_SHIFT=s;PI_PROJ=pp;return (Math.pow(f,1/y)-1)*100};
+  const piDef=piHor(H);
+  if(L.sc.usesIpca){$("scPi").placeholder=fx(piDef,2);$("scPiHint").textContent="Vazio = "+(PI_MODE==="impl"?"inflação implícita do mercado até "+fdate(H):PI_MODE==="focus"?"Focus informado":"média dos últimos 12 meses")+" ("+fx(piDef,2)+"% a.a.). Troque em Mercado › Inflação implícita."}
   const piIn=num($("scPi").value);PI_PROJ=isFinite(piIn)&&$("scPi").value.trim()?piIn:null;
   const step=+$("scStep").value,span=+$("scSpan").value,atEnd=H>=L.end,drv=L.sc.driver;
   const unitInv=L.inv/L.q;
-  const piBase=piProj(),cdiBase=(Math.pow(dfCurve(252),1)-1)*100;
+  const piBase=PI_PROJ!=null?PI_PROJ:piDef,cdiBase=(Math.pow(dfCurve(252),1)-1)*100;
   if(atEnd&&drv==="PRE"){
     const cl=L.sc.cashBetween(H).filter(c=>c.t>VAL),cash=cl.reduce((a,c)=>a+c.amt,0)*L.q,oc=scOutcome(L,L.pastList.concat(cl),H,0),res=oc.res,pct=res/L.inv*100,tir=oc.tir;
     out.innerHTML='<p class="sub" style="max-width:70ch">Prefixado levado ao vencimento: você recebe exatamente a taxa contratada ('+L.fmt(L.rc)+'), então o resultado não muda com os juros.</p><dl style="max-width:520px"><div class="row"><dt>Valor investido</dt><dd>'+brl(L.inv)+'</dd></div><div class="row"><dt>Total recebido até '+fdate(H)+'</dt><dd>'+brl(L.recvPast+cash)+'</dd></div><div class="row strong"><dt>Resultado total</dt><dd class="'+(res>=0?"pos":"neg")+'">'+signed(res,brl)+'</dd></div><div class="row"><dt>Rentabilidade no período / ao ano (TIR)</dt><dd>'+signed(pct,v=>fx(v,2))+'% / '+signed(tir,v=>fx(v,2))+'% a.a.</dd></div></dl><p class="sub" style="font-size:.88rem;margin-top:10px">Para ver o efeito de cada 0,5 ponto nos juros, escolha uma data de venda antes do vencimento.</p>';
@@ -1868,7 +1870,7 @@ function scCalc(){
       const dd=Math.round(dlt*100)/100;
       if(drv==="IPCA")SC_PI_SHIFT=dd;else SC_DI_SHIFT=dd;
       const cl=L.sc.cashBetween(H).filter(c=>c.t>VAL),cash=cl.reduce((a,c)=>a+c.amt,0)*L.q,oc=scOutcome(L,L.pastList.concat(cl),H,0),tir=oc.tir;
-      const lvl=drv==="IPCA"?piProj():(Math.pow(dfScen(252),1)-1)*100;
+      const lvl=drv==="IPCA"?piProj(H):(Math.pow(dfScen(252),1)-1)*100;
       SC_PI_SHIFT=0;SC_DI_SHIFT=0;
       const res=oc.res,pct=res/L.inv*100;
       rows.push({dd,lvl,cash,res,pct,ann:tir});
@@ -1918,7 +1920,7 @@ function scCross(L,src){
   h+='</tr></thead><tbody>';
   steps.forEach(rd=>{
     if(drv==="IPCA")SC_PI_SHIFT=rd;else SC_DI_SHIFT=rd;
-    const lvl=drv==="IPCA"?piProj():(dfScen(252)-1)*100;
+    const lvl=drv==="IPCA"?piProj(H):(dfScen(252)-1)*100;
     const cl=L.sc.cashBetween(H).filter(c=>c.t>VAL),recvTot=L.recvPast+cl.reduce((a,c)=>a+c.amt,0)*L.q;
     h+='<tr><td class="rowh"><b>'+fx(lvl,2)+'%</b><br><span class="sub">'+(rd>0?"+":rd<0?"−":"")+fx(Math.abs(rd),1)+'</span></td>';
     steps.forEach(c=>{
@@ -3631,7 +3633,7 @@ function piFactor(t){
   else f=Math.pow(1+(ipca12()+SC_PI_SHIFT)/100,yrs);
   PIF_CACHE.set(k,f);return f;
 }
-function piModeName(){return PI_PROJ!=null?"informada nos cenários":PI_MODE==="impl"?"inflação implícita (ANBIMA)":PI_MODE==="focus"?"Focus (informado)":"média dos últimos 12 meses"}
+function piModeName(){return PI_PROJ!=null?"informada nos cenários":PI_MODE==="impl"?"inflação implícita do mercado (ANBIMA), por prazo":PI_MODE==="focus"?"Focus (informado)":"média dos últimos 12 meses"}
 
 /* ================= Rentabilidade real: TWR mensal e TIR da carteira ================= */
 function twrData(ids){
@@ -3742,7 +3744,7 @@ function oppHtml(){
 }
 function inflHtml(){
   const L=ntnbCurve(),y0=new Date(VAL).getUTCFullYear(),F=SETTINGS.focus||{};
-  let h='<span class="label">Inflação implícita e projeção usada no aplicativo</span><div class="scctl" style="margin-top:8px"><div class="field"><label for="piMode">Projeção de IPCA</label><select id="piMode"><option value="m12">Média dos últimos 12 meses ('+fx(ipca12(),2)+'%)</option><option value="impl">Inflação implícita da ANBIMA (por prazo)</option><option value="focus">Boletim Focus (informado abaixo)</option></select></div>';
+  let h='<span class="label">Inflação implícita e projeção usada no aplicativo</span><div class="scctl" style="margin-top:8px"><div class="field"><label for="piMode">Projeção de IPCA</label><select id="piMode"><option value="impl">Inflação implícita do mercado, por prazo (ANBIMA) — recomendado</option><option value="m12">Média dos últimos 12 meses ('+fx(ipca12(),2)+'%)</option><option value="focus">Boletim Focus (informado abaixo)</option></select></div>';
   for(let y=y0;y<=y0+3;y++)h+='<div class="field"><label for="fc'+y+'">Focus '+(y===y0+3?y+' em diante':y)+'</label><div class="affix s"><input id="fc'+y+'" inputmode="decimal" value="'+esc(F[y]||"")+'" placeholder="IPCA %"><span class="suf">%</span></div></div>';
   h+='</div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="piSave">Salvar projeção</button><span class="sub" id="piMsg">Hoje: '+piModeName()+'.</span></div>';
   h+='<p class="sub" style="font-size:.82rem;margin-top:6px">A projeção vale para todo o aplicativo: valor futuro dos títulos IPCA+, cenários, metas, escada e análise de troca. O Focus não pode ser lido automaticamente daqui; copie as medianas do boletim semanal do Banco Central.</p>';
@@ -3778,7 +3780,7 @@ async function mkClick(e){
   if(e.target.id==="oppMore"){const b=document.querySelector("#mkOut .oppmore");if(b){b.hidden=!b.hidden;e.target.textContent=b.hidden?"Mostrar todos os títulos":"Mostrar só os 10 primeiros"}return}
   if(e.target.id==="piSave"){const y0=new Date(VAL).getUTCFullYear(),F={};for(let y=y0;y<=y0+3;y++){const v=$("fc"+y).value.trim();if(v)F[y]=v}
     PI_MODE=$("piMode").value;if(PI_MODE==="focus"&&!Object.keys(F).length){$("piMsg").textContent="Informe ao menos o Focus do ano.";return}
-    try{localStorage.setItem("piMode",PI_MODE)}catch(x){}SETTINGS.piMode=PI_MODE;SETTINGS.focus=F;PIF_CACHE.clear();RAWC.clear();
+    try{localStorage.setItem("piMode2",PI_MODE)}catch(x){}SETTINGS.piMode=PI_MODE;SETTINGS.focus=F;PIF_CACHE.clear();RAWC.clear();
     if(DB){try{await DB.doc("settings/main").set(Object.assign({},SETTINGS,{id:"main",updatedAt:new Date().toISOString()}))}catch(x){}}
     mkCalc();$("piMsg").textContent="Projeção salva: "+piModeName()+".";return}
   const b=e.target.closest("[data-dw]");if(b){const r=document.querySelector('[data-dwr="'+b.dataset.dw+'"]');r.hidden=!r.hidden;if(!r.hidden){const P=PAPERS[b.dataset.dw];r.firstChild.innerHTML='<div class="watchrow">Avisar no celular quando a taxa ANBIMA de <b>'+P.code+'</b> <select data-dwf="dir"><option value="ge">subir até</option><option value="le">cair até</option></select> <div class="affix s" style="width:130px"><input data-dwf="rate" inputmode="decimal" value="'+fx((+P.anbima.rate)+(P.index==="DI_PCT"?5:0.5),2)+'"><span class="suf">%</span></div> <button type="button" class="btn" data-dwsave="'+P.code+'">Criar alerta</button></div>'}return}
