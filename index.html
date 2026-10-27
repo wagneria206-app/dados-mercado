@@ -3703,7 +3703,7 @@ async function fnFund(k){
 }
 function fnDecode(j){
   const I=[],Q=[];
-  if(j.i0!=null&&j.q0){let q=j.q0;I.push(j.i0);Q.push(q);(j.r||[]).forEach((r,n)=>{if(r==null)return;q*=1+r/1e6;I.push(j.i0+1+n);Q.push(q)})}
+  if(j.i0!=null&&j.q0){let q=j.q0;I.push(j.i0);Q.push(q);(j.r||[]).forEach((r,n)=>{if(r==null)return;q*=Array.isArray(r)?r[0]:1+r/1e6;if(!(q>0))return;I.push(j.i0+1+n);Q.push(q)})}
   const M=new Map();
   if(j.m0){const k0=+j.m0.slice(0,4)*12+(+j.m0.slice(4))-1,d0=j.d0?+j.d0.slice(0,4)*12+(+j.d0.slice(4))-1:null;
     (j.mq||[]).forEach((q,n)=>{if(q==null)return;const k=k0+n,o=d0!=null?k-d0:-1,g=a=>a&&o>=0&&o<a.length?a[o]:null;

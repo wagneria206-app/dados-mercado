@@ -248,7 +248,7 @@ def carregar_estado(pasta):
                 for k, x in enumerate(r):
                     if x is None:
                         continue
-                    q = q * (1 + x / ESC)
+                    q = q * x[0] if isinstance(x, list) else q * (1 + x / ESC)
                     f.i.append(i0 + 1 + k)
                     f.q.append(q)
             F[nome[:14]] = f
@@ -627,15 +627,17 @@ def metricas(f, cdi_d):
 
     def ret_desde(d):
         p = bisect.bisect_right(f.i, bisect.bisect_right(CAL, d) - 1) - 1
-        if p < 0:
+        if p < 0 or f.q[p] <= 0:
             return None, None
         return (ql / f.q[p] - 1) * 100, f.i[p]
     ym_l = dl[:4] + dl[5:7]
     ant = [m for m in meses if m < ym_l]
-    if ant:
+    if ql <= 0:
+        return out
+    if ant and f.m[ant[-1]][1]:
         out["rm"] = (ql / f.m[ant[-1]][1] - 1) * 100
     anoant = [m for m in meses if m <= f"{int(dl[:4]) - 1}12"]
-    if anoant and anoant[-1][:4] == str(int(dl[:4]) - 1):
+    if anoant and anoant[-1][:4] == str(int(dl[:4]) - 1) and f.m[anoant[-1]][1]:
         out["ra"] = (ql / f.m[anoant[-1]][1] - 1) * 100
     for n, nome in ((12, "r12"), (24, "r24"), (36, "r36"), (60, "r60")):
         alvo = data_menos_meses(dl, n)
@@ -648,7 +650,7 @@ def metricas(f, cdi_d):
     i12 = out.pop("_i12", None)
     if i12 is not None:
         p = bisect.bisect_left(f.i, i12)
-        rets = [f.q[j] / f.q[j - 1] - 1 for j in range(p + 1, len(f.q))]
+        rets = [f.q[j] / f.q[j - 1] - 1 for j in range(p + 1, len(f.q)) if f.q[j - 1] > 0]
         if len(rets) > 150:
             mu = sum(rets) / len(rets)
             v = math.sqrt(sum((x - mu) ** 2 for x in rets) / (len(rets) - 1)) * math.sqrt(252)
@@ -684,7 +686,10 @@ def codificar(f):
     i0, q0 = f.i[0], f.q[0]
     r = [None] * (f.i[-1] - i0)
     for j in range(1, len(f.i)):
-        r[f.i[j] - i0 - 1] = round((f.q[j] / f.q[j - 1] - 1) * ESC)
+        a, b = f.q[j - 1], f.q[j]
+        x = b / a if a > 0 else 1.0
+        # variações extremas (cota reiniciada, grupamento) vão como razão exata para não zerar a cota
+        r[f.i[j] - i0 - 1] = round((x - 1) * ESC) if 0.5 < x < 2 else [float(f"{x:.12g}")]
     return i0, q0, r
 
 
@@ -712,6 +717,9 @@ def anbima_nome(a):
 def principal():
     ent, sai = sys.argv[1], sys.argv[2]
     estado = carregar_estado(ent)
+    if os.environ.get("REFAZER") == "1":      # reconstrói a cota diária do zero
+        cortar_calendario(0)
+        estado["diario_ate"] = ym_add(INI_DIARIO, -1)
     ym_atual = HOJE.strftime("%Y%m")
     m1, m2 = ym_add(ym_atual, -1), ym_add(ym_atual, -2)
 
