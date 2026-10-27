@@ -578,6 +578,7 @@ html.pages .saverow:has(#savePos),html.pages .saverow:has(#pcSavePos),html.pages
 html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),html.pages #aiFab,html.pages #notaBox,html.pages #expRow,html.pages #pcTermo,html.pages #pcBatchBox,
 html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .pctab th:nth-child(7),html.pages .pctab td:nth-child(7){display:none!important}
 .ctab tfoot tr.msub td{border-top:1px solid var(--line);color:var(--muted)}.ctab tfoot tr.mtot td{border-top:2px solid var(--line);font-weight:600;color:var(--ink)}.ctab tfoot small{font-weight:400;color:var(--muted)}
+#scMatField{grid-column:span 2;min-width:0}@media (max-width:640px){#scMatField{grid-column:auto}}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -846,6 +847,7 @@ html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .
       </div>
       <div class="scctl">
         <div class="field"><label for="scSrc">Investimento</label><select id="scSrc"><option value="pub">Título público</option><option value="pc">Crédito privado</option></select></div>
+        <div class="field" id="scMatField"><label for="scMat">Título e vencimento</label><select id="scMat"></select><small>Compra, taxa e quantidade vêm da aba Calcular título.</small></div>
         <div class="field"><label for="scDate">Data da venda</label><input type="date" id="scDate"><small id="scDateHint">Vencimento do título (padrão).</small></div>
         <div class="field"><label for="scStep">Passo</label><select id="scStep"><option value="0.25">0,25 p.p.</option><option value="0.5" selected>0,50 p.p.</option><option value="1">1,00 p.p.</option></select></div>
         <div class="field"><label for="scVal">Valores</label><select id="scVal"><option value="net" selected>Líquidos de IR e custos</option><option value="gross">Brutos</option></select></div>
@@ -1837,8 +1839,13 @@ function scOutcome(L,items,H,sale){ // resultado e TIR, brutos ou líquidos de I
   if(SCNET){const tx=taxCalc(L.reg(H),L.inv,L.q,L.buy,items,H,sale);return {res:tx.net,tir:irr(L.inv/L.q,tx.flows,L.buy)}}
   const tot=items.reduce((a,c)=>a+c.amt,0)+sale;return {res:tot*L.q-L.inv,tir:irr(L.inv/L.q,items.concat(sale>0?[{t:H,amt:sale}]:[]),L.buy)};
 }
+function scMatSync(){
+  const sm=$("scMat"),pub=$("scSrc").value==="pub";$("scMatField").hidden=!pub;if(!pub)return;
+  if(sm.dataset.n!==String(sel.options.length)||!sm.options.length){sm.innerHTML=sel.innerHTML;sm.dataset.n=String(sel.options.length)}
+  sm.value=sel.value;
+}
 function scCalc(){
-  SCNET=$("scVal").value==="net";
+  SCNET=$("scVal").value==="net";scMatSync();
   const src=$("scSrc").value,L=LAST[src],out=$("scOut");
   $("scPiField").hidden=true;
   if(!L){$("scCrossBox").hidden=true;out.innerHTML='<p class="err">Preencha primeiro a compra na aba '+(src==="pub"?"Títulos públicos":"Crédito privado")+'. Os cenários usam aquela posição.</p>';$("scChart").innerHTML="";$("scWhat").textContent="";return}
@@ -1950,6 +1957,9 @@ function drawScChart(rows,L,xlabel){
 function scBind(){
   ["scSrc","scStep","scSpan"].forEach(id=>$(id).addEventListener("change",scCalc));
   $("scDate").addEventListener("change",()=>{scUserDate[$("scSrc").value]=$("scDate").value||null;scCalc()});
+  $("scMat").addEventListener("change",()=>{ // troca o título aqui e na aba Calcular título
+    sel.value=$("scMat").value;manual=false;MBASE=null;scUserDate.pub=null;applyFam();
+    const prev=activeMod;activeMod="pub";SILENT=true;try{calc()}catch(e){}SILENT=false;activeMod=prev;scCalc()});
   $("scPi").addEventListener("input",scCalc);
   $("scCross").addEventListener("click",e=>{const td=e.target.closest("td[data-info]");if(!td)return;document.querySelectorAll("#scCross td.sel").forEach(x=>x.classList.remove("sel"));td.classList.add("sel");$("scXInfo").innerHTML="<b>"+td.dataset.info+"</b>"});
   $("scXDate").addEventListener("change",()=>{scXUser[$("scSrc").value]=$("scXDate").value||null;scCalc()});
