@@ -572,6 +572,14 @@ def ajustes(a):
             continue
         pc = a.c[p]
         if tp == "S":
+            if abs(v - 1) > 0.15:
+                # confere com o salto de preço entre o último pregão "com" e o primeiro "ex"
+                q = bisect.bisect_left(a.i, ix_ex)
+                if q >= len(a.i) or a.i[q] - ix_ex > 10:
+                    continue
+                r = a.c[q] / pc
+                if abs(math.log(r * v)) > abs(math.log(r)):
+                    continue
             f = 1 / v
         else:
             # valor do provento em termos da cota da época (desfaz desdobramentos posteriores não refletidos)
@@ -846,7 +854,17 @@ def principal():
                 reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn}
                 l, lfim = ltm(f)
                 # valor de mercado: ações ON e PN em circulação × cotação da classe (ou da outra classe se não negociar)
-                cap = f.get("cap") or [None, info.get("on"), info.get("pn")]
+                cap = list(f.get("cap") or [None, info.get("on"), info.get("pn")])
+                b3t = (info.get("on") or 0) + (info.get("pn") or 0)
+                cvt = (cap[1] or 0) + (cap[2] or 0)
+                if b3t and cvt:
+                    razao = b3t / cvt
+                    if 500 < razao < 2000:             # composição do capital informada em milhares
+                        cap = [cap[0], (cap[1] or 0) * 1000, (cap[2] or 0) * 1000]
+                    elif not 0.5 < razao < 2:
+                        cap = [cap[0], info.get("on"), info.get("pn")]
+                elif b3t and not cvt:
+                    cap = [cap[0], info.get("on"), info.get("pn")]
                 pon = A.get(cod + "3")
                 ppn = next((A[cod + s] for s in ("4", "5", "6") if cod + s in A and len(A[cod + s].c)), None)
                 p_on = pon.c[-1] if pon is not None and len(pon.c) else (ppn.c[-1] if ppn else None)
