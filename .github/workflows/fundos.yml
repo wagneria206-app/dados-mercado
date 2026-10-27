@@ -1,0 +1,56 @@
+name: Atualizar fundos (CVM)
+
+on:
+  schedule:
+    - cron: "17 11 * * *"     # 8h17 de Brasília
+    - cron: "47 23 * * 1-5"   # 20h47 de Brasília
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: "Tempo máximo de coleta (min)"
+        required: false
+        default: "38"
+      cda:
+        description: "Refazer as carteiras (1 = sim)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-fundos
+  cancel-in-progress: false
+
+jobs:
+  fundos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests
+      - name: Restaurar a última publicação (ramo "fundos")
+        run: |
+          mkdir -p /tmp/ent /tmp/sai
+          if git fetch -q --depth=1 origin fundos; then git --work-tree=/tmp/ent checkout FETCH_HEAD -- . && git reset -q; fi
+          ls /tmp/ent | head
+      - name: Coletar
+        env:
+          MINUTOS: ${{ github.event.inputs.minutos || '38' }}
+          CDA: ${{ github.event.inputs.cda || '0' }}
+        run: python scripts/fundos.py /tmp/ent /tmp/sai
+      - name: Publicar no ramo "fundos"
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          cd /tmp/sai
+          du -sh . ; ls f | wc -l
+          git init -q -b fundos
+          git config user.name "robo-dados"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Fundos de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" fundos
