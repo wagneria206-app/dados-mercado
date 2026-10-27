@@ -33,6 +33,7 @@ jobs:
         run: |
           if git fetch -q --depth=1 origin site; then git restore --source=FETCH_HEAD --worktree -- data 2>/dev/null || git checkout FETCH_HEAD -- data && git reset -q; fi
           git restore --source=HEAD --worktree -- data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json 2>/dev/null || true
+          git restore --source=HEAD --worktree -- data/curvas_hist.json 2>/dev/null || true
       - name: Buscar dados
         run: python scripts/atualizar.py
 

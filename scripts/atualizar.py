@@ -15,6 +15,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/cri_cra_anbima.json taxas indicativas e PU da ANBIMA de todos os CRIs e CRAs precificados
   data/cri_cra_cronogramas.json cronograma de pagamentos lido de cada termo de securitização
   data/fundos/XX.json, data/fundos_hist/ cotas dos fundos (dias recentes e fins de mês)
+  data/curvas_hist.json    ETTJ da ANBIMA dia a dia (parâmetros), últimos 400 dias
   data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
   data/status.json        resultado de cada fonte (ok / erro) e horário
@@ -630,12 +631,93 @@ def anbima_curva(mercado):
             if len(p) > 3 and num(p[3]) is not None:
                 implicita.append([du, num(p[3])])
         if len(curva_pre) >= 5:
+            b = ettj_parametros(txt, dia)
+            if b:
+                h = ler_json("curvas_hist.json", {"fonte": "ANBIMA – ETTJ (parâmetros Nelson-Siegel-Svensson)", "dias": {}})
+                h["dias"][dia.isoformat()] = b
+                gravar_json("curvas_hist.json", h)
             mercado["curvePre"] = curva_pre
             mercado["curveIpca"] = curva_ipca
             mercado["inflacaoImplicita"] = implicita
             mercado["curveDate"] = dia.isoformat()
             return {"data": dia.isoformat(), "vertices": len(curva_pre)}
     raise RuntimeError("curva de juros ANBIMA não encontrada nos últimos 6 dias úteis")
+
+
+def ettj_parametros(txt, dia=None):
+    """Parâmetros da ETTJ (beta1..beta4, lambda1, lambda2) das curvas prefixada e IPCA, como a ANBIMA publica.
+    Com dia, só aceita a resposta se a data de referência impressa no arquivo for esse dia."""
+    out = {}
+    if dia is not None:
+        m = re.match(r"\s*(\d{2})/(\d{2})/(\d{4})", txt or "")
+        if not m or dt.date(int(m.group(3)), int(m.group(2)), int(m.group(1))) != dia:
+            return None
+    for L in txt.splitlines():
+        p = [c.strip() for c in L.split(";")]
+        nome = norm(p[0]) if p else ""
+        if nome in ("prefixados", "ipca") and len(p) >= 7:
+            try:
+                v = [float(x.replace(",", ".")) for x in p[1:7]]
+            except ValueError:
+                continue
+            out["pre" if nome == "prefixados" else "ipca"] = [round(x, 12) for x in v]
+    return out if len(out) == 2 else None
+
+
+@fonte("anbima_curva_hist")
+def anbima_curva_hist():
+    """
+    Histórico diário da ETTJ (só os 12 parâmetros por dia; o app recalcula a curva com a fórmula da ANBIMA).
+    Busca primeiro as datas que o app compara (1 dia, 1 semana, 1 mês e 1 ano atrás) e depois completa,
+    aos poucos, todos os dias úteis dos últimos 400 dias. Feriado ou dia sem curva fica marcado como vazio.
+    """
+    h = ler_json("curvas_hist.json", {"fonte": "ANBIMA – ETTJ (parâmetros Nelson-Siegel-Svensson)", "dias": {}})
+    dias = h.setdefault("dias", {})
+    vazios = h.setdefault("vazios", {})
+
+    def uteis_antes(d, n=6):
+        out = []
+        while len(out) < n:
+            if d.weekday() < 5:
+                out.append(d)
+            d -= dt.timedelta(days=1)
+        return out
+    alvo = []
+    for back in (1, 7, 30, 365):
+        alvo += uteis_antes(HOJE - dt.timedelta(days=back))
+    alvo += [HOJE - dt.timedelta(days=k) for k in range(1, 401)]
+    vistos, fila = set(), []
+    for d in alvo:
+        k = d.isoformat()
+        if d.weekday() >= 5 or k in vistos or k in dias or vazios.get(k, 0) >= 2:
+            continue
+        vistos.add(k)
+        fila.append(d)
+    limite, novos, sem = time.time() + 4 * 60, 0, 0
+    for d in fila[:80]:
+        if time.time() > limite:
+            break
+        k = d.isoformat()
+        try:
+            r = baixar(URL_ETTJ, dados={"Idioma": "PT", "Dt_Ref": d.strftime("%d/%m/%Y"), "saida": "csv"}, tentativas=2, timeout=60)
+            b = ettj_parametros(texto(r), d)
+        except Exception:  # noqa: BLE001
+            b = None
+        if b:
+            dias[k] = b
+            vazios.pop(k, None)
+            novos += 1
+        else:
+            vazios[k] = vazios.get(k, 0) + 1
+            sem += 1
+    corte = (HOJE - dt.timedelta(days=420)).isoformat()
+    h["dias"] = {k: v for k, v in sorted(dias.items()) if k >= corte}
+    h["vazios"] = {k: v for k, v in sorted(vazios.items()) if k >= corte}
+    gravar_json("curvas_hist.json", h)
+    if fila and not h["dias"]:
+        raise RuntimeError("a ANBIMA não devolveu nenhuma curva histórica")
+    return {"dias": len(h["dias"]), "novos_agora": novos, "sem_curva_agora": sem,
+            "mais_antigo": min(h["dias"]) if h["dias"] else None, "faltam": max(0, len(fila) - novos - sem)}
 
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
@@ -1555,6 +1637,7 @@ def main():
     tesouro_direto(mercado)        # Tesouro Transparente: histórico (pode atrasar alguns dias)
     tesouro_direto_site(mercado)   # site do Tesouro Direto: dados do dia, quando disponível
     anbima_curva(mercado)
+    anbima_curva_hist()
     bcb(mercado)
     ipca(mercado)
     anbima_debentures()
