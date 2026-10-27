@@ -579,6 +579,7 @@ html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),ht
 html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .pctab th:nth-child(7),html.pages .pctab td:nth-child(7){display:none!important}
 .ctab tfoot tr.msub td{border-top:1px solid var(--line);color:var(--muted)}.ctab tfoot tr.mtot td{border-top:2px solid var(--line);font-weight:600;color:var(--ink)}.ctab tfoot small{font-weight:400;color:var(--muted)}
 #scMatField{grid-column:span 2;min-width:0}@media (max-width:640px){#scMatField{grid-column:auto}}
+html.pages .saverow:has(#ldSave){display:none!important}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -725,7 +726,7 @@ html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .
         <div class="scctl"><div class="field"><label for="fdCotas">Cotas compradas</label><input id="fdCotas" inputmode="decimal" placeholder="do extrato"></div><div class="field"><label for="fdCota0">ou cota na aplicação</label><input id="fdCota0" inputmode="decimal" placeholder="ex.: 1,23456789"></div></div>
         <div class="field"><label for="fdCotasNow">Cotas hoje <span style="color:var(--muted);font-weight:400">(opcional, do extrato, já sem o come-cotas)</span></label><input id="fdCotasNow" inputmode="decimal"></div><div class="field"><label for="fdSaldo">Saldo bruto hoje <span style="color:var(--muted);font-weight:400">(do extrato; basta isto se não tiver as cotas)</span></label><input id="fdSaldo" inputmode="decimal" placeholder="ex.: 43.098,49"></div>
         <div class="field"><label for="fdExp">Rendimento esperado entre cotas</label><div class="affix s"><input id="fdExp" inputmode="decimal" placeholder="100"><span class="suf">% do CDI</span></div><small>Usado só para estimar o valor entre a última cota registrada e hoje.</small></div>
-        <details class="nota"><summary>Registrar a cota de hoje</summary><div class="scctl" style="margin-top:10px"><div class="field"><label for="fdQDate">Data</label><input type="date" id="fdQDate"></div><div class="field"><label for="fdQVal">Valor da cota</label><input id="fdQVal" inputmode="decimal" placeholder="ex.: 1,98765432"></div></div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="fdQSave">Salvar cota</button><span class="sub" id="fdQMsg"></span></div><p class="sub" style="font-size:.82rem;margin-top:6px">A cota fica gravada pelo CNPJ e vale para todos os clientes que têm o fundo. A atualização diária também tenta ler a cota em fontes públicas, conferindo o CNPJ.</p></details>
+        <details class="nota"><summary>Registrar a cota de hoje</summary><div class="scctl" style="margin-top:10px"><div class="field"><label for="fdQDate">Data</label><input type="date" id="fdQDate"></div><div class="field"><label for="fdQVal">Valor da cota</label><input id="fdQVal" inputmode="decimal" placeholder="ex.: 1,98765432"></div></div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="fdQSave">Salvar cota</button><span class="sub" id="fdQMsg"></span></div><p class="sub" style="font-size:.82rem;margin-top:6px">A cota informada vale para este cálculo. O robô também traz, todo dia, a cota oficial da CVM de todos os fundos.</p></details>
         <div class="saverow"><label class="mvlab">Carteira <select id="fdSaveCart"></select></label><button type="button" class="btn sec" id="fdSavePos">Salvar na carteira</button><button type="button" class="link" id="fdSaveNew" hidden>Salvar como nova</button><span class="sub" id="fdSaveMsg"></span></div><div class="saverow" style="margin-top:6px"><button type="button" class="link" data-ptsim="fund">Simular impacto na carteira do cliente</button><button type="button" class="link" data-propadd="fund">Adicionar à proposta</button></div><div id="ptFund"></div>
       </form>
     </section>
@@ -937,7 +938,7 @@ html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .
       <h3>FGC</h3>
       <ul>
         <li>CDB, RDB, LCI, LCA e LC têm garantia do FGC de até R$ 250 mil por CPF por conglomerado, e até R$ 1 milhão a cada 4 anos. LCD, LIG e LF não têm.</li>
-        <li>O limite soma tudo o que você tem no mesmo grupo, inclusive em corretoras diferentes. A aba Carteiras mostra a exposição por conglomerado, hoje e no pico projetado.</li>
+        <li>O limite soma tudo o que você tem no mesmo grupo, inclusive em corretoras diferentes.</li>
       </ul>
     </div>
   </section>
@@ -972,7 +973,7 @@ html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .
       <li>Compara o rendimento total no prazo: o IR incide só sobre o ganho, pela alíquota do prazo inteiro. Em % do CDI usa o CDI projetado pela curva da ANBIMA; em IPCA +, a projeção de IPCA das outras abas.</li>
       <li>Empatar na taxa não quer dizer empatar no risco: veja o emissor e a cobertura do FGC.</li></ul></div>
     <div><h3>Escada</h3><ul>
-      <li>Usa as taxas de compra oficiais do Tesouro Direto e calcula o preço pela metodologia do Tesouro. Os degraus podem ser salvos numa carteira como compra de hoje, para acompanhar.</li>
+      <li>Usa as taxas de compra oficiais do Tesouro Direto e calcula o preço pela metodologia do Tesouro. </li>
       <li>Levando cada título até o vencimento, o valor recebido não depende das oscilações de mercado; nos títulos IPCA+ depende do IPCA realizado.</li></ul></div>
   </section>
   <section class="notes" id="notesTx" hidden>
@@ -2717,7 +2718,7 @@ function bkCalc(){
   h+='<div class="row"><dt>Rentabilidade anual (bruta / líquida)</dt><dd>'+fx(r.tirGross,2)+'% / '+fx(r.tirNet,2)+'%</dd></div>';
   h+='</dl>';
   if(eq)h+='<p class="sub" style="margin-top:12px;font-size:.9rem">'+eq+'</p>';
-  h+='<p class="sub" style="margin-top:8px;font-size:.88rem">'+(r.fgc?'Coberto pelo FGC até R$ 250 mil por CPF por conglomerado (somando todos os títulos do mesmo grupo). Veja a exposição na aba Carteiras, em FGC.':'Este tipo de título não tem garantia do FGC: o risco é do emissor.')+' '+(r.liq?'Com liquidez diária: o resgate antecipado sai pelo valor na curva.':'Sem liquidez diária: o resgate antes do vencimento depende de recompra pelo emissor, que pode pagar menos que a curva.')+(p.idx==="IPCA"?' IPCA do mês anterior, com aniversário na data da aplicação e pro rata por dias úteis (padrão dos bancos emissores).':'')+(p.idx==="DI_PCT"||p.idx==="DI_SPREAD"?' CDI passado: série diária oficial do Banco Central; futuro: curva de juros da ANBIMA.':'')+'</p>';
+  h+='<p class="sub" style="margin-top:8px;font-size:.88rem">'+(r.fgc?'Coberto pelo FGC até R$ 250 mil por CPF por conglomerado (somando todos os títulos do mesmo grupo).':'Este tipo de título não tem garantia do FGC: o risco é do emissor.')+' '+(r.liq?'Com liquidez diária: o resgate antecipado sai pelo valor na curva.':'Sem liquidez diária: o resgate antes do vencimento depende de recompra pelo emissor, que pode pagar menos que a curva.')+(p.idx==="IPCA"?' IPCA do mês anterior, com aniversário na data da aplicação e pro rata por dias úteis (padrão dos bancos emissores).':'')+(p.idx==="DI_PCT"||p.idx==="DI_SPREAD"?' CDI passado: série diária oficial do Banco Central; futuro: curva de juros da ANBIMA.':'')+'</p>';
   out.innerHTML=h;
 }
 function bkFill(p){$("bkType").value=p.key||"CDB";$("bkIssuer").value=p.issuer||"";$("bkConglom").value=p.conglom||"";$("bkBuy").value=p.buy||"";$("bkMat").value=p.mat||"";$("bkAmt").value=p.amt||"";$("bkIdx").value=p.idx||"DI_PCT";$("bkRate").value=p.rate||"";$("bkLiq").checked=!!p.liq;bkApplyIdx()}
@@ -4086,8 +4087,8 @@ async function fdFetch(){
 async function fdQuoteSave(){
   const c=cnpjNorm($("fdCnpj").value),msg=$("fdQMsg"),d=$("fdQDate").value,v=num($("fdQVal").value);
   if(!cnpjValid(c)){msg.textContent="CNPJ inválido.";return}if(!d||parseDate(d)>VAL+DAY){msg.textContent="Informe a data da cota (até hoje).";return}if(!(v>0)){msg.textContent="Informe o valor da cota.";return}
-  if(!DB){msg.textContent="Funciona com o aplicativo aberto no Claude.";return}
   const old=FUNDS[c]||{cnpj:c},Q=(old.quotes||[]).filter(q=>q[0]!==d).concat([[d,v,"informada"]]).sort((a,b)=>a[0].localeCompare(b[0])).slice(-240);
+  if(!DB){FUNDS[c]=Object.assign({},old,{cnpj:c,quotes:Q,name:old.name||$("fdName").value.trim()||""});msg.textContent="Cota de "+fdate(parseDate(d))+" usada no cálculo.";fdCalc();return}
   try{await DB.doc("funds/"+c).set(Object.assign({},old,{cnpj:c,quotes:Q,updatedAt:new Date().toISOString(),name:old.name||$("fdName").value.trim()||""}));msg.textContent="Cota salva para o CNPJ "+cnpjFmt(c)+"."}catch(e){msg.textContent="Não deu para salvar agora."}
 }
 function fdBind(){
