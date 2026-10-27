@@ -14,6 +14,10 @@ on:
         description: "Refazer as carteiras (1 = sim)"
         required: false
         default: "0"
+      refazer:
+        description: "Reconstruir a cota diária do zero (1 = sim)"
+        required: false
+        default: "0"
 
 permissions:
   contents: write
@@ -41,6 +45,7 @@ jobs:
         env:
           MINUTOS: ${{ github.event.inputs.minutos || '38' }}
           CDA: ${{ github.event.inputs.cda || '0' }}
+          REFAZER: ${{ github.event.inputs.refazer || '0' }}
         run: python scripts/fundos.py /tmp/ent /tmp/sai
       - name: Publicar no ramo "fundos"
         env:
