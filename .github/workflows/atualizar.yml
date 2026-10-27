@@ -5,6 +5,11 @@ on:
     - cron: "30 22 * * 1-5"   # 19h30 de Brasília, dias úteis (depois da ANBIMA)
     - cron: "0 11 * * 1-6"    # 8h de Brasília (pega o CSV do Tesouro do dia anterior)
   workflow_dispatch:          # botão "Run workflow" na aba Actions
+    inputs:
+      fontes:
+        description: "Só estas fontes, separadas por vírgula (vazio = coleta completa)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -35,7 +40,9 @@ jobs:
           git restore --source=HEAD --worktree -- data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json 2>/dev/null || true
           git restore --source=HEAD --worktree -- data/curvas_hist.json 2>/dev/null || true
       - name: Buscar dados
-        run: python scripts/atualizar.py
+        env:
+          FONTES: ${{ github.event.inputs.fontes }}
+        run: if [ -n "$FONTES" ]; then python scripts/atualizar.py --so "$FONTES"; else python scripts/atualizar.py; fi
 
       - name: Gravar o estado do robô no main (termos lidos e cronogramas)
         if: always()
