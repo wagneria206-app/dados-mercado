@@ -222,6 +222,7 @@ class Fundo:
 
 
 CAL = []          # datas do calendário (AAAA-MM-DD)
+OLD = {}          # carteira e histórico de carteira da publicação anterior
 CALIX = {}
 F = {}
 
@@ -252,6 +253,8 @@ def carregar_estado(pasta):
                     f.i.append(i0 + 1 + k)
                     f.q.append(q)
             F[nome[:14]] = f
+            if j.get("cart") or j.get("carth"):
+                OLD[nome[:14]] = (j.get("cart"), j.get("carth") or {})
             n += 1
     log("estado carregado:", n, "fundos,", len(CAL), "dias no calendário")
     return est
@@ -459,15 +462,16 @@ def nome_ativo(blc, L):
 
 
 def carteiras(ativos, estado):
-    """Composição e maiores posições na carteira mais recente de cada fundo (últimos 3 meses de CDA)."""
-    out, assin = {}, []
+    """Composição e maiores posições na carteira mais recente de cada fundo; composição de cada mês lido (histórico)."""
+    out, assin, hist = {}, [], {}
+    n_meses = 3 if estado.get("cda_hist") else 13
     meses = []
-    for k in range(1, 8):
+    for k in range(1, n_meses + 5):
         ym = ym_add(HOJE.strftime("%Y%m"), -k)
         meses.append(ym)
     lidos = 0
     for ym in meses:
-        if lidos >= 3 or time.time() > LIMITE - 300:
+        if lidos >= n_meses or time.time() > LIMITE - 300:
             break
         try:
             r = baixar(URL_CDA.format(ym), aceita_404=True)
@@ -486,7 +490,7 @@ def carteiras(ativos, estado):
                 continue
             for L in ler_csv(z.open(nome)):
                 k = chave(L.get("CNPJ_FUNDO_CLASSE") or L.get("CNPJ_FUNDO"))
-                if not k or k not in ativos or k in out:
+                if not k or k not in ativos:
                     continue
                 if blc == "PL":
                     pl[k] = num(L.get("VL_PATRIM_LIQ"))
@@ -502,7 +506,7 @@ def carteiras(ativos, estado):
                     nm, cn = nome_ativo(blc, L)
                 c = comp.setdefault(k, {})
                 c[tp] = c.get(tp, 0) + v
-                if v > 0:
+                if v > 0 and k not in out:
                     p = pos.setdefault(k, {})
                     a = p.setdefault(nm, [0.0, cn, tp])
                     a[0] += v
@@ -512,12 +516,17 @@ def carteiras(ativos, estado):
             base = pl.get(k) or sum(v for v in c.values())
             if not base:
                 continue
+            hist.setdefault(k, {})[ym] = [[t, round(v / base * 100, 1)] for t, v in sorted(c.items(), key=lambda x: -abs(x[1]))[:10]]
+            if k in out:
+                continue
             top = sorted(pos.get(k, {}).items(), key=lambda x: -x[1][0])[:12]
             out[k] = {"dt": f"{ym[:4]}-{ym[4:]}",
                       "comp": [[t, round(v / base * 100, 2)] for t, v in sorted(c.items(), key=lambda x: -abs(x[1]))],
                       "top": [[n, round(a[0] / base * 100, 2), a[1], a[2]] for n, a in top]}
-        log("CDA", ym, "carteiras novas:", len(comp))
-    return out, assin
+        log("CDA", ym, "carteiras:", len(comp))
+    if lidos >= n_meses:
+        estado["cda_hist"] = 1
+    return out, assin, hist
 
 
 # ------------------------------------------------------------------ índices de referência
@@ -785,17 +794,22 @@ def principal():
 
     # 4) cadastro, carteira e índices
     info = cadastro(ativos)
-    cart_ant = {}
+    hist = {}
     if estado.get("cda") != HOJE.strftime("%Y-%W") or os.environ.get("CDA") == "1":
-        cart, assin = carteiras(ativos, estado)
+        cart, assin, hist = carteiras(ativos, estado)
         estado["cda"] = HOJE.strftime("%Y-%W")
         estado["cda_meses"] = assin
+        for k, (c0, _) in OLD.items():          # fundo sem carteira nova: mantém a anterior
+            if k not in cart and c0:
+                cart[k] = c0
     else:
-        for k in ativos:
-            j = ler_json(os.path.join(ent, "f", k + ".json"), {})
-            if j.get("cart"):
-                cart_ant[k] = j["cart"]
-        cart = cart_ant
+        cart = {k: c0 for k, (c0, _) in OLD.items() if c0}
+    carth = {}
+    for k in ativos:
+        h = dict((OLD.get(k) or (None, {}))[1])
+        h.update(hist.get(k, {}))
+        if h:
+            carth[k] = dict(sorted(h.items())[-24:])
     bench = indices()
     velho = ler_json(os.path.join(ent, "bench.json"), {"d": {}, "m": {}})
     for nome, serie in (velho.get("m") or {}).items():          # fonte fora do ar: mantém a última coleta
@@ -810,7 +824,7 @@ def principal():
 
     # 5) gravação
     cdi_d = bench["d"].get("cdi")
-    gestores, cls_l, anb_l, tip_l = {}, {}, {}, {}
+    gestores, cls_l, anb_l, tip_l, adm_l = {}, {}, {}, {}, {}
 
     def ix(dic, v):
         if v not in dic:
@@ -840,6 +854,8 @@ def principal():
             reg.update(i0=i0, q0=q0, r=r)
         if k in cart:
             reg["cart"] = cart[k]
+        if carth.get(k):
+            reg["carth"] = carth[k]
         mt = metricas(f, cdi_d)
         reg["met"] = {a: r2(b) if a != "cap" else round(b) for a, b in mt.items()}
         gravar(os.path.join(pf, k + ".json"), reg)
@@ -862,14 +878,16 @@ def principal():
                        round(u[2] or 0), u[3] or 0, r2(mt.get("rm")), r2(mt.get("ra")), r2(mt.get("r12")), r2(mt.get("r24")),
                        r2(mt.get("r36")), r2(mt.get("r60")), r2(mt.get("v12")), r2(mt.get("sh")), r2(mt.get("dd")),
                        round(mt.get("cap", 0)), f"{prim[:4]}-{prim[4:]}", flags, inf.get("tadm"),
-                       CAL[f.i[-1]] if len(f.i) else None])
+                       CAL[f.i[-1]] if len(f.i) else None, inf.get("amin"),
+                       (inf.get("dcot") or 0) + (inf.get("dpag") or 0) if inf.get("dcot") is not None or inf.get("dpag") is not None else None,
+                       inf.get("tperf"), ix(adm_l, (inf.get("adm") or "").strip()[:60])])
     inv = lambda d: [a for a, _ in sorted(d.items(), key=lambda x: x[1])]  # noqa: E731
     ult = CAL[-1] if CAL else None
     gravar(os.path.join(sai, "idx.json"), {
         "dt": ult, "geradoEm": dt.datetime.now().isoformat(timespec="seconds"),
         "cols": ["cnpj", "nome", "tipo", "classe", "anbima", "gestor", "pl", "cotistas", "rm", "ra", "r12", "r24", "r36", "r60",
-                 "v12", "sharpe", "dd36", "capt12", "inicio", "flags", "tadm", "ult"],
-        "tipos": inv(tip_l), "classes": inv(cls_l), "anbima": inv(anb_l), "gestores": inv(gestores),
+                 "v12", "sharpe", "dd36", "capt12", "inicio", "flags", "tadm", "ult", "amin", "dres", "tperf", "adm"],
+        "tipos": inv(tip_l), "classes": inv(cls_l), "anbima": inv(anb_l), "gestores": inv(gestores), "adms": inv(adm_l),
         "cdi12": r2(metricas_cdi(cdi_d)), "rows": linhas,
         "fonte": "CVM – informe diário, cadastro, extrato, lâmina e CDA"})
     gravar(os.path.join(sai, "cal.json"), {"d": CAL})
