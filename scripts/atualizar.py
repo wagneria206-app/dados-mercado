@@ -1102,10 +1102,11 @@ def dolar_fundamentos():
         out["ultimo"]["commodities"] = {"data": k, "valor": d[k]}
     except Exception as e:  # noqa: BLE001
         falhas.append(f"commodities (FRED): {str(e)[:100]}")
-    try:   # IPCA mensal desde 1995 (SGS 433), para a paridade do poder de compra de longo prazo
-        r = requests.get(URL_SGS.format(433, "01/01/1995", HOJE.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
-        V = r.json() if r.content.strip()[:1] == b"[" else []
-        d = {data_dmy(x["data"])[:7]: num(x["valor"]) for x in V if num(x["valor"]) is not None}
+    try:   # IPCA mensal desde 1995 (SGS 433), em blocos de 10 anos (limite da API), para a paridade de longo prazo
+        d = {}
+        for a in range(1995, HOJE.year + 1, 10):
+            ini, fim = dt.date(a, 1, 1), min(dt.date(a + 9, 12, 31), HOJE)
+            d.update({x[0][:7]: x[1] for x in sgs_periodo(433, ini, fim)})
         if len(d) > 300:
             out["mensal"]["ipca_var"] = d
         else:
