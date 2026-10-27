@@ -588,10 +588,6 @@ details.memo dl{margin-top:6px}
 
 .tdsusp{margin:-8px 0 18px;padding:10px 14px;border-radius:10px;border:1px solid var(--loss);background:var(--loss-bg);color:var(--ink);font-size:.88rem;line-height:1.45}
 
-html.pages button[data-area="cart"],html.pages button[data-mod="cart"]{display:none!important}
-
-html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),html.pages #pcTermo,html.pages #pcBatchBox{display:none!important}
-
 .ctab tfoot tr.msub td{border-top:1px solid var(--line);color:var(--muted)}.ctab tfoot tr.mtot td{border-top:2px solid var(--line);font-weight:600;color:var(--ink)}.ctab tfoot small{font-weight:400;color:var(--muted)}
 
 #scMatField{grid-column:span 2;min-width:0}@media (max-width:640px){#scMatField{grid-column:auto}}
@@ -699,7 +695,7 @@ html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),ht
       <form id="pcForm" novalidate style="display:flex;flex-direction:column;gap:18px">
         <div class="field">
           <label for="pcCode">Código do papel</label>
-          <div class="coderow"><input id="pcCode" list="pcList" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex.: MOVI27, 22K0767293, CRA0210013B" value="MOVI27"><button type="button" class="btn sec" id="pcFetch">Buscar dados do papel</button></div><details class="pcbatch" id="pcBatchBox" style="margin-top:8px"><summary>Cadastrar vários papéis de uma vez</summary><div style="margin-top:8px"><label for="pcBatchTx" class="sub" style="font-size:.84rem">Cole os códigos separados por espaço, vírgula ou linha (debêntures, CRI e CRA). Uma única pesquisa cadastra todos; leva alguns minutos e você pode continuar usando o app.</label><textarea id="pcBatchTx" rows="3" spellcheck="false" autocapitalize="characters" style="width:100%;margin-top:6px" placeholder="CBRDB8, 22K0767293, CRA0210013B"></textarea><p style="margin-top:6px"><button type="button" class="btn" id="pcBatchGo">Cadastrar todos</button></p><div id="pcBatchOut" class="sub" style="font-size:.86rem;margin-top:6px"></div></div></details>
+          <div class="coderow"><input id="pcCode" list="pcList" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex.: MOVI27, 22K0767293, CRA0210013B" value="MOVI27"><button type="button" class="btn sec" id="pcFetch">Buscar dados do papel</button></div>
           <datalist id="pcList"></datalist>
           <small>Debêntures pelo código (ex.: MOVI27); CRI e CRA pelo código CETIP (ex.: CRA02300795).</small>
         </div>
@@ -729,13 +725,7 @@ html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),ht
           <small id="pcMrateHint"></small>
         </div>
         
-        <details id="pcTermo" class="pctermo">
-          <summary>Ler o documento oficial (termo de securitização ou escritura, em PDF)</summary>
-          <p class="sub" style="font-size:.86rem;margin-top:8px">Baixe o termo de securitização (CRI/CRA) ou a escritura de emissão (debêntures) no site da securitizadora ou do emissor e escolha o arquivo aqui. O app lê <b>todas</b> as páginas, o Claude identifica a série deste código e extrai as regras de correção e o cronograma completo. Você confere antes de gravar.</p>
-          <p style="margin-top:8px"><input type="file" id="ptFile" accept="application/pdf,.pdf"> <button type="button" class="btn" id="ptGo">Ler documento</button></p>
-          <div id="ptMsg" class="sub" style="font-size:.86rem;margin-top:6px"></div>
-          <div id="ptOut"></div>
-        </details>
+        
         <details id="pcEdit">
           <summary>Corrigir características do papel</summary>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
@@ -1027,7 +1017,7 @@ const clean=s=>String(s==null?"":s).replace(/[<>"`]/g,"").slice(0,400);
 
 const utc=(y,m,d)=>Date.UTC(y,m,d);
 const $=id=>document.getElementById(id);
-const TRIGGER_ID="trig_01MWBwabSAF6DozZdXhG6Gyh";
+
 
 /* ---------- séries históricas embutidas ---------- */
 const BASE_IDX=1614.62;          // IPCA jun/2000: VNA = R$ 1.000 em 15/07/2000
@@ -1081,7 +1071,10 @@ function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=
 function holidays(y){if(hcache[y])return hcache[y];const s=new Set(),e=easter(y);[[0,1],[3,21],[4,1],[8,7],[9,12],[10,2],[10,15],[11,25]].forEach(([m,d])=>s.add(utc(y,m,d)));if(y>=2024)s.add(utc(y,10,20));[-48,-47,-2,60].forEach(o=>s.add(e+o*DAY));return hcache[y]=s}
 function isBiz(t){const d=new Date(t),w=d.getUTCDay();return w!==0&&w!==6&&!holidays(d.getUTCFullYear()).has(t)}
 const ducache=new Map();
-function du(a,b){const key=a+":"+b;let n=ducache.get(key);if(n!=null)return n;n=0;for(let t=a;t<b;t+=DAY)if(isBiz(t))n++;ducache.set(key,n);return n}
+const BZ0=Date.UTC(1999,0,1),BZN=Math.round((Date.UTC(2101,0,1)-BZ0)/DAY);let BZC=null;
+function bzCum(){if(BZC)return BZC;const C=new Int32Array(BZN+1);let c=0;for(let i=0;i<BZN;i++){C[i]=c;if(isBiz(BZ0+i*DAY))c++}C[BZN]=c;return BZC=C}
+function du(a,b){if(!(b>a))return 0;const ia=(a-BZ0)/DAY,ib=(b-BZ0)/DAY;if(Number.isInteger(ia)&&Number.isInteger(ib)&&ia>=0&&ib<=BZN){const C=bzCum();return C[ib]-C[ia]}
+  const key=a+":"+b;let n=ducache.get(key);if(n!=null)return n;n=0;for(let t=a;t<b;t+=DAY)if(isBiz(t))n++;ducache.set(key,n);return n}
 function parseDate(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||"");return m?utc(+m[1],+m[2]-1,+m[3]):NaN}
 function addMonths(t,n){const d=new Date(t);return utc(d.getUTCFullYear(),d.getUTCMonth()+n,d.getUTCDate())}
 
@@ -1168,7 +1161,7 @@ function pastPayments(kind,d,buy){
 }
 
 /* ---------- aplicação dos dados de mercado ---------- */
-function applyData(d){
+function applyData(d){CALC_GEN++;
   const v=parseDate(d.refDate);if(isNaN(v))return false;
   VAL=v;K_VAL=new Date(VAL).getUTCFullYear()*12+new Date(VAL).getUTCMonth();
   if(isFinite(d.selicOver)&&d.selicOver>0)SELIC_OVER=+d.selicOver;
@@ -1420,7 +1413,9 @@ function dfCurve(d){ // fator (1+r)^(du/252) da curva pré ANBIMA, flat-forward
   for(let i=1;i<V.length;i++)if(d<=V[i][0]){const [d0,r0]=V[i-1],[d1,r1]=V[i],f0=Math.pow(1+r0/100,d0/252),f1=Math.pow(1+r1/100,d1/252);return f0*Math.pow(f1/f0,(d-d0)/(d1-d0))}
   const [dl,rl]=V[V.length-1];return Math.pow(1+rl/100,dl/252)*Math.pow(1+rl/100,(d-dl)/252);
 }
-function cdiDay(t){ // taxa diária do CDI (fração) no dia útil t
+let CALC_GEN=0,CDM=new Map(),CDM_K="";
+function cdiDay(t){const k=CALC_GEN+"|"+SC_DI_SHIFT;if(k!==CDM_K){CDM=new Map();CDM_K=k}let v=CDM.get(t);if(v===undefined){v=cdiDay0(t);CDM.set(t,v)}return v}
+function cdiDay0(t){ // taxa diária do CDI (fração) no dia útil t
   const k=new Date(t).toISOString().slice(0,10);
   if(CDI_DAILY[k]!=null)return CDI_DAILY[k]/100;
   {const v=cdiRun(t);if(v!=null)return v/100}
@@ -1429,7 +1424,9 @@ function cdiDay(t){ // taxa diária do CDI (fração) no dia útil t
   if(t>=VAL){const n=du(VAL,t);return dfScen(n+1)/dfScen(n)-1}
   return Math.pow(1+SELIC_OVER/100,1/252)-1;
 }
-function cdiFactor(a,b,pct){let f=1;for(let t=a;t<b;t+=DAY)if(isBiz(t)){const x=cdiDay(t);f*=pct==null?1+x:1+x*pct/100}return f}
+let CDS=new Map(),CDS_K="";
+function cdiDays(a,b){const k=CALC_GEN+"|"+SC_DI_SHIFT;if(k!==CDS_K){CDS=new Map();CDS_K=k}const key=a+":"+b;let L=CDS.get(key);if(!L){L=[];for(let t=a;t<b;t+=DAY)if(isBiz(t))L.push(cdiDay(t));if(CDS.size>400)CDS.clear();CDS.set(key,L)}return L}
+function cdiFactor(a,b,pct){const L=cdiDays(a,b);let f=1;if(pct==null)for(let i=0;i<L.length;i++)f*=1+L[i];else for(let i=0;i<L.length;i++)f*=1+L[i]*pct/100;return f}
 function cdiAnnualAt(t){const x=cdiDay(nextBiz(t));return (Math.pow(1+x,252)-1)*100}
 function periodFactor(P,a,b){
   if(b<=a)return 1;const n=du(a,b);
@@ -1510,7 +1507,7 @@ const PCF={
   PRE:{pre:"",suf:"% a.a.",dec:2,ex:"13,00",axis:"Taxa de mercado (% a.a.)",span:2.5,txt:r=>fx(r,2)+"% a.a."}
 };
 const TYPE_NAME={DEB:"Debênture",CRI:"CRI",CRA:"CRA"};
-let PAPERS=JSON.parse(JSON.stringify(PAPERS0)),pcDb=null,activeMod="pub";
+let PAPERS=JSON.parse(JSON.stringify(PAPERS0)),pcDb=null,activeMod="pub";let PC_RATES_ON=false;
 const pcMemo=new Map();
 function codeClean(c){c=String(c||"").trim().toUpperCase().replace(/\s+/g,"");c=c.replace(/^(CRA|CRI|DEB|DEBENTURE)[-–_.\/]+/,"");c=c.replace(/^(CRA|CRI)(?=(CRA|CRI)[0-9])/,"");const d=c.match(/^DEB([A-Z]{4}[0-9]{2})$/);if(d)c=d[1];return c.replace(/[^A-Z0-9]/g,"")}
 function pcCanon(c){c=codeClean(c);if(!c||PAPERS[c])return c;const m=c.match(/^(CRI|CRA)([0-9].*)$/);if(m&&PAPERS[m[2]])return m[2];if(/^[0-9]/.test(c)){if(PAPERS["CRI"+c])return "CRI"+c;if(PAPERS["CRA"+c])return "CRA"+c}return c}
@@ -1712,47 +1709,21 @@ async function pcSaveEdit(){
   const doc=Object.assign({},old,{code,type:old.type||(/^CRI/.test(code)?"CRI":/^CRA/.test(code)?"CRA":"DEB"),index:$("peIdx").value,rate,vne,start,basis:$("peBasis").value,ipcaLag:+$("peLag").value,schedule:sch,official:false,status:"ok",updatedAt:new Date().toISOString(),notes:"Características corrigidas manualmente."});
   if(!(old.sources||[]).includes("Correção manual"))doc.sources=(old.sources||[]).concat(["Correção manual"]);
   PAPERS[code]=doc;pcMemo.clear();
-  if(pcDb){try{await pcDb.doc("papers/"+code).set(doc);$("peMsg").textContent="Salvo."}catch(e){$("peMsg").textContent="Salvo só neste aparelho (não deu para gravar na calculadora)."}}
-  else $("peMsg").textContent="Salvo só nesta sessão.";
+  $("peMsg").textContent="Salvo só nesta sessão.";
   pcList();pcCalc();
 }
-let PCB_LIST=[];
-async function pcBatch(){
-  const out=$("pcBatchOut"),raw=($("pcBatchTx").value||"").toUpperCase().split(/[\s,;]+/).map(x=>codeClean(x)).filter(x=>x.length>=5&&x.length<=16);
-  const codes=[...new Set(raw.map(c=>pcP(c)?pcCanon(c):c))].slice(0,15);
-  if(!codes.length){out.textContent="Digite pelo menos um código.";return}
-  if(!pcDb||!mcpNs){out.textContent="A busca funciona com o app aberto no Claude.";return}
-  const novos=codes.filter(c=>{const P=pcP(c);return !P||P.status==="error"});const ja=codes.filter(c=>!novos.includes(c));
-  if(!novos.length){out.innerHTML="Todos já estão cadastrados: "+ja.map(pcEsc).join(", ")+".";PCB_LIST=codes;pcBatchShow();return}
-  const b=$("pcBatchGo");b.disabled=true;out.textContent="Pedindo a pesquisa…";
-  try{for(const c of novos){const ref=pcDb.doc("papers/"+c),sn=await ref.get(),stamp={code:c,status:"pending",requestedAt:new Date().toISOString()};if(sn.exists)await ref.update(stamp);else await ref.set(stamp);PAPERS[c]=Object.assign({},PAPERS[c]||{},stamp)}
-    await mcpNs.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIGGER_ID,text:"Cadastrar ou atualizar os papéis de crédito privado "+novos.join(", ")+" (siga o PASSO 8 para cada um)."},{cache:false});
-    PCB_LIST=codes;pcBatchShow();pcList()}
-  catch(e){out.textContent=e&&e.code==="approval_required"?"É preciso permitir o acesso quando o Claude perguntar. Tente de novo e escolha Permitir.":"Não deu para pedir a pesquisa agora. Tente de novo em instantes."}
-  finally{setTimeout(()=>{b.disabled=false},30000)}
-}
-function pcBatchShow(){const out=$("pcBatchOut");if(!out||!PCB_LIST.length)return;
-  out.innerHTML=PCB_LIST.map(c=>{const P=pcP(c),st=!P?"—":P.status==="pending"?'<span class="tag est">pesquisando…</span>':P.status==="error"?'<span class="tag man">não identificado</span>':'<span class="tag">cadastrado</span>';return '<div style="display:flex;gap:8px;align-items:center;margin:3px 0"><button type="button" class="link" data-pcopen="'+pcEsc(c)+'">'+pcEsc(c)+'</button>'+st+(P&&P.name?'<span style="color:var(--muted)">'+pcEsc(String(P.name).slice(0,60))+'</span>':'')+'</div>'}).join("")}
-document.addEventListener("click",e=>{const o=e.target.closest("[data-pcopen]");if(o){$("pcCode").value=o.dataset.pcopen;pcCalc();return}if(e.target.id==="pcBatchGo")pcBatch()});
+
+
+
+document.addEventListener("click",e=>{const o=e.target.closest("[data-pcopen]");if(o){$("pcCode").value=o.dataset.pcopen;pcCalc();return}});
 async function pcFetch(){
   const code=codeClean($("pcCode").value);
   if(!code){setStat("Digite o código do papel.","bad");return}
-  if(PAGES&&!pcDb)return pcRoboFetch(code);
-  if(!pcDb||!mcpNs){$("pcInfo").innerHTML='<p class="err">A busca funciona com a calculadora aberta no Claude (claude.ai no navegador ou app).</p>';return}
-  const btnF=$("pcFetch");btnF.disabled=true;
-  try{
-    const ref=pcDb.doc("papers/"+code),snap=await ref.get();
-    const stamp={code,status:"pending",requestedAt:new Date().toISOString()};
-    if(snap.exists)await ref.update(stamp);else await ref.set(stamp);
-    PAPERS[code]=Object.assign({},PAPERS[code]||{},stamp);pcCalc();
-    await mcpNs.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIGGER_ID,text:"Cadastrar ou atualizar o papel de crédito privado "+code+" (siga o PASSO 8)."},{cache:false});
-  }catch(e){
-    $("pcInfo").innerHTML='<p class="err">'+(e&&e.code==="approval_required"?"É preciso permitir o acesso quando o Claude perguntar. Toque de novo e escolha Permitir.":"Não deu para pedir a busca agora. Tente de novo em instantes.")+'</p>';
-  }finally{setTimeout(()=>{btnF.disabled=false},60000)}
+  return pcRoboFetch(code);
 }
 const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",cart:"cart"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira"},AREA_LAST={calc:"pub",simu:"sc",mkt:"mk",cart:"cart"};
 function setMod(m){
-  activeMod=m;const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
+  activeMod=m;if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
   if($("areaTitle"))$("areaTitle").textContent=AREA_T[ar];
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mod===m?"true":"false"));
@@ -2003,7 +1974,7 @@ function defaultBase(kind,d){return tdRow(kind,d)?"TD":"ANBIMA"}
 /* ================= Banco de dados: carteira e histórico ================= */
 let DB=null,POS={},HIST={},SILENT=false;
 
-function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
 
 
 
@@ -2698,12 +2669,7 @@ async function mkClick(e){
   if(e.target.id==="piSave"){
     PI_MODE=$("piMode").value;if(PI_MODE!=="m12")PI_MODE="impl";
     try{localStorage.setItem("piMode2",PI_MODE)}catch(x){}SETTINGS.piMode=PI_MODE;PIF_CACHE.clear();RAWC.clear();
-    if(DB){try{await DB.doc("settings/main").set(Object.assign({},SETTINGS,{id:"main",updatedAt:new Date().toISOString()}))}catch(x){}}
     mkCalc();$("piMsg").textContent="Em uso: "+piModeName()+". Vale para todo o aplicativo.";return}
-  const b=e.target.closest("[data-dw]");if(b){const r=document.querySelector('[data-dwr="'+b.dataset.dw+'"]');r.hidden=!r.hidden;if(!r.hidden){const P=PAPERS[b.dataset.dw];r.firstChild.innerHTML='<div class="watchrow">Avisar no celular quando a taxa ANBIMA de <b>'+P.code+'</b> <select data-dwf="dir"><option value="ge">subir até</option><option value="le">cair até</option></select> <div class="affix s" style="width:130px"><input data-dwf="rate" inputmode="decimal" value="'+fx((+P.anbima.rate)+(P.index==="DI_PCT"?5:0.5),2)+'"><span class="suf">%</span></div> <button type="button" class="btn" data-dwsave="'+P.code+'">Criar alerta</button></div>'}return}
-  const s=e.target.closest("[data-dwsave]");if(s){const code=s.dataset.dwsave,row=s.closest("tr"),dir=row.querySelector('[data-dwf="dir"]').value,rate=num(row.querySelector('[data-dwf="rate"]').value);if(!isFinite(rate)||!DB)return;
-    const id="w"+newId(),desc="Debênture "+code+" · taxa ANBIMA "+(dir==="ge"?"≥ ":"≤ ")+fx(rate,2)+"%";try{await DB.doc("watch/"+id).set({id,kind:"DEB",code,d:"",side:"anbima",dir,rate,desc,active:true,setAt:new Date().toISOString(),lastFired:""})}catch(x){}return}
-  const d=e.target.closest("[data-dwdel]");if(d){try{await DB.doc("watch/"+d.dataset.dwdel).delete()}catch(x){}}
 }
 
 /* ================= Teste de estresse ================= */
@@ -2830,20 +2796,13 @@ function fdCalc(){
 }
 async function fdFetch(){
   const c=cnpjNorm($("fdCnpj").value),info=$("fdInfo");if(!cnpjValid(c)){info.innerHTML=fdInfoHtml(c);return}
-  if(PAGES&&!DB)return fdRoboFetch(c);
-  if(!DB||!mcpNs){info.insertAdjacentHTML("beforeend",'<p class="err">A busca funciona com o aplicativo aberto no Claude.</p>');return}
-  const b=$("fdFetch");b.disabled=true;
-  try{const old=FUNDS[c]||{};await DB.doc("funds/"+c).set(Object.assign({},old,{cnpj:c,status:"pending",requestedAt:new Date().toISOString(),quotes:old.quotes||[]}));
-    await mcpNs.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIGGER_ID,text:"Cadastrar ou atualizar o fundo de CNPJ "+c+" (siga o PASSO 8F)."},{cache:false})}
-  catch(e){info.insertAdjacentHTML("beforeend",'<p class="err">'+(e&&e.code==="approval_required"?"É preciso permitir o acesso quando o Claude perguntar.":"Não deu para pedir a busca agora.")+'</p>')}
-  finally{setTimeout(()=>{b.disabled=false},60000)}
+  return fdRoboFetch(c);
 }
 async function fdQuoteSave(){
   const c=cnpjNorm($("fdCnpj").value),msg=$("fdQMsg"),d=$("fdQDate").value,v=num($("fdQVal").value);
   if(!cnpjValid(c)){msg.textContent="CNPJ inválido.";return}if(!d||parseDate(d)>VAL+DAY){msg.textContent="Informe a data da cota (até hoje).";return}if(!(v>0)){msg.textContent="Informe o valor da cota.";return}
   const old=FUNDS[c]||{cnpj:c},Q=(old.quotes||[]).filter(q=>q[0]!==d).concat([[d,v,"informada"]]).sort((a,b)=>a[0].localeCompare(b[0])).slice(-240);
-  if(!DB){FUNDS[c]=Object.assign({},old,{cnpj:c,quotes:Q,name:old.name||$("fdName").value.trim()||""});msg.textContent="Cota de "+fdate(parseDate(d))+" usada no cálculo.";fdCalc();return}
-  try{await DB.doc("funds/"+c).set(Object.assign({},old,{cnpj:c,quotes:Q,updatedAt:new Date().toISOString(),name:old.name||$("fdName").value.trim()||""}));msg.textContent="Cota salva para o CNPJ "+cnpjFmt(c)+"."}catch(e){msg.textContent="Não deu para salvar agora."}
+  FUNDS[c]=Object.assign({},old,{cnpj:c,quotes:Q,name:old.name||$("fdName").value.trim()||""});msg.textContent="Cota de "+fdate(parseDate(d))+" usada no cálculo.";fdCalc();
 }
 function fdBind(){
   ["fdCnpj","fdName","fdBuy","fdAmt","fdCotas","fdCota0","fdCotasNow","fdSaldo","fdExp"].forEach(id=>$(id).addEventListener("input",fdCalc));
@@ -3343,24 +3302,7 @@ function onDoc(doc){
   else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok");
   if(doc.status!=="running"&&at>requestedAt)btn.disabled=false;
 }
-btn.addEventListener("click",async()=>{
-  if(PAGES){btn.disabled=true;setStat("Lendo os dados do robô…","run");await roboLoad(null);btn.disabled=false;return}
-  if(!mcpNs){setStat("O botão funciona com a calculadora aberta no Claude (claude.ai no navegador ou app). Aqui, você pode ajustar a taxa de mercado manualmente.","bad");return}
-  btn.disabled=true;setStat("Pedindo a atualização…","run");
-  try{
-    await mcpNs.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIGGER_ID},{cache:false});
-    requestedAt=Date.now();
-    setStat("Atualização pedida às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+". Leva alguns minutos; os números mudam sozinhos quando os dados chegarem.","run");
-    setTimeout(()=>{btn.disabled=false},120000);
-  }catch(e){
-    btn.disabled=false;
-    const c=e&&e.code;
-    if(c==="approval_required")setStat("É preciso permitir o acesso quando o Claude perguntar. Toque de novo e escolha Permitir.","bad");
-    else if(c==="not_in_manifest")setStat("O acesso foi recusado para esta página. Libere-o no menu Permissões do artefato e toque de novo.","bad");
-    else if(c==="server_not_connected"||c==="needs_reauth"||c==="selection_required")setStat("O conector Claude Code Remote não está disponível na sua conta. Verifique em Configurações → Conectores do claude.ai.","bad");
-    else if(c==="tool_error")setStat("O Claude não conseguiu iniciar a atualização. Talvez a tarefa tenha sido removida; peça ao Claude para recriá-la.","bad");
-    else setStat("Não deu para pedir a atualização agora. Tente de novo em instantes.","bad");
-  }
+btn.addEventListener("click",async()=>{btn.disabled=true;setStat("Lendo os dados do robô…","run");await roboLoad(null);btn.disabled=false
 });
 
 /* ---------- Curvas de juros (ETTJ ANBIMA): atual, 1 dia, 1 semana, 1 mês e 1 ano atrás ---------- */
@@ -3547,7 +3489,7 @@ async function roboLoad(db){
       if(m.refDate>=antes){onDoc(doc);if(db&&m.refDate>antes){try{await db.doc("market/current").set(doc);log.gravouMercado=true}catch(e){log.erroGravar=String(e&&e.message||e).slice(0,200)}}}
     }
     let n=0;
-    const [deb,cri]=await Promise.all([roboJson("debentures.json").catch(()=>null),roboJson("cri_cra_anbima.json").catch(()=>null)]);
+    const [deb,cri]=PC_RATES_ON||db?await Promise.all([roboJson("debentures.json").catch(()=>null),roboJson("cri_cra_anbima.json").catch(()=>null)]):[null,null];
     const cc=c=>{c=String(c||"").toUpperCase().replace(/[^A-Z0-9]/g,"").replace(/^CRA(?=CRA)/,"");const x=c.match(/^(?:CRI|CRA)(\d{2}[A-Z]\d{7})$/);return x?x[1]:c};
     for(const code of Object.keys(PAPERS)){
       const P=PAPERS[code];if(!P||!P.code)continue;
@@ -3562,14 +3504,14 @@ async function roboLoad(db){
         if(db){try{await db.doc("papers/"+P.code).update({anbima:a})}catch(e){}}
       }
     }
-    if(n){pcMemo.clear();try{PCE_MEMO.clear()}catch(e){}try{RAWC.clear()}catch(e){}refreshAll()}
+    if(n){pcMemo.clear();try{PCE_MEMO.clear()}catch(e){}try{RAWC.clear()}catch(e){}try{if(!pcManual)pcAuto()}catch(e){}refreshAll()}
     log.papeis=n;log.ok=true;log.td=m&&m.td?{date:m.td.date,hora:m.td.hora||null,suspenso:m.td.suspenso||null}:null;
   }catch(e){log.erro=String(e&&e.message||e).slice(0,300)}
   ROBO_ST=log;if(PAGES)roboStat();
   if(db){try{await db.doc("synclog/pagina").set(log)}catch(e){}}
 }
 const cl=window.claude&&typeof window.claude.use==="function"?window.claude:null;
-if(PAGES&&!cl){document.documentElement.classList.add("pages");setTimeout(()=>{papeisLoad().then(()=>roboLoad(null));tdHistLoad();taxasHistLoad();curvasLoad()},300);setInterval(()=>{roboLoad(null);curvasLoad()},30*60000)}
+{document.documentElement.classList.add("pages");setTimeout(()=>{papeisLoad().then(()=>roboLoad(null));tdHistLoad();taxasHistLoad();curvasLoad()},300);setInterval(()=>{roboLoad(null);curvasLoad()},30*60000)}
 
 })();
 </script>
