@@ -797,6 +797,16 @@ def principal():
                 cart_ant[k] = j["cart"]
         cart = cart_ant
     bench = indices()
+    velho = ler_json(os.path.join(ent, "bench.json"), {"d": {}, "m": {}})
+    for nome, serie in (velho.get("m") or {}).items():          # fonte fora do ar: mantém a última coleta
+        if nome not in bench["m"] and serie:
+            bench["m"][nome] = serie
+    for nome, serie in (velho.get("d") or {}).items():
+        if nome not in bench["d"] and serie:
+            s2 = list(serie[:len(CAL)])
+            while len(s2) < len(CAL):
+                s2.append(s2[-1] if s2 else None)
+            bench["d"][nome] = s2
 
     # 5) gravação
     cdi_d = bench["d"].get("cdi")
