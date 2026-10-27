@@ -15,6 +15,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/cri_cra_anbima.json taxas indicativas e PU da ANBIMA de todos os CRIs e CRAs precificados
   data/cri_cra_cronogramas.json cronograma de pagamentos lido de cada termo de securitização
   data/fundos/XX.json, data/fundos_hist/ cotas dos fundos (dias recentes e fins de mês)
+  data/dolar.json          dólar PTAX do Banco Central: fechamento diário desde 1995 e boletins do dia
   data/curvas_hist.json    ETTJ da ANBIMA dia a dia (parâmetros), últimos 400 dias
   data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
@@ -719,6 +720,71 @@ def anbima_curva_hist():
     return {"dias": len(h["dias"]), "novos_agora": novos, "sem_curva_agora": sem,
             "mais_antigo": min(h["dias"]) if h["dias"] else None, "faltam": max(0, len(fila) - novos - sem)}
 
+
+
+# ---------------------------------------------------------------- Banco Central: dólar (PTAX)
+
+URL_PTAX = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/"
+UA_BCB = {"User-Agent": "robo-dados-mercado/1.0 (GitHub Actions)", "Accept": "application/json"}
+
+
+def olinda(caminho):
+    ultimo = None
+    for tentativa in range(3):
+        try:
+            r = requests.get(URL_PTAX + caminho, timeout=120, headers=UA_BCB)
+            if r.status_code == 200 and r.content.strip()[:1] == b"{":
+                return r.json().get("value", [])
+            diag("bcb_ptax", URL_PTAX + caminho, r)
+            ultimo = f"HTTP {r.status_code}"
+        except Exception as e:  # noqa: BLE001
+            ultimo = str(e)
+        time.sleep(5 * (tentativa + 1))
+    raise RuntimeError(f"PTAX: {ultimo}")
+
+
+def ptax_boletins(dolar):
+    """Boletins do dia (abertura, intermediários e fechamento); se hoje ainda não tem, o último dia útil."""
+    for d in dias_recentes(5):
+        L = olinda("CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda='USD'&@dataCotacao='"
+                   + d.strftime("%m-%d-%Y") + "'&$format=json")
+        if L:
+            bol = [{"hora": x["dataHoraCotacao"][11:16], "tipo": x.get("tipoBoletim", ""),
+                    "compra": x["cotacaoCompra"], "venda": x["cotacaoVenda"]} for x in L]
+            dolar["boletins"] = {"data": d.isoformat(), "lista": bol}
+            fech = [b for b in bol if norm(b["tipo"]).startswith("fech")]
+            if fech:   # o fechamento do dia entra na série assim que sai
+                ser = dict((r[0], r) for r in dolar.get("serie", []))
+                ser[d.isoformat()] = [d.isoformat(), fech[-1]["compra"], fech[-1]["venda"]]
+                dolar["serie"] = [ser[k] for k in sorted(ser)]
+            return len(bol)
+    return 0
+
+
+@fonte("bcb_dolar_ptax")
+def bcb_dolar():
+    """
+    Dólar PTAX do Banco Central: série diária de fechamento (compra e venda) desde 1995 e os boletins do dia.
+    Na primeira vez baixa tudo; depois, só os últimos 40 dias (o Banco Central pode corrigir dias recentes).
+    """
+    dolar = ler_json("dolar.json", {})
+    ser = dict((r[0], r) for r in dolar.get("serie", []))
+    ini = dt.date(1995, 1, 2) if len(ser) < 5000 else HOJE - dt.timedelta(days=40)
+    L = olinda("CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"
+               + ini.strftime("%m-%d-%Y") + "'&@dataFinalCotacao='" + HOJE.strftime("%m-%d-%Y")
+               + "'&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao")
+    for x in L:
+        d = x["dataHoraCotacao"][:10]
+        if x.get("cotacaoVenda"):
+            ser[d] = [d, x["cotacaoCompra"], x["cotacaoVenda"]]
+    if len(ser) < 5000:
+        raise RuntimeError(f"PTAX: série incompleta ({len(ser)} dias)")
+    dolar = {"fonte": "Banco Central do Brasil – PTAX (fechamento: média dos 4 boletins do dia)",
+             "serie": [ser[k] for k in sorted(ser)], "boletins": dolar.get("boletins")}
+    n = ptax_boletins(dolar)
+    dolar["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("dolar.json", dolar)
+    return {"dias": len(dolar["serie"]), "ultimo": dolar["serie"][-1], "boletins_hoje": n}
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
 
@@ -1615,6 +1681,17 @@ def rapido():
     mercado = ler_json("mercado.json", {})
     antes = (mercado.get("td") or {}).get("ALL")
     tesouro_direto_site(mercado)
+    try:
+        dolar = ler_json("dolar.json", {})
+        if dolar.get("serie"):
+            antes_b = json.dumps(dolar.get("boletins"))
+            ptax_boletins(dolar)
+            if json.dumps(dolar.get("boletins")) != antes_b:
+                dolar["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+                gravar_json("dolar.json", dolar)
+            STATUS["bcb_dolar_ptax"] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"), "boletins": len((dolar.get("boletins") or {}).get("lista", []))}
+    except Exception as e:  # noqa: BLE001
+        STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
     st = ler_json("status.json", {"fontes": {}})
     st.setdefault("fontes", {}).update(STATUS)
     st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
@@ -1639,6 +1716,7 @@ def main():
     anbima_curva(mercado)
     anbima_curva_hist()
     bcb(mercado)
+    bcb_dolar()
     ipca(mercado)
     anbima_debentures()
     snd_catalogo()
