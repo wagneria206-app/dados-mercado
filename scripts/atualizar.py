@@ -16,6 +16,7 @@ Busca dados públicos oficiais e grava arquivos JSON na pasta data/:
   data/cri_cra_cronogramas.json cronograma de pagamentos lido de cada termo de securitização
   data/fundos/XX.json, data/fundos_hist/ cotas dos fundos (dias recentes e fins de mês)
   data/dolar.json          dólar PTAX do Banco Central: fechamento diário desde 1995 e boletins do dia
+  data/dolar_futuro.json   dólar futuro da B3: ajuste de cada vencimento do DOL, dia a dia (400 dias)
   data/curvas_hist.json    ETTJ da ANBIMA dia a dia (parâmetros), últimos 400 dias
   data/taxas_hist.json     60 dias de taxas ANBIMA (títulos públicos, debêntures, CRI/CRA)
   data/termos/textos.json  situação da extração de cada documento
@@ -801,6 +802,86 @@ def bcb_dolar(mercado):
     gravar_json("dolar.json", dolar)
     mercado["dolar"] = dolar_resumo(dolar)
     return {"dias": len(dolar["serie"]), "ultimo": dolar["serie"][-1], "boletins_hoje": n}
+
+
+
+# ---------------------------------------------------------------- B3: dólar futuro (preços de ajuste)
+
+URL_B3_AJUSTES = "https://www2.bmf.com.br/pages/portal/bmfbovespa/lumis/lum-ajustes-do-pregao-ptBR.asp"
+
+
+def b3_ajustes_dol(dia):
+    """Preços de ajuste do contrato DOL (dólar comercial) de cada vencimento: [[código, ajuste, ajuste anterior], ...]."""
+    r = baixar(URL_B3_AJUSTES, dados={"dData1": dia.strftime("%d/%m/%Y")}, tentativas=2, timeout=90)
+    txt = texto(r)
+    p = _Tabelas()
+    p.feed(txt)
+    out, merc = [], ""
+    for t in p.tabelas:
+        for L in t:
+            if len(L) < 4:
+                continue
+            if L[0].strip():
+                merc = L[0]
+            if not norm(merc).startswith("dol"):
+                continue
+            venc = L[1].strip().upper()
+            if not re.fullmatch(r"[FGHJKMNQUVXZ]\d{2}", venc):
+                continue
+            ant, atu = num(L[2]), num(L[3])
+            if not atu:
+                continue
+            k = 1000 if atu > 100 else 1          # cotado em R$ por US$ 1.000
+            out.append([venc, round(atu / k, 6), round(ant / k, 6) if ant else None])
+    if not out:
+        diag("b3_ajustes", URL_B3_AJUSTES + " (POST " + dia.isoformat() + ")", r)
+    return out
+
+
+@fonte("b3_dolar_futuro")
+def b3_dolar_futuro(max_novos=60):
+    """
+    Dólar futuro da B3: preço de ajuste de todos os vencimentos do contrato DOL, dia a dia (até 400 dias).
+    Confere cada dia pela regra da B3: o "ajuste anterior" de um dia é o ajuste do dia útil anterior.
+    """
+    h = ler_json("dolar_futuro.json", {"fonte": "B3 – preços de ajuste do pregão (contrato DOL)", "dias": {}, "vazios": {}})
+    dias, vazios = h.setdefault("dias", {}), h.setdefault("vazios", {})
+    fila = [HOJE - dt.timedelta(days=k) for k in range(0, 401)]
+    fila = [d for d in fila if d.weekday() < 5 and d.isoformat() not in dias and vazios.get(d.isoformat(), 0) < 2]
+    limite, novos, sem, suspeitos = time.time() + 4 * 60, 0, 0, 0
+    for d in fila[:max_novos]:
+        if time.time() > limite:
+            break
+        k = d.isoformat()
+        try:
+            L = b3_ajustes_dol(d)
+        except Exception:  # noqa: BLE001
+            L = []
+        if L:
+            dias[k] = L
+            vazios.pop(k, None)
+            novos += 1
+        else:
+            vazios[k] = vazios.get(k, 0) + 1
+            sem += 1
+    # conferência: ajuste anterior de cada dia = ajuste do dia útil anterior guardado (mesmo vencimento)
+    ks = sorted(dias)
+    for a, b in zip(ks, ks[1:]):
+        pa = {x[0]: x[1] for x in dias[a]}
+        ok = [abs(x[2] - pa[x[0]]) < 0.0006 for x in dias[b] if x[2] and x[0] in pa]
+        if ok and not any(ok) and (dt.date.fromisoformat(b) - dt.date.fromisoformat(a)).days <= 4:
+            suspeitos += 1
+    corte = (HOJE - dt.timedelta(days=420)).isoformat()
+    h["dias"] = {k: v for k, v in sorted(dias.items()) if k >= corte}
+    h["vazios"] = {k: v for k, v in sorted(vazios.items()) if k >= corte}
+    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("dolar_futuro.json", h)
+    if not h["dias"]:
+        raise RuntimeError("a B3 não devolveu preços de ajuste do dólar")
+    if suspeitos > 3:
+        raise RuntimeError(f"{suspeitos} dias não batem com o ajuste do dia anterior (a página pode ter ignorado a data)")
+    return {"dias": len(h["dias"]), "novos_agora": novos, "sem_dado_agora": sem, "mais_antigo": min(h["dias"]),
+            "ultimo": max(h["dias"]), "dias_que_nao_batem": suspeitos}
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
 
@@ -1710,6 +1791,10 @@ def rapido():
             STATUS["bcb_dolar_ptax"] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"), "boletins": len((dolar.get("boletins") or {}).get("lista", []))}
     except Exception as e:  # noqa: BLE001
         STATUS["bcb_dolar_ptax"] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(e)[:300]}
+    if not os.path.exists(os.path.join(DADOS, "dolar_futuro.json")):
+        b3_dolar_futuro(max_novos=8)        # primeira vez: começa o histórico sem esperar a coleta da noite
+    elif AGORA.hour * 60 + AGORA.minute >= 18 * 60 + 30 and HOJE.weekday() < 5:
+        b3_dolar_futuro(max_novos=1)
     st = ler_json("status.json", {"fontes": {}})
     st.setdefault("fontes", {}).update(STATUS)
     st["intradiario_em"] = AGORA.isoformat(timespec="seconds")
@@ -1735,6 +1820,7 @@ def main():
     anbima_curva_hist()
     bcb(mercado)
     bcb_dolar(mercado)
+    b3_dolar_futuro()
     ipca(mercado)
     anbima_debentures()
     snd_catalogo()
