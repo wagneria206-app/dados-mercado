@@ -577,6 +577,7 @@ html.pages button[data-area="cart"],html.pages button[data-mod="cart"]{display:n
 html.pages .saverow:has(#savePos),html.pages .saverow:has(#pcSavePos),html.pages .saverow:has(#bkSavePos),html.pages .saverow:has(#fdSavePos),
 html.pages .saverow:has([data-ptsim]),html.pages .saverow:has([data-propadd]),html.pages #aiFab,html.pages #notaBox,html.pages #expRow,html.pages #pcTermo,html.pages #pcBatchBox,
 html.pages .pctab th:nth-child(6),html.pages .pctab td:nth-child(6),html.pages .pctab th:nth-child(7),html.pages .pctab td:nth-child(7){display:none!important}
+.ctab tfoot tr.msub td{border-top:1px solid var(--line);color:var(--muted)}.ctab tfoot tr.mtot td{border-top:2px solid var(--line);font-weight:600;color:var(--ink)}.ctab tfoot small{font-weight:400;color:var(--muted)}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -3748,7 +3749,12 @@ function inflHtml(){
   if(L.length){h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab"><thead><tr><th style="text-align:left">Vencimento NTN-B</th><th>Juro real</th><th>Prefixado (curva)</th><th>Inflação implícita</th>'+(Object.keys(F).length?'<th class="c-ph">Focus médio</th>':'')+'</tr></thead><tbody>';
     L.forEach(([t,r])=>{const n=zeroPre(du(VAL,t)),ii=((1+n/100)/(1+r/100)-1)*100;let fc="";if(Object.keys(F).length){const m=PI_MODE;PI_MODE="focus";const pp=PI_PROJ;PI_PROJ=null;const f=piFactor(t);PI_MODE=m;PI_PROJ=pp;fc='<td class="c-ph">'+fx((Math.pow(f,1/((t-VAL)/DAY/365.25))-1)*100,2)+'%</td>'}
       h+='<tr><td style="text-align:left">'+fdate(t)+'</td><td>'+fx(r,2)+'%</td><td>'+fx(n,2)+'%</td><td><b>'+fx(ii,2)+'%</b></td>'+fc+'</tr>'});
-    h+='</tbody></table></div><p class="sub" style="font-size:.82rem;margin-top:6px">Inflação implícita = (1 + taxa prefixada da curva ANBIMA) ÷ (1 + juro real da NTN-B) − 1, para cada prazo. Se o IPCA ficar acima dela, o IPCA+ rende mais que o prefixado de mesmo prazo; abaixo, o prefixado vence. IPCA dos últimos 12 meses: '+fx(ipca12(),2)+'%.</p>'}
+    {const RR=L.map(([t,r])=>{const n=zeroPre(du(VAL,t));return {t,r,n,ii:((1+n/100)/(1+r/100)-1)*100,a:(t-VAL)/DAY/365.25}});
+     const fcCol=Object.keys(F).length?'<td class="c-ph">—</td>':'';
+     const med=(lab,S,forte)=>{if(!S.length)return "";const m=k=>S.reduce((s,x)=>s+x[k],0)/S.length;
+       return '<tr class="'+(forte?'mtot':'msub')+'"><td style="text-align:left">'+lab+' <small>('+S.length+' venc.)</small></td><td>'+fx(m("r"),2)+'%</td><td>'+fx(m("n"),2)+'%</td><td><b>'+fx(m("ii"),2)+'%</b></td>'+fcCol+'</tr>'};
+     h+='</tbody><tfoot>'+med("Média — até 5 anos",RR.filter(x=>x.a<=5))+med("Média — de 5 a 10 anos",RR.filter(x=>x.a>5&&x.a<=10))+med("Média — acima de 10 anos",RR.filter(x=>x.a>10))+med("Média de todos os vencimentos",RR,true)+'</tfoot>'}
+    h+='</table></div><p class="sub" style="font-size:.82rem;margin-top:6px">Médias simples dos vencimentos de cada faixa (prazo contado a partir de hoje). Inflação implícita = (1 + taxa prefixada da curva ANBIMA) ÷ (1 + juro real da NTN-B) − 1, para cada prazo. Se o IPCA ficar acima dela, o IPCA+ rende mais que o prefixado de mesmo prazo; abaixo, o prefixado vence. IPCA dos últimos 12 meses: '+fx(ipca12(),2)+'%.</p>'}
   return h;
 }
 function paperMat(P){const s=P.schedule;return Array.isArray(s)&&s.length?parseDate(s[s.length-1][0]):NaN}
