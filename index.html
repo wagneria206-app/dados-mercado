@@ -619,6 +619,10 @@ details.memo dl{margin-top:6px}
 .cvtip i{display:inline-block;width:10px;height:3px;border-radius:2px}
 
 .cvtab td small{color:var(--muted);font-weight:400}
+
+.opptx{padding:0;text-align:left;font:inherit;color:var(--ink);cursor:pointer}.opptx:hover b{text-decoration:underline}.opptx small{color:var(--accent);font-weight:700}
+
+tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transition:background .4s}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -818,7 +822,7 @@ details.memo dl{margin-top:6px}
   <section id="modMk" hidden aria-label="Painel de mercado"><div class="tdlink"><div><b>Taxas do Tesouro Direto agora</b><span>Preços e taxas de compra e resgate atualizados durante o dia, no site oficial.</span></div><a href="https://www.tesourodireto.com.br/titulos/precos-e-taxas.htm" target="_blank" rel="noopener noreferrer">Consultar no Tesouro Direto <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div><div id="mkOut" style="display:flex;flex-direction:column;gap:18px"></div></section>
   <section class="panel" id="modTx" hidden aria-label="Histórico de taxas">
     <div style="display:flex;flex-direction:column;gap:16px">
-      <div><span class="label">Histórico de taxas</span><p class="sub" style="margin-top:4px">A taxa de cada título do Tesouro Direto, dia a dia, desde o primeiro dia em que foi oferecido até hoje, com a menor e a maior taxa e as datas em que aconteceram.</p></div>
+      <div><button type="button" class="link" id="txBack" hidden style="margin-bottom:6px">‹ Voltar às oportunidades do Tesouro Direto</button><span class="label" style="display:block">Histórico de taxas</span><p class="sub" style="margin-top:4px">A taxa de cada título do Tesouro Direto, dia a dia, desde o primeiro dia em que foi oferecido até hoje, com a menor e a maior taxa e as datas em que aconteceram.</p></div>
       <div class="scctl">
         <div class="field"><label for="txType">Tipo de título</label><select id="txType"></select></div>
         <div class="field"><label for="txMat">Título</label><select id="txMat"></select></div>
@@ -2204,6 +2208,7 @@ function txTable(S,n,side){
 }
 let txRT=null;window.addEventListener("resize",()=>{if(activeMod!=="tx")return;clearTimeout(txRT);txRT=setTimeout(txCalc,150)});
 function txBind(){
+  $("txBack").addEventListener("click",()=>{const k=TX_BACK;$("txBack").hidden=true;setMod("mk");setTimeout(()=>{const el=k&&document.querySelector('[data-oppk="'+k+'"]');if(el){const tb=el.closest(".oppmore");if(tb&&tb.hidden){tb.hidden=false;const bm=$("oppMore");if(bm)bm.textContent="Mostrar só os 10 primeiros"}try{el.scrollIntoView({behavior:"smooth",block:"center"})}catch(x){}el.closest("tr").classList.add("opphl");setTimeout(()=>{const r=el.closest("tr");if(r)r.classList.remove("opphl")},1800)}},60)});
   $("txType").addEventListener("change",()=>{TXSEL={n:+$("txType").value,m:""};txCalc()});
   $("txMat").addEventListener("change",()=>{TXSEL={n:+$("txType").value,m:$("txMat").value};txCalc()});
   ["txSide","txPer"].forEach(id=>$(id).addEventListener("change",txCalc));
@@ -2643,8 +2648,8 @@ function oppData(){
 function oppHtml(){
   const L=oppData().sort((a,b)=>(isFinite(b.pctl)?b.pctl:-1)-(isFinite(a.pctl)?a.pctl:-1));if(!L.length)return '<p class="sub">Sem taxas de compra do Tesouro Direto nos dados de hoje.</p>';
   const fr=(o,v)=>!isFinite(v)?"—":(o.fam==="ipca"?"IPCA + ":o.fam==="selic"?"Selic + ":"")+fx(v,2)+"%";
-  let h='<span class="label">Oportunidades no Tesouro Direto</span><p class="sub" style="margin:4px 0 10px">Taxa de compra de hoje comparada com toda a história de cada título. Percentil 90 = a taxa de hoje é maior que em 90% dos dias desde o lançamento.</p><div class="tablewrap" style="max-height:none"><table class="ctab opptab"><thead><tr><th style="text-align:left">Título</th><th>Compra hoje</th><th>Percentil histórico</th><th class="c-ph">Mín. · máx.</th><th class="c-ph">Média 12m</th><th class="c-ph">vs ANBIMA</th></tr></thead><tbody>';
-  L.forEach((o,i)=>{if(i===10)h+='</tbody><tbody class="oppmore" hidden>';const p=o.pctl,cls=p>=90?"hi":p>=70?"md":"";h+='<tr><td style="text-align:left"><b>'+o.name.replace(/^Tesouro /,"")+'</b>'+(p>=90?' <span class="ttag k-bank">taxa alta</span>':'')+'<br><small>desde '+(isFinite(o.since)?txD2(o.since):"—")+'</small></td><td>'+fr(o,o.buy)+'</td><td><div class="pbar '+cls+'"><i style="width:'+(isFinite(p)?p.toFixed(0):0)+'%"></i></div><small>'+(isFinite(p)?fx(p,0):"—")+'</small></td><td class="c-ph">'+(isFinite(o.min)?fx(o.min,2)+' · '+fx(o.max,2):"—")+'</td><td class="c-ph">'+(isFinite(o.avg)?fx(o.avg,2):"—")+'</td><td class="c-ph">'+(isFinite(o.anb)?signed(o.buy-o.anb,v=>fx(v,2)):"—")+'</td></tr>'});
+  let h='<span class="label">Oportunidades no Tesouro Direto</span><p class="sub" style="margin:4px 0 10px">Taxa de compra de hoje comparada com toda a história de cada título. Percentil 90 = a taxa de hoje é maior que em 90% dos dias desde o lançamento. Toque no nome do título para ver o histórico de taxas.</p><div class="tablewrap" style="max-height:none"><table class="ctab opptab"><thead><tr><th style="text-align:left">Título</th><th>Compra hoje</th><th>Percentil histórico</th><th class="c-ph">Mín. · máx.</th><th class="c-ph">Média 12m</th><th class="c-ph">vs ANBIMA</th></tr></thead><tbody>';
+  L.forEach((o,i)=>{if(i===10)h+='</tbody><tbody class="oppmore" hidden>';const p=o.pctl,cls=p>=90?"hi":p>=70?"md":"";h+='<tr><td style="text-align:left"><button type="button" class="link opptx" data-txgo="'+TX_KIND.indexOf(o.kind)+'|'+txMatFromKind(o.kind,o.d)+'" data-oppk="'+o.k+'" title="Ver o histórico de taxas deste título"><b>'+o.name.replace(/^Tesouro /,"")+'</b> <small aria-hidden="true">›</small></button>'+(p>=90?' <span class="ttag k-bank">taxa alta</span>':'')+'<br><small>desde '+(isFinite(o.since)?txD2(o.since):"—")+'</small></td><td>'+fr(o,o.buy)+'</td><td><div class="pbar '+cls+'"><i style="width:'+(isFinite(p)?p.toFixed(0):0)+'%"></i></div><small>'+(isFinite(p)?fx(p,0):"—")+'</small></td><td class="c-ph">'+(isFinite(o.min)?fx(o.min,2)+' · '+fx(o.max,2):"—")+'</td><td class="c-ph">'+(isFinite(o.avg)?fx(o.avg,2):"—")+'</td><td class="c-ph">'+(isFinite(o.anb)?signed(o.buy-o.anb,v=>fx(v,2)):"—")+'</td></tr>'});
   return h+'</tbody></table></div>'+(L.length>10?'<p style="margin-top:8px"><button type="button" class="link" id="oppMore">Mostrar todos os '+L.length+' títulos</button></p>':'')+'<p class="sub" style="font-size:.82rem;margin-top:6px">Histórico oficial do Tesouro Transparente. "vs ANBIMA": taxa de compra do Tesouro menos a taxa indicativa da ANBIMA para o mesmo vencimento (positivo = o Tesouro vende mais barato que a referência de mercado). Taxa historicamente alta não é garantia de ganho: é o ponto de partida da análise.</p>';
 }
 function inflHtml(){
@@ -2665,7 +2670,10 @@ function inflHtml(){
 
 
 function mkCalc(){const o=$("mkOut");if(!o)return;o.innerHTML='<section class="panel">'+oppHtml()+'</section><section class="panel">'+inflHtml()+'</section><section class="panel">'+curvHtml()+'</section>';const s=$("piMode");if(s)s.value=PI_MODE}
+let TX_BACK=null;
 async function mkClick(e){
+  const g=e.target.closest&&e.target.closest("[data-txgo]");if(g){const [n,m]=g.dataset.txgo.split("|");TX_BACK=g.dataset.oppk;
+    txFillTypes();$("txType").value=n;$("txSide").value="c";TXSEL={n:+n,m};setMod("tx");const b=$("txBack");if(b)b.hidden=false;try{window.scrollTo({top:0,behavior:"smooth"})}catch(x){}return}
   if(e.target.id==="oppMore"){const b=document.querySelector("#mkOut .oppmore");if(b){b.hidden=!b.hidden;e.target.textContent=b.hidden?"Mostrar todos os "+(10+b.rows.length)+" títulos":"Mostrar só os 10 primeiros"}return}
   if(e.target.id==="piSave"){
     PI_MODE=$("piMode").value;if(PI_MODE!=="m12")PI_MODE="impl";
