@@ -2,10 +2,7 @@
 data/*
 # Estado que o robô precisa guardar entre execuções e que só cresce aos poucos:
 !data/termos/
-data/termos/texto/*
-!data/termos/texto/.keep
 !data/cri_cra_cronogramas.json
 !data/papeis_cadastrados.json
 !data/fundos_hist/
-__pycache__/
 __pycache__/

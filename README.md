@@ -12,12 +12,12 @@ Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Merc
 | Arquivo (ramo site) | Conteúdo | Fonte |
 |---|---|---|
 | `mercado.json` | Títulos públicos, Tesouro Direto, curva de juros, CDI, Selic, IPCA | ANBIMA, Tesouro Direto, Banco Central, IBGE |
-| `td_historico.json`, `td_intradiario.json` | Tesouro Direto: 90 dias e coletas do dia | Tesouro Direto |
+| `td_historico.json` | Tesouro Direto: últimos 90 dias | Tesouro Direto |
 | `debentures.json`, `cri_cra_anbima.json`, `taxas_hist.json` | Taxas indicativas e PU (e 60 dias de histórico) | ANBIMA |
 | `catalogo_debentures.json` | Características e agenda de todas as debêntures | SND (debentures.com.br) |
 | `cri_cra_cvm.json` | Dados de todos os CRI e CRA | CVM – informes mensais |
 | `cri_cra_cronogramas.json` | Cronograma de pagamentos lido de cada termo de securitização | Fundos.NET |
-| `fundos/XX.json` | Cotas e cadastro de todos os fundos (por início do CNPJ) | CVM – informe diário |
+| `fundos/XX.json`, `fundos_hist/XX.json` | Cotas e cadastro de todos os fundos (por início do CNPJ) e cotas de fim de mês desde 2021 | CVM – informe diário |
 | `status.json` | Resultado de cada fonte na última execução | — |
 
 **Quando roda:** coleta completa às 19h30 (dias úteis) e 8h (segunda a sábado); Tesouro Direto a cada
