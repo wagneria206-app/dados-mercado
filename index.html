@@ -4159,7 +4159,7 @@ function atDecode(j){
   return Object.assign(j,{I,Q,R,M,MK,n:j.t,lab:j.t,rlab:"Desde "+new Date(AT.T[I[0]]).getUTCFullYear(),riskNote:"as cotações diárias com proventos",monNote:"Retorno total (cotação com proventos reinvestidos) calculado com os fechamentos da B3."});
 }
 const atRow=t=>{const R=AT.idx.rows;for(let j=0;j<R.length;j++)if(R[j][0]===t)return R[j];return null};
-function atHash(){const m=/ativo=([A-Z0-9]{4,7})/i.exec(location.hash||"");if(m&&AT.cur!==m[1].toUpperCase()){AT.cur=m[1].toUpperCase();AT.q="";if(activeMod!=="aa")setMod("aa")}}
+function atHash(){const m=/ativo=([A-Z0-9]{4,7})/i.exec(location.hash||"");if(m&&(AT.cur!==m[1].toUpperCase()||activeMod!=="aa")){AT.cur=m[1].toUpperCase();AT.q="";const q=$("atQ");if(q)q.value="";const r=$("atRes");if(r)r.hidden=true;if(activeMod!=="aa")setMod("aa");else atAa()}}
 function atOpen(t){AT.cur=t;AT.q="";try{history.replaceState(null,"","#ativo="+t)}catch(e){}
   try{const h=JSON.parse(localStorage.getItem("atHist")||"[]").filter(x=>x!==t);h.unshift(t);localStorage.setItem("atHist",JSON.stringify(h.slice(0,10)))}catch(e){}
   if(activeMod!=="aa")setMod("aa");else{const q=$("atQ");if(q)q.value="";const r=$("atRes");if(r)r.hidden=true;atAa()}
@@ -4230,7 +4230,7 @@ function atHead(A){
   if(it.length)h+='<dl class="fninfo">'+it.join("")+'</dl>';
   return h+'</section>';
 }
-function atFiiLast(A){const f=A.fii;if(!f||!f.m)return null;for(let k=f.m.length-1;k>=0;k--){const v=f.m[k];if(v&&v[0])return {vpc:v[0],pl:v[1],cot:v[2],dy:v[3],k:+f.m0.slice(0,4)*12+(+f.m0.slice(4))-1+k}}return null}
+function atFiiLast(A){const f=A.fii;if(!f||!f.m)return null;const px=A.R&&A.R.length?A.R[A.R.length-1]:null;for(let k=f.m.length-1;k>=0;k--){const v=f.m[k];if(v&&v[0]){const ok=!px||(px/v[0]>0.2&&px/v[0]<5);return {vpc:ok?v[0]:null,pl:v[1],cot:v[2]>1?v[2]:null,dy:v[3],k:+f.m0.slice(0,4)*12+(+f.m0.slice(4))-1+k}}}return null}
 function atPriceHtml(A){
   const per=FN.per,p0=fnStart(A,per);let h='<section class="panel"><h3>Cotação</h3>'+fnSeg("fnper",FN_PER.filter(x=>x[0]!=="mes"),per);
   if(!p0)return h+'<p class="sub">Sem histórico para o período.</p></section>';
