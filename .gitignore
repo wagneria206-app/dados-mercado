@@ -5,4 +5,5 @@ data/*
 !data/cri_cra_cronogramas.json
 !data/papeis_cadastrados.json
 !data/fundos_hist/
+!data/curvas_hist.json
 __pycache__/
