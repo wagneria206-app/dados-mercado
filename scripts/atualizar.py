@@ -965,8 +965,8 @@ def bls_cpi():
                           timeout=(10, 60), headers=UA_WEB)
         J = r.json()
         for x in (J.get("Results", {}).get("series") or [{}])[0].get("data", []):
-            if x.get("period", "").startswith("M") and x["period"] != "M13":
-                out[f"{x['year']}-{x['period'][1:]}"] = float(x["value"])
+            if x.get("period", "").startswith("M") and x["period"] != "M13" and num(x.get("value", "")) is not None:
+                out[f"{x['year']}-{x['period'][1:]}"] = num(x["value"])
         time.sleep(1)
     if len(out) < 300:
         raise RuntimeError(f"BLS: só {len(out)} meses")
@@ -1149,8 +1149,10 @@ def inflacao_detalhe():
     """Meta da Selic, IPCA (mês e 12 meses), núcleos, serviços, livres e monitorados (Banco Central), grupos e IPCA-15 (IBGE)."""
     out = {"fonte": "Banco Central (SGS) e IBGE (SIDRA)", "sgs": {}, "falhas": []}
     try:
-        L = sgs_periodo(432, HOJE - dt.timedelta(days=800))
-        out["selic_meta"] = {"data": L[-1][0], "valor": L[-1][1], "historico": [x for i, x in enumerate(L) if i == 0 or x[1] != L[i - 1][1]][-12:]}
+        r = requests.get("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/10?formato=json", timeout=(10, 60), headers=UA_BCB)
+        L = [(data_dmy(x["data"]), num(x["valor"])) for x in r.json() if num(x["valor"]) is not None]
+        L = [x for x in L if x[0] <= HOJE.isoformat()] or L
+        out["selic_meta"] = {"data": L[-1][0], "valor": L[-1][1]}
     except Exception as e:  # noqa: BLE001
         out["falhas"].append(f"Selic meta: {str(e)[:120]}")
     for nome, cod in SGS_INFLACAO.items():
@@ -1201,8 +1203,8 @@ def anbima_ima():
         C["yield"] = next((k for c, k in pos.items() if c == "yield"), None)
     rows = []
     for L in linhas:
-        if L is cab or len(L) < len(cab) - 3 or C["nome"] is None or C["nome"] >= len(L):
-            continue
+        if L is cab or L[0] != cab[0] or len(L) < len(cab) - 3 or C["nome"] is None or C["nome"] >= len(L):
+            continue        # só as linhas de totais (mesmo tipo de registro do cabeçalho)
         nome = L[C["nome"]]
         if not re.match(r"^(IRF|IMA)", nome.upper()):
             continue
