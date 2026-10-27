@@ -846,7 +846,7 @@ def b3_ajustes(dia, timeout=90, tentativas=2):
 
 
 @fonte("b3_futuros")
-def b3_futuros(max_novos=60, timeout=90, tentativas=2):
+def b3_futuros(max_novos=25, timeout=(10, 45), tentativas=1):
     """
     Dólar futuro (DOL) e juros futuros (DI1) da B3: preço de ajuste de todos os vencimentos, dia a dia (até 400 dias).
     Confere cada dia pela regra da B3: o "ajuste anterior" de um dia é o ajuste do dia útil anterior.
@@ -862,7 +862,7 @@ def b3_futuros(max_novos=60, timeout=90, tentativas=2):
     vaz = H["DOL"]["vazios"]
     fila = [HOJE - dt.timedelta(days=k) for k in range(0, 401)]
     fila = [d for d in fila if d.weekday() < 5 and not feito(d.isoformat()) and vaz.get(d.isoformat(), 0) < 2]
-    limite, novos, sem = time.time() + 4 * 60, 0, 0
+    limite, novos, sem = time.time() + 3 * 60, 0, 0
     for d in fila[:max_novos]:
         if time.time() > limite:
             break
@@ -921,7 +921,7 @@ FRED_SERIES = {
 
 
 def fred(serie):
-    r = baixar(URL_FRED.format(serie), tentativas=3, timeout=120)
+    r = baixar(URL_FRED.format(serie), tentativas=2, timeout=(10, 40))
     out = {}
     for L in texto(r).splitlines()[1:]:
         p = L.split(",")
@@ -950,7 +950,11 @@ def dolar_fundamentos():
     out = {"fonte": "Federal Reserve (FRED): CPI dos EUA, índice amplo do dólar, SOFR e juro real de 10 anos; FMI (via FRED): "
                     "commodities; Ipeadata (J.P. Morgan): EMBI+ Brasil", "mensal": {}, "ultimo": {}}
     falhas = []
+    limite = time.time() + 3 * 60
     for nome, cod in FRED_SERIES.items():
+        if time.time() > limite:
+            falhas.append(f"{cod}: sem tempo nesta execução")
+            continue
         try:
             d = fred(cod)
         except Exception as e:  # noqa: BLE001
@@ -961,7 +965,7 @@ def dolar_fundamentos():
         k = max(d)
         out["ultimo"][nome] = {"data": k, "valor": d[k]}
     try:   # IPCA mensal desde 1995 (SGS 433), para a paridade do poder de compra de longo prazo
-        r = requests.get(URL_SGS.format(433, "01/01/1995", HOJE.strftime("%d/%m/%Y")), timeout=120, headers=UA_BCB)
+        r = requests.get(URL_SGS.format(433, "01/01/1995", HOJE.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
         V = r.json() if r.content.strip()[:1] == b"[" else []
         d = {data_dmy(x["data"])[:7]: num(x["valor"]) for x in V if num(x["valor"]) is not None}
         if len(d) > 300:
@@ -971,7 +975,7 @@ def dolar_fundamentos():
     except Exception as e:  # noqa: BLE001
         falhas.append(f"IPCA SGS 433: {str(e)[:120]}")
     try:   # risco-país (opcional: a série pode parar de ser atualizada)
-        r = requests.get(URL_IPEA.format("JPM366_EMBI366"), timeout=120, headers={"Accept": "application/json"})
+        r = requests.get(URL_IPEA.format("JPM366_EMBI366"), timeout=(10, 40), headers={"Accept": "application/json"})
         V = r.json().get("value", [])
         d = {x["VALDATA"][:10]: float(x["VALVALOR"]) for x in V if x.get("VALVALOR") is not None}
         if d:
@@ -999,7 +1003,7 @@ URL_SIDRA = "https://apisidra.ibge.gov.br/values/t/{}/n1/all/v/{}/p/last%2014/c3
 
 def sgs_periodo(serie, ini, fim=None):
     fim = fim or HOJE
-    r = requests.get(URL_SGS.format(serie, ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")), timeout=120, headers=UA_BCB)
+    r = requests.get(URL_SGS.format(serie, ini.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y")), timeout=(10, 60), headers=UA_BCB)
     if r.status_code != 200 or r.content.strip()[:1] != b"[":
         diag(f"bcb_sgs_{serie}", r.url, r)
         raise RuntimeError(f"SGS {serie}: HTTP {r.status_code}")
@@ -1008,7 +1012,7 @@ def sgs_periodo(serie, ini, fim=None):
 
 def sidra(tabela, variaveis, categorias):
     """Tabela do SIDRA (IBGE) -> {AAAAMM: {nome da categoria: {variável: valor}}}."""
-    r = requests.get(URL_SIDRA.format(tabela, variaveis, categorias), timeout=180, headers={"Accept": "application/json"})
+    r = requests.get(URL_SIDRA.format(tabela, variaveis, categorias), timeout=(10, 60), headers={"Accept": "application/json"})
     L = r.json() if r.content.strip()[:1] == b"[" else []
     if len(L) < 2:
         diag(f"sidra_{tabela}", r.url, r)
@@ -1065,7 +1069,7 @@ URL_IMA = "https://www.anbima.com.br/informacoes/ima/arqs/ima_completo.txt"
 @fonte("anbima_ima")
 def anbima_ima():
     """Índices de renda fixa da ANBIMA (IRF-M, IMA-B, IMA-S...): número-índice, variações, duration e yield. Guarda o histórico."""
-    r = baixar(URL_IMA, tentativas=3, timeout=120)
+    r = baixar(URL_IMA, tentativas=2, timeout=(10, 60))
     txt = texto(r)
     linhas = [L.split(";") for L in txt.splitlines() if ";" in L]
     cab = next((L for L in linhas if any("ndice" in c for c in L) and any("Data" in c for c in L)), None)
