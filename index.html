@@ -3785,7 +3785,7 @@ function credHtml(){
   if(W.length)h+='<div class="alertbox" style="margin-top:10px">'+W.map(w=>'<div class="watchrow">🔔 '+w.desc+(w.lastFired?' · último aviso '+fdt(w.lastFired):'')+' <button type="button" class="link" data-dwdel="'+w.id+'">Remover</button></div>').join("")+'</div>';
   return h+'<p class="sub" style="font-size:.82rem;margin-top:6px">Spread sobre NTN-B: taxa da debênture IPCA+ menos o juro real da NTN-B de mesmo prazo (prêmio de crédito). O histórico de cada papel cresce a cada atualização diária. CRI e CRA não têm taxa ANBIMA diária.</p>';
 }
-function mkCalc(){const o=$("mkOut");if(!o)return;o.innerHTML='<section class="panel">'+oppHtml()+'</section><section class="panel">'+inflHtml()+'</section>'+(Object.keys(PAPERS).length?'<section class="panel">'+credHtml()+'</section>':'');const s=$("piMode");if(s)s.value=PI_MODE}
+function mkCalc(){const o=$("mkOut");if(!o)return;o.innerHTML='<section class="panel">'+oppHtml()+'</section><section class="panel">'+inflHtml()+'</section>';const s=$("piMode");if(s)s.value=PI_MODE}
 async function mkClick(e){
   if(e.target.id==="oppMore"){const b=document.querySelector("#mkOut .oppmore");if(b){b.hidden=!b.hidden;e.target.textContent=b.hidden?"Mostrar todos os títulos":"Mostrar só os 10 primeiros"}return}
   if(e.target.id==="piSave"){const y0=new Date(VAL).getUTCFullYear(),F={};for(let y=y0;y<=y0+3;y++){const v=$("fc"+y).value.trim();if(v)F[y]=v}
