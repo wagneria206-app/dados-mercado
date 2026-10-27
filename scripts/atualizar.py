@@ -939,6 +939,16 @@ def dolar_fundamentos():
         out["mensal"][nome] = mensal(d) if diaria else {k[:7]: v for k, v in d.items()}
         k = max(d)
         out["ultimo"][nome] = {"data": k, "valor": d[k]}
+    try:   # IPCA mensal desde 1995 (SGS 433), para a paridade do poder de compra de longo prazo
+        r = requests.get(URL_SGS.format(433, "01/01/1995", HOJE.strftime("%d/%m/%Y")), timeout=120, headers=UA_BCB)
+        V = r.json() if r.content.strip()[:1] == b"[" else []
+        d = {data_dmy(x["data"])[:7]: num(x["valor"]) for x in V if num(x["valor"]) is not None}
+        if len(d) > 300:
+            out["mensal"]["ipca_var"] = d
+        else:
+            falhas.append(f"IPCA SGS 433: {len(d)} meses")
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"IPCA SGS 433: {str(e)[:120]}")
     try:   # risco-país (opcional: a série pode parar de ser atualizada)
         r = requests.get(URL_IPEA.format("JPM366_EMBI366"), timeout=120, headers={"Accept": "application/json"})
         V = r.json().get("value", [])
