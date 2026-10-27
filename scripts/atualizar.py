@@ -884,7 +884,7 @@ def b3_ajustes(dia, timeout=(10, 90), tentativas=2):
 
 
 @fonte("b3_futuros")
-def b3_futuros(max_novos=30, timeout=(10, 90), tentativas=2):
+def b3_futuros(max_novos=90, timeout=(10, 90), tentativas=2):
     """
     Dólar futuro (DOL) e juros futuros (DI1) da B3: preço de ajuste de todos os vencimentos, dia a dia (até 400 dias),
     pelo arquivo consolidado diário da B3.
