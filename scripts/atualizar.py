@@ -1285,19 +1285,57 @@ def _quantis(v):
     return {"n": len(v), "p25": q(0.25), "mediana": q(0.5), "p75": q(0.75)}
 
 
-@fonte("credito_spreads")
-def credito_spreads():
-    """
-    Spread das debêntures (taxas indicativas da ANBIMA): DI+ (spread sobre o CDI) e IPCA+ (taxa menos a NTN-B de mesmo
-    vencimento). Guarda mediana e quartis por dia, e o histórico diário das taxas indicativas dos títulos públicos.
-    """
-    deb = ler_json("debentures.json", {})
-    m = ler_json("mercado.json", {})
-    a = m.get("anbima") or {}
-    ref = deb.get("refDate") or m.get("refDate")
-    ntnb = [(dt.date.fromisoformat(r[0]).toordinal(), r[1]) for r in a.get("NTNB", []) if r and r[1] is not None]
+def ler_ms(dia, timeout=(10, 40)):
+    """Arquivo diário da ANBIMA de títulos públicos: {LTN|NTNF|NTNB|LFT: [[venc, taxa, pu]]} ou None."""
+    r = baixar(URL_ANBIMA_PUB.format(dia), aceita_404=True, tentativas=1, timeout=timeout)
+    if r is None or len(r.content) < 500 or r.content.lstrip()[:1] == b"<":
+        return None
+    linhas = ler_arroba(texto(r))
+    cab_i = next((i for i, L in enumerate(linhas) if norm(L[0]).startswith("titulo")), None)
+    if cab_i is None:
+        return None
+    cab = [norm(c) for c in linhas[cab_i]]
+    c_venc = next(i for i, c in enumerate(cab) if "vencimento" in c)
+    c_tx = next(i for i, c in enumerate(cab) if "indicativ" in c and "interv" not in c)
+    c_pu = cab.index("pu") if "pu" in cab else None
+    saida = {k: [] for k in ANBIMA_PUB.values()}
+    for L in linhas[cab_i + 1:]:
+        k = ANBIMA_PUB.get(L[0].strip().upper())
+        if not k or len(L) <= max(c_venc, c_tx):
+            continue
+        venc, tx = data_ymd(L[c_venc]), num(L[c_tx])
+        if venc and tx is not None:
+            saida[k].append([venc, tx, (num(L[c_pu]) or 0) if c_pu is not None and c_pu < len(L) else 0])
+    return saida if any(saida.values()) else None
+
+
+def ler_db(dia, timeout=(10, 40)):
+    """Arquivo diário da ANBIMA de debêntures: {código: {indice, taxa, venc, nome}} ou None."""
+    r = baixar(URL_ANBIMA_DEB.format(dia), aceita_404=True, tentativas=1, timeout=timeout)
+    if r is None or len(r.content) < 500 or r.content.lstrip()[:1] == b"<":
+        return None
+    cab, out = None, {}
+    for L in ler_arroba(texto(r)):
+        n = [norm(c) for c in L]
+        if any(c.startswith("codigo") for c in n) and any("taxa indicativa" in c for c in n):
+            cab = n
+            continue
+        if cab is None or not re.fullmatch(r"[A-Z0-9]{4,14}", L[0].strip().upper()):
+            continue
+        def campo(ch):
+            for k, c in enumerate(cab):
+                if ch in c and k < len(L):
+                    return L[k].strip()
+            return ""
+        out[L[0].strip().upper()] = {"indice": campo("indice"), "taxa": num(campo("taxa indicativa")),
+                                     "venc": data_ymd(campo("venc")) if campo("venc") else None, "nome": campo("nome")}
+    return out or None
+
+
+def spreads_do_dia(papers, ntnb_rows):
+    ntnb = [(dt.date.fromisoformat(r[0]).toordinal(), r[1]) for r in ntnb_rows if r and r[1] is not None]
     di, ip, inc = [], [], []
-    for cod, p in (deb.get("papers") or {}).items():
+    for cod, p in (papers or {}).items():
         ind, tx, v = norm(p.get("indice", "")), p.get("taxa"), p.get("venc")
         if tx is None or not v:
             continue
@@ -1309,20 +1347,58 @@ def credito_spreads():
                 ip.append(tx - b)
                 if "(*)" in (p.get("nome") or ""):
                     inc.append(tx - b)
+    return {"di": _quantis(di), "ipca": _quantis(ip), "ipca_incentivadas": _quantis(inc)}
+
+
+@fonte("credito_spreads")
+def credito_spreads(max_hist=60):
+    """
+    Spread das debêntures (taxas indicativas da ANBIMA): DI+ (spread sobre o CDI) e IPCA+ (taxa menos a NTN-B de mesmo
+    vencimento). Guarda mediana e quartis por dia e o histórico das taxas indicativas dos títulos públicos.
+    Completa o passado aos poucos com os arquivos diários da ANBIMA (até 400 dias).
+    """
+    deb = ler_json("debentures.json", {})
+    m = ler_json("mercado.json", {})
+    a = m.get("anbima") or {}
+    ref = deb.get("refDate") or m.get("refDate")
     h = ler_json("credito_hist.json", {"fonte": "ANBIMA – taxas indicativas de debêntures; spread IPCA+ sobre a NTN-B de mesmo vencimento", "dias": {}})
-    if ref and (di or ip):
-        h["dias"][ref] = {"di": _quantis(di), "ipca": _quantis(ip), "ipca_incentivadas": _quantis(inc)}
-    corte = (HOJE - dt.timedelta(days=800)).isoformat()
-    h["dias"] = {k: v for k, v in sorted(h["dias"].items()) if k >= corte}
-    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
-    gravar_json("credito_hist.json", h)
-    # taxas indicativas dos títulos públicos, dia a dia
     t = ler_json("titulos_hist.json", {"fonte": "ANBIMA – taxas indicativas dos títulos públicos", "dias": {}})
+    vaz = h.setdefault("vazios", {})
+    if ref and deb.get("papers"):
+        h["dias"][ref] = spreads_do_dia(deb["papers"], a.get("NTNB", []))
     if m.get("refDate") and a:
         t["dias"][m["refDate"]] = {k: [[r[0], r[1]] for r in v if r and r[1] is not None] for k, v in a.items() if isinstance(v, list)}
+    # passado: arquivos diários da ANBIMA de datas anteriores
+    limite, novos, sem = time.time() + 3 * 60, 0, 0
+    fila = [HOJE - dt.timedelta(days=k) for k in range(1, 401)]
+    fila = [d for d in fila if d.weekday() < 5 and d.isoformat() not in h["dias"] and vaz.get(d.isoformat(), 0) < 2]
+    for d in fila[:max_hist]:
+        if time.time() > limite:
+            break
+        k = d.isoformat()
+        try:
+            ms, db = ler_ms(d), ler_db(d)
+        except Exception:  # noqa: BLE001
+            ms = db = None
+        if ms and db:
+            h["dias"][k] = spreads_do_dia(db, ms.get("NTNB", []))
+            t["dias"].setdefault(k, {kk: [[r[0], r[1]] for r in v] for kk, v in ms.items()})
+            vaz.pop(k, None)
+            novos += 1
+        else:
+            vaz[k] = vaz.get(k, 0) + 1
+            sem += 1
+    corte = (HOJE - dt.timedelta(days=800)).isoformat()
+    h["dias"] = {k: v for k, v in sorted(h["dias"].items()) if k >= corte}
+    h["vazios"] = {k: v for k, v in sorted(vaz.items()) if k >= corte}
+    h["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("credito_hist.json", h)
     t["dias"] = {k: v for k, v in sorted(t["dias"].items()) if k >= corte}
     gravar_json("titulos_hist.json", t)
-    return {"ref": ref, "di": _quantis(di), "ipca": _quantis(ip), "dias_credito": len(h["dias"]), "dias_titulos": len(t["dias"])}
+    ult = h["dias"].get(ref) if ref else None
+    return {"ref": ref, "hoje": ult, "dias_credito": len(h["dias"]), "dias_titulos": len(t["dias"]), "novos_passado": novos,
+            "sem_arquivo": sem, "mais_antigo": min(h["dias"]) if h["dias"] else None}
+
 
 # ---------------------------------------------------------------- SND: catálogo de debêntures
 
