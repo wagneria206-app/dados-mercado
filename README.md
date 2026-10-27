@@ -20,6 +20,7 @@ Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Merc
 | `fundos/XX.json`, `fundos_hist/XX.json` | Cotas e cadastro de todos os fundos (por início do CNPJ) e cotas de fim de mês desde 2021 | CVM – informe diário |
 | `dolar.json` | Dólar PTAX: fechamento diário (compra e venda) desde 1995 e boletins do dia | Banco Central (PTAX) |
 | `dolar_futuro.json` | Dólar futuro: preço de ajuste de cada vencimento do contrato DOL, dia a dia | B3 |
+| `dolar_fundamentos.json` | Inflação dos EUA, dólar global, commodities, juros dos EUA e risco-país (para o dólar justo) | Federal Reserve (FRED), FMI, Ipeadata |
 | `curvas_hist.json` | Curva de juros da ANBIMA dia a dia (parâmetros da ETTJ) | ANBIMA |
 | `status.json` | Resultado de cada fonte na última execução | — |
 
