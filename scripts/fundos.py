@@ -1031,13 +1031,18 @@ def principal():
                        inf.get("tperf"), ix(adm_l, (inf.get("adm") or "").strip()[:60])])
     inv = lambda d: [a for a, _ in sorted(d.items(), key=lambda x: x[1])]  # noqa: E731
     ult = CAL[-1] if CAL else None
-    gravar(os.path.join(sai, "idx.json"), {
+    cab = {
         "dt": ult, "geradoEm": dt.datetime.now().isoformat(timespec="seconds"),
         "cols": ["cnpj", "nome", "tipo", "classe", "anbima", "gestor", "pl", "cotistas", "rm", "ra", "r12", "r24", "r36", "r60",
                  "v12", "sharpe", "dd36", "capt12", "inicio", "flags", "tadm", "ult", "amin", "dres", "tperf", "adm"],
         "tipos": inv(tip_l), "classes": inv(cls_l), "anbima": inv(anb_l), "gestores": inv(gestores), "adms": inv(adm_l),
-        "cdi12": r2(metricas_cdi(cdi_d)), "rows": linhas,
-        "fonte": "CVM – informe diário, cadastro, extrato, lâmina e CDA"})
+        "cdi12": r2(metricas_cdi(cdi_d)),
+        "fonte": "CVM – informe diário, cadastro, extrato, lâmina e CDA"}
+    gravar(os.path.join(sai, "idx.json"), dict(cab, rows=linhas))
+    # índice em duas partes para o app abrir mais rápido: primeiro os fundos não exclusivos, depois os exclusivos
+    excl = [r for r in linhas if (r[19] or 0) & 1]
+    gravar(os.path.join(sai, "idx_p.json"), dict(cab, rows=[r for r in linhas if not (r[19] or 0) & 1], resto=len(excl)))
+    gravar(os.path.join(sai, "idx_x.json"), {"geradoEm": cab["geradoEm"], "rows": excl})
     gravar(os.path.join(sai, "cal.json"), {"d": CAL})
     gravar(os.path.join(sai, "bench.json"), bench)
     estado.update(geradoEm=dt.datetime.now().isoformat(timespec="seconds"), fundos=len(linhas), dias=len(CAL),
