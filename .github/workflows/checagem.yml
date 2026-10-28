@@ -1,0 +1,55 @@
+name: Checagem do app
+
+# Abre o app num navegador sem tela, com os dados reais, e percorre todas as abas.
+# Roda em toda alteração do app (pull request e main) e uma vez por dia depois dos robôs.
+on:
+  pull_request:
+    paths: ["index.html", "sw.js", "manifest.webmanifest", "tests/**", ".github/workflows/checagem.yml"]
+  push:
+    branches: [main]
+    paths: ["index.html", "sw.js", "manifest.webmanifest", "tests/**"]
+  schedule:
+    - cron: "23 13 * * 1-6"     # 10h23 de Brasília, depois das coletas da manhã
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: checagem-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checagem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Instalar navegador
+        run: |
+          pip install -q playwright==1.48.0
+          python -m playwright install --with-deps chromium
+      - name: Percorrer todas as abas
+        run: python -u tests/checagem.py index.html
+      - name: Avisar falha (issue no GitHub)
+        if: failure() && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          N=$(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[0].number' 2>/dev/null || true)
+          MSG="A checagem de $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M') encontrou problema no app: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -n "$N" ]; then gh issue comment "$N" -R "${{ github.repository }}" --body "$MSG"; else gh issue create -R "${{ github.repository }}" --title "$T" --body "$MSG
+
+          Este aviso fecha sozinho quando a checagem voltar a passar."; fi
+      - name: Fechar aviso de falha anterior
+        if: success() && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          for N in $(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[].number' 2>/dev/null); do gh issue close "$N" -R "${{ github.repository }}" --comment "Voltou a passar em $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M')."; done
