@@ -3073,7 +3073,7 @@ function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
-  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml());
+  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+P(ibgeCalHtml());
   else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
   o.innerHTML=h;const s=$("piMode");if(s)s.value=PI_MODE}
 let TX_BACK=null;
@@ -4039,7 +4039,7 @@ function fnFa(){
   if(!FN.files.has(k)){b.innerHTML='<section class="panel"><p class="sub">Carregando o fundo '+fnCnpjF(k)+'…</p></section>';
     fnFund(k).then(()=>{if(FN.cur===k&&activeMod==="fa")fnFa()}).catch(e=>{if(FN.cur===k)b.innerHTML='<section class="panel"><p class="warn">Não encontrei o fundo '+fnCnpjF(k)+' na base da CVM ('+esc(e.message)+'). Ele pode estar encerrado ou não informar cota diária.</p></section>'});return}
   const F=FN.files.get(k);
-  try{b.innerHTML=fnHead(F)+fnPerfHtml(F)+fnWinHtml(F)+fnMonHtml(F)+fnRiskHtml(F)+fnJanHtml(F)+fnPeerHtml(F)+fnSimHtml(F)+fnGrossHtml(F)+fnPlHtml(F)+fnCartHtml(F)+fnSrcHtml(F)}
+  try{b.innerHTML=fnHead(F)+fnPerfHtml(F)+fnWinHtml(F)+fnMonHtml(F)+fnRiskHtml(F)+fnJanHtml(F)+fnPeerHtml(F)+fnSimHtml(F)+fnGrossHtml(F)+fnPlHtml(F)+fnCartHtml(F)+fnDocsHtml(F)+fnSrcHtml(F)}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function fnHome(){
@@ -4170,6 +4170,10 @@ function fnCartHtml(F){
     h+='</tbody></table></div>';if(c.top.some(x=>x[2]))h+='<p class="sub" style="font-size:.8rem">Os fundos investidos são clicáveis.</p>'}
   return h+fnCartHistHtml(F)+'</section>';
 }
+function fnDocsHtml(F){ // regulamento, lâmina, demonstrações e fatos relevantes ficam nos sistemas da CVM (sem link direto por fundo)
+  const c=/^\d{14}$/.test(F.c)?F.c:/^\d{14}$/.test(F.pai||"")?F.pai:"";if(!c)return "";
+  return '<section class="panel"><h3>Documentos oficiais</h3><p class="sub">Regulamento, lâmina, demonstrações financeiras, fatos relevantes e assembleias do fundo estão nos sistemas da CVM. Copie o CNPJ e cole na busca.</p><div class="spbtns" style="margin-top:8px"><button type="button" class="btn sec" data-copiar="'+fnCnpjF(c)+'">Copiar CNPJ '+fnCnpjF(c)+'</button><a class="btn sec" href="https://web.cvm.gov.br/app/fundosweb/#/consultaPublica" target="_blank" rel="noopener">Abrir a consulta de fundos da CVM</a><a class="btn sec" href="https://cvmweb.cvm.gov.br/swb/default.asp?sg_sistema=fundosreg" target="_blank" rel="noopener">Fundos registrados (CVM)</a></div></section>'}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-copiar]");if(!x)return;const v=x.dataset.copiar,ok=()=>{const t=x.textContent;x.textContent="CNPJ copiado";setTimeout(()=>{x.textContent=t},1800)};try{navigator.clipboard.writeText(v).then(ok,()=>{})}catch(err){}});
 function fnSrcHtml(F){return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: CVM (informe diário, cadastro, extrato, lâmina e composição da carteira), Banco Central (CDI, IPCA e dólar PTAX) e B3 (Ibovespa e IFIX). Rentabilidade passada não garante rentabilidade futura. Base atualizada até '+(FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
 
 /* ranking */
@@ -4748,7 +4752,7 @@ function spTopHtml(){
   h+='<div class="sprow"><div class="field"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+SP.carts.map((x,j)=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(x.nome)+'</option>').join("")+'</select></div><div class="field"><label for="spNome">Nome</label><input id="spNome" data-spnome="1" value="'+esc(c.nome)+'" maxlength="60" autocomplete="off"></div>'
     +'<div class="spbtns"><button type="button" class="btn sec" data-spnew="1">Nova</button><button type="button" class="btn sec" data-spdup="1">Duplicar</button><button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div></div>';
   h+='<div class="spimp"><label class="btn sec" for="spImp">Importar posição da B3 (Excel)</label><input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span class="sub" style="font-size:.8rem">Arquivo de posição da Área do Investidor da B3. Fica só neste navegador.</span><span id="spImpMsg"></span></div>';
-  h+='<div class="label" style="margin-top:12px">Composição</div><div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar fundo (nome ou CNPJ) ou ativo da B3 (PETR4, HGLG11, BOVA11…)"><div id="spRes2" class="fnres" hidden></div></div>';
+  h+='<div class="label" style="margin-top:12px">Composição</div><div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar fundo, ativo da B3 (PETR4, HGLG11…), debênture, CRI ou CRA (código ou emissor)"><div id="spRes2" class="fnres" hidden></div></div>';
   h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
   if(c.itens.length){
     h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Item</th><th class="c-ph" style="text-align:left">Tipo</th><th>Peso</th><th class="c-ph">Valor inicial</th><th></th></tr></thead><tbody>';
@@ -4891,6 +4895,7 @@ function spResHtml(c,it,R){
   if(+c.aporte>0||R.ir)h+='<div class="label" style="margin-top:10px">Patrimônio e valor investido</div>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"});
   let pk=1,v=1;const dd=[[R.pts[0].t,0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([x.t,(v/pk-1)*100])});
   h+='<div class="label" style="margin-top:10px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});
+  if(it.some(x=>/^cr:/.test(x.k)))h+='<p class="warn" style="font-size:.84rem">Debêntures, CRI e CRA entram com a taxa indicativa atual da ANBIMA aplicada a todo o período: é uma estimativa do carrego, sem a oscilação de preço (marcação a mercado) nem o risco de crédito do emissor. A ANBIMA só publica os preços dos últimos dias.</p>';
   h+='<p class="sub" style="font-size:.8rem">Simulação '+(R.diaria?'diária (cotas e cotações de cada dia útil, desde 2019)':'mensal (fechamentos de fim de mês, desde 2005)')+': cota dos fundos (CVM), cotação com proventos dos ativos (B3), Tesouro Direto (preço de resgate) e índices do Banco Central. '+(R.ir?'O valor líquido estima o IR se tudo fosse resgatado na data: come-cotas em maio e novembro nos fundos, tabela regressiva na renda fixa, 15% em ações, ETFs e BDRs e 20% sobre o ganho de preço dos FIIs. Nos rebalanceamentos, a parte vendida de cada item paga IR sobre o ganho proporcional (sem a isenção de R$ 20 mil mensais em ações)'+(R.irReb>0?': '+brl(R.irReb)+' no período':'')+'. ':'Valores brutos, sem IR. ')+'Sem corretagem e custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
   // ano a ano
   const anos=[...new Set(R.rets.map(x=>Math.floor(x.m/12)))].sort((a,b)=>b-a);
@@ -5013,6 +5018,7 @@ function spSearch(q){
   const out=[];if(q.trim().length<2)return out;
   if(AT.idx)atSearch(q,6).forEach(j=>{const r=AT.idx.rows[j];out.push({t:"a",k:r[0],n:r[0]+" · "+r[1],tipo:r[AT.C.tipo],s:'R$ '+fx(r[AT.C.preco],2)+' · 12m '+fnPctT(r[AT.C.r12])})});
   if(FN.idx)fnSearch(q,8).forEach(j=>{const r=FN.idx.rows[j];out.push({t:"f",k:r[0],n:r[1],tipo:"Fundo · "+(FN.idx.classes[r[FN.C.classe]]||""),s:fnCnpjF(r[0])+' · 12m '+fnPctT(r[FN.C.r12])})});
+  spCredSearch(q).forEach(x=>out.push(x));
   return out;
 }
 function spAdd(item){const c=spC();if(c.itens.length>=CMP_MAX){alertLite("A carteira aceita até "+CMP_MAX+" itens.");return}if(c.itens.some(x=>x.t===item.t&&x.k===item.k))return;
@@ -5051,8 +5057,21 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activ
 });
 let SP_QT=null;
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="spQ")return;const box=$("spRes2");clearTimeout(SP_QT);SP_QT=setTimeout(()=>{const L=spSearch(t.value);if(t.value.trim().length<2){box.hidden=true;return}
-  box.innerHTML=L.length?L.map(x=>'<button type="button" class="fnri" data-spadd=\''+JSON.stringify({t:x.t,k:x.k,n:x.n.slice(0,80),tipo:x.tipo}).replace(/'/g,"&#39;")+'\'><b>'+esc(x.n)+'</b><small>'+esc(x.tipo)+' · '+x.s+'</small></button>').join(""):'<div class="fnri"><small>Nada encontrado.</small></div>';box.hidden=false},120)});
+  box.innerHTML=L.length?L.map(x=>'<button type="button" class="fnri" data-spadd=\''+JSON.stringify({t:x.t,k:x.k,n:x.n.slice(0,80),tipo:x.tipo,rf:x.rf,x:x.x,isento:x.isento}).replace(/'/g,"&#39;")+'\'><b>'+esc(x.n)+'</b><small>'+esc(x.tipo)+' · '+x.s+'</small></button>').join(""):'<div class="fnri"><small>Nada encontrado.</small></div>';box.hidden=false},120)});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.dataset&&e.target.dataset.sprfx!=null){e.preventDefault();SP.rf.taxa=e.target.value;const b=document.querySelector("[data-sprfadd]");if(b)b.click()}});
+
+/* ----- debêntures, CRI e CRA no simulador: entram como renda fixa pela taxa indicativa atual da ANBIMA */
+const SP_CRED={L:null,load:null};
+function spCredLoad(){if(SP_CRED.L||SP_CRED.load)return;const g=f=>fetch(ROBO+f,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  SP_CRED.load=Promise.all([g("debentures.json"),g("cri_cra_anbima.json")]).then(([d,c])=>{const L=[];
+    [[d,"Debênture"],[c,"CRI/CRA"]].forEach(([j,tipo])=>{if(!j||!j.papers)return;Object.entries(j.papers).forEach(([cod,p])=>{const ind=String(p.indice||""),tx=p.taxa;if(tx==null||!isFinite(tx))return;
+      let rf=null;if(/^DI\s*\+/i.test(ind))rf="cdimais";else if(/%\s*do\s*DI/i.test(ind))rf="cdi";else if(/^IPCA/i.test(ind))rf="ipca";else if(/PREFIXADO/i.test(ind))rf="pre";if(!rf)return;
+      const nome=String(p.nome||p.risco||p.emissor||"").replace(/\s*\(\*\)\s*/,"").trim(),inc=/\(\*\)/.test(String(p.nome||""));
+      L.push({cod,nome,tipo,rf,x:+tx,ind,venc:p.venc,isento:tipo==="CRI/CRA"||inc?1:0,ref:j.refDate,sk:fnNorm(cod+" "+nome+" "+(p.emissor||""))})})});
+    SP_CRED.L=L;SP_CRED.load=null;const q=$("spQ");if(q&&q.value.trim().length>=2)q.dispatchEvent(new Event("input",{bubbles:true}))})}
+function spCredSearch(q){if(!SP_CRED.L){spCredLoad();return []}const t=fnNorm(q).split(/\s+/).filter(Boolean);if(!t.length||q.trim().length<3)return [];
+  return SP_CRED.L.filter(x=>t.every(w=>x.sk.includes(w))).slice(0,6).map(x=>{const lab=spRfLab(x.rf,x.x);return {t:"s",k:"cr:"+x.cod,rf:x.rf,x:x.x,isento:x.isento,n:x.cod+" · "+x.nome.slice(0,40)+" ("+lab+")",tipo:x.tipo,
+    s:x.ind+" · taxa ANBIMA "+lab+" · vence "+fdate(Date.parse(x.venc+"T00:00:00Z"))+(x.isento?" · isento de IR":"")}})}
 
 /* ===== Relatório em PDF com a identidade do escritório ===== */
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
@@ -5467,6 +5486,46 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
   else return;syncLs()},true);
 if(SYNC.tok){setTimeout(()=>syncNow(),1500);setInterval(()=>{if(document.visibilityState==="visible")syncNow()},5*60000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncNow()})}
 
+/* ===== Risco-país implícito: cupom cambial de 1 ano (DI futuro × dólar futuro, B3) menos o juro dos EUA (SOFR) =====
+   Substitui o EMBI+ Brasil, cuja série pública (Ipeadata/J.P. Morgan) foi encerrada em 2024. */
+const RISCO={di:null,load:null};
+function riscoSerie(){
+  const DI=(typeof MK==="object"&&MK.di)||RISCO.di;if(!FXF||!DI||!DI.dias)return null;
+  const J=FXJ&&FXJ.mensal?FXJ.mensal:{},us={};[J.treasury_2a,J.fed_funds,J.juro_eua].forEach(o=>Object.assign(us,o||{}));const out=[];
+  Object.keys(FXF.dias).sort().forEach(d=>{const Ld=DI.dias[d],Lf=FXF.dias[d];if(!Array.isArray(Ld)||!Array.isArray(Lf))return;
+    const t=Date.parse(d+"T00:00:00Z"),pu={},fw={};Ld.forEach(r=>{if(r&&+r[1]>0)pu[r[0]]=+r[1]});Lf.forEach(r=>{if(r&&+r[1]>0)fw[r[0]]=+r[1]});
+    const cs=Object.keys(fw).filter(c=>pu[c]).map(c=>({c,e:fxExp(c)})).filter(x=>x.e>t+20*DAY).sort((a,b)=>a.e-b.e);if(cs.length<2)return;
+    const m1=cs[0];let m2=null;cs.forEach(x=>{if(!m2||Math.abs(x.e-m1.e-365*DAY)<Math.abs(m2.e-m1.e-365*DAY))m2=x});if(!m2||m2.e-m1.e<300*DAY||m2.e-m1.e>430*DAY)return;
+    const dc=(m2.e-m1.e)/DAY,cupom=((pu[m1.c]/pu[m2.c])/(fw[m2.c]/fw[m1.c])-1)*360/dc*100,ym=d.slice(0,7);
+    let u=us[ym];if(u==null){const ks=Object.keys(us).filter(k=>k<=ym).sort();u=ks.length?us[ks[ks.length-1]]:null}
+    if(!isFinite(cupom)||u==null)return;out.push({t,d,cupom,us:+u,premio:(cupom-u)*100,m1:m1.c,m2:m2.c})});
+  return out.length?out:null;
+}
+function fxRiscoHtml(){
+  if(!FXF)return "";
+  if(!(typeof MK==="object"&&MK.di)&&!RISCO.di){if(!RISCO.load)RISCO.load=fetch(ROBO+"di_futuro.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{RISCO.di=j;const el=$("fxRisco");if(el)el.outerHTML=fxRiscoHtml()}).catch(()=>{});return '<div id="fxRisco"></div>'}
+  const S=riscoSerie();if(!S)return '<div id="fxRisco"></div>';const u=S[S.length-1],a30=S.find(x=>x.t>=u.t-30*DAY),a1y=S[0];
+  let h='<div id="fxRisco"><div class="label" style="margin-top:16px">Risco-país implícito (cupom cambial de 1 ano − juro dos EUA)</div>';
+  h+='<div class="fnkpis" style="margin-top:6px"><div class="fnkp"><span>Prêmio implícito</span><b>'+fx(u.premio,0)+' pontos</b><small>'+fdate(u.t)+(a30?' · 30 dias atrás '+fx(a30.premio,0):'')+'</small></div><div class="fnkp"><span>Cupom cambial 1 ano</span><b>'+fx(u.cupom,2)+'%</b><small>'+u.m1+' → '+u.m2+', ao ano (360)</small></div><div class="fnkp"><span>Juro dos EUA</span><b>'+fx(u.us,2)+'%</b><small>SOFR, média do mês</small></div></div>';
+  h+=fxMulti([{lab:"Prêmio implícito (pontos-base)",col:"var(--loss)",w:2.2,pts:S.map(x=>[x.t,x.premio])}],{months:false,unit:""});
+  h+='<p class="sub" style="font-size:.8rem;margin-top:4px">Quanto o mercado de câmbio paga a mais, em dólar, para ficar 1 ano no Brasil em vez de nos EUA: taxa do cupom cambial entre dois vencimentos do dólar futuro e do DI futuro da B3 com cerca de 1 ano de distância, menos o juro americano (SOFR do Fed de Nova York; nos meses mais antigos, sem SOFR publicado na base, o Treasury de 2 anos). Sobe quando cresce a percepção de risco do país. Serve como substituto do EMBI+ Brasil, cuja série pública foi encerrada em 2024; os níveis não são iguais aos do EMBI, mas o movimento é parecido. Histórico desde '+fdate(a1y.t)+'.</p></div>';
+  return h;
+}
+
+/* ===== Próximas divulgações do IBGE (calendário oficial, lido direto pelo navegador; se não carregar, a seção some) ===== */
+const IBGECAL={d:null,load:null,err:false};
+function ibgeCalHtml(){
+  if(IBGECAL.err)return "";
+  if(!IBGECAL.d){if(!IBGECAL.load){const hj=new Date(),f=d=>String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+"-"+d.getFullYear(),ate=new Date(hj.getTime()+75*864e5);
+      IBGECAL.load=fetch("https://servicodados.ibge.gov.br/api/v3/calendario/?qtd=300&de="+f(hj)+"&ate="+f(ate)).then(r=>r.ok?r.json():Promise.reject()).then(j=>{IBGECAL.d=j;if(typeof activeMod!=="undefined"&&activeMod==="in"&&typeof mkCalc==="function")mkCalc()}).catch(()=>{IBGECAL.err=true})}
+    return ""}
+  const L=(Array.isArray(IBGECAL.d)?IBGECAL.d:IBGECAL.d.items||[]).map(x=>{const tit=String(x.titulo||x.nome_produto||x.titulo_produto||""),dd=String(x.data_divulgacao||x.data||"");const m=/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/.exec(dd);return m?{tit,t:Date.UTC(+m[3],+m[2]-1,+m[1]),h:m[4]?m[4]+"h"+m[5]:""}:null})
+    .filter(x=>x&&/IPCA|INPC|PIB|Contas Nacionais|PNAD|Produção Industrial|Pesquisa Mensal de Comércio|Pesquisa Mensal de Serviços|Desocupação|IPP/i.test(x.tit)).sort((a,b)=>a.t-b.t);
+  const vis=new Set(),U=L.filter(x=>{const k=x.tit+"|"+x.t;if(vis.has(k))return false;vis.add(k);return true}).slice(0,14);
+  if(!U.length)return "";
+  return '<h3>Próximas divulgações do IBGE</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Divulgação</th></tr></thead><tbody>'+U.map(x=>'<tr><td style="text-align:left;white-space:nowrap">'+fdate(x.t)+(x.h?' <small>'+x.h+'</small>':'')+'</td><td style="text-align:left">'+esc(x.tit)+'</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Fonte: calendário de divulgações do IBGE.</p>';
+}
+
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
@@ -5717,12 +5776,12 @@ function fxJustoHtml(spot){
     const ser=[{lab:"PTAX (média do mês)",col:"var(--accent)",pts:P.R.filter(r=>r.ym>="2006-01").map(r=>[fxYmT(r.ym),r.s]),w:2.2},{lab:"Justo pela paridade (média desde 1999)",col:"var(--s2)",pts:P.R.filter(r=>r.ym>="2006-01").map(r=>[fxYmT(r.ym),P.main.avg*r.p]),dash:"5 4"}];
     if(B)ser.push({lab:"Modelo de fundamentos (ajustado)",col:"var(--s3)",pts:B.fitted});
     h+=fxMulti(ser)+'</details>'}
-  if(B){const nm=["Constante","Diferença de inflação Brasil × EUA (log)","Dólar global – índice DXY pelas cotações do BC (log)"].concat(B.coOk?["Commodities – índice do FMI (log)"]:[]).concat(B.embiOk?["Risco-país – EMBI+ Brasil (pontos ÷ 100)"]:[]);
+  if(B){const nm=["Constante","Diferença de inflação Brasil × EUA (log)","Dólar global – índice DXY pelas cotações do BC (log)"].concat(B.coOk?["Commodities – IC-Br do Banco Central em dólares (log)"]:[]).concat(B.embiOk?["Risco-país – EMBI+ Brasil (pontos ÷ 100)"]:[]);
     const U=B.U,val=[null,null,U.dolar_global].concat(B.coOk?[U.commodities]:[]).concat(B.embiOk?[U.embi]:[]);
     h+='<details style="margin-top:10px"><summary class="label" style="cursor:pointer">2. Modelo de fundamentos (regressão)</summary><p class="sub" style="margin-top:6px">Ideia: o real se valoriza quando o dólar perde força no mundo e quando as commodities sobem, e se desvaloriza quando o risco-país aumenta. O app estima, com dados mensais de '+mname(fxYm(B.from))+' a '+mname(fxYm(B.to))+' ('+B.n+' meses), quanto cada fator explica do dólar e aplica os valores mais recentes. O modelo explica '+fx(B.r2*100,0)+'% das variações do período; a faixa normal (±1 desvio dos erros) é de ±'+fx((Math.exp(B.sd)-1)*100,1)+'%.</p><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab fxstat"><thead><tr><th style="text-align:left">Fator</th><th>Coeficiente</th><th style="text-align:left">Último valor</th></tr></thead><tbody>'
      +B.beta.map((b,i)=>'<tr><td style="text-align:left">'+nm[i]+'</td><td>'+fx(b,3)+'</td><td style="text-align:left"><small>'+(val[i]?fx(val[i].valor,2)+' em '+fdate(Date.parse(val[i].data)):i===1?'IPCA e CPI até '+mname(fxYm(B.to)):'—')+'</small></td></tr>').join("")+'</tbody></table></div>'
      +((!B.embiOk||!B.coOk)?'<p class="sub" style="font-size:.8rem">Ficou de fora: '+[!B.coOk?'commodities (fonte indisponível)':'',!B.embiOk?'risco-país (série do EMBI+ desatualizada)':''].filter(Boolean).join(' e ')+'.</p>':'')+'</details>'}
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Banco Central (PTAX e paridades para o índice do dólar), IBGE (IPCA), BLS (CPI dos EUA), Fed de Nova York (SOFR)'+(B&&B.coOk?', FMI (commodities)':'')+(B&&B.embiOk?', Ipeadata/J.P. Morgan (EMBI+ Brasil)':'')+'. O dólar de hoje usa '+(spot!==FX._v[FX._v.length-1]?'o último boletim da PTAX':'a PTAX de fechamento')+'.</p>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Banco Central (PTAX e paridades para o índice do dólar), IBGE (IPCA), BLS (CPI dos EUA), Fed de Nova York (SOFR)'+(B&&B.coOk?', Banco Central (IC-Br em dólares, commodities)':'')+(B&&B.embiOk?', Ipeadata/J.P. Morgan (EMBI+ Brasil)':'')+'. O dólar de hoje usa '+(spot!==FX._v[FX._v.length-1]?'o último boletim da PTAX':'a PTAX de fechamento')+'.</p>';
   return h;
 }
 
@@ -5765,7 +5824,7 @@ function fxCalc(){
    +'<tr><td style="text-align:left">Percentil de hoje</td><td>'+fx(pct,0)+'</td><td style="text-align:left"><small>o dólar esteve mais barato que hoje em '+fx(pct,0)+'% dos dias do período</small></td></tr>'
    +'<tr><td style="text-align:left">Volatilidade anualizada</td><td>'+fx(vol,1)+'%</td><td style="text-align:left"><small>desvio-padrão das variações diárias × √252</small></td></tr>'
    +'</tbody></table></div>';
-  h+=fxJustoHtml(live?+live.venda:vL)+fxFutHtml();
+  h+=fxJustoHtml(live?+live.venda:vL)+fxFutHtml()+fxRiscoHtml();
   // boletins do dia
   if(B)h+='<div class="label" style="margin-top:14px">Boletins de '+fdate(Date.parse(B.data+"T00:00:00Z"))+'</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab"><thead><tr><th style="text-align:left">Horário</th><th style="text-align:left">Boletim</th><th>Compra</th><th>Venda</th></tr></thead><tbody>'+B.lista.map(b=>'<tr><td style="text-align:left">'+esc(b.hora)+'</td><td style="text-align:left">'+esc(b.tipo)+'</td><td>'+fx(+b.compra,4)+'</td><td>'+fx(+b.venda,4)+'</td></tr>').join("")+'</tbody></table></div>';
   // fechamentos mensais
