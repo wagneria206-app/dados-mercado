@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: atualizar-dados
@@ -68,3 +69,21 @@ jobs:
           git add -A
           git commit -q -m "Dados de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
           git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" site
+      - name: Avisar falha (issue no GitHub)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          N=$(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[0].number' 2>/dev/null || true)
+          MSG="A execução de $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M') falhou: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -n "$N" ]; then gh issue comment "$N" -R "${{ github.repository }}" --body "$MSG"; else gh issue create -R "${{ github.repository }}" --title "$T" --body "$MSG
+
+          O app continua mostrando os últimos dados publicados. Este aviso fecha sozinho quando o robô voltar a rodar sem erro."; fi
+      - name: Fechar aviso de falha anterior
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          for N in $(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[].number' 2>/dev/null); do gh issue close "$N" -R "${{ github.repository }}" --comment "Voltou a funcionar em $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M')."; done

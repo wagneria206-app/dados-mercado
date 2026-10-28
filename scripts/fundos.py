@@ -156,9 +156,10 @@ def ler_mes(ym, filtro=None):
         for L in leitor:
             if len(L) < n:
                 continue
-            if c_sub is not None and L[c_sub].strip():
-                continue
-            k = chave(L[c_cnpj])
+            sub = L[c_sub].strip().upper() if c_sub is not None else ""
+            k = sub if sub else chave(L[c_cnpj])
+            if sub:
+                SUBPAI[sub] = chave(L[c_cnpj])
             if not k or (filtro is not None and k not in filtro):
                 continue
             q = num(L[c_q])
@@ -221,6 +222,7 @@ class Fundo:
         self.q = array("d")       # cotas
 
 
+SUBPAI = {}       # subclasse -> CNPJ da classe
 CAL = []          # datas do calendário (AAAA-MM-DD)
 OLD = {}          # carteira e histórico de carteira da publicação anterior
 CALIX = {}
@@ -252,9 +254,9 @@ def carregar_estado(pasta):
                     q = q * x[0] if isinstance(x, list) else q * (1 + x / ESC)
                     f.i.append(i0 + 1 + k)
                     f.q.append(q)
-            F[nome[:14]] = f
+            F[nome[:-5]] = f
             if j.get("cart") or j.get("carth"):
-                OLD[nome[:14]] = (j.get("cart"), j.get("carth") or {})
+                OLD[nome[:-5]] = (j.get("cart"), j.get("carth") or {})
             n += 1
     log("estado carregado:", n, "fundos,", len(CAL), "dias no calendário")
     return est
@@ -319,6 +321,7 @@ def ler_csv(fobj):
 
 def cadastro(ativos):
     info = {}
+    ativos = set(ativos) | {v for v in SUBPAI.values() if v}      # classes das subclasses também
 
     def pega(k, **kv):
         d = info.setdefault(k, {})
@@ -405,9 +408,8 @@ def cadastro(ativos):
                 if not cab_ok:
                     DIAG["lamina_colunas"] = list(L.keys())
                     cab_ok = True
-                if (L.get("ID_SUBCLASSE") or "").strip():
-                    continue
-                k = chave(L.get("CNPJ_FUNDO_CLASSE") or L.get("CNPJ_FUNDO"))
+                sub = (L.get("ID_SUBCLASSE") or "").strip().upper()
+                k = sub or chave(L.get("CNPJ_FUNDO_CLASSE") or L.get("CNPJ_FUNDO"))
                 if k and k in ativos and k not in lam:
                     lam[k] = L
             break
@@ -431,7 +433,38 @@ def cadastro(ativos):
                 v = num(L.get(col))
                 if v:
                     d["risco"] = v
-    log("cadastro:", len(info), "fundos; extrato:", len(ext), "; lâmina:", len(lam))
+    subs = [k for k in ativos if len(k) != 14 or not k.isdigit()]
+    if subs:
+        try:
+            r = baixar(URL_CAD_175)
+            z = zipfile.ZipFile(io.BytesIO(r.content))
+            nome_sub = next(n for n in z.namelist() if "subclasse" in n)
+            for L in ler_csv(z.open(nome_sub)):
+                L = {norm(a): b for a, b in L.items()}
+                k = (L.get("id_subclasse") or "").strip().upper()
+                if k not in ativos:
+                    continue
+                pai = SUBPAI.get(k)
+                base = dict(info.get(pai, {}))
+                for a in ("obj", "pol", "fan", "tadm", "tperf", "amin", "dcot", "dpag", "tsai", "car", "risco", "rsk"):
+                    base.pop(a, None)
+                d = info.setdefault(k, {})
+                for a, v in base.items():
+                    d.setdefault(a, v)
+                nm = (L.get("denominacao_social") or "").strip()
+                pn = (info.get(pai, {}) or {}).get("n", "")
+                d["n"] = (pn + " · " + nm) if nm and len(nm) < 40 and pn else (nm or pn)
+                for a, col in (("exc", "exclusivo"), ("pub", "publico_alvo"), ("cond", "forma_condominio"), ("prev", "previdenciario")):
+                    v = (L.get(col) or "").strip()
+                    if v:
+                        d[a] = v
+                ini = (L.get("data_inicio") or "")[:10]
+                if re.match(r"\d{4}-\d\d-\d\d$", ini):
+                    d["ini"] = ini
+                d["pai"] = pai
+        except Exception as e:  # noqa: BLE001
+            DIAG["subclasses"] = str(e)[:200]
+    log("cadastro:", len(info), "fundos e subclasses; extrato:", len(ext), "; lâmina:", len(lam))
     return info
 
 
@@ -570,8 +603,99 @@ def b3_indice(indice, ano):
     return sorted(out)
 
 
+URL_ANB_IMA = "https://www.anbima.com.br/informacoes/ima/ima-sh-down.asp"
+URL_ANB_PUB = "https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/anbima_ima.json"
+ANB_IDX = {"IMA-B": "imab", "IMA-B 5": "imab5", "IMA-B 5+": "imab5p", "IRF-M": "irfm", "IMA-S": "imas", "IMA-GERAL": "imag"}
+ANB = None        # {data: {nome: número-índice}}; None = só ler a última publicação
+
+
+def anbima_dia(d):
+    """Números-índice do IMA numa data (formulário de séries históricas da ANBIMA). {} se não houve cálculo."""
+    dados = {"Tipo": "", "DataRef": "", "Pai": "ima", "escolha": "2", "Idioma": "PT", "saida": "csv",
+             "Dt_Ref": d.strftime("%d/%m/%Y"), "Dt_Ref_Ver": HOJE.strftime("%Y%m%d")}
+    r = requests.post(URL_ANB_IMA, data=dados, headers=UA, timeout=(10, 40))
+    out = {}
+    for L in r.content.decode("latin-1").splitlines():
+        p = L.split(";")
+        if len(p) > 3 and p[0].strip() in ANB_IDX and re.match(r"\d\d/\d\d/\d{4}$", p[1].strip()):
+            v = num(p[2])
+            if v:
+                out[ANB_IDX[p[0].strip()]] = v
+    return out
+
+
+def anbima_historico(estado, max_dias=450):
+    """Fins de mês desde 2005 e, depois, dias úteis desde 2019 (do mais recente para o mais antigo)."""
+    feitos = set(estado.get("anb_vazios", []))
+    alvo = []
+    m = dt.date(INI_MENSAL, 1, 31)
+    while m < HOJE:
+        fim = (m.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+        alvo.append(fim)
+        m = (fim + dt.timedelta(days=1)).replace(day=28) + dt.timedelta(days=4)
+    feitos_m = {d[:7] for d in ANB}
+    pedidos = 0
+    for fim in alvo:
+        if fim.strftime("%Y-%m") in feitos_m or fim >= HOJE or time.time() > LIMITE - 500 or pedidos > 330:
+            continue
+        for back in range(0, 6):
+            d = fim - dt.timedelta(days=back)
+            if d.weekday() >= 5:
+                continue
+            pedidos += 1
+            try:
+                v = anbima_dia(d)
+            except Exception as e:  # noqa: BLE001
+                DIAG["anbima_ima"] = str(e)[:150]
+                v = {}
+            time.sleep(0.3)
+            if v:
+                ANB[d.isoformat()] = v
+                break
+    for d in reversed(CAL):
+        if pedidos >= max_dias or time.time() > LIMITE - 400:
+            break
+        if d in ANB or d in feitos:
+            continue
+        pedidos += 1
+        try:
+            v = anbima_dia(dt.date.fromisoformat(d))
+        except Exception as e:  # noqa: BLE001
+            DIAG["anbima_ima"] = str(e)[:150]
+            continue
+        time.sleep(0.3)
+        if v:
+            ANB[d] = v
+        else:
+            feitos.add(d)
+    estado["anb_vazios"] = sorted(feitos)[-400:]
+    log("ANBIMA IMA:", len(ANB), "datas no histórico;", pedidos, "consultas")
+
+
 def indices():
-    b = {"d": {}, "m": {}, "fonte": "BCB (CDI, IPCA, dólar PTAX) e B3 (Ibovespa, IFIX)"}
+    global ANB
+    b = {"d": {}, "m": {}, "fonte": "BCB (CDI, IPCA, dólar PTAX), B3 (Ibovespa, IFIX) e ANBIMA (IMA)"}
+    if ANB is None:
+        try:
+            ANB = requests.get(URL_ANB_PUB, headers=UA, timeout=(10, 60)).json()
+        except Exception:  # noqa: BLE001
+            ANB = {}
+    if ANB:
+        ds = sorted(ANB)
+        for nome in ANB_IDX.values():
+            serie = [(d, ANB[d][nome]) for d in ds if ANB[d].get(nome)]
+            if not serie:
+                continue
+            dd = dict(serie)
+            b["m"][nome] = {}
+            for d, v in serie:
+                b["m"][nome][d[:4] + d[5:7]] = v
+            ult, arr = None, []
+            for d in CAL:
+                if d in dd:
+                    ult = dd[d]
+                arr.append(ult if (ult is not None and d >= ds[0]) else None)
+            b["d"][nome] = arr
     ini = dt.date(INI_MENSAL, 1, 1)
     try:
         cdi = dict(sgs(12, dt.date(int(INI_DIARIO[:4]), 1, 1), HOJE))
@@ -810,6 +934,13 @@ def principal():
         h.update(hist.get(k, {}))
         if h:
             carth[k] = dict(sorted(h.items())[-24:])
+    global ANB
+    ANB = ler_json(os.path.join(ent, "anbima_ima.json"), {})
+    try:
+        anbima_historico(estado)
+    except Exception as e:  # noqa: BLE001
+        DIAG["anbima_hist"] = str(e)[:200]
+    gravar(os.path.join(sai, "anbima_ima.json"), ANB)
     bench = indices()
     velho = ler_json(os.path.join(ent, "bench.json"), {"d": {}, "m": {}})
     for nome, serie in (velho.get("m") or {}).items():          # fonte fora do ar: mantém a última coleta
@@ -845,7 +976,7 @@ def principal():
         reg = {"c": k, "n": inf.get("n") or inf.get("nf") or "", "tipo": tipo}
         if inf.get("anb"):
             inf["anb"] = anbima_nome(inf["anb"])
-        for a in ("fan", "cls", "anb", "bm", "pub", "exc", "lp", "cond", "ini", "fic", "aud", "cus", "ges", "adm", "cnf", "nf",
+        for a in ("fan", "cls", "anb", "bm", "pub", "exc", "lp", "cond", "ini", "fic", "aud", "cus", "ges", "adm", "cnf", "nf", "pai", "prev",
                   "tadm", "tperf", "itperf", "amin", "dcot", "dpag", "tsai", "car", "obj", "pol", "risco", "rsk"):
             if inf.get(a) not in (None, ""):
                 reg[a] = inf[a]
@@ -854,6 +985,8 @@ def principal():
             reg.update(i0=i0, q0=q0, r=r)
         if k in cart:
             reg["cart"] = cart[k]
+        elif inf.get("pai") in cart:
+            reg["cart"] = cart[inf["pai"]]
         if carth.get(k):
             reg["carth"] = carth[k]
         mt = metricas(f, cdi_d)
@@ -872,6 +1005,8 @@ def principal():
             flags |= 8
         if "fechad" in norm(inf.get("cond")):
             flags |= 16
+        if inf.get("pai"):
+            flags |= 32
         prim = meses[0]
         linhas.append([k, reg["n"][:90], ix(tip_l, tipo), ix(cls_l, classe_cvm(inf.get("cls"), tipo)),
                        ix(anb_l, anbima_nome(inf.get("anb"))), ix(gestores, (inf.get("ges") or "").strip()[:60]),

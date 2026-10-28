@@ -8,6 +8,7 @@ Uso: python scripts/ativos.py ENTRADA SAIDA
 """
 import base64
 import bisect
+import csv
 import datetime as dt
 import io
 import json
@@ -192,6 +193,101 @@ def tipo_de(meta):
     return "Ação"
 
 
+# ------------------------------------------------------------------ Tesouro Direto (Tesouro Transparente)
+
+URL_TD = ("https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3"
+          "/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/PrecoTaxaTesouroDireto.csv")
+TD_NOMES = {"tesouro selic": ("SELIC", "Tesouro Selic"), "tesouro prefixado": ("PRE", "Tesouro Prefixado"),
+            "tesouro prefixado com juros semestrais": ("PREJ", "Tesouro Prefixado com Juros Semestrais"),
+            "tesouro ipca+": ("IPCA", "Tesouro IPCA+"), "tesouro ipca+ com juros semestrais": ("IPCAJ", "Tesouro IPCA+ com Juros Semestrais"),
+            "tesouro renda+ aposentadoria extra": ("RENDA", "Tesouro RendA+"), "tesouro educa+": ("EDUCA", "Tesouro Educa+")}
+
+
+def tesouro_direto():
+    """Títulos à venda: preço de resgate diário (PU venda manhã) desde o lançamento e cupons semestrais como proventos."""
+    r = FU.baixar(URL_TD, timeout=(15, 300))
+    try:
+        txt = r.content.decode("utf-8")
+    except UnicodeDecodeError:
+        txt = r.content.decode("latin-1")
+    linhas = list(csv.reader(io.StringIO(txt), delimiter=";"))
+    cab = [norm(c) for c in linhas[0]]
+    ix = lambda *n: next(cab.index(x) for x in n if x in cab)  # noqa: E731
+    c_t, c_v, c_d = ix("tipo titulo"), ix("data vencimento"), ix("data base")
+    c_pv, c_pb = ix("pu venda manha"), ix("pu base manha")
+    ser = {}
+    for L in linhas[1:]:
+        if len(L) <= max(c_t, c_v, c_d, c_pv, c_pb):
+            continue
+        tp = TD_NOMES.get(norm(L[c_t]))
+        v, d = dbr(L[c_v]), dbr(L[c_d])
+        if not tp or not v or not d or v <= HOJE.isoformat():
+            continue
+        pu = num(L[c_pv]) or num(L[c_pb])
+        if pu:
+            ser.setdefault((tp, v), {})[d] = pu
+    ipca = {}
+    try:
+        for d, x in FU.sgs(433, dt.date(2000, 7, 1), HOJE):
+            ipca[d[:7]] = x
+    except Exception as e:  # noqa: BLE001
+        DIAG["td_ipca"] = str(e)[:150]
+
+    def vna(ano, mes):
+        v, y, m = 1000.0, 2000, 7
+        while (y, m) < (ano, mes):
+            x = ipca.get(f"{y}-{m:02d}")
+            if x is None:
+                return None
+            v *= 1 + x / 100
+            m += 1
+            if m > 12:
+                y, m = y + 1, 1
+        return v
+    n = 0
+    for ((code, nome), venc), pts in ser.items():
+        ano_ref = int(venc[:4]) - (19 if code == "RENDA" else 4 if code == "EDUCA" else 0)
+        t = f"TD-{code}-{ano_ref}"
+        if t in A:
+            t += "-" + venc[5:7]
+        a = A[t] = Ativo(t)
+        for d in sorted(pts):
+            k = CALIX.get(d)
+            if k is not None and (not len(a.i) or k > a.i[-1]):
+                a.i.append(k)
+                a.c.append(pts[d])
+        if not len(a.i):
+            del A[t]
+            continue
+        a.meta = {"td": 1, "nr": f"{nome} {ano_ref}", "esp": code, "venc": venc, "isin": "", "tipo": "Tesouro Direto"}
+        # cupons semestrais (pagos no dia do cupom; o preço cai no mesmo dia)
+        meses = []
+        if code == "PREJ":
+            meses = [1, 7]
+        elif code == "IPCAJ":
+            mv = int(venc[5:7])
+            meses = sorted({mv, (mv + 5) % 12 + 1})
+        d0 = CAL[a.i[0]]
+        for ano in range(int(d0[:4]), HOJE.year + 1):
+            for mm in meses:
+                dia = 1 if code == "PREJ" else 15
+                dc = f"{ano}-{mm:02d}-{dia:02d}"
+                if dc <= d0 or dc > HOJE.isoformat() or dc > venc:
+                    continue
+                if code == "PREJ":
+                    val = 1000 * (1.1 ** 0.5 - 1)
+                else:
+                    vv = vna(ano, mm)
+                    if vv is None:
+                        continue
+                    val = vv * (1.06 ** 0.5 - 1)
+                p = bisect.bisect_left(CAL, dc) - 1
+                if p >= 0:
+                    a.ev.append([CAL[p], "C", round(val, 6), dc])
+        n += 1
+    log("Tesouro Direto:", n, "títulos à venda")
+
+
 # ------------------------------------------------------------------ estado
 
 def carregar(ent):
@@ -238,13 +334,15 @@ def carregar(ent):
 SUF = {"ON": "3", "PN": "4", "PNA": "5", "PNB": "6", "PNC": "7", "PND": "8", "UNT": "11", "UNIT": "11"}
 
 
-def add_ev(a, data, tipo, valor):
+def add_ev(a, data, tipo, valor, pag=None):
     if not data or valor is None or valor <= 0:
         return
     for e in a.ev:
         if e[0] == data and e[1] == tipo and abs(e[2] - valor) < 1e-9:
+            if pag and len(e) < 4:
+                e.append(pag)
             return
-    a.ev.append([data, tipo, round(valor, 10)])
+    a.ev.append([data, tipo, round(valor, 10)] + ([pag] if pag else []))
 
 
 def tipo_prov(label):
@@ -262,7 +360,7 @@ def eventos_supl(cash, stock, por_isin, por_cod=None):
     for x in cash or []:
         a = por_isin.get((x.get("isinCode") or x.get("assetIssued") or "").strip())
         if a is not None:
-            add_ev(a, dbr(x.get("lastDatePrior")), tipo_prov(x.get("label")), num(x.get("rate")))
+            add_ev(a, dbr(x.get("lastDatePrior")), tipo_prov(x.get("label")), num(x.get("rate")), dbr(x.get("paymentDate")))
     for x in stock or []:
         a = por_isin.get((x.get("isinCode") or "").strip())
         lab, f = norm(x.get("label")), num(x.get("factor"))
@@ -563,7 +661,8 @@ def ajustes(a):
     out = []
     if not len(a.i):
         return out
-    for dc, tp, v in sorted(a.ev, key=lambda e: e[0]):
+    for e in sorted(a.ev, key=lambda e: e[0]):
+        dc, tp, v = e[0], e[1], e[2]
         ix_ex = bisect.bisect_right(CAL, dc)
         if ix_ex >= len(CAL) or ix_ex <= a.i[0]:
             continue
@@ -725,9 +824,13 @@ def principal():
         aplicar_ano(atual, ativos)
         log("cotações", ano, "ok")
     del atual
+    try:
+        tesouro_direto()
+    except Exception as e:  # noqa: BLE001
+        DIAG["tesouro_direto"] = str(e)[:200]
     por_isin = {a.meta.get("isin"): a for a in A.values() if a.meta.get("isin")}
     for a in A.values():
-        a.meta["tipo"] = tipo_de(a.meta)
+        a.meta["tipo"] = "Tesouro Direto" if a.meta.get("td") else tipo_de(a.meta)
 
     # 3) FIIs: informe mensal da CVM
     anos_fii = [str(y) for y in range(2016, ano + 1) if str(y) not in est.get("fii_feitos", []) or y >= ano - 1]
@@ -758,7 +861,7 @@ def principal():
     cods = {}
     for t, a in A.items():
         tp = a.meta["tipo"]
-        if tp in ("Ação", "Unit"):
+        if tp in ("Ação", "Unit", "BDR"):
             cods.setdefault(("E", t[:4]), []).append(t)
         elif tp in ("FII", "Fiagro", "FI-Infra", "ETF"):
             cods.setdefault(("F", t[:4]), []).append(t)
@@ -917,6 +1020,10 @@ def principal():
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
                 setor = "ETF" if tp == "ETF" else ""
+        elif tp == "Tesouro Direto":
+            setor = {"SELIC": "Tesouro Selic", "PRE": "Tesouro Prefixado", "PREJ": "Tesouro Prefixado com Juros",
+                     "IPCA": "Tesouro IPCA+", "IPCAJ": "Tesouro IPCA+ com Juros", "RENDA": "Tesouro RendA+", "EDUCA": "Tesouro Educa+"}.get(a.meta.get("esp"), "")
+            reg["venc"] = a.meta.get("venc")
         elif tp.startswith("BDR"):
             b = bdr.get(cod) or {}
             nome = b.get("nome") or nome
@@ -931,6 +1038,21 @@ def principal():
                      round(ind["mcap"]) if ind.get("mcap") else (round(extra["mcap"]) if extra.get("mcap") else None),
                      r2(ind.get("pl_r")), r2(ind.get("pvp") if ind else extra.get("pvp")), r2(ind.get("roe")), r2(ind.get("ml")),
                      r2(ind.get("dl_ebit")), r2(ind.get("ev_ebit")), int(extra["cot"]) if extra.get("cot") else None, r2(mt.get("sh"))])
+    hoje = HOJE.isoformat()
+    lim = (HOJE - dt.timedelta(days=10)).isoformat()
+    agenda = []
+    for t, a in A.items():
+        if not len(a.c) or a.meta.get("td"):
+            continue
+        for e in a.ev:
+            if e[1] in ("S", "E"):
+                continue
+            pag = e[3] if len(e) > 3 else None
+            if e[0] >= lim or (pag and pag >= hoje):
+                agenda.append([t, a.meta.get("tipo"), e[1], e[0], pag, e[2], round(e[2] / a.c[-1] * 100, 3) if a.c[-1] else None])
+    agenda.sort(key=lambda x: (x[3], x[0]))
+    FU.gravar(os.path.join(sai, "agenda.json"), {"geradoEm": dt.datetime.now().isoformat(timespec="seconds"), "hoje": hoje,
+                                                 "cols": ["t", "tipo", "prov", "datacom", "pagamento", "valor", "yield"], "rows": agenda})
     inv = [s for s, _ in sorted(setores.items(), key=lambda x: x[1])]
     FU.gravar(os.path.join(sai, "idx.json"), {
         "dt": CAL[-1] if CAL else None, "geradoEm": dt.datetime.now().isoformat(timespec="seconds"),
