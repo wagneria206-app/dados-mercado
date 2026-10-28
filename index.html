@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-YPT6UoeuB4AdQ+EVnbTTZbO+ZQDr187HpnDLjxNEPnk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-rkkfLQem5XuhjOmJVAn0IXNcci6B7QNdIJRf+8zrNuM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -980,6 +980,30 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 label.link{color:var(--accent);font:600 .85rem var(--f-body);cursor:pointer;text-decoration:none}
 
 label.link:focus-within,label.link:hover{text-decoration:underline}
+
+.spsit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-height:44px}
+
+.spef{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
+
+#spObs{width:100%;margin-top:6px}
+
+.spbar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:6px 0 4px;background:var(--line)}
+
+.spbar i{display:block;height:100%}
+
+.spficha{border-top:1px solid var(--line);padding:6px 0}
+
+.spficha summary{cursor:pointer;font-weight:600;padding:4px 0}
+
+.spfh{padding:6px 0 4px}
+
+.relsecs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 14px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+
+.relsecs label{display:flex;gap:8px;align-items:flex-start;font-weight:500;font-size:.88rem}
+
+.relsecs input{min-height:0;margin-top:3px}
+
+.relbox{max-height:92vh;overflow:auto}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -4524,7 +4548,7 @@ function cmpRender(kind){
 }
 function cmpHtml(K,st){
   const Fs=K.list.map(k=>K.files.get(k)).filter(Boolean),col=j=>CMP_COLS[j%CMP_COLS.length];
-  let h='<div class="cmphead"><span class="sub">'+Fs.length+' de '+CMP_MAX+'</span><button type="button" class="link" data-cmpclear="'+K.kind+'">Limpar tudo</button><button type="button" class="link" data-cmpcsv="'+K.kind+'">Baixar tabela (CSV)</button><button type="button" class="link" data-rel="'+(K.kind==="f"?"fc":"ac")+'">Relatório PDF</button></div>';
+  let h='<div class="cmphead"><span class="sub">'+Fs.length+' de '+CMP_MAX+'</span><button type="button" class="link" data-cmpclear="'+K.kind+'">Limpar tudo</button><button type="button" class="link" data-cmpcsv="'+K.kind+'">Baixar tabela (CSV)</button><button type="button" class="link" data-rel="'+(K.kind==="f"?"fc":"ac")+'">Relatório PDF</button><button type="button" class="link" data-cmp2sp="'+K.kind+'">Criar carteira/proposta com estes itens</button></div>';
   h+='<div class="fnchips">'+Fs.map((F,j)=>'<span class="fnchip"><i style="background:'+col(j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(F)+'">'+esc(K.name(F).slice(0,46))+'</button><button type="button" class="fnx" data-cmprm="'+K.kind+'|'+K.key(F)+'" aria-label="Remover">×</button></span>').join("")+'</div>';
   h+=fnSeg("cmpper",FN_PER.filter(x=>x[0]!=="mes").concat([["custom","Datas livres"]]),st.per);
   if(st.per==="custom")h+='<div class="cmpdates"><label>De <input type="date" data-cmpini="'+K.kind+'" value="'+esc(st.ini)+'"></label><label>até <input type="date" data-cmpfim="'+K.kind+'" value="'+esc(st.fim)+'"></label></div>';
@@ -4738,7 +4762,7 @@ const SP_RF={cdi:"% do CDI",cdimais:"CDI + taxa",ipca:"IPCA + taxa",pre:"Prefixa
 const SP_REB=[["0","Sem rebalanceamento"],["1","Mensal"],["3","Trimestral"],["6","Semestral"],["12","Anual"]];
 try{const c=JSON.parse(localStorage.getItem("spCarts")||"null");if(Array.isArray(c)&&c.length)SP.carts=c;SP.cur=Math.min(+(localStorage.getItem("spCur")||0),Math.max(0,SP.carts.length-1))}catch(e){}
 if(!SP.carts.length)SP.carts=[spNova("Carteira 1")];
-function spNova(nome){return {nome,itens:[],valor:100000,aporte:0,ini:"",fim:"",reb:"12",base:"m",ir:1,hz:10,meta:"",omax:100,bm:{cdi:1,ibov:0,ipca:0,ifix:0,usd:0,spx:0},ipcax:""}}
+function spNova(nome,cli){return {nome,cli:cli||"",sit:"proposta",criada:new Date().toISOString().slice(0,10),ver:1,obs:"",itens:[],valor:100000,aporte:0,ini:"",fim:"",reb:"12",base:"m",ir:1,hz:10,meta:"",omax:100,bm:{cdi:1,ibov:0,ipca:0,ifix:0,usd:0,spx:0},ipcax:""}}
 function spSave(){try{localStorage.setItem("spCarts",JSON.stringify(SP.carts));localStorage.setItem("spCur",String(SP.cur))}catch(e){}if(typeof syncMark==="function")syncMark()}
 const spC=()=>SP.carts[SP.cur];
 function spBoot(){return Promise.all([FN.idx?null:fnBoot(),AT.idx?null:atBoot()])}
@@ -4750,14 +4774,33 @@ function spCalc(){
   spTopHtml();spRun();
 }
 function spItemNome(it){return it.n||it.k}
+const spHoje=()=>new Date().toISOString().slice(0,10);
+function spClientes(){return [...new Set(SP.carts.map(x=>String(x.cli||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"))}
+function spRotulo(x){return (x.cli?x.cli+" · ":"")+x.nome+(x.sit==="efetivada"?" (efetivada)":" (proposta)")}
+function spListaHtml(){
+  const L=SP.carts.map((x,j)=>[x,j]).filter(([x])=>!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli)).sort((a,b)=>String(a[0].cli||"~").localeCompare(String(b[0].cli||"~"),"pt-BR")||String(b[0].criada||"").localeCompare(String(a[0].criada||"")));
+  return '<details class="nota" style="margin-top:8px"><summary>'+(SP.fcli?'Carteiras deste cliente':'Todas as carteiras e propostas')+' ('+L.length+')</summary><div class="tablewrap" style="max-height:360px"><table class="ctab"><thead><tr><th style="text-align:left">Cliente</th><th style="text-align:left">Carteira</th><th style="text-align:left">Situação</th><th class="c-ph">Itens</th><th class="c-ph">Valor</th></tr></thead><tbody>'
+    +L.map(([x,j])=>'<tr'+(j===SP.cur?' class="cmpbm"':'')+'><td style="text-align:left">'+esc(x.cli||"—")+'</td><td style="text-align:left"><button type="button" class="link" data-spgo="'+j+'">'+esc(x.nome)+'</button></td><td style="text-align:left">'+(x.sit==="efetivada"?'efetivada em '+fdate(Date.parse(x.ef.data+"T00:00:00Z")):'proposta'+(x.criada?' de '+fdate(Date.parse(x.criada+"T00:00:00Z")):''))+'</td><td class="c-ph">'+x.itens.length+'</td><td class="c-ph">'+brl(x.sit==="efetivada"?+x.ef.valor:+x.valor||0)+'</td></tr>').join("")
+    +'</tbody></table></div></details>';
+}
 const spRfLab=(rf,x)=>rf==="cdi"?fx(x,1)+"% do CDI":rf==="cdimais"?"CDI + "+fx(x,2)+"% a.a.":rf==="ipca"?"IPCA + "+fx(x,2)+"% a.a.":"Prefixado "+fx(x,2)+"% a.a.";
 function spRfEd(it,j){ // taxa da renda fixa editável (útil para CDB, LCI e LCA importados com taxa estimada)
   return '<span class="sprfe"><select data-sprfe="'+j+'" aria-label="Indexador">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(it.rf===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s"><input inputmode="decimal" data-sprfv="'+j+'" value="'+fx(+it.x||0,2)+'" aria-label="Taxa"><span class="suf">'+(it.rf==="cdi"?"% CDI":"% a.a.")+'</span></span>'+(it.est?'<small class="warn" style="display:block">taxa estimada na importação: ajuste para a taxa real</small>':'')+'</span>'}
 function spTopHtml(){
   const c=spC(),tot=c.itens.reduce((a,x)=>a+(+x.w||0),0);
-  let h='<section class="panel"><h3>Simulador de carteiras</h3><p class="sub">Monte carteiras com fundos, ações, FIIs, ETFs, BDRs e renda fixa, e veja como teriam se saído no passado. As carteiras ficam salvas só neste navegador.</p>';
-  h+='<div class="sprow"><div class="field"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+SP.carts.map((x,j)=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(x.nome)+'</option>').join("")+'</select></div><div class="field"><label for="spNome">Nome</label><input id="spNome" data-spnome="1" value="'+esc(c.nome)+'" maxlength="60" autocomplete="off"></div>'
-    +'<div class="spbtns"><button type="button" class="btn sec" data-spnew="1">Nova</button><button type="button" class="btn sec" data-spdup="1">Duplicar</button><button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div></div>';
+  let h='<section class="panel"><h3>Carteiras e propostas</h3><p class="sub">Monte propostas de carteira para cada cliente com fundos, ações, FIIs, ETFs, BDRs, Tesouro e renda fixa, e veja como a carteira e cada item teriam se saído. Identifique o cliente por um código ou apelido; o nome completo vai só no relatório. As carteiras ficam salvas '+(typeof SYNC!=="undefined"&&SYNC.tok?'no seu repositório privado do GitHub, em todos os aparelhos conectados':'só neste navegador (conecte o GitHub em Mercado › Favoritos e alertas para guardar em todos os aparelhos)')+'.</p>';
+  const clis=spClientes(),vis=SP.carts.map((x,j)=>[x,j]).filter(([x,j])=>j===SP.cur||!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli));
+  h+='<div class="sprow"><div class="field"><label for="spCliF">Cliente</label><select id="spCliF" data-spclif="1"><option value="">Todos os clientes</option>'+clis.map(k=>'<option value="'+esc(k)+'"'+(SP.fcli===k?' selected':'')+'>'+esc(k)+'</option>').join("")+'<option value="__sem"'+(SP.fcli==="__sem"?' selected':'')+'>Sem cliente</option></select></div>'
+    +'<div class="field"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+vis.map(([x,j])=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(spRotulo(x))+'</option>').join("")+'</select></div></div>';
+  h+='<div class="sprow"><div class="field"><label for="spNome">Nome da carteira</label><input id="spNome" data-spnome="1" value="'+esc(c.nome)+'" maxlength="60" autocomplete="off"></div>'
+    +'<div class="field"><label for="spCliI">Cliente (código ou apelido)</label><input id="spCliI" data-spcli="1" list="spCliL" value="'+esc(c.cli||"")+'" maxlength="40" autocomplete="off" placeholder="ex.: C014"><datalist id="spCliL">'+clis.map(k=>'<option value="'+esc(k)+'">').join("")+'</datalist></div>'
+    +'<div class="field"><label>Situação</label><div class="spsit">'+(c.sit==="efetivada"?'<span class="fnq fnq1">Efetivada em '+fdate(Date.parse(c.ef.data+"T00:00:00Z"))+'</span>':'<span class="fnq fnq3">Proposta</span>')+(c.criada?' <small>criada em '+fdate(Date.parse(c.criada+"T00:00:00Z"))+(c.ver>1?' · versão '+c.ver:'')+'</small>':'')+'</div></div></div>';
+  h+='<div class="spbtns"><button type="button" class="btn sec" data-spnew="1">Nova</button><button type="button" class="btn sec" data-spdup="1">Duplicar</button><button type="button" class="btn sec" data-spver="1">Nova versão</button>'
+    +(c.sit==="efetivada"?'<button type="button" class="btn sec" data-spdesef="1">Voltar para proposta</button>':'<button type="button" class="btn sec" data-spefform="1">Efetivar carteira</button>')
+    +'<button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div>';
+  if(SP.efForm&&c.sit!=="efetivada")h+='<div class="spef"><p class="sub" style="margin:0 0 6px">A partir da data de efetivação o app acompanha o desempenho real desta carteira e compara com o que foi proposto.</p><div class="sprow"><div class="field"><label for="spEfD">Data da aplicação</label><input id="spEfD" type="date" value="'+new Date().toISOString().slice(0,10)+'" max="'+new Date().toISOString().slice(0,10)+'"></div><div class="field"><label for="spEfV">Valor aplicado</label><div class="affix s"><input id="spEfV" inputmode="decimal" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div><div class="field" style="align-self:end"><div class="spbtns" style="margin:0"><button type="button" class="btn" data-spefok="1">Confirmar</button><button type="button" class="btn sec" data-spefno="1">Cancelar</button></div></div></div></div>';
+  h+='<details class="nota" style="margin-top:10px"'+(c.obs?' open':'')+'><summary>Observações internas</summary><textarea id="spObs" data-spobs="1" rows="3" maxlength="2000" placeholder="Anotações suas sobre esta carteira (não vão para o relatório)">'+esc(c.obs||"")+'</textarea></details>';
+  if(SP.carts.length>1)h+=spListaHtml();
   h+='<div class="spimp"><label class="btn sec" for="spImp">Importar posição da B3 (Excel)</label><input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span class="sub" style="font-size:.8rem">Arquivo de posição da Área do Investidor da B3. Fica só neste navegador.</span><span id="spImpMsg"></span></div>';
   h+='<div class="label" style="margin-top:12px">Composição</div><div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar fundo, ativo da B3 (PETR4, HGLG11…), debênture, CRI ou CRA (código ou emissor)"><div id="spRes2" class="fnres" hidden></div></div>';
   h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
@@ -4821,7 +4864,9 @@ async function spRunCore(){
   box.innerHTML='<section class="panel"><p class="sub">Calculando…</p></section>';
   let D;try{D=await Promise.all(it.map(spItemData))}catch(e){box.innerHTML='<section class="panel"><p class="err">Não deu para carregar um dos itens: '+esc(e.message)+'</p></section>';return}
   if(tok!==SP_TOKEN)return;
-  try{const R=spSim(c,it,D);box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spCmpCartsHtml()}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
+  try{const R=spSim(c,it,D);
+    if(c.sit==="efetivada"&&c.ef&&c.ef.data){const d=c.ef.data,dia=FN.cal&&d>=FN.cal[0];R.ef=spSim(Object.assign({},c,{base:dia?"d":"m",ini:dia?"":d.slice(0,7),iniD:dia?d:"",fim:"",aporte:0,valor:+c.ef.valor||0}),it,D)}
+    box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spCmpCartsHtml()}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
 }
 /* ----- grade de datas e simulação */
 function spGrid(c,D){
@@ -4837,6 +4882,7 @@ function spSim(c,it,D){
   const G=spGrid(c,D),K=G.keys;if(!K.length)return {erro:"Sem dados."};
   let j0=0;for(;j0<K.length;j0++){if(G.lv.every(x=>x.arr[j0]!=null))break}
   if(c.ini){const [y,mm]=c.ini.split("-").map(Number);const want=y*12+mm-2;while(j0<K.length&&G.mOf(K[j0])<want)j0++}
+  if(c.iniD&&G.diaria){let j=j0;while(j+1<K.length&&K[j+1]<=c.iniD)j++;j0=j}
   let j1=K.length-1;const lastItem=G.lv.map(x=>x.lastKey).reduce((a,b)=>a<b?a:b);while(j1>j0&&K[j1]>lastItem)j1--;
   if(!G.diaria){const cdi=FN.L.m.cdi||{},lc=Math.max(...Object.keys(cdi).map(Number));while(j1>j0&&K[j1]>lc)j1--}
   if(c.fim){const [y,mm]=c.fim.split("-").map(Number);const lim=y*12+mm-1;while(j1>j0&&G.mOf(K[j1])>lim)j1--}
@@ -4890,7 +4936,7 @@ function spResHtml(c,it,R){
   if(R.erro)return '<section class="panel"><p class="warn">'+esc(R.erro)+'</p></section>';
   const last=R.pts[R.pts.length-1],st=spStats(R,R.rets,last.idx),lbl=k=>R.diaria?fdate(Date.parse(k+"T00:00:00Z")):mname(k);
   const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
-  let h='<section class="panel" id="spPanel"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
+  let h=(R.ef?spEfHtml(c,it,R.ef,st):'')+'<section class="panel" id="spPanel" data-reltit="Resumo da carteira (histórico)"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
   const nst=R.ir?{tot:(last.nidx-1)*100}:null;
   h+='<div class="fnkpis">'+kp("Patrimônio final",brl(last.v),(R.ir?"líquido de IR "+brl(last.liq):"investido "+brl(last.inv)))+kp("Retorno no período",fnPct(st.tot),(st.pcdi!=null?fx(st.pcdi,0)+"% do CDI":"")+(R.ir?" · líquido de IR "+fnPctT(nst.tot):""))+kp("Retorno ao ano",fnPctT(st.ann),"volatilidade "+fx(st.vol,2)+"%")+kp("Sharpe",st.sharpe!=null?fx(st.sharpe,2):"—","meses acima do CDI "+(st.acima!=null?fx(st.acima,0)+"%":"—"))+kp("Perda máxima",fnPct(st.dd),"pior mês "+fnPctT(st.worst))+'</div>';
   const S=[{lab:c.nome,col:FN_COLS[0],w:2.4,pts:fnThin(R.pts,800).map(p=>[p.t,(p.idx-1)*100])}],bms=[];
@@ -4899,26 +4945,27 @@ function spResHtml(c,it,R){
     const lab=b==="ipcax"?"IPCA + "+c.ipcax+"%":FN_BM[b].lab,col=b==="ipcax"?"var(--s2)":FN_BM[b].col;
     S.push({lab,col,dash:b==="cdi"||b==="ipcax"?"5 4":null,w:1.5,pts:fnThin(R.pts,800).map(p=>{const v=m.get(p.k);return [p.t,v?(v/b0-1)*100:null]})});bms.push([b,lab,m])});
   h+='<div class="label" style="margin-top:6px">Rentabilidade acumulada (sem efeito dos aportes)</div>'+fnChart(S,{fmt:"pct",zero:true,months:!R.diaria,aria:"Rentabilidade da carteira"});
-  if(+c.aporte>0||R.ir)h+='<div class="label" style="margin-top:10px">Patrimônio e valor investido</div>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"});
+  h+='</section>'+spCompHtml(c,it,R)+spItensHtml(c,it,R);
+  if(+c.aporte>0||R.ir)h+='<section class="panel" data-reltit="Patrimônio e valor investido"><h3>Patrimônio e valor investido</h3>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"})+'</section>';
   let pk=1,v=1;const dd=[[R.pts[0].t,0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([x.t,(v/pk-1)*100])});
-  h+='<div class="label" style="margin-top:10px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});
+  h+='<section class="panel" data-reltit="Perda a partir do pico e metodologia"><h3>Perda a partir do pico (drawdown)</h3>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});
   if(it.some(x=>/^cr:/.test(x.k)))h+='<p class="warn" style="font-size:.84rem">Debêntures, CRI e CRA entram com a taxa indicativa atual da ANBIMA aplicada a todo o período: é uma estimativa do carrego, sem a oscilação de preço (marcação a mercado) nem o risco de crédito do emissor. A ANBIMA só publica os preços dos últimos dias.</p>';
   h+='<p class="sub" style="font-size:.8rem">Simulação '+(R.diaria?'diária (cotas e cotações de cada dia útil, desde 2019)':'mensal (fechamentos de fim de mês, desde 2005)')+': cota dos fundos (CVM), cotação com proventos dos ativos (B3), Tesouro Direto (preço de resgate) e índices do Banco Central. '+(R.ir?'O valor líquido estima o IR se tudo fosse resgatado na data: come-cotas em maio e novembro nos fundos, tabela regressiva na renda fixa, 15% em ações, ETFs e BDRs e 20% sobre o ganho de preço dos FIIs. Nos rebalanceamentos, a parte vendida de cada item paga IR sobre o ganho proporcional (sem a isenção de R$ 20 mil mensais em ações)'+(R.irReb>0?': '+brl(R.irReb)+' no período':'')+'. ':'Valores brutos, sem IR. ')+'Sem corretagem e custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
   // ano a ano
   const anos=[...new Set(R.rets.map(x=>Math.floor(x.m/12)))].sort((a,b)=>b-a);
   const yrC=y=>{let v2=1,ok=false;R.rets.forEach(x=>{if(Math.floor(x.m/12)!==y)return;v2*=1+x.r;ok=true});return ok?(v2-1)*100:null};
   const yrB=(m,y)=>{let a=null,z=null,prev=R.k0;R.rets.forEach(x=>{if(Math.floor(x.m/12)===y){if(a==null)a=m.get(prev);z=m.get(x.k)}prev=x.k});return a&&z?(z/a-1)*100:null};
-  h+='<section class="panel"><h3>Ano a ano</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th><th>Carteira</th>'+bms.map(b=>'<th>'+esc(b[1])+'</th>').join("")+'</tr></thead><tbody>';
+  h+='<section class="panel" data-reltit="Ano a ano"><h3>Ano a ano</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th><th>Carteira</th>'+bms.map(b=>'<th>'+esc(b[1])+'</th>').join("")+'</tr></thead><tbody>';
   anos.forEach(y=>{h+='<tr><td style="text-align:left">'+y+'</td><td><b>'+fnPct(yrC(y))+'</b></td>'+bms.map(b=>'<td>'+fnPct(yrB(b[2],y))+'</td>').join("")+'</tr>'});
   h+='<tr class="cmpbm"><td style="text-align:left">Período</td><td><b>'+fnPct(st.tot)+'</b></td>'+bms.map(b=>{const a=b[2].get(R.k0),z=b[2].get(R.last);return '<td>'+(a&&z?fnPct((z/a-1)*100):'—')+'</td>'}).join("")+'</tr></tbody></table></div></section>';
   // contribuição por item
   const totC=R.contrib.reduce((a,x)=>a+x,0);
-  h+='<section class="panel"><h3>Contribuição de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno do item</th><th>Contribuição</th><th class="c-ph">% do resultado</th>'+(R.ir?'<th class="c-ph" style="text-align:left">Tributação considerada</th>':'')+'</tr></thead><tbody>';
+  h+='<section class="panel" data-reltit="Contribuição de cada item e correlação"><h3>Contribuição de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno do item</th><th>Contribuição</th><th class="c-ph">% do resultado</th>'+(R.ir?'<th class="c-ph" style="text-align:left">Tributação considerada</th>':'')+'</tr></thead><tbody>';
   it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fnPct(R.per[i])+'</td><td>'+fnPct(R.contrib[i])+' <small>p.p.</small></td><td class="c-ph">'+(totC?fx(R.contrib[i]/totC*100,0)+'%':'—')+'</td>'+(R.ir?'<td class="c-ph tw" style="text-align:left"><small>'+esc(SP_IR[R.reg[i]]||"")+'</small></td>':'')+'</tr>'});
   h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Contribuição: quanto cada item somou ao retorno da carteira, em pontos percentuais, considerando o peso que ele tinha a cada momento.</p>';
   if(it.length>1)h+=spCorHtml(it,R);
   h+='</section>';
-  h+=spProjHtml(c,R)+spOtimHtml(c,it,R);
+  h+=spFichasHtml(c,it)+spProjHtml(c,R)+spOtimHtml(c,it,R);
   SP.last={c,it,R,st,bms};
   return h;
 }
@@ -4990,12 +5037,12 @@ function spOtimHtml(c,it,R){
 /* comparação entre as carteiras salvas */
 let SP_CMP=null;
 function spCmpCartsHtml(){
-  if(SP.carts.length<2)return "";
-  return '<section class="panel"><h3>Comparar carteiras</h3><p class="sub">Todas as carteiras salvas, no período em comum.</p><div id="spCmpBox">'+(SP_CMP||'<button type="button" class="btn sec" data-spcmp="1">Comparar as '+SP.carts.length+' carteiras</button>')+'</div></section>';
+  const n=SP.carts.filter(x=>!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli)).length;if(n<2)return "";
+  return '<section class="panel" data-reltit="Comparação entre as carteiras"><h3>Comparar carteiras</h3><p class="sub">'+(SP.fcli&&SP.fcli!=="__sem"?'As carteiras do cliente '+esc(SP.fcli):'Todas as carteiras salvas')+', no período em comum.</p><div id="spCmpBox">'+(SP_CMP||'<button type="button" class="btn sec" data-spcmp="1">Comparar as '+n+' carteiras</button>')+'</div></section>';
 }
 async function spCmpCarts(){
   const box=$("spCmpBox");if(!box)return;box.innerHTML='<p class="sub">Calculando…</p>';
-  const res=[];for(const c of SP.carts){const it=c.itens.filter(x=>(+x.w||0)>0);if(!it.length)continue;try{const D=await Promise.all(it.map(spItemData));res.push({c,it,D})}catch(e){}}
+  const res=[];for(const c of SP.carts.filter(x=>!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli))){const it=c.itens.filter(x=>(+x.w||0)>0);if(!it.length)continue;try{const D=await Promise.all(it.map(spItemData));res.push({c,it,D})}catch(e){}}
   if(res.length<2){box.innerHTML='<p class="sub">É preciso ter pelo menos 2 carteiras com itens.</p>';return}
   const first=r=>Math.max(...r.D.map(x=>Math.min(...x.m.keys())));const k0=Math.max(...res.map(first));
   const out=res.map(r=>Object.assign(r,{R:spSim(Object.assign({},r.c,{ini:mname2(k0),fim:"",aporte:0,base:"m",ir:0}),r.it,r.D)}));
@@ -5037,18 +5084,28 @@ document.addEventListener("click",e=>{
   if((x=g("data-speq"))){const n=c.itens.length;c.itens.forEach((it,j)=>it.w=Math.round(100/n*10)/10);const d=100-c.itens.reduce((a,it)=>a+it.w,0);if(n)c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;spSave();spCalc();return}
   if((x=g("data-spnorm"))){const t=c.itens.reduce((a,it)=>a+(+it.w||0),0);if(t>0)c.itens.forEach(it=>it.w=Math.round(it.w/t*1000)/10);spSave();spCalc();return}
   if((x=g("data-spclear"))){c.itens=[];spSave();spCalc();return}
-  if((x=g("data-spnew"))){SP.carts.push(spNova("Carteira "+(SP.carts.length+1)));SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
-  if((x=g("data-spdup"))){const d=JSON.parse(JSON.stringify(c));d.nome=c.nome+" (cópia)";SP.carts.push(d);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spnew"))){const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"";SP.carts.push(spNova(cli?"Proposta "+(SP.carts.filter(y=>y.cli===cli).length+1):"Carteira "+(SP.carts.length+1),cli));SP.efForm=false;SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spdup"))){const d=JSON.parse(JSON.stringify(c));d.nome=c.nome+" (cópia)";d.id=null;d.sit="proposta";delete d.ef;d.criada=spHoje();d.ver=1;SP.carts.push(d);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdel"))){if(SP.carts.length<2)return;if(!confirmLite(x))return;SP.carts.splice(SP.cur,1);SP.cur=Math.max(0,SP.cur-1);SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-sprfadd"))){const v=num(SP.rf.taxa);if(v==null){alertLite("Informe a taxa da renda fixa.");return}spAdd({t:"s",k:SP.rf.tipo+":"+v,rf:SP.rf.tipo,x:v,n:SP.rf.tipo==="cdi"?fx(v,1)+"% do CDI":SP.rf.tipo==="cdimais"?"CDI + "+fx(v,2)+"% a.a.":SP.rf.tipo==="ipca"?"IPCA + "+fx(v,2)+"% a.a.":"Prefixado "+fx(v,2)+"% a.a.",tipo:"Renda fixa"});return}
   if((x=g("data-spcmp"))){spCmpCarts();return}
+  if((x=g("data-spver"))){const d=JSON.parse(JSON.stringify(c));d.id=null;d.sit="proposta";delete d.ef;d.criada=spHoje();d.ver=(+c.ver||1)+1;d.nome=String(c.nome).replace(/\s*\(v\d+\)$/,"")+" (v"+d.ver+")";SP.carts.push(d);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spgo"))){SP.cur=+x.dataset.spgo;SP.efForm=false;SP_CMP=null;spSave();spCalc();try{$("spTop").scrollIntoView({behavior:"smooth"})}catch(y){}return}
+  if((x=g("data-spefform"))){SP.efForm=true;spTopHtml();return}
+  if((x=g("data-spefno"))){SP.efForm=false;spTopHtml();return}
+  if((x=g("data-spefok"))){const d=$("spEfD").value,v=num($("spEfV").value);if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>spHoje()){$("spEfD").focus();return}if(v==null||v<=0){$("spEfV").focus();return}
+    c.sit="efetivada";c.ef={data:d,valor:v};SP.efForm=false;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spdesef"))){c.sit="proposta";delete c.ef;spSave();spCalc();return}
   if((x=g("data-spotim"))){const o=SP.otim&&SP.otim[x.dataset.spotim];if(!o)return;const at=c.itens.filter(y=>(+y.w||0)>0);at.forEach((y,i)=>y.w=Math.round(o.w[i]*1000)/10);const d=100-c.itens.reduce((a,y)=>a+(+y.w||0),0);if(at.length)at[0].w=Math.round((at[0].w+d)*10)/10;SP_CMP=null;spSave();spCalc();try{$("spTop").scrollIntoView({behavior:"smooth"})}catch(y){}return}
   if((x=g("data-spcsv"))){spCsv();return}
   if((x=g("data-spretry"))){FN.err=null;AT.err=null;spCalc();return}
 });
 function confirmLite(btn){if(btn.dataset.ok==="1")return true;btn.dataset.ok="1";btn.textContent="Confirmar exclusão";setTimeout(()=>{btn.dataset.ok="";btn.textContent="Excluir"},4000);return false}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();
-  if(t.dataset.spsel){SP.cur=+t.value;SP_CMP=null;spSave();spCalc()}
+  if(t.dataset.spsel){SP.cur=+t.value;SP.efForm=false;SP_CMP=null;spSave();spCalc()}
+  else if(t.dataset.spclif!=null&&t.id==="spCliF"){SP.fcli=t.value;const j=SP.carts.findIndex(x=>!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli));if(j>=0&&!(!SP.fcli||(SP.fcli==="__sem"?!spC().cli:spC().cli===SP.fcli)))SP.cur=j;SP_CMP=null;spSave();spCalc()}
+  else if(t.dataset.spcli!=null&&t.id==="spCliI"){c.cli=t.value.trim().slice(0,40);spSave();spTopHtml()}
+  else if(t.dataset.spobs!=null&&t.id==="spObs"){c.obs=t.value.slice(0,2000);spSave()}
   else if(t.dataset.spnome!=null&&t.dataset.spnome!==undefined&&t.id==="spNome"){c.nome=t.value.trim()||c.nome;SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spw!=null){const v=num(t.value);c.itens[+t.dataset.spw].w=v==null?0:Math.max(0,v);SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spv){const k=t.dataset.spv;c[k]=k==="valor"||k==="aporte"?(num(t.value)||0):t.value;SP_CMP=null;spSave();spCalc()}
@@ -5080,14 +5137,66 @@ function spCredSearch(q){if(!SP_CRED.L){spCredLoad();return []}const t=fnNorm(q)
   return SP_CRED.L.filter(x=>t.every(w=>x.sk.includes(w))).slice(0,6).map(x=>{const lab=spRfLab(x.rf,x.x);return {t:"s",k:"cr:"+x.cod,rf:x.rf,x:x.x,isento:x.isento,n:x.cod+" · "+x.nome.slice(0,40)+" ("+lab+")",tipo:x.tipo,
     s:x.ind+" · taxa ANBIMA "+lab+" · vence "+fdate(Date.parse(x.venc+"T00:00:00Z"))+(x.isento?" · isento de IR":"")}})}
 
+/* ----- propostas: desempenho desde a efetivação, composição, itens e fichas */
+function spEfHtml(c,it,E,stP){
+  const dt=fdate(Date.parse(c.ef.data+"T00:00:00Z"));
+  if(!E||E.erro||!E.pts||E.pts.length<2)return '<section class="panel" data-reltit="Desde a efetivação"><h3>Desde a efetivação ('+dt+')</h3><p class="sub">Ainda não há cotas publicadas depois da data de aplicação. O acompanhamento aparece assim que os dados do próximo dia útil chegarem.</p></section>';
+  const last=E.pts[E.pts.length-1],st=spStats(E,E.rets,last.idx),dias=Math.max(1,(last.t-E.pts[0].t)/DAY),esp=stP&&stP.ann!=null?(Math.pow(1+stP.ann/100,dias/365)-1)*100:null;
+  const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>',lbl=k=>E.diaria?fdate(Date.parse(k+"T00:00:00Z")):mname(k);
+  let h='<section class="panel" data-reltit="Desde a efetivação"><h3>Desde a efetivação ('+dt+')</h3><p class="sub">Desempenho real dos itens e pesos desta carteira desde a aplicação, até '+lbl(E.last)+', com rebalanceamento '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'.</p>';
+  h+='<div class="fnkpis">'+kp("Valor aplicado",brl(+c.ef.valor),dt)+kp("Valor hoje",brl(last.v),E.ir?"líquido de IR "+brl(last.liq):"")+kp("Retorno desde a aplicação",fnPct(st.tot),st.pcdi!=null&&st.tot>0?fx(st.pcdi,0)+"% do CDI":(()=>{const cl=spCdiLv(E),a=cl(E.k0),z=cl(E.last);return a&&z?"CDI no período "+fnPctT((z/a-1)*100):""})())+kp("Esperado pelo histórico",esp!=null?fnPctT(esp):"—","retorno anual da proposta ("+fnPctT(stP.ann)+") no mesmo prazo")+kp("Diferença",esp!=null?fnPct(st.tot-esp)+" <small>p.p.</small>":"—","realizado − esperado")+'</div>';
+  const S=[{lab:"Carteira",col:FN_COLS[0],w:2.4,pts:E.pts.map(p=>[p.t,(p.idx-1)*100])}],cdi=E.diaria?spBmDaily("cdi",c):spBmSeries("cdi",c);
+  if(cdi&&cdi.get(E.k0)){const b0=cdi.get(E.k0);S.push({lab:"CDI",col:FN_BM.cdi.col,dash:"5 4",w:1.5,pts:E.pts.map(p=>{const v=cdi.get(p.k);return [p.t,v?(v/b0-1)*100:null]})})}
+  h+=fnChart(S,{fmt:"pct",zero:true,months:!E.diaria,aria:"Desde a efetivação"});
+  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno desde a aplicação</th><th>Contribuição</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(E.w[i]*100,1)+'%</td><td>'+fnPct(E.per[i])+'</td><td>'+fnPct(E.contrib[i])+' <small>p.p.</small></td></tr>').join("")+'</tbody></table></div>';
+  return h+'<p class="sub" style="font-size:.8rem">Valores calculados com as cotas e cotações oficiais a partir da data informada, sem custos de corretagem. Não substitui o extrato da instituição.</p></section>';
+}
+function spClasse(x){
+  if(x.t==="f"){const r=FN.idx&&fnRow(x.k);return r?(FN.idx.classes[r[FN.C.classe]]||"Fundo"):"Fundo"}
+  if(x.t==="a"){const r=AT.idx&&atRow(x.k);return r?r[AT.C.tipo]:"Bolsa"}
+  return /^renda fixa$/i.test(x.tipo||"")||!x.tipo?"Renda Fixa":x.tipo;
+}
+function spCompHtml(c,it,R){
+  const v0=+c.valor||0,grp=new Map();it.forEach((x,i)=>{const g=spClasse(x),k=[...grp.keys()].find(y=>fnNorm(y)===fnNorm(g))||g;grp.set(k,(grp.get(k)||0)+R.w[i])});
+  const G=[...grp.entries()].sort((a,b)=>b[1]-a[1]),cols=["var(--accent)","var(--s2)","var(--s3)","var(--s4)","var(--gold)","var(--loss)","#0e7490","#64748b"];
+  let h='<section class="panel" data-reltit="Composição da carteira"><h3>Composição da carteira</h3><div class="spbar" role="img" aria-label="Composição por tipo">'+G.map(([g,w],j)=>'<i style="width:'+(w*100).toFixed(2)+'%;background:'+cols[j%cols.length]+'" title="'+esc(g)+' '+fx(w*100,1)+'%"></i>').join("")+'</div><div class="legend">'+G.map(([g,w],j)=>'<span><i style="background:'+cols[j%cols.length]+'"></i>'+esc(g)+' · '+fx(w*100,1)+'%</span>').join("")+'</div>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left" class="c-ph">Tipo</th><th>Peso</th><th>Valor</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+(x.t==="f"?'<small style="display:block;color:var(--muted)">'+fnCnpjF(x.k)+'</small>':'')+'</td><td style="text-align:left" class="c-ph"><small>'+esc(spClasse(x))+'</small></td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+brl(v0*R.w[i])+'</td></tr>').join("")+'<tr class="cmpbm"><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b>100%</b></td><td><b>'+brl(v0)+'</b></td></tr></tbody></table></div></section>';
+  return h;
+}
+function spItensHtml(c,it,R){
+  const lin=x=>{
+    if(x.t==="f"){const r=FN.idx&&fnRow(x.k),C=FN.C;if(!r)return null;const F=FN.files.get(x.k)||{};return {r12:r[C.r12],r24:r[C.r24],r36:r[C.r36],v:r[C.v12],sh:r[C.sharpe],dd:r[C.dd36],tx:(r[C.tadm]!=null?r[C.tadm]:F.tadm)!=null?"adm. "+fx(r[C.tadm]!=null?r[C.tadm]:F.tadm,2)+"%":"—",res:F.dcot!=null||F.dpag!=null?"D+"+fx((F.dcot||0)+(F.dpag||0),0):r[C.dres]!=null?"D+"+fx(r[C.dres],0):"—",pl:fnMoney(r[C.pl])}}
+    if(x.t==="a"){const r=AT.idx&&atRow(x.k),C=AT.C;if(!r)return null;return {r12:r[C.r12],r24:r[C.r24],r36:r[C.r36],v:r[C.v12],sh:r[C.sharpe],dd:r[C.dd36],tx:r[C.dy]!=null?"DY "+fx(r[C.dy],2)+"%":"—",res:r[C.tipo]==="Tesouro Direto"?"D+1":"D+2",pl:r[C.liq]?fnMoney(r[C.liq])+"/dia":"—"}}
+    return {r12:null,r24:null,r36:null,v:null,sh:null,dd:null,tx:spRfLab(x.rf,+x.x||0),res:"—",pl:"—"}};
+  let h='<section class="panel" data-reltit="Rentabilidade e risco de cada item"><h3>Rentabilidade e risco de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>12 meses</th><th>24 meses</th><th>36 meses</th><th>Volatilidade 12m</th><th>Sharpe</th><th>Perda máx. 36m</th><th class="c-ph">Taxa / DY</th><th class="c-ph">Resgate</th><th class="c-ph">PL / liquidez</th></tr></thead><tbody>';
+  it.forEach(x=>{const L=lin(x)||{};const P=v=>v==null?"—":fnPct(v);h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+P(L.r12)+'</td><td>'+P(L.r24)+'</td><td>'+P(L.r36)+'</td><td>'+(L.v!=null?fx(L.v,2)+"%":"—")+'</td><td>'+(L.sh!=null?fx(L.sh,2):"—")+'</td><td>'+P(L.dd)+'</td><td class="c-ph">'+esc(L.tx||"—")+'</td><td class="c-ph">'+esc(L.res||"—")+'</td><td class="c-ph">'+esc(L.pl||"—")+'</td></tr>'});
+  return h+'</tbody></table></div><p class="sub" style="font-size:.8rem">Números de cada item até a data mais recente da base (fundos: CVM; ativos: B3). Resgate: prazo de cotização mais pagamento informado na lâmina. Renda fixa aparece pela taxa contratada.</p></section>';
+}
+function spFichasHtml(c,it){
+  const fs=it.filter(x=>(x.t==="f"&&FN.files.has(x.k))||(x.t==="a"&&AT.files.has(x.k)));if(!fs.length)return "";
+  let h='<section class="panel" data-reltit="Ficha de cada fundo e ativo"><h3>Ficha de cada fundo e ativo</h3><p class="sub">Características, taxas, prazos, público-alvo e objetivo de cada item, segundo a CVM (cadastro e lâmina) e a B3.</p>';
+  fs.forEach(x=>{let f="";try{f=x.t==="f"?fnHead(FN.files.get(x.k)):fnUse(AT,()=>atHead(AT.files.get(x.k)))}catch(e){f=""}
+    h+='<details class="spficha"><summary>'+esc(spItemNome(x))+'</summary>'+f.replace(/^<section class="panel fnhead">/,'<div class="fnhead spfh">').replace(/<\/section>$/,'</div>')+'</details>'});
+  return h+'</section>';
+}
+
+/* comparador -> nova proposta com os mesmos itens e pesos iguais */
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-cmp2sp]");if(!x)return;const k=x.dataset.cmp2sp,L=(k==="f"?FN.cmp:AT.cmp).slice(0,CMP_MAX);if(!L.length)return;
+  const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"",c=spNova("Proposta "+new Date().toLocaleDateString("pt-BR"),cli),n=L.length;
+  c.itens=L.map((id,j)=>{if(k==="f"){const r=FN.idx&&fnRow(id);return {t:"f",k:id,n:r?r[1]:id,tipo:"Fundo · "+(r&&FN.idx.classes[r[FN.C.classe]]||""),w:Math.round(100/n*10)/10}}const r=AT.idx&&atRow(id);return {t:"a",k:id,n:id+(r?" · "+r[1]:""),tipo:r?r[AT.C.tipo]:"",w:Math.round(100/n*10)/10}});
+  const d=100-c.itens.reduce((a,y)=>a+y.w,0);c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;
+  SP.carts.push(c);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();setMod("sp");try{$("fnOut").scrollIntoView({behavior:"smooth"})}catch(y){}alertLite("Carteira criada com "+n+(k==="f"?" fundos":" ativos")+" em pesos iguais. Ajuste os pesos e o cliente.")});
+
 /* ===== Relatório em PDF com a identidade do escritório ===== */
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
 try{const c=JSON.parse(localStorage.getItem("relCfg")||"null");if(c&&typeof c==="object")Object.assign(REL.cfg,c)}catch(e){}
 function relSave(){try{localStorage.setItem("relCfg",JSON.stringify(REL.cfg))}catch(e){alertLite("Não deu para guardar o logo neste navegador (espaço insuficiente). Use uma imagem menor.")}}
 const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira"};
 function relOpen(kind){
-  REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();d=document.createElement("div");d.className="reldlg";
-  const c=REL.cfg;
+  REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();
+  REL.box=relConteudo(kind);if(!REL.box){alertLite("Abra a análise antes de gerar o relatório.");return}
+  d=document.createElement("div");d.className="reldlg";
+  const c=REL.cfg,secs=relSecoes(REL.box),fora=relFora(kind);
   d.innerHTML='<div class="relbox" role="dialog" aria-modal="true" aria-labelledby="relT"><h3 id="relT">Relatório em PDF · '+REL_T[kind]+'</h3><p class="sub">Os dados do escritório ficam guardados só neste navegador. O relatório abre pronto para imprimir: escolha “Salvar como PDF”.</p>'
     +'<div class="relgrid"><div class="field"><label for="relNome">Escritório ou empresa</label><input id="relNome" data-relcfg="nome" value="'+esc(c.nome)+'" maxlength="80"></div>'
     +'<div class="field"><label for="relResp">Responsável</label><input id="relResp" data-relcfg="resp" value="'+esc(c.resp)+'" maxlength="80" placeholder="nome e certificação"></div>'
@@ -5096,10 +5205,15 @@ function relOpen(kind){
     +'<div class="field"><label for="relLogo">Logo</label><input id="relLogo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-rellogo="1">'+(c.logo?'<small><img src="'+c.logo+'" alt="" style="max-height:28px;vertical-align:middle"> <button type="button" class="link" data-relnologo="1">remover</button></small>':'<small>PNG, JPG ou SVG</small>')+'</div>'
     +'<div class="field"><label for="relPara">Preparado para <span style="color:var(--muted);font-weight:400">(opcional, não fica salvo)</span></label><input id="relPara" data-relx="para" value="'+esc(REL.para)+'" maxlength="80"></div></div>'
     +'<div class="field"><label for="relObs">Comentário do assessor <span style="color:var(--muted);font-weight:400">(opcional, não fica salvo)</span></label><textarea id="relObs" data-relx="obs" rows="3" maxlength="1500">'+esc(REL.obs)+'</textarea></div>'
+    +(secs.length>1?'<div class="field"><label>O que vai no relatório</label><div class="spbtns" style="margin:2px 0 6px"><button type="button" class="link" data-relpre="tudo">Completo</button><button type="button" class="link" data-relpre="resumo">Resumido</button><button type="button" class="link" data-relpre="nada">Desmarcar tudo</button></div><div class="relsecs">'+secs.map((t,i)=>'<label><input type="checkbox" data-relsec="'+i+'"'+(fora.includes(t)?'':' checked')+'>'+esc(t)+'</label>').join("")+'</div><small>A escolha fica lembrada para o próximo relatório deste tipo.</small></div>':'')
     +'<div class="field"><label for="relRod">Texto de rodapé</label><input id="relRod" data-relcfg="rodape" value="'+esc(c.rodape)+'" maxlength="300" placeholder="ex.: aviso legal do escritório"></div>'
     +'<div class="spbtns" style="margin-top:12px"><button type="button" class="btn" data-relgo="1">Gerar PDF</button><button type="button" class="btn sec" data-relclose="1">Cancelar</button></div></div>';
   ($("modFn")||document.body).appendChild(d);setTimeout(()=>{const i=$("relNome");if(i)i.focus()},30);
 }
+function relTit(el){return (el.dataset&&el.dataset.reltit)||((el.querySelector("h3")||el.querySelector(".label")||{}).textContent||"").trim().replace(/\s+/g," ").slice(0,70)||"Seção"}
+function relSecoes(box){return [...box.children].filter(e=>/^(SECTION|DIV)$/.test(e.tagName)&&(e.classList.contains("panel")||e.classList.contains("relsec"))).map(relTit)}
+function relFora(kind){try{const a=JSON.parse(localStorage.getItem("relFora_"+kind)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
+const REL_RESUMO=/^(Resumo|Composição|Rentabilidade e risco de cada item|Desde a efetivação|Rentabilidade$|Rentabilidade acumulada|Risco$)/;
 function relClean(root){
   root.querySelectorAll(".fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
   root.querySelectorAll("button").forEach(b=>{const s=document.createElement("span");s.innerHTML=b.innerHTML;s.className=b.className.replace(/\b(link|off)\b/g,"").trim();if(b.classList.contains("off"))s.style.opacity=".4";b.replaceWith(s)});
@@ -5110,7 +5224,7 @@ function relClean(root){
 function relConteudo(kind){
   const box=document.createElement("div");
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
-  else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML}
+  else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML;const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
   else{const k=kind==="fc"?"f":"a",X=CMP_CTX[k];if(!X)return null;const b=$(kind==="fc"?"fnCbody":"atCbody");if(!b)return null;
     const tmp=document.createElement("div");tmp.innerHTML=b.innerHTML;tmp.querySelectorAll(".tablewrap,.cmpwrap").forEach(e=>e.remove());tmp.querySelectorAll("p.sub").forEach(e=>{if(/Correlação dos retornos|Cada janela|No período escolhido|Para comparar com LCI/.test(e.textContent))e.remove()});
     let h=tmp.innerHTML;const nomes={ret:"Rentabilidade",risk:"Risco",jan:"Janelas móveis",info:"Características",cor:"Correlação"};
@@ -5125,7 +5239,11 @@ function relTitulo(kind){
   const L=kind==="fc"?FN.cmp:AT.cmp;return [REL_T[kind],L.length+(kind==="fc"?" fundos":" ativos")];
 }
 function relGerar(){
-  const kind=REL.kind,cont=relConteudo(kind);if(!cont){alertLite("Abra a análise antes de gerar o relatório.");return}
+  const kind=REL.kind,cont=REL.box;if(!cont){alertLite("Abra a análise antes de gerar o relatório.");return}
+  {const els=[...cont.children].filter(e=>/^(SECTION|DIV)$/.test(e.tagName)&&(e.classList.contains("panel")||e.classList.contains("relsec"))),fora=[];
+    document.querySelectorAll(".reldlg [data-relsec]").forEach(cb=>{const el=els[+cb.dataset.relsec];if(el&&!cb.checked){fora.push(relTit(el));el.remove()}});
+    try{localStorage.setItem("relFora_"+kind,JSON.stringify(fora))}catch(e){}
+    if(!cont.querySelector(".panel,.relsec")){alertLite("Escolha pelo menos uma parte para o relatório.");return}}
   const c=REL.cfg,[tit,sub]=relTitulo(kind),hoje=new Date().toLocaleDateString("pt-BR");
   const css=[...document.querySelectorAll("style")].map(s=>s.textContent).join("\n");
   const cor=/^#[0-9a-f]{6}$/i.test(c.cor||"")?c.cor:"#12294A";
@@ -5168,10 +5286,11 @@ function relLogo(file){
   rd.readAsDataURL(file);
 }
 document.addEventListener("click",e=>{
-  const x=e.target.closest&&e.target.closest("[data-rel],[data-relsp],[data-relgo],[data-relclose],[data-relnologo]");if(!x){if(e.target.classList&&e.target.classList.contains("reldlg"))e.target.remove();return}
+  const x=e.target.closest&&e.target.closest("[data-rel],[data-relsp],[data-relgo],[data-relclose],[data-relnologo],[data-relpre]");if(!x){if(e.target.classList&&e.target.classList.contains("reldlg"))e.target.remove();return}
   if(x.dataset.relsp){relOpen("sp");return}
   if(x.dataset.rel){relOpen(x.dataset.rel);return}
   if(x.dataset.relgo){relGerar();return}
+  if(x.dataset.relpre){const p=x.dataset.relpre,els=REL.box?relSecoes(REL.box):[];document.querySelectorAll(".reldlg [data-relsec]").forEach(cb=>{cb.checked=p==="tudo"?true:p==="nada"?false:REL_RESUMO.test(els[+cb.dataset.relsec]||"")});return}
   if(x.dataset.relclose){const d=document.querySelector(".reldlg");if(d)d.remove();return}
   if(x.dataset.relnologo){REL.cfg.logo="";relSave();relOpen(REL.kind)}
 });
