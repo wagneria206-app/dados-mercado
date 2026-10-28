@@ -5142,6 +5142,29 @@ async function impArquivo(file){
 }
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="spImp"&&t.files&&t.files[0]){impArquivo(t.files[0]);t.value=""}});
 
+/* ----- atualização automática de Fundos e Bolsa (mesmo padrão do Mercado: a cada 30 minutos) */
+const UPD={f:null,a:null,t:0,run:null};
+async function updCheck(){
+  if(UPD.run)return UPD.run;
+  UPD.run=(async()=>{
+    const g=u=>fetch(u,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+    const [f,a]=await Promise.all([FN.idx?g(fnUrl("estado.json")):null,AT.idx?g(atUrl("estado.json")):null]);
+    UPD.t=Date.now();let mf=false,ma=false;
+    if(f&&f.geradoEm){if(UPD.f&&UPD.f!==f.geradoEm)mf=true;UPD.f=f.geradoEm}
+    if(a&&a.geradoEm){if(UPD.a&&UPD.a!==a.geradoEm)ma=true;UPD.a=a.geradoEm}
+    if(mf||ma){BASES.est=null;SP_CMP=null}
+    if(mf){FN.idx=null;FN.files.clear();FN.load=null;FN.err=null;await fnBoot()}
+    if(ma){AT.idx=null;AT.files.clear();AT.load=null;AT.err=null;AG.dados=null;AG.load=null;EXT_SPX=null;await atBoot()}
+    if((mf||ma)&&FNM.has(activeMod)){if(activeMod==="ag")agCalc();else if(activeMod==="sp")spCalc();else fnCalc()}
+  })().finally(()=>{UPD.run=null});
+  return UPD.run;
+}
+// registra a versão carregada assim que cada base termina de carregar
+setInterval(()=>{if((FN.idx&&!UPD.f)||(AT.idx&&!UPD.a))updCheck()},5000);
+setInterval(()=>{if(FN.idx||AT.idx)updCheck()},30*60000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-UPD.t>30*60000&&(FN.idx||AT.idx))updCheck()});
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#refresh")&&(FN.idx||AT.idx))setTimeout(updCheck,0)});
+
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
