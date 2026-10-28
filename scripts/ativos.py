@@ -284,6 +284,24 @@ def tesouro_direto():
                 p = bisect.bisect_left(CAL, dc) - 1
                 if p >= 0:
                     a.ev.append([CAL[p], "C", round(val, 6), dc])
+        # RendA+ e Educa+: na fase de pagamentos, parcela mensal no dia 15. O valor da parcela é a queda do preço
+        # nesse dia além da variação diária típica dos dias anteriores (o Tesouro Transparente só publica o PU).
+        if code in ("RENDA", "EDUCA"):
+            pos = {k: j for j, k in enumerate(a.i)}
+            for ano in range(ano_ref, HOJE.year + 1):
+                for mm in range(1, 13):
+                    dc = f"{ano}-{mm:02d}-15"
+                    if dc <= d0 or dc > HOJE.isoformat() or dc > venc:
+                        continue
+                    p = bisect.bisect_left(CAL, dc)
+                    j = pos.get(p)
+                    if j is None or j < 6 or pos.get(p - 1) != j - 1:
+                        continue
+                    rs = sorted(a.c[q] / a.c[q - 1] - 1 for q in range(max(1, j - 11), j))
+                    g = rs[len(rs) // 2] if rs else 0
+                    queda = a.c[j - 1] * (1 + g) - a.c[j]
+                    if queda > a.c[j - 1] * 0.002:
+                        a.ev.append([CAL[a.i[j - 1]], "C", round(queda, 6), CAL[p]])
         n += 1
     log("Tesouro Direto:", n, "títulos à venda")
 
