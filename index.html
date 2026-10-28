@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
@@ -695,7 +695,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .debq .field{flex:1;min-width:180px}
 
-.wrap[data-area="bolsa"] .tabs button[data-mod="aa"],.wrap[data-area="bolsa"] .tabs button[data-mod="ar"],.wrap[data-area="bolsa"] .tabs button[data-mod="ac"],.wrap[data-area="simu"] .tabs button[data-mod="sp"],.wrap[data-area="fnd"] .tabs button[data-mod="fg"],.wrap[data-area="fnd"] .tabs button[data-mod="fa"],.wrap[data-area="fnd"] .tabs button[data-mod="fr"],.wrap[data-area="fnd"] .tabs button[data-mod="fc"]{display:inline-flex;align-items:center}
+.wrap[data-area="bolsa"] .tabs button[data-mod="aa"],.wrap[data-area="bolsa"] .tabs button[data-mod="ar"],.wrap[data-area="bolsa"] .tabs button[data-mod="ac"],.wrap[data-area="simu"] .tabs button[data-mod="sp"],.wrap[data-area="bolsa"] .tabs button[data-mod="ag"],.wrap[data-area="fnd"] .tabs button[data-mod="fg"],.wrap[data-area="fnd"] .tabs button[data-mod="fa"],.wrap[data-area="fnd"] .tabs button[data-mod="fr"],.wrap[data-area="fnd"] .tabs button[data-mod="fc"]{display:inline-flex;align-items:center}
 
 #modFn .panel{margin-bottom:16px}
 
@@ -888,6 +888,14 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .relgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin:10px 0}
 @media (max-width:760px){.spparams{grid-template-columns:1fr 1fr}.relgrid{grid-template-columns:1fr}}
+
+.spimp{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+
+.spimp label.btn{cursor:pointer}
+
+.spiso{display:flex;gap:6px;align-items:center;font-size:.78rem;color:var(--muted);cursor:pointer}
+
+.spiso input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -910,7 +918,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
   </nav>
   <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -1998,7 +2006,7 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",aa:"bolsa",ar:"bolsa",ac:"bolsa"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
 const MKM=new Set(["rs","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
@@ -2984,7 +2992,7 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=P(rsHtml())+P(agendaHtml());
+  try{if(activeMod==="rs")h=P(rsHtml())+P(agendaHtml())+P(basesHtml());
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml());
@@ -3724,8 +3732,9 @@ document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkCli
 let FX_TOP=null;
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
 const FN_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/";
-const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","sp"]);
+const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","ag","sp"]);
 const FN_BM={cdi:{lab:"CDI",col:"var(--flat)",dash:"5 4"},ibov:{lab:"Ibovespa",col:"var(--s3)"},ipca:{lab:"IPCA",col:"var(--s2)"},usd:{lab:"Dólar",col:"var(--s4)"},ifix:{lab:"IFIX",col:"var(--gold)"}};
+Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#0e7490"},imab5:{lab:"IMA-B 5",col:"#0891b2"},imab5p:{lab:"IMA-B 5+",col:"#155e75"},irfm:{lab:"IRF-M",col:"#7c3aed"},imas:{lab:"IMA-S",col:"#64748b"},imag:{lab:"IMA-Geral",col:"#9d174d"}});
 const FN_COLS=["var(--accent)","var(--loss)","var(--s4)","var(--s3)","var(--s2)","var(--gold)"];
 const FN_PER=[["mes","No mês"],["ano","No ano"],["6","6 meses"],["12","12 meses"],["24","24 meses"],["36","36 meses"],["60","60 meses"],["tudo","Desde o início"]];
 const FN={idx:null,C:null,sk:null,T:null,cal:null,B:null,L:null,files:new Map(),load:null,err:null,view:null,cur:null,per:"12",bm:{cdi:1,ibov:0,ipca:0,usd:0,ifix:0},tabCmp:"pcdi",rper:"12",
@@ -3737,7 +3746,7 @@ function fnSave(){try{localStorage.setItem("fnCmp",JSON.stringify(FN.cmp));local
 const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
 async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
 const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-const fnCnpjF=k=>k&&k.length===14?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
+const fnCnpjF=k=>k&&k.length===14&&/^\d+$/.test(k)?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
 function fnMoney(v){if(v==null||!isFinite(v))return "—";const a=Math.abs(v),s=v<0?"−":"";return a>=1e9?s+"R$ "+fx(a/1e9,2)+" bi":a>=1e6?s+"R$ "+fx(a/1e6,1)+" mi":a>=1e3?s+"R$ "+fx(a/1e3,0)+" mil":s+"R$ "+fx(a,0)}
 function fnPct(v,d){if(v==null||!isFinite(v))return "—";d=d==null?2:d;return '<span class="'+(v>0?"pos":v<0?"neg":"")+'">'+(v<0?"−":"")+fx(Math.abs(v),d)+"%</span>"}
 const fnPctT=(v,d)=>v==null||!isFinite(v)?"—":(v<0?"−":"")+fx(Math.abs(v),d==null?2:d)+"%";
@@ -3762,14 +3771,14 @@ function lvBuild(cal,B){ // níveis acumulados dos índices: diários (alinhados
   const keys=Object.keys(cdiM).map(Number).sort((a,b)=>a-b);
   const acc=(src)=>{const ks=Object.keys(src).map(Number).sort((a,b)=>a-b);const o={};if(!ks.length)return o;let v=1;o[ks[0]-1]=1;for(let k=ks[0];k<=ks[ks.length-1];k++){if(src[k]==null){o[k]=v;continue}v*=1+src[k]/100;o[k]=v}return o};
   L.m.cdi=acc(cdiM);L.m.ipca=acc(ipcaM);L.ipcaLast=Math.max(...Object.keys(ipcaM).map(Number));
-  ["ibov","ifix","usd"].forEach(b=>{const o={};Object.keys(B.m[b]||{}).forEach(k=>o[mk(k)]=B.m[b][k]);L.m[b]=o});
+  ["ibov","ifix","usd","imab","imab5","imab5p","irfm","imas","imag"].forEach(b=>{const o={};Object.keys(B.m[b]||{}).forEach(k=>o[mk(k)]=B.m[b][k]);L.m[b]=o});
   const k0=n?mk(cal[0].slice(0,4)+cal[0].slice(5,7)):0;
   // CDI diário encadeado a partir do fim do mês anterior ao calendário
   if(B.d.cdi&&n){const a=new Array(n);let v=L.m.cdi[k0-1]||1;for(let i=0;i<n;i++){v*=1+(B.d.cdi[i]||0)/100;a[i]=v}L.d.cdi=a}
   // IPCA diário: rateado pelos dias úteis de cada mês
   if(n){const a=new Array(n),byM={};cal.forEach((d,i)=>{const k=mk(d.slice(0,4)+d.slice(5,7));(byM[k]=byM[k]||[]).push(i)});
     Object.keys(byM).map(Number).sort((x,y)=>x-y).forEach(k=>{const ids=byM[k],base=L.m.ipca[k-1]!=null?L.m.ipca[k-1]:null,v=ipcaM[k];ids.forEach((i,j)=>{a[i]=base==null?null:v==null?base:base*Math.pow(1+v/100,(j+1)/ids.length)})});L.d.ipca=a}
-  ["ibov","ifix","usd"].forEach(b=>{if(B.d[b])L.d[b]=B.d[b]});
+  ["ibov","ifix","usd","imab","imab5","imab5p","irfm","imas","imag"].forEach(b=>{if(B.d[b])L.d[b]=B.d[b]});
   return L;
 }
 function fnLevels(){FN.L=lvBuild(FN.cal,FN.B)}
@@ -3906,7 +3915,7 @@ function fnShell(m){
 }
 function fnRender(){if(activeMod==="aa")atAa();else if(activeMod==="ac")atCmp();else if(activeMod==="fa")fnFa();else if(activeMod==="fc")fnCmp()}
 function fnCalc(m){
-  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="fg")return fnGest();if(m==="sp")return spCalc();const o=fnShell(m);if(!o)return;
+  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="fg")return fnGest();if(m==="sp")return spCalc();if(m==="ag")return agCalc();const o=fnShell(m);if(!o)return;
   const body=m==="fa"?$("fnBody"):m==="fr"?$("fnRkT"):$("fnCbody");
   if(!FN.idx){
     if(FN.err){const h='<section class="panel"><p class="warn">A base de fundos ainda não está disponível ('+esc(FN.err.message||FN.err)+'). Na primeira vez o robô leva cerca de uma hora para montar o histórico de todos os fundos da CVM. Tente de novo em alguns minutos.</p><button type="button" class="btn sec" data-fnretry="1">Tentar de novo</button></section>';if(body)body.innerHTML=h;else o.innerHTML=h}
@@ -3924,7 +3933,7 @@ function fnSearch(q,max){
 function fnResHtml(js){const R=FN.idx.rows,C=FN.C;if(!js.length)return '<div class="fnri"><small>Nenhum fundo encontrado.</small></div>';
   return js.map(j=>{const r=R[j];return '<button type="button" class="fnri" data-fnopen="'+r[0]+'"><b>'+esc(r[1])+'</b><small>'+fnCnpjF(r[0])+' · '+esc(FN.idx.classes[r[C.classe]]||"")+' · PL '+fnMoney(r[C.pl])+' · 12m '+fnPctT(r[C.r12])+'</small></button>'}).join("")}
 function fnRow(k){const R=FN.idx.rows;for(let j=0;j<R.length;j++)if(R[j][0]===k)return R[j];return null}
-function fnHash(){const m=/fundo=(\d{14})/.exec(location.hash||"");if(m&&(FN.cur!==m[1]||activeMod!=="fa")){FN.cur=m[1];FN.q="";const q=$("fnQ");if(q)q.value="";const r=$("fnRes");if(r)r.hidden=true;if(activeMod!=="fa")setMod("fa");else fnFa()}}
+function fnHash(){const m=/fundo=([0-9A-Z]{14,16})/i.exec(location.hash||"");if(m&&(FN.cur!==m[1]||activeMod!=="fa")){FN.cur=m[1];FN.q="";const q=$("fnQ");if(q)q.value="";const r=$("fnRes");if(r)r.hidden=true;if(activeMod!=="fa")setMod("fa");else fnFa()}}
 function fnOpen(k){FN.cur=k;FN.q="";try{history.replaceState(null,"","#fundo="+k)}catch(e){}
   try{const h=JSON.parse(localStorage.getItem("fnHist")||"[]").filter(x=>x!==k);h.unshift(k);localStorage.setItem("fnHist",JSON.stringify(h.slice(0,8)))}catch(e){}
   if(activeMod!=="fa")setMod("fa");else{const q=$("fnQ");if(q)q.value="";const r=$("fnRes");if(r)r.hidden=true;fnFa()}
@@ -3952,20 +3961,21 @@ function fnHome(){
   h+=list("Maiores fundos abertos ao público",R.filter(r=>ok(r)&&!(r[C.flags]&2)).sort((a,b)=>(b[C.pl]||0)-(a[C.pl]||0)).slice(0,8),r=>'PL '+fnMoney(r[C.pl])+' · '+fnInt(r[C.cotistas])+' cotistas');
   return h;
 }
-function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
+function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(F&&F.pai)t.push("Subclasse");if(F&&/^s/i.test(F.prev||""))t.push("Previdenciário");if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
 function fnHead(F){
   const r=fnRow(F.c),C=FN.C,l=fnLast(F),r12=fnRet(F,"12"),ra=fnRet(F,"ano"),cd12=r12?fnBmRet("cdi",r12.p0,r12.p1):null,rk=fnRisk(F,fnStart(F,"12"));
   const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
   let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(nm)+'</h3><div class="fnsub">'+fnCnpjF(F.c)+(F.fan&&F.fan!==F.n?' · '+esc(F.fan):'')+'</div>';
   h+='<div class="fntags">'+[F.tipo,FN.idx.classes[r?r[C.classe]:-1],F.anb].filter(Boolean).map(x=>'<span class="fntag strong">'+esc(x)+'</span>').join("")+fnTags(r,F).map(x=>'<span class="fntag">'+esc(x)+'</span>').join("")+'</div></div>';
   h+='<div class="fnacts"><button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button><button type="button" class="btn sec" data-rel="fa">Relatório PDF</button></div></div>';
+  if(F.pai)h+='<p class="sub" style="margin-top:6px">Esta é uma subclasse, com cota própria. <button type="button" class="link" data-fnopen="'+F.pai+'">Ver a classe '+fnCnpjF(F.pai)+'</button></p>';
   const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
   h+='<div class="fnkpis">'+kp("Rentabilidade 12 meses",r12?fnPct(r12.r):"—",cd12&&r12?fx(r12.r/cd12*100,0)+"% do CDI":"")+kp("No ano",ra?fnPct(ra.r):"—",ra&&fnBmRet("cdi",ra.p0,ra.p1)?fx(ra.r/fnBmRet("cdi",ra.p0,ra.p1)*100,0)+"% do CDI":"")
     +kp("Patrimônio líquido",fnMoney(u.pl),u.cot!=null?fnInt(u.cot)+" cotistas":"")+kp("Volatilidade 12m",rk?fx(rk.vol,2)+"%":"—",rk&&rk.sharpe!=null?"Sharpe "+fx(rk.sharpe,2):"")
     +kp("Última cota",l?fx(l.q,6):"—",l?fdate(l.t):"")+'</div>';
   const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
   add("Gestora",esc(F.ges||""));add("Administradora",esc(F.adm||""));add("Custodiante",esc(F.cus||""));add("Auditoria",esc(F.aud||""));
-  add("Início das atividades",F.ini?fdate(Date.parse(F.ini.slice(0,10)+"T00:00:00Z")):"");add("Índice de referência",esc(F.bm||""));
+  {const k0=F.MK&&F.MK[0],ti=F.ini?Date.parse(F.ini.slice(0,10)+"T00:00:00Z"):null,tc=k0!=null?Date.UTC(Math.floor(k0/12),k0%12,1):null;add("Início das atividades",ti?fdate(ti)+(tc&&tc<ti-31*DAY?' <small>(cotas na CVM desde '+mname(k0)+(k0===2005*12?' ou antes':'')+')</small>':''):tc?'cotas na CVM desde '+mname(k0):"")}add("Índice de referência",esc(F.bm||""));
   add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a.":"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
   add("Aplicação mínima",F.amin!=null?(F.amin?brl(F.amin):"Sem mínimo"):"");
   add("Resgate",F.dcot!=null||F.dpag!=null?(F.dcot!=null?"cotização D+"+fx(F.dcot,0):"")+(F.dpag!=null?" · pagamento D+"+fx(F.dpag,0):""):"");
@@ -4153,7 +4163,7 @@ document.addEventListener("input",e=>{
 });
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-fnadd]");if(!x)return;const k=x.dataset.fnadd;if(!FN.cmp.includes(k))fnCmpToggle(k);const q=$("fnCq");if(q)q.value="";$("fnCres").hidden=true;fnCmp()});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="fnQ"&&FN.idx){const js=fnSearch(e.target.value,1);if(js.length){e.preventDefault();fnOpen(FN.idx.rows[js[0]][0])}}});
-window.addEventListener("hashchange",()=>{if(FN.idx)fnHash();if(FNM.has(activeMod))fnCalc()});
+window.addEventListener("hashchange",()=>{if(FN.idx)fnHash();else{const m=/fundo=([0-9A-Z]{14,16})/i.exec(location.hash||"");if(m){FN.cur=m[1];if(activeMod!=="fa")setMod("fa")}}if(FNM.has(activeMod)&&!/ativo=/.test(location.hash))fnCalc()});
 
 /* ===== Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) ===== */
 const AT_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/ativos/";
@@ -4184,7 +4194,7 @@ function atDecode(j){
   return Object.assign(j,{I,Q,R,M,MK,n:j.t,lab:j.t,rlab:"Desde "+new Date(AT.T[I[0]]).getUTCFullYear(),riskNote:"as cotações diárias com proventos",monNote:"Retorno total (cotação com proventos reinvestidos) calculado com os fechamentos da B3."});
 }
 const atRow=t=>{const R=AT.idx.rows;for(let j=0;j<R.length;j++)if(R[j][0]===t)return R[j];return null};
-function atHash(){const m=/ativo=([A-Z0-9]{4,7})/i.exec(location.hash||"");if(m&&(AT.cur!==m[1].toUpperCase()||activeMod!=="aa")){AT.cur=m[1].toUpperCase();AT.q="";const q=$("atQ");if(q)q.value="";const r=$("atRes");if(r)r.hidden=true;if(activeMod!=="aa")setMod("aa");else atAa()}}
+function atHash(){const m=/ativo=([A-Z0-9-]{4,16})/i.exec(location.hash||"");if(m&&(AT.cur!==m[1].toUpperCase()||activeMod!=="aa")){AT.cur=m[1].toUpperCase();AT.q="";const q=$("atQ");if(q)q.value="";const r=$("atRes");if(r)r.hidden=true;if(activeMod!=="aa")setMod("aa");else atAa()}}
 function atOpen(t){AT.cur=t;AT.q="";try{history.replaceState(null,"","#ativo="+t)}catch(e){}
   try{const h=JSON.parse(localStorage.getItem("atHist")||"[]").filter(x=>x!==t);h.unshift(t);localStorage.setItem("atHist",JSON.stringify(h.slice(0,10)))}catch(e){}
   if(activeMod!=="aa")setMod("aa");else{const q=$("atQ");if(q)q.value="";const r=$("atRes");if(r)r.hidden=true;atAa()}
@@ -4252,6 +4262,7 @@ function atHead(A){
   if(fi){add("Nome no informe da CVM",esc(fi.nome||""));add("Segmento",esc(fi.seg||""));add("Administrador",esc(fi.adm||""));add("Público-alvo",esc(fi.pub||""));add("Início",fi.ini?fdate(Date.parse(fi.ini+"T00:00:00Z")):"");add("CNPJ",fnCnpjF(fi.cnpj))}
   if(A.fund&&A.fund.cnpj)add("CNPJ",fnCnpjF(A.fund.cnpj));
   add("ISIN",esc(A.meta&&A.meta.isin||""));
+  if(A.tipo==="Tesouro Direto"){add("Vencimento",A.venc?fdate(Date.parse(A.venc+"T00:00:00Z")):"");add("Preço usado",'preço de resgate (PU de venda) do Tesouro Transparente; cupons semestrais reinvestidos no retorno'+(/RENDA|EDUCA/.test(A.t)?'. Na fase de pagamentos mensais do RendA+ e do Educa+, o preço cai a cada parcela paga e as parcelas não entram no retorno':''))}
   if(it.length)h+='<dl class="fninfo">'+it.join("")+'</dl>';
   return h+'</section>';
 }
@@ -4270,7 +4281,7 @@ function atProvHtml(A){
   if(!ev.length)return A.tipo==="ETF"||A.tipo.startsWith("BDR")?"":'<section class="panel"><h3>Proventos</h3><p class="sub">Nenhum provento registrado na B3 para este ativo.</p></section>';
   const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));
   const fac=ix=>spl.reduce((a,e)=>e[0]>ix?a*e[1]:a,1); // converte valores antigos para a base de ações de hoje
-  const NM={D:"Dividendo",J:"JCP",R:"Rendimento",E:"Rendimento (estimado)",A:"Amortização"};
+  const NM={D:"Dividendo",J:"JCP",R:"Rendimento",E:"Rendimento (estimado)",A:"Amortização",C:"Cupom"};const PAG={};(A.evc||[]).forEach(e=>{if(e[3])PAG[e[0]+"|"+e[1]+"|"+(+e[2]).toFixed(8)]=e[3]});
   const anos={};ev.forEach(e=>{if(e.tp==="A")return;const y=+e.dc.slice(0,4);anos[y]=(anos[y]||0)+e.v*fac(e.ix)});
   const yrs=Object.keys(anos).map(Number).sort((a,b)=>a-b).slice(-12);
   const pxY=y=>{let best=null;for(let x=0;x<A.I.length;x++){const d=new Date(AT.T[A.I[x]]);if(d.getUTCFullYear()===y)best=x}return best==null?null:A.R[best]*fac(A.I[best])};
@@ -4278,8 +4289,8 @@ function atProvHtml(A){
   if(yrs.length>1)h+='<div class="label">Proventos por ano (R$ por '+(AT_FUNDO.has(A.tipo)?'cota':'ação')+', na base de ações de hoje)</div>'+fnChart([{lab:"Proventos",col:"var(--gain)",pts:yrs.map(y=>[Date.UTC(y,6,1),anos[y]])}],{fmt:"brl",bars:true,zero:true,h:170,aria:"Proventos por ano"});
   h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+yrs.slice().reverse().map(y=>'<th>'+y+'</th>').join("")+'</tr></thead><tbody><tr><td style="text-align:left">Total por ação</td>'+yrs.slice().reverse().map(y=>'<td>R$ '+fx(anos[y],2)+'</td>').join("")+'</tr><tr><td style="text-align:left">Dividend yield <small>(sobre o preço de fim de ano)</small></td>'+yrs.slice().reverse().map(y=>{const p=pxY(y);return '<td>'+(p?fx(anos[y]/p*100,2)+'%':'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
   if(AT_FUNDO.has(A.tipo)){const L=ev.filter(e=>e.tp!=="A").slice(-24);if(L.length>3)h+='<div class="label" style="margin-top:10px">Rendimento mensal por cota</div>'+fnChart([{lab:"Rendimento",col:"var(--gain)",pts:L.map(e=>[Date.parse(e.dc+"T00:00:00Z"),e.v*fac(e.ix)])}],{fmt:"brl",bars:true,zero:true,h:160,aria:"Rendimentos"})}
-  h+='<div class="label" style="margin-top:10px">Últimos proventos</div><div class="tablewrap" style="max-height:340px"><table class="ctab"><thead><tr><th style="text-align:left">Data com</th><th style="text-align:left">Tipo</th><th>Valor</th><th>% do preço</th></tr></thead><tbody>';
-  ev.slice().reverse().slice(0,40).forEach(e=>{h+='<tr><td style="text-align:left">'+fdate(Date.parse(e.dc+"T00:00:00Z"))+'</td><td style="text-align:left">'+(NM[e.tp]||e.tp)+'</td><td>R$ '+fx(e.v,e.v<0.1?4:2)+'</td><td>'+fx((1-e.f)*100,2)+'%</td></tr>'});
+  h+='<div class="label" style="margin-top:10px">Últimos proventos</div><div class="tablewrap" style="max-height:340px"><table class="ctab"><thead><tr><th style="text-align:left">Data com</th><th style="text-align:left" class="c-ph">Pagamento</th><th style="text-align:left">Tipo</th><th>Valor</th><th>% do preço</th></tr></thead><tbody>';
+  ev.slice().reverse().slice(0,40).forEach(e=>{const pg=PAG[e.dc+"|"+e.tp+"|"+(+e.v).toFixed(8)];h+='<tr><td style="text-align:left">'+fdate(Date.parse(e.dc+"T00:00:00Z"))+'</td><td style="text-align:left" class="c-ph">'+(pg&&pg<"9000"?fdate(Date.parse(pg+"T00:00:00Z")):pg?'a definir':'—')+'</td><td style="text-align:left">'+(NM[e.tp]||e.tp)+'</td><td>R$ '+fx(e.v,e.v<0.1?4:2)+'</td><td>'+fx((1-e.f)*100,2)+'%</td></tr>'});
   h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Valores por ação na data com, como divulgados pela B3. O JCP aparece pelo valor bruto. '+(ev.some(e=>e.tp==="E")?'Os rendimentos marcados como estimados (anteriores aos últimos 12 meses publicados pela B3) foram calculados pelo dividend yield mensal do informe da CVM sobre o valor patrimonial da cota. ':'')+'</p></section>';
   return h;
 }
@@ -4378,7 +4389,7 @@ document.addEventListener("input",e=>{
   if(t.id==="arTxt"){AT.rk.txt=t.value;AT.rk.n=50;clearTimeout(AT_QT);AT_QT=setTimeout(()=>{atSave();atRkTable()},200)}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="atQ"&&AT.idx){const js=atSearch(e.target.value,1);if(js.length){e.preventDefault();atOpen(AT.idx.rows[js[0]][0])}}});
-window.addEventListener("hashchange",()=>{if(AT.idx)atHash()});
+window.addEventListener("hashchange",()=>{if(AT.idx)atHash();else{const m=/ativo=([A-Z0-9-]{4,16})/i.exec(location.hash||"");if(m){AT.cur=m[1].toUpperCase();if(activeMod!=="aa")setMod("aa")}}});
 
 /* ===== Comparador (fundos e ativos, até 20), janelas móveis, similares, gross-up, gestoras ===== */
 const CMP_MAX=20;
@@ -4623,7 +4634,7 @@ const SP_RF={cdi:"% do CDI",cdimais:"CDI + taxa",ipca:"IPCA + taxa",pre:"Prefixa
 const SP_REB=[["0","Sem rebalanceamento"],["1","Mensal"],["3","Trimestral"],["6","Semestral"],["12","Anual"]];
 try{const c=JSON.parse(localStorage.getItem("spCarts")||"null");if(Array.isArray(c)&&c.length)SP.carts=c;SP.cur=Math.min(+(localStorage.getItem("spCur")||0),Math.max(0,SP.carts.length-1))}catch(e){}
 if(!SP.carts.length)SP.carts=[spNova("Carteira 1")];
-function spNova(nome){return {nome,itens:[],valor:100000,aporte:0,ini:"",reb:"12",bm:{cdi:1,ibov:0,ipca:0,ifix:0,usd:0,spx:0},ipcax:""}}
+function spNova(nome){return {nome,itens:[],valor:100000,aporte:0,ini:"",fim:"",reb:"12",base:"m",ir:1,hz:10,meta:"",omax:100,bm:{cdi:1,ibov:0,ipca:0,ifix:0,usd:0,spx:0},ipcax:""}}
 function spSave(){try{localStorage.setItem("spCarts",JSON.stringify(SP.carts));localStorage.setItem("spCur",String(SP.cur))}catch(e){}}
 const spC=()=>SP.carts[SP.cur];
 function spBoot(){return Promise.all([FN.idx?null:fnBoot(),AT.idx?null:atBoot()])}
@@ -4640,27 +4651,35 @@ function spTopHtml(){
   let h='<section class="panel"><h3>Simulador de carteiras</h3><p class="sub">Monte carteiras com fundos, ações, FIIs, ETFs, BDRs e renda fixa, e veja como teriam se saído no passado. As carteiras ficam salvas só neste navegador.</p>';
   h+='<div class="sprow"><div class="field"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+SP.carts.map((x,j)=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(x.nome)+'</option>').join("")+'</select></div><div class="field"><label for="spNome">Nome</label><input id="spNome" data-spnome="1" value="'+esc(c.nome)+'" maxlength="60" autocomplete="off"></div>'
     +'<div class="spbtns"><button type="button" class="btn sec" data-spnew="1">Nova</button><button type="button" class="btn sec" data-spdup="1">Duplicar</button><button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div></div>';
+  h+='<div class="spimp"><label class="btn sec" for="spImp">Importar posição da B3 (Excel)</label><input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span class="sub" style="font-size:.8rem">Arquivo de posição da Área do Investidor da B3. Fica só neste navegador.</span><span id="spImpMsg"></span></div>';
   h+='<div class="label" style="margin-top:12px">Composição</div><div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar fundo (nome ou CNPJ) ou ativo da B3 (PETR4, HGLG11, BOVA11…)"><div id="spRes2" class="fnres" hidden></div></div>';
   h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
   if(c.itens.length){
     h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Item</th><th class="c-ph" style="text-align:left">Tipo</th><th>Peso</th><th class="c-ph">Valor inicial</th><th></th></tr></thead><tbody>';
-    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it)))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small></td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
+    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it)))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small>'+(it.t==="s"?'<label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label>':'')+'</td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
     h+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b class="'+(Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph">'+brl(+c.valor||0)+'</td><td></td></tr></tfoot></table></div>'
       +'<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
   }
   h+='<div class="spparams"><div class="field"><label for="spV">Valor inicial</label><div class="affix s"><input id="spV" inputmode="decimal" data-spv="valor" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spA">Aporte mensal</label><div class="affix s"><input id="spA" inputmode="decimal" data-spv="aporte" value="'+fx(+c.aporte||0,2)+'"><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spI">Início</label><input id="spI" type="month" data-spv="ini" value="'+esc(c.ini||"")+'"><small>Vazio = o mais antigo possível</small></div>'
-    +'<div class="field"><label for="spR">Rebalanceamento</label><select id="spR" data-spv="reb">'+SP_REB.map(([v,l])=>'<option value="'+v+'"'+(String(c.reb)===v?' selected':'')+'>'+l+'</option>').join("")+'</select></div></div>';
+    +'<div class="field"><label for="spF">Fim</label><input id="spF" type="month" data-spv="fim" value="'+esc(c.fim||"")+'"><small>Vazio = o mais recente</small></div>'
+    +'<div class="field"><label for="spR">Rebalanceamento</label><select id="spR" data-spv="reb">'+SP_REB.map(([v,l])=>'<option value="'+v+'"'+(String(c.reb)===v?' selected':'')+'>'+l+'</option>').join("")+'</select></div>'
+    +'<div class="field"><label for="spB">Base de cálculo</label><select id="spB" data-spv="base"><option value="m"'+(c.base!=="d"?' selected':'')+'>Mensal (desde 2005)</option><option value="d"'+(c.base==="d"?' selected':'')+'>Diária (desde 2019)</option></select></div>'
+    +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Mostrar o resultado líquido de IR</label></div></div>';
   h+='<div class="cvsel fnbm" style="margin-top:6px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div>';
   h+='</section>';
   $("spTop").innerHTML=h;
 }
-/* ----- séries mensais de cada item: Map mês -> nível */
-async function spSeries(it){
-  if(it.t==="f"){const F=await fnFund(it.k);const m=new Map();F.MK.forEach(k=>m.set(k,F.M.get(k).q));return m}
-  if(it.t==="a"){const A=await atFile(it.k);const m=new Map();A.MK.forEach(k=>m.set(k,A.M.get(k).q));return m}
-  return spRfSeries(it);
+/* ----- dados de cada item: níveis mensais e diários, e regime de IR */
+const SP_IR={lp:"Fundo de longo prazo (come-cotas 15%)",cp:"Fundo de curto prazo (come-cotas 20%)",acoes:"Ações, ETFs e BDRs (15% no resgate)",fii:"FII (rendimentos isentos; 20% sobre o ganho de preço)",rf:"Renda fixa (tabela regressiva)",isento:"Isento de IR",prev:"Previdência (IR no plano)"};
+async function spItemData(it){
+  if(it.t==="f"){const F=await fnFund(it.k);const m=new Map(),d=new Map();F.MK.forEach(k=>m.set(k,F.M.get(k).q));F.I.forEach((ix,j)=>d.set(FN.cal[ix],F.Q[j]));
+    const txt=fnNorm((F.cls||"")+" "+(F.anb||"")+" "+(F.n||""));const reg=/^s/i.test(F.prev||"")||/previd/.test(txt)?"prev":/acoes/.test(txt)?"acoes":/^s/i.test(F.lp||"")?"lp":/^n/i.test(F.lp||"")?"cp":"lp";
+    return {m,d,reg}}
+  if(it.t==="a"){const A=await atFile(it.k);const m=new Map(),pm=new Map(),d=new Map();A.MK.forEach(k=>{m.set(k,A.M.get(k).q);pm.set(k,A.M.get(k).p)});A.I.forEach((ix,j)=>d.set(AT.cal[ix],A.Q[j]));
+    const reg=A.tipo==="Tesouro Direto"?"rf":AT_FUNDO.has(A.tipo)?"fii":"acoes";return {m,d,pm,reg}}
+  return {m:spRfSeries(it),d:spRfDaily(it),reg:it.isento?"isento":"rf"};
 }
 function spRfSeries(it){
   const L=FN.L,m=new Map(),x=num(String(it.x))||0;if(!L)return m;const cdi=L.m.cdi||{},ipca=L.m.ipca||{};
@@ -4671,9 +4690,21 @@ function spRfSeries(it){
     v*=1+r;m.set(k,v);prev=k});
   return m;
 }
+function spRfDaily(it){
+  const L=FN.L,d=new Map(),x=num(String(it.x))||0;if(!L||!L.d.cdi)return d;const C=L.d.cdi,I=L.d.ipca||[];let v=1;
+  FN.cal.forEach((dt,i)=>{if(i===0){d.set(dt,1);return}const c=C[i]/C[i-1]-1;let r;
+    if(it.rf==="cdi")r=c*x/100;else if(it.rf==="cdimais")r=(1+c)*Math.pow(1+x/100,1/252)-1;else if(it.rf==="pre")r=Math.pow(1+x/100,1/252)-1;
+    else{const ii=I[i]&&I[i-1]?I[i]/I[i-1]-1:0;r=(1+ii)*Math.pow(1+x/100,1/252)-1}
+    v*=1+r;d.set(dt,v)});
+  return d;
+}
 function spBmSeries(b,c){
   const L=FN.L;if(!L)return null;if(b==="ipcax"){const x=num(String(c.ipcax||""));if(x==null)return null;return spRfSeries({rf:"ipca",x})}
   const o=L.m[b];if(!o)return null;const m=new Map();Object.keys(o).forEach(k=>{if(o[k]!=null)m.set(+k,o[k])});return m;
+}
+function spBmDaily(b,c){
+  const L=FN.L;if(!L)return null;if(b==="ipcax"){const x=num(String(c.ipcax||""));if(x==null)return null;return spRfDaily({rf:"ipca",x})}
+  const a=L.d[b];if(!a)return null;const d=new Map();FN.cal.forEach((dt,i)=>{if(a[i]!=null)d.set(dt,a[i])});return d;
 }
 let SP_TOKEN=0;
 async function spRunCore(){
@@ -4681,84 +4712,171 @@ async function spRunCore(){
   const it=c.itens.filter(x=>(+x.w||0)>0);
   if(!it.length){box.innerHTML='<section class="panel"><p class="sub">Adicione fundos, ativos ou renda fixa e defina os pesos.</p></section>'+spCmpCartsHtml();return}
   box.innerHTML='<section class="panel"><p class="sub">Calculando…</p></section>';
-  let S;try{S=await Promise.all(it.map(spSeries))}catch(e){box.innerHTML='<section class="panel"><p class="err">Não deu para carregar um dos itens: '+esc(e.message)+'</p></section>';return}
+  let D;try{D=await Promise.all(it.map(spItemData))}catch(e){box.innerHTML='<section class="panel"><p class="err">Não deu para carregar um dos itens: '+esc(e.message)+'</p></section>';return}
   if(tok!==SP_TOKEN)return;
-  const R=spSim(c,it,S);
-  try{box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spCmpCartsHtml()}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
+  try{const R=spSim(c,it,D);box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spCmpCartsHtml()}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
 }
-function spSim(c,it,S){
-  // período: do mês mais antigo em que todos têm dado até o último mês com CDI e com todos os itens
-  const first=Math.max(...S.map(m=>Math.min(...m.keys()))),cdi=FN.L&&FN.L.m.cdi?FN.L.m.cdi:{};
-  const lastCdi=Math.max(...Object.keys(cdi).map(Number));
-  let last=Math.min(...S.map(m=>Math.max(...m.keys())),isFinite(lastCdi)?lastCdi:Infinity);
-  let k0=first;if(c.ini){const [y,mm]=c.ini.split("-").map(Number);const want=y*12+mm-2;if(want>k0)k0=want}
-  if(!(last>k0))return {erro:"Não há período em comum para todos os itens"+(c.ini?" a partir da data escolhida":"")+"."};
-  const W=it.map(x=>+x.w/100),sw=W.reduce((a,x)=>a+x,0),w=W.map(x=>x/sw),reb=+c.reb||0;
-  let V=w.map(x=>x*(+c.valor||0)),idx=1,inv=+c.valor||0;const pts=[{k:k0,v:V.reduce((a,x)=>a+x,0),idx:1,inv}],rets=[],contrib=w.map(()=>0),alr={};
-  let n=0;
-  for(let k=k0+1;k<=last;k++){
-    const r=S.map(m=>{const a=m.get(k-1),b=m.get(k);return a&&b?b/a-1:0});
-    const tot0=V.reduce((a,x)=>a+x,0);V=V.map((x,i)=>x*(1+r[i]));const tot1=V.reduce((a,x)=>a+x,0);const rp=tot0?tot1/tot0-1:0;
-    V.forEach((x,i)=>{contrib[i]+=tot0?(V[i]/(1+r[i]))/tot0*r[i]*idx:0});
-    idx*=1+rp;rets.push({k,r:rp});n++;
-    if(+c.aporte>0){const T=tot1;V=V.map((x,i)=>x+(+c.aporte)*w[i]);inv+=+c.aporte}
-    if(reb&&n%reb===0){const T=V.reduce((a,x)=>a+x,0);V=w.map(x=>x*T)}
-    pts.push({k,v:V.reduce((a,x)=>a+x,0),idx,inv});
+/* ----- grade de datas e simulação */
+function spGrid(c,D){
+  const diaria=c.base==="d",keys=[];
+  if(diaria){FN.cal.forEach(d=>keys.push(d))}
+  else{const all=new Set();D.forEach(x=>x.m.forEach((v,k)=>all.add(k)));const ks=[...all].sort((a,b)=>a-b);if(ks.length)for(let k=ks[0];k<=ks[ks.length-1];k++)keys.push(k)}
+  const tOf=k=>diaria?Date.parse(k+"T00:00:00Z"):fnMt(k),mOf=k=>diaria?+k.slice(0,4)*12+(+k.slice(5,7))-1:k;
+  const lv=D.map(x=>{const src=diaria?x.d:x.m;let last=null,seen=false;const arr=keys.map(k=>{const v=src.get(k);if(v!=null){last=v;seen=true}return seen?last:null});
+    const ks=[...src.keys()].sort();return {arr,first:ks[0],lastKey:ks[ks.length-1]}});
+  return {diaria,keys,tOf,mOf,lv};
+}
+function spSim(c,it,D){
+  const G=spGrid(c,D),K=G.keys;if(!K.length)return {erro:"Sem dados."};
+  let j0=0;for(;j0<K.length;j0++){if(G.lv.every(x=>x.arr[j0]!=null))break}
+  if(c.ini){const [y,mm]=c.ini.split("-").map(Number);const want=y*12+mm-2;while(j0<K.length&&G.mOf(K[j0])<want)j0++}
+  let j1=K.length-1;const lastItem=G.lv.map(x=>x.lastKey).reduce((a,b)=>a<b?a:b);while(j1>j0&&K[j1]>lastItem)j1--;
+  if(!G.diaria){const cdi=FN.L.m.cdi||{},lc=Math.max(...Object.keys(cdi).map(Number));while(j1>j0&&K[j1]>lc)j1--}
+  if(c.fim){const [y,mm]=c.fim.split("-").map(Number);const lim=y*12+mm-1;while(j1>j0&&G.mOf(K[j1])>lim)j1--}
+  if(!(j1>j0))return {erro:"Não há período em comum para todos os itens"+(c.ini||c.fim?" nas datas escolhidas":"")+"."};
+  const W=it.map(x=>+x.w/100),sw=W.reduce((a,x)=>a+x,0),w=W.map(x=>x/sw),reb=+c.reb||0,ap=+c.aporte||0,v0=+c.valor||0,ir=c.ir!==0;
+  const reg=D.map(x=>x.reg),ccRate=r=>r==="lp"?0.15:r==="cp"?0.2:0;
+  let V=w.map(x=>x*v0),idx=1,inv=v0,n=0;
+  let Vn=V.slice(),base=V.slice(),ccb=V.slice(),cc=w.map(()=>0),nidx=1,lvPrev=null;
+  const liq=(meses)=>{let tot=0;Vn.forEach((v,i)=>{const r=reg[i];let rate=0;
+      if(r==="lp"||r==="rf")rate=meses<=6?0.225:meses<=12?0.2:meses<=24?0.175:0.15;else if(r==="cp")rate=meses<=6?0.225:0.2;else if(r==="acoes")rate=0.15;else if(r==="fii")rate=0.2*(SP_FIIPRICE[i]==null?1:SP_FIIPRICE[i]);
+      const ganho=v+cc[i]-base[i],devido=Math.max(0,ganho*rate-cc[i]);tot+=v-devido});return tot};
+  const SP_FIIPRICE=D.map((x,i)=>{if(reg[i]!=="fii"||!x.pm)return null;const a0=G.mOf(K[j0]),a1=G.mOf(K[j1]);const p0=x.pm.get(a0),p1=x.pm.get(a1),q0=x.m.get(a0),q1=x.m.get(a1);if(!p0||!p1||!q0||!q1)return 1;const pr=p1/p0-1,tr=q1/q0-1;return tr>0?Math.max(0,Math.min(1,pr/tr)):0});
+  const pts=[{k:K[j0],t:G.tOf(K[j0]),v:v0,idx:1,inv,liq:v0,nidx:1}],rets=[],contrib=w.map(()=>0),irets=w.map(()=>[]);
+  lvPrev=v0;
+  for(let j=j0+1;j<=j1;j++){
+    const r=G.lv.map(x=>x.arr[j]/x.arr[j-1]-1);r.forEach((x,i)=>irets[i].push(x));
+    const tot0=V.reduce((a,x)=>a+x,0);V=V.map((x,i)=>x*(1+r[i]));const tot1=V.reduce((a,x)=>a+x,0),rp=tot0?tot1/tot0-1:0;
+    V.forEach((x,i)=>{contrib[i]+=tot0?(V[i]/(1+r[i]))/tot0*r[i]*idx:0});idx*=1+rp;
+    Vn=Vn.map((x,i)=>x*(1+r[i]));
+    const novoMes=G.mOf(K[j])!==G.mOf(K[j-1]);let aj=0;
+    if(novoMes){n++;const mesAnt=G.mOf(K[j-1])%12;
+      if(ir&&(mesAnt===4||mesAnt===10))Vn.forEach((x,i)=>{const t=ccRate(reg[i]);if(!t)return;const g=x-ccb[i];if(g>0){const tx=g*t;Vn[i]-=tx;cc[i]+=tx}ccb[i]=Vn[i]});
+      if(ap>0){V=V.map((x,i)=>x+ap*w[i]);Vn=Vn.map((x,i)=>x+ap*w[i]);base=base.map((x,i)=>x+ap*w[i]);ccb=ccb.map((x,i)=>x+ap*w[i]);inv+=ap;aj=ap}
+      if(reb&&n%reb===0){const T=V.reduce((a,x)=>a+x,0);V=w.map(x=>x*T);const Tn=Vn.reduce((a,x)=>a+x,0);
+        Vn.forEach((x,i)=>{const alvo=w[i]*Tn;if(alvo<x&&x>0){const f=alvo/x;base[i]*=f;ccb[i]*=f;cc[i]*=f}else{base[i]+=alvo-x;ccb[i]+=alvo-x}Vn[i]=alvo})}}
+    rets.push({k:K[j],t:G.tOf(K[j]),m:G.mOf(K[j]),r:rp});
+    const L=ir?liq(n):Vn.reduce((a,x)=>a+x,0);nidx*=lvPrev?(L-aj)/lvPrev:1;lvPrev=L;
+    pts.push({k:K[j],t:G.tOf(K[j]),v:V.reduce((a,x)=>a+x,0),idx,inv,liq:L,nidx});
   }
-  const per=it.map((x,i)=>{const a=S[i].get(k0),b=S[i].get(last);return a&&b?(b/a-1)*100:null});
-  return {k0,last,pts,rets,contrib:contrib.map(x=>x*100),per,w};
+  const per=G.lv.map(x=>(x.arr[j1]/x.arr[j0]-1)*100);
+  return {G,j0,j1,k0:K[j0],last:K[j1],m0:G.mOf(K[j0]),m1:G.mOf(K[j1]),pts,rets,irets,contrib:contrib.map(x=>x*100),per,w,reg,meses:n,diaria:G.diaria,ir};
 }
-function spStats(rets,idxEnd,k0,last){
-  const n=rets.length;if(!n)return {};const mu=rets.reduce((a,x)=>a+x.r,0)/n,sd=Math.sqrt(rets.reduce((a,x)=>a+(x.r-mu)**2,0)/Math.max(1,n-1));
-  const cdi=FN.L.m.cdi||{},cTot=cdi[last]&&cdi[k0]?cdi[last]/cdi[k0]-1:null;const ann=Math.pow(idxEnd,12/n)-1,cAnn=cTot!=null?Math.pow(1+cTot,12/n)-1:null;
+function spCdiLv(R){ // nível do CDI em cada ponto da grade
+  if(R.diaria){const a=FN.L.d.cdi||[],ix=new Map(FN.cal.map((d,i)=>[d,i]));return k=>{const i=ix.get(k);return i==null?null:a[i]}}
+  const m=FN.L.m.cdi||{};return k=>m[k]!=null?m[k]:null;
+}
+function spStats(R,rets,idxEnd){
+  const n=rets.length;if(!n)return {};const ppy=R.diaria?252:12,cl=spCdiLv(R);
+  const mu=rets.reduce((a,x)=>a+x.r,0)/n,sd=Math.sqrt(rets.reduce((a,x)=>a+(x.r-mu)**2,0)/Math.max(1,n-1));
+  const c0=cl(R.k0),c1=cl(rets[n-1].k),cTot=c0&&c1?c1/c0-1:null,anos=R.diaria?n/252:n/12;
+  const ann=Math.pow(idxEnd,1/anos)-1,cAnn=cTot!=null?Math.pow(1+cTot,1/anos)-1:null;
   let pk=1,v=1,dd=0;rets.forEach(x=>{v*=1+x.r;if(v>pk)pk=v;dd=Math.min(dd,v/pk-1)});
-  let acima=0,nc=0;rets.forEach(x=>{const c=cdi[x.k]&&cdi[x.k-1]?cdi[x.k]/cdi[x.k-1]-1:null;if(c!=null){nc++;if(x.r>c)acima++}});
-  const s=rets.map(x=>x.r).sort((a,b)=>a-b);
-  return {tot:(idxEnd-1)*100,ann:ann*100,vol:sd*Math.sqrt(12)*100,sharpe:cAnn!=null&&sd>0?(ann-cAnn)/(sd*Math.sqrt(12)):null,dd:dd*100,cdi:cTot!=null?cTot*100:null,pcdi:cTot>0?(idxEnd-1)/cTot*100:null,acima:nc?acima/nc*100:null,pos:rets.filter(x=>x.r>0).length/n*100,best:s[n-1]*100,worst:s[0]*100,n};
+  // meses acima do CDI e melhor/pior mês (agrega a base diária em meses)
+  const mm=new Map();let prevK=R.k0;rets.forEach(x=>{const o=mm.get(x.m)||{r:1,c0:cl(prevK)};o.r*=1+x.r;o.c1=cl(x.k);mm.set(x.m,o);prevK=x.k});
+  let acima=0,nc=0;const mr=[];mm.forEach(o=>{const rr=o.r-1;mr.push(rr);if(o.c0&&o.c1){nc++;if(rr>o.c1/o.c0-1)acima++}});mr.sort((a,b)=>a-b);
+  return {tot:(idxEnd-1)*100,ann:ann*100,vol:sd*Math.sqrt(ppy)*100,sharpe:cAnn!=null&&sd>0?(ann-cAnn)/(sd*Math.sqrt(ppy)):null,dd:dd*100,cdi:cTot!=null?cTot*100:null,pcdi:cTot>0?(idxEnd-1)/cTot*100:null,acima:nc?acima/nc*100:null,best:mr[mr.length-1]*100,worst:mr[0]*100,n,meses:mm.size};
 }
 function spResHtml(c,it,R){
   if(R.erro)return '<section class="panel"><p class="warn">'+esc(R.erro)+'</p></section>';
-  const last=R.pts[R.pts.length-1],st=spStats(R.rets,last.idx,R.k0,R.last),t=k=>fnMt(k);
+  const last=R.pts[R.pts.length-1],st=spStats(R,R.rets,last.idx),lbl=k=>R.diaria?fdate(Date.parse(k+"T00:00:00Z")):mname(k);
   const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
-  let h='<section class="panel" id="spPanel"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+mname(R.k0)+' a '+mname(R.last)+' ('+st.n+' meses) · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
-  h+='<div class="fnkpis">'+kp("Patrimônio final",brl(last.v),"investido "+brl(last.inv))+kp("Retorno no período",fnPct(st.tot),st.pcdi!=null?fx(st.pcdi,0)+"% do CDI":"")+kp("Retorno ao ano",fnPctT(st.ann),"volatilidade "+fx(st.vol,2)+"%")+kp("Sharpe",st.sharpe!=null?fx(st.sharpe,2):"—","meses acima do CDI "+(st.acima!=null?fx(st.acima,0)+"%":"—"))+kp("Perda máxima",fnPct(st.dd),"pior mês "+fnPctT(st.worst))+'</div>';
-  // gráfico de rentabilidade
-  const S=[{lab:c.nome,col:FN_COLS[0],w:2.4,pts:R.pts.map(p=>[t(p.k),(p.idx-1)*100])}],bms=[];
-  Object.keys(FN_BM).concat(["ipcax"]).forEach(b=>{if(b==="ipcax"?!(c.ipcax&&num(String(c.ipcax))!=null):!(c.bm&&c.bm[b]))return;const m=spBmSeries(b,c);if(!m||!m.get(R.k0))return;const b0=m.get(R.k0);
+  let h='<section class="panel" id="spPanel"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
+  const nst=R.ir?{tot:(last.nidx-1)*100}:null;
+  h+='<div class="fnkpis">'+kp("Patrimônio final",brl(last.v),(R.ir?"líquido de IR "+brl(last.liq):"investido "+brl(last.inv)))+kp("Retorno no período",fnPct(st.tot),(st.pcdi!=null?fx(st.pcdi,0)+"% do CDI":"")+(R.ir?" · líquido de IR "+fnPctT(nst.tot):""))+kp("Retorno ao ano",fnPctT(st.ann),"volatilidade "+fx(st.vol,2)+"%")+kp("Sharpe",st.sharpe!=null?fx(st.sharpe,2):"—","meses acima do CDI "+(st.acima!=null?fx(st.acima,0)+"%":"—"))+kp("Perda máxima",fnPct(st.dd),"pior mês "+fnPctT(st.worst))+'</div>';
+  const S=[{lab:c.nome,col:FN_COLS[0],w:2.4,pts:fnThin(R.pts,800).map(p=>[p.t,(p.idx-1)*100])}],bms=[];
+  if(R.ir)S.push({lab:c.nome+" (líquida de IR)",col:FN_COLS[0],dash:"3 3",w:1.6,pts:fnThin(R.pts,800).map(p=>[p.t,(p.nidx-1)*100])});
+  Object.keys(FN_BM).concat(["ipcax"]).forEach(b=>{if(b==="ipcax"?!(c.ipcax&&num(String(c.ipcax))!=null):!(c.bm&&c.bm[b]))return;const m=R.diaria?spBmDaily(b,c):spBmSeries(b,c);if(!m||!m.get(R.k0))return;const b0=m.get(R.k0);
     const lab=b==="ipcax"?"IPCA + "+c.ipcax+"%":FN_BM[b].lab,col=b==="ipcax"?"var(--s2)":FN_BM[b].col;
-    S.push({lab,col,dash:b==="cdi"||b==="ipcax"?"5 4":null,w:1.5,pts:R.pts.map(p=>{const v=m.get(p.k);return [t(p.k),v?(v/b0-1)*100:null]})});bms.push([b,lab,m])});
-  h+='<div class="label" style="margin-top:6px">Rentabilidade acumulada (sem efeito dos aportes)</div>'+fnChart(S,{fmt:"pct",zero:true,months:true,aria:"Rentabilidade da carteira"});
-  if(+c.aporte>0)h+='<div class="label" style="margin-top:10px">Patrimônio e valor investido</div>'+fnChart([{lab:"Patrimônio",col:FN_COLS[0],w:2.2,pts:R.pts.map(p=>[t(p.k),p.v])},{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:R.pts.map(p=>[t(p.k),p.inv])}],{fmt:"money",months:true,aria:"Patrimônio"});
-  let pk=1,v=1;const dd=[[t(R.k0),0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([t(x.k),(v/pk-1)*100])});
-  h+='<div class="label" style="margin-top:10px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:dd}],{fmt:"pct",zero:true,fill:true,h:160,months:true,aria:"Drawdown"});
-  h+='<p class="sub" style="font-size:.8rem">Simulação mensal com os fechamentos de fim de mês: cota dos fundos (CVM), cotação com proventos dos ativos (B3) e índices do Banco Central. Valores brutos, sem IR, taxas de corretagem ou custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
-  // comparação com índices e ano a ano
-  const anos=[...new Set(R.rets.map(x=>Math.floor(x.k/12)))].sort((a,b)=>b-a);
-  const yr=(getR,y)=>{let v2=1,ok=false;R.rets.forEach(x=>{if(Math.floor(x.k/12)!==y)return;const r=getR(x.k);if(r==null)return;v2*=1+r;ok=true});return ok?(v2-1)*100:null};
-  const mR=new Map(R.rets.map(x=>[x.k,x.r]));
+    S.push({lab,col,dash:b==="cdi"||b==="ipcax"?"5 4":null,w:1.5,pts:fnThin(R.pts,800).map(p=>{const v=m.get(p.k);return [p.t,v?(v/b0-1)*100:null]})});bms.push([b,lab,m])});
+  h+='<div class="label" style="margin-top:6px">Rentabilidade acumulada (sem efeito dos aportes)</div>'+fnChart(S,{fmt:"pct",zero:true,months:!R.diaria,aria:"Rentabilidade da carteira"});
+  if(+c.aporte>0||R.ir)h+='<div class="label" style="margin-top:10px">Patrimônio e valor investido</div>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"});
+  let pk=1,v=1;const dd=[[R.pts[0].t,0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([x.t,(v/pk-1)*100])});
+  h+='<div class="label" style="margin-top:10px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});
+  h+='<p class="sub" style="font-size:.8rem">Simulação '+(R.diaria?'diária (cotas e cotações de cada dia útil, desde 2019)':'mensal (fechamentos de fim de mês, desde 2005)')+': cota dos fundos (CVM), cotação com proventos dos ativos (B3), Tesouro Direto (preço de resgate) e índices do Banco Central. '+(R.ir?'O valor líquido estima o IR se tudo fosse resgatado na data: come-cotas em maio e novembro nos fundos, tabela regressiva na renda fixa, 15% em ações, ETFs e BDRs e 20% sobre o ganho de preço dos FIIs. Rebalanceamentos não geram IR na simulação. ':'Valores brutos, sem IR. ')+'Sem corretagem e custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
+  // ano a ano
+  const anos=[...new Set(R.rets.map(x=>Math.floor(x.m/12)))].sort((a,b)=>b-a);
+  const yrC=y=>{let v2=1,ok=false;R.rets.forEach(x=>{if(Math.floor(x.m/12)!==y)return;v2*=1+x.r;ok=true});return ok?(v2-1)*100:null};
+  const yrB=(m,y)=>{let a=null,z=null,prev=R.k0;R.rets.forEach(x=>{if(Math.floor(x.m/12)===y){if(a==null)a=m.get(prev);z=m.get(x.k)}prev=x.k});return a&&z?(z/a-1)*100:null};
   h+='<section class="panel"><h3>Ano a ano</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th><th>Carteira</th>'+bms.map(b=>'<th>'+esc(b[1])+'</th>').join("")+'</tr></thead><tbody>';
-  anos.forEach(y=>{h+='<tr><td style="text-align:left">'+y+'</td><td><b>'+fnPct(yr(k=>mR.get(k),y))+'</b></td>'+bms.map(b=>'<td>'+fnPct(yr(k=>b[2].get(k)&&b[2].get(k-1)?b[2].get(k)/b[2].get(k-1)-1:null,y))+'</td>').join("")+'</tr>'});
+  anos.forEach(y=>{h+='<tr><td style="text-align:left">'+y+'</td><td><b>'+fnPct(yrC(y))+'</b></td>'+bms.map(b=>'<td>'+fnPct(yrB(b[2],y))+'</td>').join("")+'</tr>'});
   h+='<tr class="cmpbm"><td style="text-align:left">Período</td><td><b>'+fnPct(st.tot)+'</b></td>'+bms.map(b=>{const a=b[2].get(R.k0),z=b[2].get(R.last);return '<td>'+(a&&z?fnPct((z/a-1)*100):'—')+'</td>'}).join("")+'</tr></tbody></table></div></section>';
   // contribuição por item
   const totC=R.contrib.reduce((a,x)=>a+x,0);
-  h+='<section class="panel"><h3>Contribuição de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno do item</th><th>Contribuição</th><th class="c-ph">% do resultado</th></tr></thead><tbody>';
-  it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fnPct(R.per[i])+'</td><td>'+fnPct(R.contrib[i])+' <small>p.p.</small></td><td class="c-ph">'+(totC?fx(R.contrib[i]/totC*100,0)+'%':'—')+'</td></tr>'});
-  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Contribuição: quanto cada item somou ao retorno da carteira, em pontos percentuais, considerando o peso que ele tinha a cada mês.</p>';
-  // correlação mensal
+  h+='<section class="panel"><h3>Contribuição de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno do item</th><th>Contribuição</th><th class="c-ph">% do resultado</th>'+(R.ir?'<th class="c-ph" style="text-align:left">Tributação considerada</th>':'')+'</tr></thead><tbody>';
+  it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fnPct(R.per[i])+'</td><td>'+fnPct(R.contrib[i])+' <small>p.p.</small></td><td class="c-ph">'+(totC?fx(R.contrib[i]/totC*100,0)+'%':'—')+'</td>'+(R.ir?'<td class="c-ph tw" style="text-align:left"><small>'+esc(SP_IR[R.reg[i]]||"")+'</small></td>':'')+'</tr>'});
+  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Contribuição: quanto cada item somou ao retorno da carteira, em pontos percentuais, considerando o peso que ele tinha a cada momento.</p>';
   if(it.length>1)h+=spCorHtml(it,R);
   h+='</section>';
+  h+=spProjHtml(c,R)+spOtimHtml(c,it,R);
   SP.last={c,it,R,st,bms};
   return h;
 }
 function spCorHtml(it,R){
-  const S=SP_SER;if(!S)return "";const ks=R.rets.map(x=>x.k);
-  const ret=S.map(m=>ks.map(k=>m.get(k)&&m.get(k-1)?m.get(k)/m.get(k-1)-1:null));
-  const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,j)=>{if(v!=null&&b[j]!=null){xs.push(v);ys.push(b[j])}});if(xs.length<12)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
-  let h='<div class="label" style="margin-top:12px">Correlação dos retornos mensais</div><div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+it.map((x,j)=>'<th><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>';
+  const ret=R.irets;
+  const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,j)=>{if(isFinite(v)&&isFinite(b[j])){xs.push(v);ys.push(b[j])}});if(xs.length<12)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
+  let h='<div class="label" style="margin-top:12px">Correlação dos retornos '+(R.diaria?'diários':'mensais')+'</div><div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+it.map((x,j)=>'<th><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>';
   it.forEach((x,i)=>{h+='<tr><td class="cmpn">'+(i+1)+'. '+esc(spItemNome(x).slice(0,30))+'</td>'+it.map((y,j)=>{const c=i===j?1:cor(ret[i],ret[j]);return '<td>'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>'}).join("")+'</tr>'});
   return h+'</tbody></table></div>';
 }
-let SP_SER=null;
+/* ----- retornos mensais (agrega a base diária) */
+function spMensais(R){const mm=new Map();R.rets.forEach(x=>mm.set(x.m,(mm.get(x.m)||1)*(1+x.r)));return [...mm.values()].map(v=>v-1)}
+function spMensaisItens(R){return R.irets.map(arr=>{const mm=new Map();arr.forEach((r,j)=>{const m=R.rets[j].m;mm.set(m,(mm.get(m)||1)*(1+r))});return [...mm.values()].map(v=>v-1)})}
+/* ----- projeção (Monte Carlo com reamostragem dos meses do histórico simulado) */
+function spProjHtml(c,R){
+  const mr=spMensais(R);if(mr.length<24)return '<section class="panel"><h3>Projeção</h3><p class="sub">São necessários pelo menos 24 meses de histórico para projetar.</p></section>';
+  const hz=Math.max(1,Math.min(40,+c.hz||10)),meta=num(String(c.meta||""))||null,N=2000,M=hz*12,ap=+c.aporte||0,v0=+c.valor||0;
+  let seed=12345;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  const P=[[],[],[],[],[]],qs=[0.05,0.25,0.5,0.75,0.95],fins=[],vals=[];for(let s=0;s<N;s++)vals.push(new Float64Array(M+1));
+  for(let s=0;s<N;s++){let v=v0;vals[s][0]=v;for(let m=1;m<=M;m++){v=v*(1+mr[Math.floor(rnd()*mr.length)])+ap;vals[s][m]=v}fins.push(v)}
+  const hoje=Date.now(),tm=m=>hoje+m*30.44*DAY;
+  for(let m=0;m<=M;m+=(M>120?2:1)){const col=vals.map(a=>a[m]).sort((a,b)=>a-b);qs.forEach((q,i)=>P[i].push([tm(m),col[Math.floor(q*(N-1))]]))}
+  const invest=[];for(let m=0;m<=M;m+=(M>120?2:1))invest.push([tm(m),v0+ap*m]);
+  fins.sort((a,b)=>a-b);const pm=meta?fins.filter(x=>x>=meta).length/N*100:null;
+  const ipm=(()=>{const I=FN.L.m.ipca||{};const ks=Object.keys(I).map(Number).filter(k=>k>R.m0&&k<=R.m1&&I[k-1]);if(!ks.length)return 0;return ks.reduce((a,k)=>a+(I[k]/I[k-1]-1),0)/ks.length})(),def=Math.pow(1+ipm,M);
+  let h='<section class="panel"><h3>Projeção</h3><p class="sub">'+N+' cenários sorteando os retornos mensais da própria carteira no período simulado ('+mr.length+' meses), a partir do valor inicial e do aporte informados.</p>';
+  h+='<div class="spparams" style="grid-template-columns:repeat(3,1fr)"><div class="field"><label for="spHz">Horizonte</label><select id="spHz" data-spv="hz">'+[1,2,3,5,10,15,20,25,30].map(y=>'<option value="'+y+'"'+(y===hz?' selected':'')+'>'+y+(y>1?' anos':' ano')+'</option>').join("")+'</select></div><div class="field"><label for="spMeta">Meta de patrimônio</label><div class="affix s"><input id="spMeta" inputmode="decimal" data-spv="meta" value="'+(meta?fx(meta,2):'')+'" placeholder="opcional"><span class="suf">R$</span></div></div></div>';
+  h+=fnChart([{lab:"Otimista (95%)",col:"var(--gain)",dash:"3 3",w:1.3,pts:P[4]},{lab:"Favorável (75%)",col:"var(--gain)",w:1.4,pts:P[3]},{lab:"Mediana",col:FN_COLS[0],w:2.4,pts:P[2]},{lab:"Desfavorável (25%)",col:"var(--loss)",w:1.4,pts:P[1]},{lab:"Pessimista (5%)",col:"var(--loss)",dash:"3 3",w:1.3,pts:P[0]},{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.2,pts:invest}],{fmt:"money",aria:"Projeção"});
+  const at=yy=>{const m=Math.min(M,yy*12),col=vals.map(a=>a[m]).sort((a,b)=>a-b);return qs.map(q=>col[Math.floor(q*(N-1))])};
+  const marcos=[1,3,5,10,15,20,30].filter(y=>y<=hz);if(!marcos.includes(hz))marcos.push(hz);
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Em</th><th>Pessimista</th><th>Desfavorável</th><th>Mediana</th><th>Favorável</th><th>Otimista</th><th class="c-ph">Investido</th></tr></thead><tbody>';
+  marcos.forEach(y=>{const v=at(y);h+='<tr><td style="text-align:left">'+y+(y>1?' anos':' ano')+'</td>'+v.map((x,i)=>'<td'+(i===2?' style="font-weight:700"':'')+'>'+fnMoney(x)+'</td>').join("")+'<td class="c-ph">'+fnMoney(v0+ap*y*12)+'</td></tr>'});
+  h+='</tbody></table></div>';
+  if(meta)h+='<p style="margin:8px 0"><b>Chance de atingir '+fnMoney(meta)+' em '+hz+(hz>1?' anos':' ano')+': '+fx(pm,0)+'%</b></p>';
+  h+='<p class="sub" style="font-size:.8rem">Valores nominais e brutos de IR. Em valores de hoje, descontando a inflação média do período ('+fx(ipm*1200,1)+'% ao ano, aproximadamente), a mediana seria '+fnMoney(at(hz)[2]/def)+'. A projeção supõe que o futuro se pareça com o passado da carteira, o que pode não acontecer.</p></section>';
+  return h;
+}
+/* ----- otimização: carteiras sorteadas e fronteira eficiente (média e variância dos retornos mensais) */
+function spOtimHtml(c,it,R){
+  if(it.length<2)return "";const X=spMensaisItens(R),n=X.length,T=X[0].length;if(T<24)return "";
+  const mu=X.map(a=>a.reduce((s,x)=>s+x,0)/T),cov=X.map((a,i)=>X.map((b,j)=>{let s=0;for(let t=0;t<T;t++)s+=(a[t]-mu[i])*(b[t]-mu[j]);return s/(T-1)}));
+  const cdiM=(()=>{const cl=spCdiLv(R),c0=cl(R.k0),c1=cl(R.last);return c0&&c1?Math.pow(c1/c0,1/Math.max(1,T))-1:0})();
+  const ev=w=>{let m=0,v=0;for(let i=0;i<n;i++){m+=w[i]*mu[i];for(let j=0;j<n;j++)v+=w[i]*w[j]*cov[i][j]}const ra=Math.pow(1+m,12)-1,va=Math.sqrt(Math.max(0,v))*Math.sqrt(12);return {r:ra*100,v:va*100,s:va>1e-6?(ra-(Math.pow(1+cdiM,12)-1))/va:null,w}};
+  const mx=Math.max(1/n,(+c.omax||100)/100);let seed=777;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  const pts=[];for(let s=0;s<6000&&pts.length<3000;s++){const g=X.map(()=>-Math.log(1-rnd()+1e-12)*(rnd()<0.3?3:1));const sg=g.reduce((a,x)=>a+x,0);const w=g.map(x=>x/sg);if(w.some(x=>x>mx+1e-9))continue;pts.push(ev(w))}
+  for(let i=0;i<n;i++){if(mx>=1){const w=X.map((_,j)=>j===i?1:0);pts.push(ev(w))}}
+  if(!pts.length)return "";
+  const atual=ev(R.w),minV=pts.reduce((a,b)=>b.v<a.v?b:a),maxS=pts.filter(p=>p.s!=null).reduce((a,b)=>b.s>a.s?b:a,pts[0]);
+  SP.otim={minV,maxS};
+  const NW=window.innerWidth<640,W=NW?420:760,H=NW?300:260,PL=46,PR=12,PT=12,PB=30;const vs=pts.map(p=>p.v),rs=pts.map(p=>p.r);
+  const v0=Math.min(...vs,atual.v)*0.95,v1=Math.max(...vs,atual.v)*1.05,r0=Math.min(...rs,atual.r)-0.5,r1=Math.max(...rs,atual.r)+0.5;
+  const Xp=v=>PL+(v-v0)/(v1-v0||1)*(W-PL-PR),Yp=r=>PT+(r1-r)/(r1-r0||1)*(H-PT-PB);
+  let g='';const st=niceStep((r1-r0)/5);for(let r=Math.ceil(r0/st)*st;r<=r1;r+=st)g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+Yp(r).toFixed(1)+'" y2="'+Yp(r).toFixed(1)+'" stroke="var(--line)" stroke-dasharray="2 4"/><text x="'+(PL-6)+'" y="'+(Yp(r)+4).toFixed(1)+'" text-anchor="end">'+fx(r,st<1?1:0)+'%</text>';
+  const sx=niceStep((v1-v0)/5);for(let v=Math.ceil(v0/sx)*sx;v<=v1;v+=sx)g+='<text x="'+Xp(v).toFixed(1)+'" y="'+(H-PB+16)+'" text-anchor="middle">'+fx(v,sx<1?1:0)+'%</text>';
+  pts.forEach(p=>{g+='<circle cx="'+Xp(p.v).toFixed(1)+'" cy="'+Yp(p.r).toFixed(1)+'" r="1.8" fill="var(--accent)" opacity=".25"/>'});
+  const mk=(p,col,lab)=>'<circle cx="'+Xp(p.v).toFixed(1)+'" cy="'+Yp(p.r).toFixed(1)+'" r="6" fill="'+col+'" stroke="var(--surface)" stroke-width="2"><title>'+lab+'</title></circle>';
+  g+=mk(minV,"var(--s4)","Mínima volatilidade")+mk(maxS,"var(--gold)","Máximo Sharpe")+mk(atual,"var(--loss)","Carteira atual");
+  g+='<text x="'+(W-PR)+'" y="'+(H-4)+'" text-anchor="end">volatilidade ao ano</text>';
+  let h='<section class="panel"><h3>Otimização da carteira</h3><p class="sub">Cada ponto é uma combinação de pesos dos mesmos itens, com o retorno e a volatilidade que teria tido no período simulado. A borda de cima é a fronteira eficiente: o maior retorno para cada nível de risco.</p>';
+  h+='<div class="fnrow"><label class="sub" style="display:flex;gap:8px;align-items:center">Peso máximo por item <select data-spv="omax">'+[100,50,40,30,25,20].map(x=>'<option value="'+x+'"'+(x===(+c.omax||100)?' selected':'')+'>'+x+'%</option>').join("")+'</select></label></div>';
+  h+='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Fronteira eficiente">'+g+'</svg><div class="legend"><span><i style="background:var(--loss)"></i>Carteira atual</span><span><i style="background:var(--s4)"></i>Mínima volatilidade</span><span><i style="background:var(--gold)"></i>Máximo Sharpe</span></div>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Atual</th><th>Mínima volatilidade</th><th>Máximo Sharpe</th></tr></thead><tbody>';
+  it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><small>'+esc(spItemNome(x).slice(0,50))+'</small></td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fx(minV.w[i]*100,1)+'%</td><td>'+fx(maxS.w[i]*100,1)+'%</td></tr>'});
+  const lin=(lab,f)=>'<tr class="cmpbm"><td style="text-align:left">'+lab+'</td>'+[atual,minV,maxS].map(p=>'<td>'+f(p)+'</td>').join("")+'</tr>';
+  h+=lin("Retorno ao ano",p=>fnPctT(p.r))+lin("Volatilidade ao ano",p=>fx(p.v,2)+'%')+lin("Sharpe",p=>p.s!=null?fx(p.s,2):'—')+'</tbody></table></div>';
+  h+='<div class="spbtns" style="margin-top:8px"><button type="button" class="btn sec" data-spotim="minV">Usar os pesos de mínima volatilidade</button><button type="button" class="btn sec" data-spotim="maxS">Usar os pesos de máximo Sharpe</button></div>';
+  return h+'<p class="sub" style="font-size:.8rem">Calculado com os retornos mensais do período simulado. Pesos ótimos no passado mudam com o tempo e costumam concentrar a carteira: use como referência, não como recomendação.</p></section>';
+}
 /* comparação entre as carteiras salvas */
 let SP_CMP=null;
 function spCmpCartsHtml(){
@@ -4767,29 +4885,30 @@ function spCmpCartsHtml(){
 }
 async function spCmpCarts(){
   const box=$("spCmpBox");if(!box)return;box.innerHTML='<p class="sub">Calculando…</p>';
-  const res=[];for(const c of SP.carts){const it=c.itens.filter(x=>(+x.w||0)>0);if(!it.length)continue;try{const S=await Promise.all(it.map(spSeries));res.push({c,it,S})}catch(e){}}
+  const res=[];for(const c of SP.carts){const it=c.itens.filter(x=>(+x.w||0)>0);if(!it.length)continue;try{const D=await Promise.all(it.map(spItemData));res.push({c,it,D})}catch(e){}}
   if(res.length<2){box.innerHTML='<p class="sub">É preciso ter pelo menos 2 carteiras com itens.</p>';return}
-  const k0=Math.max(...res.map(r=>Math.max(...r.S.map(m=>Math.min(...m.keys())))));
-  const out=res.map(r=>Object.assign(r,{R:spSim(Object.assign({},r.c,{ini:mname2(k0),aporte:0}),r.it,r.S)}));
-  const ok=out.filter(r=>!r.R.erro),last=Math.min(...ok.map(r=>r.R.last));
-  let h=fnUse(FN,()=>{const S=ok.map((r,j)=>({lab:r.c.nome,col:CMP_COLS[j%20],w:2,pts:r.R.pts.filter(p=>p.k<=last).map(p=>[fnMt(p.k),(p.idx-1)*100])}));
+  const first=r=>Math.max(...r.D.map(x=>Math.min(...x.m.keys())));const k0=Math.max(...res.map(first));
+  const out=res.map(r=>Object.assign(r,{R:spSim(Object.assign({},r.c,{ini:mname2(k0),fim:"",aporte:0,base:"m",ir:0}),r.it,r.D)}));
+  const ok=out.filter(r=>!r.R.erro);if(ok.length<2){box.innerHTML='<p class="sub">Não há período em comum entre as carteiras.</p>';return}const last=Math.min(...ok.map(r=>r.R.last));
+  let h=fnUse(FN,()=>{const S=ok.map((r,j)=>({lab:r.c.nome,col:CMP_COLS[j%20],w:2,pts:r.R.pts.filter(p=>p.k<=last).map(p=>[p.t,(p.idx-1)*100])}));
     let x=fnChart(S,{fmt:"pct",zero:true,months:true,aria:"Carteiras"});
     x+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Carteira</th><th>Retorno</th><th>% do CDI</th><th>Ao ano</th><th>Volatilidade</th><th>Sharpe</th><th>Perda máxima</th><th class="c-ph">Meses acima do CDI</th></tr></thead><tbody>';
-    ok.forEach((r,j)=>{const rr=r.R.rets.filter(q=>q.k<=last),idx=rr.reduce((a,q)=>a*(1+q.r),1),s=spStats(rr,idx,r.R.k0,last);x+='<tr><td style="text-align:left"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+esc(r.c.nome)+'</td><td><b>'+fnPct(s.tot)+'</b></td><td>'+(s.pcdi!=null?fx(s.pcdi,0)+'%':'—')+'</td><td>'+fnPctT(s.ann)+'</td><td>'+fx(s.vol,2)+'%</td><td>'+(s.sharpe!=null?fx(s.sharpe,2):'—')+'</td><td>'+fnPct(s.dd)+'</td><td class="c-ph">'+(s.acima!=null?fx(s.acima,0)+'%':'—')+'</td></tr>'});
-    return x+'</tbody></table></div><p class="sub" style="font-size:.8rem">De '+mname(ok[0].R.k0)+' a '+mname(last)+', sem aportes.</p>'});
+    ok.forEach((r,j)=>{const rr=r.R.rets.filter(q=>q.k<=last),idx=rr.reduce((a,q)=>a*(1+q.r),1),s=spStats(r.R,rr,idx);x+='<tr><td style="text-align:left"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+esc(r.c.nome)+'</td><td><b>'+fnPct(s.tot)+'</b></td><td>'+(s.pcdi!=null?fx(s.pcdi,0)+'%':'—')+'</td><td>'+fnPctT(s.ann)+'</td><td>'+fx(s.vol,2)+'%</td><td>'+(s.sharpe!=null?fx(s.sharpe,2):'—')+'</td><td>'+fnPct(s.dd)+'</td><td class="c-ph">'+(s.acima!=null?fx(s.acima,0)+'%':'—')+'</td></tr>'});
+    return x+'</tbody></table></div><p class="sub" style="font-size:.8rem">De '+mname(ok[0].R.k0)+' a '+mname(last)+', base mensal, sem aportes e sem IR.</p>'});
   SP_CMP=h;box.innerHTML=h;
 }
 const mname2=k=>Math.floor((k+1)/12)+"-"+String((k+1)%12+1).padStart(2,"0");
 function spCsv(){
-  const L=SP.last;if(!L||L.R.erro)return;const rows=[["Mês","Patrimônio","Investido","Rentabilidade acumulada (%)"].concat(L.bms.map(b=>b[1]+" acumulado (%)"))];
-  L.R.pts.forEach(p=>rows.push([mname(p.k),p.v.toFixed(2).replace(".",","),p.inv.toFixed(2).replace(".",","),((p.idx-1)*100).toFixed(4).replace(".",",")].concat(L.bms.map(b=>{const a=b[2].get(L.R.k0),z=b[2].get(p.k);return a&&z?((z/a-1)*100).toFixed(4).replace(".",","):""}))));
-  rows.push([]);rows.push(["Item","Peso-alvo (%)","Retorno no período (%)","Contribuição (p.p.)"]);L.it.forEach((x,i)=>rows.push([spItemNome(x),(L.R.w[i]*100).toFixed(2).replace(".",","),L.R.per[i]!=null?L.R.per[i].toFixed(4).replace(".",","):"",L.R.contrib[i].toFixed(4).replace(".",",")]));
+  const L=SP.last;if(!L||L.R.erro)return;const R=L.R,lbl=k=>R.diaria?k:mname(k);const rows=[["Data","Patrimônio bruto","Patrimônio líquido de IR","Investido","Rentabilidade acumulada (%)"].concat(L.bms.map(b=>b[1]+" acumulado (%)"))];
+  const f=v=>v==null?"":(+v).toFixed(4).replace(".",",");
+  R.pts.forEach(p=>rows.push([lbl(p.k),f(p.v),f(p.liq),f(p.inv),f((p.idx-1)*100)].concat(L.bms.map(b=>{const a=b[2].get(R.k0),z=b[2].get(p.k);return a&&z?f((z/a-1)*100):""}))));
+  rows.push([]);rows.push(["Item","Peso-alvo (%)","Retorno no período (%)","Contribuição (p.p.)","Tributação"]);L.it.forEach((x,i)=>rows.push([spItemNome(x),f(R.w[i]*100),f(R.per[i]),f(R.contrib[i]),SP_IR[R.reg[i]]||""]));
   cmpCsvRows(rows,"carteira-"+(L.c.nome||"simulada").replace(/[^\w-]+/g,"-").toLowerCase());
 }
 function cmpCsvRows(rows,nome){const txt="﻿"+rows.map(r=>r.map(c=>{c=String(c==null?"":c);return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")).join("\r\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=nome+"-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 /* guarda as séries para a correlação */
-async function spRun(){const c=spC(),it=c.itens.filter(x=>(+x.w||0)>0);try{SP_SER=it.length?await Promise.all(it.map(spSeries)):null}catch(e){SP_SER=null}return spRunCore()}
+async function spRun(){return spRunCore()}
 
 /* ----- eventos */
 function spSearch(q){
@@ -4812,6 +4931,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-spdel"))){if(SP.carts.length<2)return;if(!confirmLite(x))return;SP.carts.splice(SP.cur,1);SP.cur=Math.max(0,SP.cur-1);SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-sprfadd"))){const v=num(SP.rf.taxa);if(v==null){alertLite("Informe a taxa da renda fixa.");return}spAdd({t:"s",k:SP.rf.tipo+":"+v,rf:SP.rf.tipo,x:v,n:SP.rf.tipo==="cdi"?fx(v,1)+"% do CDI":SP.rf.tipo==="cdimais"?"CDI + "+fx(v,2)+"% a.a.":SP.rf.tipo==="ipca"?"IPCA + "+fx(v,2)+"% a.a.":"Prefixado "+fx(v,2)+"% a.a.",tipo:"Renda fixa"});return}
   if((x=g("data-spcmp"))){spCmpCarts();return}
+  if((x=g("data-spotim"))){const o=SP.otim&&SP.otim[x.dataset.spotim];if(!o)return;const at=c.itens.filter(y=>(+y.w||0)>0);at.forEach((y,i)=>y.w=Math.round(o.w[i]*1000)/10);const d=100-c.itens.reduce((a,y)=>a+(+y.w||0),0);if(at.length)at[0].w=Math.round((at[0].w+d)*10)/10;SP_CMP=null;spSave();spCalc();try{$("spTop").scrollIntoView({behavior:"smooth"})}catch(y){}return}
   if((x=g("data-spcsv"))){spCsv();return}
   if((x=g("data-spretry"))){FN.err=null;AT.err=null;spCalc();return}
 });
@@ -4821,6 +4941,8 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activ
   else if(t.dataset.spnome!=null&&t.dataset.spnome!==undefined&&t.id==="spNome"){c.nome=t.value.trim()||c.nome;SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spw!=null){const v=num(t.value);c.itens[+t.dataset.spw].w=v==null?0:Math.max(0,v);SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spv){const k=t.dataset.spv;c[k]=k==="valor"||k==="aporte"?(num(t.value)||0):t.value;SP_CMP=null;spSave();spCalc()}
+  else if(t.dataset.spir){c.ir=t.checked?1:0;spSave();spCalc()}
+  else if(t.dataset.spiso!=null&&t.dataset.spiso!==undefined&&t.type==="checkbox"){const it=c.itens[+t.dataset.spiso];if(it){it.isento=t.checked?1:0;spSave();spCalc()}}
   else if(t.dataset.spbm){c.bm=c.bm||{};c.bm[t.dataset.spbm]=t.checked?1:0;spSave();spCalc()}
   else if(t.dataset.sprft){SP.rf.tipo=t.value;spTopHtml()}
   else if(t.dataset.sprfx){SP.rf.taxa=t.value}
@@ -4929,7 +5051,94 @@ document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset)return;
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.rellogo)relLogo(t.files&&t.files[0])});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){const d=document.querySelector(".reldlg");if(d)d.remove()}});
 
-{const m=/fundo=(\d{14})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9]{4,7})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
+/* ===== Agenda de proventos, situação das bases, app instalável e importação de posição ===== */
+const AG={dados:null,load:null,err:null,f:{tipo:"",modo:"com",txt:""}};
+function agCalc(){
+  const o=$("fnOut");if(!o)return;
+  if(FN.view!=="ag"){FN.view="ag";o.innerHTML='<section class="panel"><h3>Agenda de proventos</h3><p class="sub">Dividendos, JCP e rendimentos anunciados na B3: próximas datas com (último dia para ter o ativo e receber) e próximos pagamentos.</p><div id="agF"></div><div id="agT"></div></section>'}
+  if(!AG.dados){
+    if(AG.err){$("agT").innerHTML='<p class="warn">A agenda ainda não está disponível. Ela aparece depois da próxima coleta do robô de ativos.</p>';return}
+    $("agT").innerHTML='<p class="sub">Carregando…</p>';
+    if(!AG.load)AG.load=Promise.all([atGet("agenda.json"),AT.idx?null:atBoot()]).then(([j])=>{AG.dados=j;AG.load=null;if(activeMod==="ag")agCalc()}).catch(e=>{AG.err=e;AG.load=null;if(activeMod==="ag")agCalc()});
+    return}
+  if(!AG.auto){AG.auto=1;const hj=AG.dados.hoje||"";if(!AG.dados.rows.some(r=>r[3]>=hj))AG.f.modo="pag"}
+  const f=AG.f,tipos=[...new Set(AG.dados.rows.map(r=>r[1]))].filter(Boolean).sort();
+  $("agF").innerHTML='<div class="fnfilt">'+'<div class="field"><label for="agTipo">Tipo de ativo</label><select id="agTipo" data-agf="tipo"><option value="">Todos</option>'+tipos.map(t=>'<option'+(t===f.tipo?' selected':'')+'>'+esc(t)+'</option>').join("")+'</select></div>'
+    +'<div class="field"><label for="agTxt">Código</label><input id="agTxt" data-agf="txt" value="'+esc(f.txt)+'" autocomplete="off" placeholder="ex.: PETR, HGLG"></div></div>'+fnSeg("agmodo",[["com","Próximas datas com"],["pag","Próximos pagamentos"],["rec","Anunciados nos últimos 10 dias"]],f.modo);
+  agTable();
+}
+function agTable(){
+  const t=$("agT");if(!t||!AG.dados)return;const f=AG.f,hoje=AG.dados.hoje||new Date().toISOString().slice(0,10),q=f.txt.trim().toUpperCase();
+  const NM={D:"Dividendo",J:"JCP",R:"Rendimento",A:"Amortização"};
+  let L=AG.dados.rows.filter(r=>(!f.tipo||r[1]===f.tipo)&&(!q||r[0].includes(q)));
+  if(f.modo==="com")L=L.filter(r=>r[3]>=hoje).sort((a,b)=>a[3].localeCompare(b[3])||(b[6]||0)-(a[6]||0));
+  else if(f.modo==="pag")L=L.filter(r=>r[4]&&r[4]>=hoje&&r[4]<"9000").sort((a,b)=>a[4].localeCompare(b[4])||(b[6]||0)-(a[6]||0));
+  else L=L.filter(r=>r[3]<hoje).sort((a,b)=>b[3].localeCompare(a[3]));
+  const nome=tk=>{const r=AT.idx?atRow(tk):null;return r?r[1]:""};
+  let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' proventos.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ativo</th><th style="text-align:left">Provento</th><th>Data com</th><th>Pagamento</th><th>Valor</th><th>% da cotação</th></tr></thead><tbody>';
+  if(!L.length)h+='<tr><td colspan="6" class="sub" style="text-align:left">'+(f.modo==="com"?'Nenhuma data com futura anunciada entre os ativos acompanhados. Veja os próximos pagamentos.':'Nada encontrado.')+'</td></tr>';L.slice(0,400).forEach(r=>{h+='<tr><td style="text-align:left" class="tw"><button type="button" class="link" data-atopen="'+r[0]+'">'+r[0]+'</button><small style="display:block;color:var(--muted)">'+esc(nome(r[0]).slice(0,40))+' · '+esc(r[1]||"")+'</small></td><td style="text-align:left">'+(NM[r[2]]||r[2])+'</td><td>'+fdate(Date.parse(r[3]+"T00:00:00Z"))+'</td><td>'+(r[4]&&r[4]<"9000"?fdate(Date.parse(r[4]+"T00:00:00Z")):'a definir')+'</td><td>R$ '+fx(r[5],r[5]<0.1?4:2)+'</td><td>'+(r[6]!=null?fx(r[6],2)+'%':'—')+'</td></tr>'});
+  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Fonte: B3 (proventos anunciados pelas companhias e fundos). JCP pelo valor bruto. A cotação de referência é a do último pregão.</p>';
+  t.innerHTML=h;
+}
+document.addEventListener("click",e=>{if(!(e.target.closest&&e.target.closest("#modFn"))||activeMod!=="ag")return;const x=e.target.closest("[data-agmodo]");if(x){AG.f.modo=x.dataset.agmodo;agCalc()}});
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.agf==="tipo"){AG.f.tipo=t.value;agTable()}});
+document.addEventListener("input",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.agf==="txt"){AG.f.txt=t.value;clearTimeout(AG.qt);AG.qt=setTimeout(agTable,150)}});
+
+/* ----- situação das bases (Mercado > Resumo) */
+const BASES={est:null,load:null};
+function basesLoad(){
+  if(BASES.est||BASES.load)return;
+  const g=u=>fetch(u,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  BASES.load=Promise.all([g(fnUrl("estado.json")),g(atUrl("estado.json")),g(ROBO+"mercado.json")]).then(([f,a,m])=>{BASES.est={f,a,m};BASES.load=null;if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc()});
+}
+function basesHtml(){
+  basesLoad();const E=BASES.est;if(!E)return "";
+  const agora=Date.now(),idade=s=>s?(agora-Date.parse(s))/3600000:null;
+  const linha=(nome,quando,fonte,limite)=>{const h=idade(quando),ok=h!=null&&h<=limite;return '<tr><td style="text-align:left">'+nome+'</td><td>'+(quando?new Date(quando).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):'—')+'</td><td><span class="fnq '+(ok?'fnq1':'fnq4')+'">'+(ok?'em dia':'atrasada')+'</span></td><td class="c-ph" style="text-align:left"><small>'+fonte+'</small></td></tr>'};
+  const st=E.m&&(E.m.updatedAt||E.m.statusAt)||null;
+  return '<h3>Situação das bases de dados</h3><p class="sub">Quando cada robô publicou dados pela última vez. Se algum atrasar, um aviso é aberto automaticamente no GitHub.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Base</th><th>Última atualização</th><th>Situação</th><th class="c-ph" style="text-align:left">Fontes</th></tr></thead><tbody>'
+    +(st?linha("Mercado (taxas, curvas, dólar, inflação)",st,"Tesouro, ANBIMA, B3, Banco Central, IBGE",30):'')
+    +linha("Fundos de investimento",E.f&&E.f.geradoEm,"CVM, Banco Central, B3, ANBIMA",30)
+    +linha("Bolsa (ações, FIIs, ETFs, BDRs, Tesouro)",E.a&&E.a.geradoEm,"B3, CVM, Tesouro Transparente",40)+'</tbody></table></div>';
+}
+
+/* ----- app instalável (PWA) */
+if("serviceWorker" in navigator&&/^https:/.test(location.protocol)&&!/claude|artifact/.test(location.hostname)){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+
+/* ----- importar posição da B3 (Área do Investidor) para o simulador — fica só neste navegador */
+function impXlsx(){return window.XLSX?Promise.resolve(window.XLSX):new Promise((ok,er)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=()=>ok(window.XLSX);s.onerror=()=>er(new Error("não deu para carregar o leitor de planilhas"));document.head.appendChild(s)})}
+async function impArquivo(file){
+  const msg=t=>{const b=$("spImpMsg");if(b)b.innerHTML=t};msg('<span class="sub">Lendo a planilha…</span>');
+  try{
+    const X=await impXlsx(),wb=X.read(await file.arrayBuffer(),{type:"array"}),itens=[],nao=[];
+    const col=(h,...ks)=>h.findIndex(c=>ks.some(k=>fnNorm(c).includes(k)));
+    wb.SheetNames.forEach(sn=>{const rows=X.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:""});if(!rows.length)return;
+      let hi=rows.findIndex(r=>r.some(c=>/produto|codigo de negociacao|código de negociação/i.test(String(c))));if(hi<0)return;const h=rows[hi].map(String),aba=fnNorm(sn);
+      const cCod=col(h,"codigo de negociacao"),cProd=col(h,"produto"),cVal=col(h,"valor atualizado","valor liquido","valor bruto","valor"),cCnpj=col(h,"cnpj"),cIdx=col(h,"indexador"),cVenc=col(h,"vencimento");
+      rows.slice(hi+1).forEach(r=>{const v=typeof r[cVal]==="number"?r[cVal]:num(String(r[cVal]||""));if(!v||v<=0)return;if(r.some(c=>/^\s*total\b/i.test(String(c))))return;
+        let cod=cCod>=0?String(r[cCod]||"").trim().toUpperCase():"",prod=cProd>=0?String(r[cProd]||"").trim():"";
+        if(!cod&&prod){const m=/^([A-Z]{4}\d{1,2}[A-Z]?)\b/.exec(prod.toUpperCase());if(m)cod=m[1]}
+        if(cod&&AT.idx&&atRow(cod)){const rr=atRow(cod);itens.push({t:"a",k:cod,n:cod+" · "+rr[1],tipo:rr[AT.C.tipo],v});return}
+        if(/tesouro/.test(aba)||/^tesouro/i.test(prod)){const P=fnNorm(prod),y=(/(\d{4})/.exec(prod)||[])[1];const code=/renda/.test(P)?"RENDA":/educa/.test(P)?"EDUCA":/selic/.test(P)?"SELIC":/ipca/.test(P)?(/juros/.test(P)?"IPCAJ":"IPCA"):/prefixado/.test(P)?(/juros/.test(P)?"PREJ":"PRE"):"";
+          const k=code&&y?"TD-"+code+"-"+y:null;if(k&&AT.idx&&atRow(k)){itens.push({t:"a",k,n:atRow(k)[1],tipo:"Tesouro Direto",v});return}}
+        const cn=cCnpj>=0?String(r[cCnpj]||"").replace(/\D/g,""):"";if(cn.length===14&&FN.idx&&fnRow(cn)){itens.push({t:"f",k:cn,n:fnRow(cn)[1],tipo:"Fundo",v});return}
+        if(/renda fixa/.test(aba)||cIdx>=0){const ix=cIdx>=0?fnNorm(String(r[cIdx]||"")):"";const rf=/ipca/.test(ix)?"ipca":/pre/.test(ix)?"pre":"cdi",x=rf==="cdi"?100:rf==="ipca"?6:12;
+          itens.push({t:"s",k:rf+":"+x+":"+itens.length,rf,x,n:(prod||"Renda fixa")+" (estimado: "+(rf==="cdi"?"100% do CDI":rf==="ipca"?"IPCA + 6%":"pré 12%")+")",tipo:"Renda fixa",v});return}
+        nao.push(prod||cod)})});
+    if(!itens.length){msg('<span class="warn">Não reconheci nenhum investimento nessa planilha. Use o arquivo de posição exportado da Área do Investidor da B3 (Extratos › Posição › baixar em Excel).</span>');return}
+    // junta repetidos e transforma valores em pesos
+    const mp=new Map();itens.forEach(x=>{const key=x.t+"|"+x.k;if(mp.has(key))mp.get(key).v+=x.v;else mp.set(key,Object.assign({},x))});
+    const L=[...mp.values()].sort((a,b)=>b.v-a.v).slice(0,CMP_MAX),tot=L.reduce((a,x)=>a+x.v,0);
+    const c=spNova("Posição importada "+new Date().toLocaleDateString("pt-BR"));c.valor=Math.round(tot*100)/100;
+    c.itens=L.map(x=>({t:x.t,k:x.k,n:x.n.slice(0,80),tipo:x.tipo,rf:x.rf,x:x.x,w:Math.round(x.v/tot*1000)/10}));
+    const d=100-c.itens.reduce((a,x)=>a+x.w,0);if(c.itens.length)c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;
+    SP.carts.push(c);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();
+    alertLite(c.itens.length+" investimentos importados"+(nao.length?"; não reconhecidos: "+nao.slice(0,5).join(", ")+(nao.length>5?"…":""):"")+". A posição fica só neste navegador.");
+  }catch(e){msg('<span class="err">Não deu para ler o arquivo: '+esc(e.message)+'</span>')}
+}
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="spImp"&&t.files&&t.files[0]){impArquivo(t.files[0]);t.value=""}});
+
+{const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
 const MK={di:null,inf:null,ima:null,cred:null,tit:null,deb:null,loaded:0,loading:false};
@@ -5282,7 +5491,7 @@ scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","sp"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","ag","sp"].includes(m0)?m0:"rs");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
