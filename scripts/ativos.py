@@ -690,7 +690,7 @@ def ajustes(a):
     tem = {e[0] for e in out if e[2] == "S"}
     for j in range(1, len(a.i)):
         r = a.c[j] / a.c[j - 1]
-        if (r < 0.55 or r > 1.9) and a.i[j] not in tem and a.i[j] - a.i[j - 1] <= 10:
+        if (r < 0.55 or r > 1.9) and not any(a.i[j - 1] < t_ <= a.i[j] for t_ in tem) and a.i[j] - a.i[j - 1] <= 10:
             m = 1 / r
             for alvo in (2, 3, 4, 5, 8, 10, 20, 25, 50, 100, 1 / 2, 1 / 3, 1 / 4, 1 / 5, 1 / 10, 1 / 20, 1 / 50, 1 / 100):
                 if abs(m / alvo - 1) < 0.12:

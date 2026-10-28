@@ -767,16 +767,22 @@ def metricas(f, cdi_d):
     ant = [m for m in meses if m < ym_l]
     if ql <= 0:
         return out
-    if ant and f.m[ant[-1]][1]:
+    # saltos de cota (reinício, amortização, erro no informe): as medidas que os atravessam não são comparáveis
+    saltos = [f.i[j] for j in range(1, len(f.q)) if f.q[j - 1] > 0 and not 0.6 < f.q[j] / f.q[j - 1] < 1.5]
+    desde = lambda ix: any(s_ > ix for s_ in saltos)  # noqa: E731
+    cal_mes = lambda ym: bisect.bisect_right(CAL, f"{ym[:4]}-{ym[4:]}-31") - 1  # noqa: E731
+    if saltos and saltos[-1] >= bisect.bisect_left(CAL, data_menos_meses(dl, 60)):
+        out["salto"] = 1
+    if ant and f.m[ant[-1]][1] and not desde(cal_mes(ant[-1])):
         out["rm"] = (ql / f.m[ant[-1]][1] - 1) * 100
     anoant = [m for m in meses if m <= f"{int(dl[:4]) - 1}12"]
-    if anoant and anoant[-1][:4] == str(int(dl[:4]) - 1) and f.m[anoant[-1]][1]:
+    if anoant and anoant[-1][:4] == str(int(dl[:4]) - 1) and f.m[anoant[-1]][1] and not desde(cal_mes(anoant[-1])):
         out["ra"] = (ql / f.m[anoant[-1]][1] - 1) * 100
     for n, nome in ((12, "r12"), (24, "r24"), (36, "r36"), (60, "r60")):
         alvo = data_menos_meses(dl, n)
         if CAL and CAL[f.i[0]] <= alvo:
             r, i0 = ret_desde(alvo)
-            if r is not None:
+            if r is not None and not desde(i0):
                 out[nome] = r
                 if n == 12:
                     out["_i12"] = i0
@@ -793,19 +799,22 @@ def metricas(f, cdi_d):
                 for j in range(i12 + 1, il + 1):
                     c *= 1 + (cdi_d[j] or 0) / 100
                 out["c12"] = (c - 1) * 100
-                if v > 0.0005:
+                if v > 0.001:
                     out["sh"] = ((1 + out["r12"] / 100) - c) / v
     # perda máxima em 36 meses
     alvo = data_menos_meses(dl, 36)
     p = bisect.bisect_left(f.i, bisect.bisect_left(CAL, alvo))
     pico, dd = 0.0, 0.0
+    if p < len(f.i) and desde(f.i[p] if p < len(f.i) else 0):
+        p = len(f.q)
+        dd = None
     for j in range(p, len(f.q)):
         x = f.q[j]
         if x > pico:
             pico = x
         elif pico:
             dd = min(dd, x / pico - 1)
-    out["dd"] = dd * 100
+    out["dd"] = dd * 100 if dd is not None else None
     ult12 = [f.m[m] for m in meses[-12:]]
     out["cap"] = sum((r[4] or 0) - (r[5] or 0) for r in ult12)
     return out
@@ -837,6 +846,8 @@ def classe_cvm(c, tipo):
                  ("referenciado", "Renda Fixa"), ("curto prazo", "Renda Fixa"), ("divida externa", "Cambial")):
         if a in c:
             return b
+    if "FAPI" in (tipo or ""):
+        return "Previdência (FAPI)"
     return {"FIDC": "FIDC", "FII": "FII", "FIP": "FIP", "FIAGRO": "Fiagro", "ETF": "ETF"}.get(tipo, tipo if tipo != "FIF" else "Outros")
 
 
@@ -973,7 +984,7 @@ def principal():
         tipo = simplifica_tipo(tipos_a.get(k) or inf.get("tpf"))
         i0, q0, r = codificar(f)
         meses = sorted(f.m)
-        reg = {"c": k, "n": inf.get("n") or inf.get("nf") or "", "tipo": tipo}
+        reg = {"c": k, "n": inf.get("n") or inf.get("nf") or ("Fundo " + k), "tipo": tipo}
         if inf.get("anb"):
             inf["anb"] = anbima_nome(inf["anb"])
         for a in ("fan", "cls", "anb", "bm", "pub", "exc", "lp", "cond", "ini", "fic", "aud", "cus", "ges", "adm", "cnf", "nf", "pai", "prev",
@@ -1007,6 +1018,8 @@ def principal():
             flags |= 16
         if inf.get("pai"):
             flags |= 32
+        if mt.get("salto"):
+            flags |= 64
         prim = meses[0]
         linhas.append([k, reg["n"][:90], ix(tip_l, tipo), ix(cls_l, classe_cvm(inf.get("cls"), tipo)),
                        ix(anb_l, anbima_nome(inf.get("anb"))), ix(gestores, (inf.get("ges") or "").strip()[:60]),
