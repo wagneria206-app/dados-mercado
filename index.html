@@ -898,6 +898,63 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 .spiso input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
+
+/* favoritos,alertas e documentos */
+.fvhd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+
+.fvhd h3{margin:0}
+
+.fvbtn[aria-pressed="true"]{color:var(--gold);border-color:var(--gold)}
+
+.fvchip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 9px;font-size:.78rem;margin:2px 4px 2px 0;white-space:nowrap}
+
+.fvchip button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:0 4px}
+
+.fvchip.fvon{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);font-weight:600}
+
+.fvadd{font-size:.82rem}
+
+.fvtab td,.fvtab th{vertical-align:middle}
+
+.fvform td{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+
+.fvtoast{position:fixed;left:16px;right:16px;bottom:18px;margin:0 auto;z-index:50;width:auto;background:var(--surface);color:var(--ink);border:1px solid var(--gold);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:12px 16px;max-width:min(520px,calc(100vw - 32px));font-size:.88rem;display:grid;gap:6px}
+
+.fvtoast[hidden]{display:none}
+
+.fvtoast .btn{justify-self:end;min-height:34px;padding:4px 12px}
+
+.wrap[data-area="mkt"] .tabs button[data-mod="fv"]{display:inline-flex;align-items:center}
+
+.fvtab .link{text-align:left}
+@media (max-width:640px){
+
+.fvtab{min-width:0!important;width:100%}
+
+.fvtab thead{display:none}
+
+.fvtab,.fvtab tbody{display:block}
+
+.fvtab tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:10px 0;border-bottom:1px solid var(--line)}
+
+.fvtab td{display:block;border:0!important;padding:0!important;text-align:left!important;white-space:normal}
+
+.fvtab td.fvn{flex:1 1 calc(100% - 44px);order:0}
+
+.fvtab td.fvx{flex:0 0 auto;order:1}
+
+.fvtab td.fvu{flex-basis:100%;order:2}
+
+.fvtab td.fvd{order:3}
+
+.fvtab td.fva{flex-basis:100%;order:4}
+
+.fvtab td[data-l]::before{content:attr(data-l) " ";color:var(--muted);font-size:.78rem}
+
+.fvtab .c-ph{display:none}
+
+.fvtab tr.fvform td{flex-basis:100%}
+}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -920,7 +977,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
   </nav>
   <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -2008,8 +2065,8 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
-const MKM=new Set(["rs","ju","cr","in","ix"]);
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",fv:"mkt"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const MKM=new Set(["rs","fv","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
@@ -2994,7 +3051,8 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=P(rsHtml())+P(agendaHtml())+P(basesHtml());
+  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(rsHtml())+P(agendaHtml())+P(basesHtml());
+  else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml());
@@ -3758,13 +3816,26 @@ function fnInt(v){return v==null||!isFinite(v)?"—":fx(v,0)}
 function fnBoot(){
   if(FN.idx||FN.load)return FN.load;
   FN.err=null;
-  FN.load=Promise.all([fnGet("idx.json"),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
-    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);
+  FN.load=Promise.all([fnGet("idx_p.json").catch(()=>fnGet("idx.json")),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
+    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);FN.full=!i.resto;FN.more=null;
     FN.sk=i.rows.map(r=>fnNorm(r[1]+" "+r[0]+" "+(i.gestores[r[FN.C.gestor]]||"")));
     FN.cal=c.d;FN.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));FN.B=b;fnLevels();
-    FN.load=null;fnHash();fnCalc();extApply();
+    FN.load=null;fnHash();fnCalc();extApply();if(!FN.full)setTimeout(fnMore,2500);
   }).catch(e=>{FN.err=e;FN.load=null;fnCalc()});
   return FN.load;
+}
+function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada depois, para a área abrir mais rápido)
+  if(!FN.idx||FN.full)return Promise.resolve();if(FN.more)return FN.more;const I=FN.idx;
+  FN.more=fnGet("idx_x.json").then(x=>{if(FN.idx!==I||FN.full)return;
+    if(x.geradoEm!==I.geradoEm)return fnGet("idx.json").then(j=>{if(FN.idx!==I)return;const vis=new Set(I.rows.map(r=>r[0]));fnMoreAdd(j.rows.filter(r=>!vis.has(r[0])))});
+    fnMoreAdd(x.rows)}).catch(()=>{FN.more=null});
+  return FN.more;
+}
+function fnMoreAdd(rows){
+  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
+  if(!FNM.has(activeMod))return;
+  if(activeMod==="fr"||activeMod==="fg"||(activeMod==="fa"&&miss))fnCalc();
+  const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
 }
 function lvBuild(cal,B){ // níveis acumulados dos índices: diários (alinhados ao calendário) e de fim de mês
   B=B||{d:{},m:{}};const n=cal.length,L={d:{},m:{}},mk=d=>+d.slice(0,4)*12+(+d.slice(4,6))-1;
@@ -3954,7 +4025,7 @@ function fnFa(){
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function fnHome(){
-  const R=FN.idx.rows,C=FN.C;let h='';
+  const R=FN.idx.rows,C=FN.C;let h=favHtml();
   let hist=[];try{hist=JSON.parse(localStorage.getItem("fnHist")||"[]")}catch(e){}
   const rows=hist.map(fnRow).filter(Boolean);
   const list=(t,arr,f)=>'<section class="panel"><div class="label">'+t+'</div><div class="fnlist">'+arr.map(r=>'<button type="button" class="fnri" data-fnopen="'+r[0]+'"><b>'+esc(r[1])+'</b><small>'+esc(FN.idx.classes[r[C.classe]]||"")+' · '+f(r)+'</small></button>').join("")+'</div></section>';
@@ -3970,7 +4041,7 @@ function fnHead(F){
   const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
   let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(nm)+'</h3><div class="fnsub">'+fnCnpjF(F.c)+(F.fan&&F.fan!==F.n?' · '+esc(F.fan):'')+'</div>';
   h+='<div class="fntags">'+[F.tipo,FN.idx.classes[r?r[C.classe]:-1],F.anb].filter(Boolean).map(x=>'<span class="fntag strong">'+esc(x)+'</span>').join("")+fnTags(r,F).map(x=>'<span class="fntag">'+esc(x)+'</span>').join("")+'</div></div>';
-  h+='<div class="fnacts"><button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button><button type="button" class="btn sec" data-rel="fa">Relatório PDF</button></div></div>';
+  h+='<div class="fnacts">'+favBtn("f:"+F.c,nm)+'<button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button><button type="button" class="btn sec" data-rel="fa">Relatório PDF</button></div></div>';
   if(r&&r[C.flags]&64)h+='<p class="warn" style="font-size:.86rem;margin-top:8px">A cota deste fundo teve saltos nos últimos anos (reinício de cota, amortização ou erro no informe à CVM). As rentabilidades e os indicadores de risco que atravessam esses saltos foram omitidos do ranking e podem não ser comparáveis.</p>';
   if(F.pai)h+='<p class="sub" style="margin-top:6px">Esta é uma subclasse, com cota própria. <button type="button" class="link" data-fnopen="'+F.pai+'">Ver a classe '+fnCnpjF(F.pai)+'</button></p>';
   const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
@@ -4237,11 +4308,11 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml())}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml());docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
-  const R=AT.idx.rows,C=AT.C;let h='';let hist=[];try{hist=JSON.parse(localStorage.getItem("atHist")||"[]")}catch(e){}
+  const R=AT.idx.rows,C=AT.C;let h=favHtml();let hist=[];try{hist=JSON.parse(localStorage.getItem("atHist")||"[]")}catch(e){}
   const list=(tt,arr,f)=>'<section class="panel"><div class="label">'+tt+'</div><div class="fnlist">'+arr.map(r=>'<button type="button" class="fnri" data-atopen="'+r[0]+'"><b>'+r[0]+' · '+esc(r[1])+'</b><small>'+f(r)+'</small></button>').join("")+'</div></section>';
   const rows=hist.map(atRow).filter(Boolean);if(rows.length)h+=list("Vistos recentemente",rows,r=>'R$ '+fx(r[C.preco],2)+' · dia '+fnPctT(r[C.d1]));
   const liq=t=>R.filter(r=>r[C.tipo]===t&&r[C.liq]).sort((a,b)=>b[C.liq]-a[C.liq]).slice(0,8);
@@ -4254,7 +4325,7 @@ function atHead(A){
   const r=atRow(A.t),C=AT.C,l=fnLast(A),m=A.met||{},ind=A.ind||{},fi=A.fii,inCmp=AT.cmp.includes(A.t),isF=AT_FUNDO.has(A.tipo);
   let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(A.t)+' · '+esc(A.nome||"")+'</h3><div class="fnsub">'+esc([A.setor,A.sub].filter(Boolean).join(" / "))+'</div>';
   h+='<div class="fntags"><span class="fntag strong">'+esc(A.tipo)+'</span>'+(A.meta&&A.meta.esp?'<span class="fntag">'+esc(A.meta.esp)+'</span>':'')+(fi&&fi.mand?'<span class="fntag">'+esc(fi.mand)+'</span>':'')+(fi&&fi.gest?'<span class="fntag">Gestão '+esc(fi.gest.toLowerCase())+'</span>':'')+'</div></div>';
-  h+='<div class="fnacts"><button type="button" class="btn sec" data-atcmp="'+A.t+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-rel="aa">Relatório PDF</button></div></div>';
+  h+='<div class="fnacts">'+favBtn("a:"+A.t,A.t+" · "+(A.nome||""))+'<button type="button" class="btn sec" data-atcmp="'+A.t+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-rel="aa">Relatório PDF</button></div></div>';
   const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
   const px=l?A.R[A.R.length-1]:null;
   let k=kp("Cotação","R$ "+(px!=null?fx(px,2):"—"),(l?fdate(l.t):"")+(m.d1!=null?' · '+fnPctT(m.d1)+' no dia':''))+kp("12 meses (com proventos)",fnPct(m.r12),m.ra!=null?"no ano "+fnPctT(m.ra):"");
@@ -5164,6 +5235,135 @@ setInterval(()=>{if((FN.idx&&!UPD.f)||(AT.idx&&!UPD.a))updCheck()},5000);
 setInterval(()=>{if(FN.idx||AT.idx)updCheck()},30*60000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-UPD.t>30*60000&&(FN.idx||AT.idx))updCheck()});
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#refresh")&&(FN.idx||AT.idx))setTimeout(updCheck,0)});
+
+/* ===== Favoritos, alertas e documentos (fatos relevantes, comunicados, relatórios) =====
+   Favoritos e alertas ficam só neste navegador (localStorage); nada vai para o repositório. */
+const FV={l:[],a:[],edit:null,boot:{}};
+try{const l=JSON.parse(localStorage.getItem("favs")||"[]");if(Array.isArray(l))FV.l=l.filter(x=>x&&typeof x.k==="string").slice(0,60)}catch(e){}
+try{const a=JSON.parse(localStorage.getItem("alertas")||"[]");if(Array.isArray(a))FV.a=a.filter(x=>x&&x.k&&x.c)}catch(e){}
+function fvSave(){try{localStorage.setItem("favs",JSON.stringify(FV.l));localStorage.setItem("alertas",JSON.stringify(FV.a))}catch(e){}}
+const fvHas=k=>FV.l.some(x=>x.k===k);
+const fvCurto=s=>{s=String(s||"").replace(/\s+/g," ").trim();return s.length>56?s.slice(0,54).replace(/\s\S*$/,"")+"…":s};
+const FV_TD={NTNB:"IPCAJ",NTNBP:"IPCA",RENDA:"RENDA",EDUCA:"EDUCA",LTN:"PRE",NTNF:"PREJ",LFT:"SELIC"};
+const FV_C={pa:["a","Preço chegar a","≥","R$"],pb:["a","Preço cair a","≤","R$"],dv:["a","Variação no dia passar de","±","%"],
+  ma:["f","Rentabilidade no mês cair abaixo de","≤","%"],r12:["f","Rentabilidade em 12 meses cair abaixo de","≤","%"],
+  ta:["t","Taxa subir a","≥","%"],tb:["t","Taxa cair a","≤","%"]};
+function favBtn(k,n){const on=fvHas(k);return '<button type="button" class="btn sec fvbtn" data-fav="'+esc(k)+'" data-favn="'+esc(String(n||"").slice(0,90))+'" aria-pressed="'+on+'">'+(on?'★ Favorito':'☆ Favoritar')+'</button>'}
+
+/* valores atuais de cada favorito */
+function fvTdName(kind,d){const K=KIND[kind];return (K&&K.td||kind)+" "+String(d).slice(0,4)}
+function fvInfo(k){
+  const tp=k[0],id=k.slice(2);
+  if(tp==="f"){if(!FN.idx)return {wait:"fundos"};const r=fnRow(id),C=FN.C;if(!r)return FN.full?{nada:1}:{wait:"fundos"};
+    return {n:r[1],sub:"Fundo · "+(FN.idx.classes[r[C.classe]]||""),ult:r[C.ult]?"cota de "+fdate(Date.parse(r[C.ult]+"T00:00:00Z")):"",val:null,dia:null,mes:r[C.rm],r12:r[C.r12],stamp:r[C.ult]||"",go:"f"}}
+  if(tp==="a"){if(!AT.idx)return {wait:"bolsa"};const r=atRow(id),C=AT.C;if(!r)return {nada:1};
+    return {n:id+" · "+r[1],sub:r[C.tipo],ult:"R$ "+fx(r[C.preco],2),val:r[C.preco],dia:r[C.d1],mes:r[C.r1m],r12:r[C.r12],stamp:r[C.data]||"",go:"a"}}
+  if(tp==="t"){const x=typeof TD_ALL==="object"&&TD_ALL?TD_ALL[id]:null;if(!x)return Object.keys(TD_ALL||{}).length?{nada:1}:{wait:"mercado"};const [kind,d]=id.split("|"),tx=x.buy!=null?x.buy:x.rate;
+    return {n:fvTdName(kind,d),sub:"Tesouro Direto · "+(x.buy!=null?"taxa de compra":"taxa de resgate (fora de venda)"),ult:(KIND[kind]&&KIND[kind].fam==="selic"?"Selic + ":KIND[kind]&&KIND[kind].fam==="ipca"?"IPCA + ":"")+fx(tx,2)+"%"+(x.price?" · R$ "+fx(x.price,2):""),val:tx,dia:null,mes:null,r12:null,stamp:new Date().toISOString().slice(0,10),go:"t",td:"TD-"+(FV_TD[kind]||kind)+"-"+String(d).slice(0,4)}}
+  return {nada:1};
+}
+function fvTest(al,I){
+  if(!I||I.wait||I.nada)return null;const v=+al.v;let x=null;
+  if(al.c==="pa"||al.c==="pb"||al.c==="ta"||al.c==="tb")x=I.val;else if(al.c==="dv")x=I.dia;else if(al.c==="ma")x=I.mes;else if(al.c==="r12")x=I.r12;
+  if(x==null||!isFinite(x)||!isFinite(v))return null;
+  const ok=al.c==="pa"||al.c==="ta"?x>=v:al.c==="dv"?Math.abs(x)>=v:x<=v;return {ok,x};
+}
+const fvAlTxt=al=>{const c=FV_C[al.c]||["","?","",""];return c[2]+" "+(c[3]==="R$"?"R$ "+fx(+al.v,2):fx(+al.v,2)+"%")};
+const fvAlLong=al=>{const c=FV_C[al.c]||["","?","",""];return c[1]+" "+(c[3]==="R$"?"R$ "+fx(+al.v,2):fx(+al.v,2)+"%")};
+
+/* painel */
+function favHtml(){return '<section class="panel fvpanel"><div class="fvbox">'+fvInner()+'</div></section>'}
+function fvInner(){
+  const need=new Set();let h='<div class="fvhd"><h3>Favoritos e alertas</h3>';
+  const perm="Notification" in window?Notification.permission:"x";
+  if(FV.a.length&&perm==="default")h+='<button type="button" class="btn sec" data-fvperm="1">Receber avisos neste aparelho</button>';
+  h+='</div>';
+  if(!FV.l.length)h+='<p class="sub">Toque em <b>☆ Favoritar</b> na página de um fundo ou de um ativo da Bolsa para acompanhar aqui a variação do dia, do mês e de 12 meses. Os títulos do Tesouro você adiciona logo abaixo. Em cada favorito dá para criar um alerta de preço, taxa ou rentabilidade.</p>';
+  else{
+    h+='<div class="tablewrap" style="max-height:none"><table class="ctab fvtab"><thead><tr><th style="text-align:left">Favorito</th><th>Último</th><th>Dia</th><th class="c-ph">Mês</th><th>12 meses</th><th style="text-align:left">Alertas</th><th></th></tr></thead><tbody>';
+    FV.l.forEach(f=>{const I=fvInfo(f.k);if(I.wait)need.add(I.wait);
+      const als=FV.a.filter(a=>a.k===f.k);
+      h+='<tr><td style="text-align:left" class="tw fvn"><button type="button" class="link" data-fvgo="'+esc(f.k)+'" title="'+esc(I.n||f.n||f.k)+'">'+esc(fvCurto(I.n||f.n||f.k))+'</button><small style="display:block;color:var(--muted)">'+esc(I.wait?"carregando…":I.nada?"não encontrado na base atual":I.sub||"")+'</small></td>'
+        +'<td class="fvu">'+(I.ult||"—")+'</td><td class="fvd" data-l="Dia">'+(I.dia!=null?fnPct(I.dia):"—")+'</td><td class="c-ph" data-l="Mês">'+(I.mes!=null?fnPct(I.mes):"—")+'</td><td class="fvd" data-l="12m">'+(I.r12!=null?fnPct(I.r12):"—")+'</td><td style="text-align:left" class="fva">';
+      als.forEach(a=>{const t=fvTest(a,I);h+='<span class="fvchip'+(t&&t.ok?' fvon':'')+'" title="'+esc(fvAlLong(a))+'">'+(t&&t.ok?'● ':'')+fvAlTxt(a)+'<button type="button" data-fvdel="'+esc(a.id)+'" aria-label="Remover alerta">×</button></span>'});
+      h+=(f.k[0]==="f"||f.k[0]==="a"||f.k[0]==="t"?'<button type="button" class="link fvadd" data-fvnew="'+esc(f.k)+'">+ alerta</button>':'')+'</td><td class="fvx"><button type="button" class="link" data-fvrm="'+esc(f.k)+'" aria-label="Tirar dos favoritos">×</button></td></tr>';
+      if(FV.edit===f.k){const tp=f.k[0],ops=Object.keys(FV_C).filter(c=>FV_C[c][0]===tp);
+        h+='<tr class="fvform"><td colspan="7" style="text-align:left"><div class="fnfilt"><div class="field"><label for="fvC">Avisar quando</label><select id="fvC">'+ops.map(c=>'<option value="'+c+'">'+FV_C[c][1]+'</option>').join("")+'</select></div><div class="field"><label for="fvV">Valor</label><input id="fvV" inputmode="decimal" autocomplete="off" placeholder="'+(tp==="a"?"ex.: 35,50":tp==="t"?"ex.: 7,50":"ex.: 0,80")+'"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-fvok="'+esc(f.k)+'">Salvar alerta</button> <button type="button" class="btn sec" data-fvcancel="1">Cancelar</button></div></div></td></tr>'}
+    });
+    h+='</tbody></table></div>';
+  }
+  // títulos do Tesouro
+  const td=typeof TD_ALL==="object"&&TD_ALL?Object.keys(TD_ALL).filter(k=>KIND[k.split("|")[0]]&&!fvHas("t:"+k)).sort((a,b)=>{const ka=a.split("|"),kb=b.split("|");return (KIND[ka[0]].td||"").localeCompare(KIND[kb[0]].td||"")||ka[1].localeCompare(kb[1])}):[];
+  if(td.length)h+='<div class="fnfilt" style="margin-top:10px"><div class="field"><label for="fvTd">Adicionar título do Tesouro</label><select id="fvTd"><option value="">Escolha o título…</option>'+td.map(k=>{const [kd,d]=k.split("|");return '<option value="'+k+'">'+esc(fvTdName(kd,d))+(TD_ALL[k].buy!=null?'':' (fora de venda)')+'</option>'}).join("")+'</select></div></div>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). '+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
+  if(need.size)setTimeout(()=>fvNeed(need),0);
+  return h;
+}
+function fvNeed(need){
+  if(need.has("fundos")&&!FV.boot.f){FV.boot.f=1;Promise.resolve(fnBoot()).then(()=>fnMore()).then(fvRefresh)}
+  if(need.has("bolsa")&&!FV.boot.a){FV.boot.a=1;Promise.resolve(atBoot()).then(fvRefresh)}
+}
+function fvRefresh(){document.querySelectorAll(".fvbox").forEach(b=>{b.innerHTML=fvInner()});fvCheck()}
+
+/* conferência dos alertas e avisos */
+function fvToast(L){
+  let d=document.querySelector(".fvtoast");if(!d){d=document.createElement("div");d.className="fvtoast";d.setAttribute("role","status");document.body.appendChild(d)}
+  if(d.hidden||!FV.tl)FV.tl=[];FV.tl=FV.tl.concat(L).slice(-6);
+  d.innerHTML='<b>Alertas disparados</b>'+FV.tl.map(x=>'<div>'+esc(x)+'</div>').join("")+'<button type="button" class="btn sec" data-fvtoast="1">Fechar</button>';d.hidden=false;
+}
+function fvNotify(tit,body){
+  try{if(!("Notification" in window)||Notification.permission!=="granted")return;
+    const o={body,icon:"icone-192.png",tag:"alerta-"+tit};
+    if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(r=>{if(r)r.showNotification(tit,o);else new Notification(tit,o)}).catch(()=>{try{new Notification(tit,o)}catch(e){}});
+    else new Notification(tit,o)}catch(e){}
+}
+function fvCheck(){
+  if(!FV.a.length)return;const novos=[],need=new Set();let mud=false;
+  FV.a.forEach(a=>{const I=fvInfo(a.k);if(I.wait){need.add(I.wait);return}const t=fvTest(a,I);if(!t)return;
+    const st=I.stamp+"|"+t.ok;if(t.ok&&a.ult!==st){a.ult=st;mud=true;const nome=I.n||a.k;novos.push(fvCurto(nome)+": "+fvAlLong(a).charAt(0).toLowerCase()+fvAlLong(a).slice(1)+" (agora "+(FV_C[a.c][3]==="R$"?"R$ "+fx(t.x,2):fx(t.x,2)+"%")+")");fvNotify(nome,fvAlLong(a)+" — agora "+(FV_C[a.c][3]==="R$"?"R$ "+fx(t.x,2):fx(t.x,2)+"%"))}
+    else if(!t.ok&&a.ult&&a.ult.endsWith("|true")){a.ult=st;mud=true}});
+  if(mud)fvSave();if(novos.length)fvToast(novos);if(need.size)fvNeed(need);
+}
+setTimeout(fvCheck,8000);setInterval(fvCheck,60000);
+
+/* eventos (valem em qualquer área do app) */
+document.addEventListener("click",e=>{
+  const g=s=>e.target.closest&&e.target.closest(s);let x;
+  if((x=g("[data-fav]"))){const k=x.dataset.fav;if(fvHas(k)){FV.l=FV.l.filter(f=>f.k!==k);FV.a=FV.a.filter(a=>a.k!==k)}else FV.l.push({k,n:x.dataset.favn||k});fvSave();const on=fvHas(k);x.setAttribute("aria-pressed",on);x.textContent=on?"★ Favorito":"☆ Favoritar";fvRefresh();return}
+  if((x=g("[data-fvgo]"))){const k=x.dataset.fvgo,id=k.slice(2);if(k[0]==="f")fnOpen(id);else if(k[0]==="a")atOpen(id);else{const I=fvInfo(k);if(I.td){if(AT.idx&&!atRow(I.td))return;atOpen(I.td)}}return}
+  if((x=g("[data-fvrm]"))){const k=x.dataset.fvrm;FV.l=FV.l.filter(f=>f.k!==k);FV.a=FV.a.filter(a=>a.k!==k);fvSave();fvRefresh();document.querySelectorAll('[data-fav="'+CSS.escape(k)+'"]').forEach(b=>{b.setAttribute("aria-pressed","false");b.textContent="☆ Favoritar"});return}
+  if((x=g("[data-fvnew]"))){FV.edit=x.dataset.fvnew;fvRefresh();const v=$("fvV");if(v)v.focus();return}
+  if(g("[data-fvcancel]")){FV.edit=null;fvRefresh();return}
+  if((x=g("[data-fvok]"))){const c=$("fvC").value,v=num(String($("fvV").value||"").replace(/[^\d,.\-]/g,""));if(!isFinite(v)||$("fvV").value.trim()===""){$("fvV").focus();return}
+    FV.a.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),k:x.dataset.fvok,c,v});FV.edit=null;fvSave();fvRefresh();
+    if("Notification" in window&&Notification.permission==="default")Notification.requestPermission().then(()=>fvRefresh()).catch(()=>{});return}
+  if((x=g("[data-fvdel]"))){FV.a=FV.a.filter(a=>a.id!==x.dataset.fvdel);fvSave();fvRefresh();return}
+  if(g("[data-fvperm]")){if("Notification" in window)Notification.requestPermission().then(()=>fvRefresh()).catch(()=>{});return}
+  if(g("[data-fvtoast]")){const d=document.querySelector(".fvtoast");if(d)d.hidden=true;return}
+});
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="fvTd"&&t.value){const k=t.value,[kd,d]=k.split("|");FV.l.push({k:"t:"+k,n:fvTdName(kd,d)});fvSave();fvRefresh()}});
+
+/* ----- documentos do ativo: fatos relevantes, comunicados, avisos, resultados e relatórios */
+const DOCS={m:new Map(),f:"todos"};
+const DOC_GR=[["todos","Todos"],["fr","Fatos relevantes"],["com","Comunicados e avisos"],["res","Resultados e relatórios"],["ass","Assembleias"]];
+function docGrupo(d){const c=fnNorm(d[2]+" "+d[3]);
+  if(/fato relevante/.test(c))return "fr";if(/assembleia|reuniao da administracao|atos de deliberacao/.test(c))return "ass";
+  if(/economico-financeiro|relatorio|demonstrac|informes periodicos|calendario/.test(c))return "res";return "com"}
+function atDocsHtml(A){const c=A.cnpj||(A.fii&&A.fii.cnpj)||(A.fund&&A.fund.cnpj)||"";if(!c||A.tipo==="Tesouro Direto")return "";return '<section class="panel" id="atDocs" data-cnpj="'+esc(c)+'" hidden></section>'}
+function docsFill(){
+  const el=$("atDocs");if(!el)return;const c=el.dataset.cnpj;
+  if(!DOCS.m.has(c)){DOCS.m.set(c,null);atGet("d/"+c+".json").then(j=>{DOCS.m.set(c,j);docsFill()}).catch(()=>{DOCS.m.set(c,{docs:[]});docsFill()});return}
+  const j=DOCS.m.get(c);if(!j)return;const L=j.docs||[];if(!L.length){el.hidden=true;return}
+  const f=DOCS.f,V=L.filter(d=>f==="todos"||docGrupo(d)===f),hoje=Date.now();
+  let h='<h3>Documentos e fatos relevantes</h3><p class="sub">Publicados '+(j.fonte==="CVM"?'pela companhia na CVM':'pelo fundo no Fundos.NET da B3')+'. Clique para abrir o documento original.</p>'+fnSeg("docf",DOC_GR.filter(g=>g[0]==="todos"||L.some(d=>docGrupo(d)===g[0])),f);
+  h+='<div class="tablewrap" style="max-height:420px;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Entrega</th><th style="text-align:left">Documento</th></tr></thead><tbody>';
+  if(!V.length)h+='<tr><td colspan="2" class="sub" style="text-align:left">Nada neste grupo.</td></tr>';
+  V.forEach(d=>{const t=Date.parse(d[0].slice(0,10)+"T00:00:00Z"),novo=hoje-t<4*864e5;const tit=[d[2],d[3]&&d[3]!==d[2]?d[3]:"",d[4]].filter(Boolean).join(" · ");
+    h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left"><a href="'+esc(d[6])+'" target="_blank" rel="noopener">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
+  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Os '+L.length+' documentos mais recentes'+(j.fonte==="CVM"?' (fatos relevantes, comunicados, avisos aos acionistas, resultados, assembleias e reuniões do conselho)':'')+'. Fonte: '+esc(j.fonte||"")+'.</p>';
+  el.innerHTML=h;el.hidden=false;
+}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-docf]");if(x){DOCS.f=x.dataset.docf;docsFill()}});
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
