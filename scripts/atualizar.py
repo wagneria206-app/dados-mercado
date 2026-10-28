@@ -1142,6 +1142,30 @@ def dolar_fundamentos():
 
 
 
+# ---------------------------------------------------------------- Capital estrangeiro (balanço de pagamentos, Banco Central)
+
+SGS_FLUXO = {"acoes": 22930,        # investimentos em carteira, passivos: ações e cotas de fundos no país, líquido (US$ milhões)
+             "renda_fixa": 22942}   # investimentos em carteira, passivos: títulos de dívida negociados no mercado doméstico, líquido
+
+
+@fonte("bcb_fluxo_estrangeiro")
+def fluxo_estrangeiro():
+    """Fluxo mensal do investidor estrangeiro em ações e em renda fixa no Brasil (Banco Central, SGS), desde 2005."""
+    out = {"fonte": "Banco Central – balanço de pagamentos, investimentos em carteira de não residentes (SGS 22930 e 22942)",
+           "unidade": "US$ milhões", "mensal": {}}
+    for nome, cod in SGS_FLUXO.items():
+        d = {}
+        for a in range(2005, HOJE.year + 1, 10):
+            ini, fim = dt.date(a, 1, 1), min(dt.date(a + 9, 12, 31), HOJE)
+            d.update({x[0][:7]: x[1] for x in sgs_periodo(cod, ini, fim)})
+        if len(d) < 100:
+            raise RuntimeError(f"SGS {cod}: só {len(d)} meses")
+        out["mensal"][nome] = d
+    out["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
+    gravar_json("fluxo_estrangeiro.json", out)
+    return {k: f"{len(v)} meses até {max(v)}" for k, v in out["mensal"].items()}
+
+
 # ---------------------------------------------------------------- Banco Central e IBGE: Selic e inflação em detalhe
 
 SGS_INFLACAO = {"ipca": 433, "nucleo_ms": 4466, "nucleo_dp": 16122, "servicos": 10844, "livres": 11428,
@@ -2333,7 +2357,8 @@ def rapido():
 
 FONTES_AVULSAS = {"b3_futuros": lambda m: b3_futuros(), "dolar_fundamentos": lambda m: dolar_fundamentos(),
                   "bcb_dolar": lambda m: bcb_dolar(m), "inflacao": lambda m: inflacao_detalhe(), "ima": lambda m: anbima_ima(),
-                  "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist()}
+                  "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist(),
+                  "fluxo": lambda m: fluxo_estrangeiro()}
 
 
 def avulsas(nomes):
@@ -2369,6 +2394,7 @@ def main():
     bcb_dolar(mercado)
     b3_futuros()
     dolar_fundamentos()
+    fluxo_estrangeiro()
     ipca(mercado)
     anbima_debentures()
     credito_spreads()
