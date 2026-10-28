@@ -1067,7 +1067,8 @@ def dolar_fundamentos():
     """Séries do dólar justo e dos juros dos EUA, só de fontes oficiais: BLS (CPI), Tesouro americano (Treasuries),
     Fed de Nova York (SOFR, juro do Fed), Banco Central (paridades para o índice do dólar) e Ipeadata (EMBI+)."""
     out = {"fonte": "BLS (CPI dos EUA), Tesouro americano (Treasuries e juro real), Fed de Nova York (SOFR e juro do Fed), "
-                    "Banco Central (paridades PTAX para o índice do dólar, fórmula do DXY), Ipeadata/J.P. Morgan (EMBI+ Brasil)",
+                    "Banco Central (paridades PTAX para o índice do dólar, fórmula do DXY, e IC-Br em dólares para as commodities), "
+                    "Ipeadata/J.P. Morgan (EMBI+ Brasil, série encerrada em 2024)",
            "mensal": {}, "ultimo": {}}
     falhas = []
     def guarda(nome, d, diaria=True):
@@ -1095,13 +1096,19 @@ def dolar_fundamentos():
             guarda(nome, nyfed(tipo))
         except Exception as e:  # noqa: BLE001
             falhas.append(f"{nome}: {str(e)[:150]}")
-    try:   # commodities pelo FRED/FMI (opcional; o FRED costuma recusar servidores)
-        d = fred("PALLFNFINDEXM")
-        out["mensal"]["commodities"] = {k[:7]: v for k, v in d.items()}
+    try:   # commodities: IC-Br em dólares do Banco Central (SGS 29042), mensal, em blocos de 10 anos
+        d = {}
+        for a in range(2000, HOJE.year + 1, 10):
+            ini, fim = dt.date(a, 1, 1), min(dt.date(a + 9, 12, 31), HOJE)
+            d.update({x[0][:7]: x[1] for x in sgs_periodo(29042, ini, fim)})
+        if len(d) < 100:
+            raise RuntimeError(f"só {len(d)} meses")
+        out["mensal"]["commodities"] = d
         k = max(d)
-        out["ultimo"]["commodities"] = {"data": k, "valor": d[k]}
+        out["ultimo"]["commodities"] = {"data": k + "-01", "valor": d[k]}
+        out["commodities_fonte"] = "Banco Central – IC-Br em dólares (SGS 29042)"
     except Exception as e:  # noqa: BLE001
-        falhas.append(f"commodities (FRED): {str(e)[:100]}")
+        falhas.append(f"commodities (IC-Br, SGS 29042): {str(e)[:100]}")
     try:   # IPCA mensal desde 1995 (SGS 433), em blocos de 10 anos (limite da API), para a paridade de longo prazo
         d = {}
         for a in range(1995, HOJE.year + 1, 10):

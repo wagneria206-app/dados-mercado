@@ -471,6 +471,12 @@ def bdrs():
 def fii_cvm(anos, por_isin):
     """Informe mensal dos FIIs: PL, cotistas, valor patrimonial da cota e rendimento do mês."""
     lidos = 0
+    # quando o ISIN do informe não bate com o da B3 (classes novas, dígito de controle diferente), usa a raiz do código
+    raiz = {}
+    for isin, a in por_isin.items():
+        if isin and len(isin) >= 6 and a.meta.get("tipo") in ("FII", "Fiagro", "FI-Infra"):
+            raiz.setdefault(isin[2:6], []).append(a)
+    raiz = {k: v[0] for k, v in raiz.items() if len(v) == 1}
     for ano in anos:
         try:
             r = FU.baixar(URL_FII.format(ano), aceita_404=True)
@@ -487,7 +493,8 @@ def fii_cvm(anos, por_isin):
                     k = (L.get("CNPJ_Fundo_Classe") or L.get("CNPJ_Fundo") or "", (L.get("Data_Referencia") or "")[:7])
                     (geral if "geral" in n else comp)[k] = L
         for k, g in geral.items():
-            a = por_isin.get((g.get("Codigo_ISIN") or "").strip())
+            isin = (g.get("Codigo_ISIN") or "").strip()
+            a = por_isin.get(isin) or (raiz.get(isin[2:6]) if len(isin) >= 6 else None)
             if a is None:
                 continue
             c = comp.get(k) or {}
