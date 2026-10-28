@@ -19,6 +19,13 @@ INDEX = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "index.html")
 RAIZ = os.path.dirname(INDEX)
 APP = "https://wagneria206-app.github.io/dados-mercado/"
 RAW = "https://raw.githubusercontent.com/wagneria206-app/dados-mercado/"
+# passa o mouse em cada gráfico visível e confere se a caixa de valores aparece dentro dele
+DICAS = """async()=>{const out=[];const cs=[...document.querySelectorAll('svg')].filter(s=>s.getBoundingClientRect().width>100&&s.parentElement&&s.parentElement.querySelector(':scope > .cvtip'));
+for(const s of cs){s.scrollIntoView({block:'center'});await new Promise(r=>setTimeout(r,50));const r=s.getBoundingClientRect();
+ (s.lastElementChild||s).dispatchEvent(new MouseEvent('mousemove',{clientX:r.left+r.width*0.6,clientY:r.top+r.height*0.5,bubbles:true}));
+ await new Promise(r=>setTimeout(r,50));const t=s.parentElement.querySelector(':scope > .cvtip'),q=t.getBoundingClientRect();
+ if(t.hidden||q.height<10||q.bottom<r.top-5||q.top>r.bottom+5||q.left>r.right+5||q.right<r.left-5)out.push(s.parentElement.className)}
+return out}"""
 RUINS = ("NaN", "undefined", "Infinity", "[object Object]")
 problemas = []
 
@@ -103,6 +110,8 @@ async def main():
                         if "Carregando" not in texto and _ >= 6:
                             break
                     ruim(f"{tag} {area}/{mod}", texto)
+                    for g in await pg.evaluate(DICAS):
+                        problemas.append(f"{tag} {area}/{mod}: gráfico ({g}) sem caixa de valores ao passar o mouse")
                     if len(texto) < 300:
                         problemas.append(f"{tag} {area}/{mod}: aba quase vazia")
                     print(tag, area, mod, len(texto), "caracteres", flush=True)
