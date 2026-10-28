@@ -1,4 +1,7 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-YPT6UoeuB4AdQ+EVnbTTZbO+ZQDr187HpnDLjxNEPnk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
@@ -5148,9 +5151,9 @@ svg.chart{max-height:250px}
     +(REL.obs?'<div class="relobs">'+esc(REL.obs)+'</div>':'')
     +cont.innerHTML
     +'<div class="relfoot">'+(c.rodape?esc(c.rodape)+'<br>':'')+'Fontes: CVM (informe diário, cadastro, lâmina, carteira, demonstrações financeiras e informe dos FIIs), B3 (cotações, proventos e índices) e Banco Central (CDI, IPCA e dólar). Rentabilidade passada não é garantia de rentabilidade futura. Os valores são brutos de impostos, salvo indicação. Este material tem caráter informativo e não constitui recomendação de investimento.</div>'
-    +'<script>window.onload=function(){setTimeout(function(){window.focus();window.print()},350)}<\/script></body></html>';
+    +'</body></html>';
   const w=window.open("","_blank");
-  if(w){w.document.open();w.document.write(doc);w.document.close()}
+  if(w){w.document.open();w.document.write(doc);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},600)}
   else{const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0";document.body.appendChild(f);f.contentWindow.document.open();f.contentWindow.document.write(doc.replace(/<script>[\s\S]*?<\/script>/,""));f.contentWindow.document.close();setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print();setTimeout(()=>f.remove(),60000)},500)}
   const d=document.querySelector(".reldlg");if(d)d.remove();
 }
@@ -5227,7 +5230,7 @@ function basesHtml(){
 if("serviceWorker" in navigator&&/^https:/.test(location.protocol)&&!/claude|artifact/.test(location.hostname)){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 
 /* ----- importar posição da B3 (Área do Investidor) para o simulador — fica só neste navegador */
-function impXlsx(){return window.XLSX?Promise.resolve(window.XLSX):new Promise((ok,er)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=()=>ok(window.XLSX);s.onerror=()=>er(new Error("não deu para carregar o leitor de planilhas"));document.head.appendChild(s)})}
+function impXlsx(){return window.XLSX?Promise.resolve(window.XLSX):new Promise((ok,er)=>{const s=document.createElement("script");s.src="xlsx.full.min.js";s.integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw";s.onload=()=>ok(window.XLSX);s.onerror=()=>er(new Error("não deu para carregar o leitor de planilhas"));document.head.appendChild(s)})}
 async function impArquivo(file){
   const msg=t=>{const b=$("spImpMsg");if(b)b.innerHTML=t};msg('<span class="sub">Lendo a planilha…</span>');
   try{
@@ -5406,7 +5409,7 @@ function docsFill(){
   h+='<div class="tablewrap" style="max-height:420px;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Entrega</th><th style="text-align:left">Documento</th></tr></thead><tbody>';
   if(!V.length)h+='<tr><td colspan="2" class="sub" style="text-align:left">Nada neste grupo.</td></tr>';
   V.forEach(d=>{const t=Date.parse(d[0].slice(0,10)+"T00:00:00Z"),novo=hoje-t<4*864e5;const tit=[d[2],d[3]&&d[3]!==d[2]?d[3]:"",d[4]].filter(Boolean).join(" · ");
-    h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left"><a href="'+esc(d[6])+'" target="_blank" rel="noopener">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
+    h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left"><a href="'+esc(/^https:\/\/(www\.rad\.cvm\.gov\.br|fnet\.bmfbovespa\.com\.br)\//.test(d[6])?d[6]:"#")+'" target="_blank" rel="noopener noreferrer">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
   h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Os '+L.length+' documentos mais recentes'+(j.fonte==="CVM"?' (fatos relevantes, comunicados, avisos aos acionistas, resultados, assembleias e reuniões do conselho)':'')+'. Fonte: '+esc(j.fonte||"")+'.</p>';
   el.innerHTML=h;el.hidden=false;
 }

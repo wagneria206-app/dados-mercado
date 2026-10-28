@@ -78,6 +78,9 @@ async def main():
             pg = await ctx.new_page()
             tag = f"[{largura}px]"
             pg.on("pageerror", lambda e, t=tag: problemas.append(f"{t} erro de JavaScript: {e}"))
+            # a política de segurança (CSP) não pode bloquear nada que o app usa
+            pg.on("console", lambda m, t=tag: problemas.append(f"{t} bloqueado pela política de segurança: {m.text[:200]}")
+                  if "Content Security Policy" in m.text else None)
 
             async def rota(r):
                 u = r.request.url
