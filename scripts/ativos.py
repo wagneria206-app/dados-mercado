@@ -792,6 +792,117 @@ def metricas(a, adj, ibov, cdi):
 
 # ------------------------------------------------------------------ principal
 
+# ------------------------------------------------------------------ documentos (CVM e B3 Fundos.NET)
+
+URL_IPE = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/IPE/DADOS/ipe_cia_aberta_{}.zip"
+FNET = ("https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosDados"
+        "?d=1&s=0&l=40&o%5B0%5D%5BdataEntrega%5D=desc&cnpjFundo={}")
+FNET_DOC = "https://fnet.bmfbovespa.com.br/fnet/publico/exibirDocumento?id={}"
+CAT_IPE = {"Fato Relevante", "Comunicado ao Mercado", "Aviso aos Acionistas", "Dados Econômico-Financeiros",
+           "Calendário de Eventos Corporativos", "Assembleia", "Reunião da Administração", "Relatório Proventos",
+           "Aviso aos Debenturistas", "Informações de Companhias em Recuperação Judicial ou Extrajudicial"}
+DOCS_MAX = 60
+
+
+def docs_companhias(cnpjs):
+    """Fatos relevantes, comunicados, avisos e atas das companhias abertas (CVM, documentos IPE)."""
+    out = {}
+    for y in (HOJE.year, HOJE.year - 1):
+        try:
+            r = FU.baixar(URL_IPE.format(y), aceita_404=True)
+        except Exception as e:  # noqa: BLE001
+            DIAG[f"ipe_{y}"] = str(e)[:150]
+            continue
+        if r is None:
+            continue
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        for n in z.namelist():
+            for L in FU.ler_csv(z.open(n)):
+                c = re.sub(r"\D", "", L.get("CNPJ_Companhia", ""))
+                if c not in cnpjs or L.get("Categoria") not in CAT_IPE or not L.get("Link_Download"):
+                    continue
+                out.setdefault(c, []).append([L.get("Data_Entrega", ""), L.get("Data_Referencia", ""), L.get("Categoria", ""),
+                                              (L.get("Tipo") or "").strip(), (L.get("Especie") or "").strip(),
+                                              (L.get("Assunto") or "").strip()[:200], L["Link_Download"]])
+    for c, v in out.items():
+        vistos, lim = set(), []
+        for d in sorted(v, key=lambda x: (x[0], x[1]), reverse=True):
+            chave = (d[0], d[2], d[3], d[5])
+            if chave in vistos:
+                continue
+            vistos.add(chave)
+            lim.append(d)
+        out[c] = lim[:DOCS_MAX]
+    return out
+
+
+def docs_fundos_listados(cnpjs):
+    """Documentos dos FIIs, Fiagros e FI-Infra no Fundos.NET da B3 (fatos relevantes, avisos, relatórios)."""
+    from concurrent.futures import ThreadPoolExecutor
+    br = lambda s: (s[6:10] + "-" + s[3:5] + "-" + s[0:2]) if len(s or "") >= 10 else (s[3:7] + "-" + s[0:2] if len(s or "") == 7 else s or "")  # noqa: E731
+
+    def um(c):
+        if time.time() > LIMITE - 400:
+            return c, None
+        try:
+            r = requests.get(FNET.format(c), headers={**UA, "X-Requested-With": "XMLHttpRequest"}, timeout=(10, 40))
+            r.raise_for_status()
+            ds = r.json().get("data") or []
+        except Exception:  # noqa: BLE001
+            return c, None
+        v = []
+        for d in ds:
+            tipo = (d.get("tipoDocumento") or "").strip()
+            if "Estruturado" in tipo or d.get("status") not in (None, "AC"):
+                continue
+            v.append([br((d.get("dataEntrega") or "")[:10]), br(d.get("dataReferencia") or ""), (d.get("categoriaDocumento") or "").strip(),
+                      tipo, (d.get("especieDocumento") or "").strip(), "", FNET_DOC.format(d.get("id"))])
+        return c, v[:DOCS_MAX]
+    out = {}
+    with ThreadPoolExecutor(6) as ex:
+        for c, v in ex.map(um, sorted(cnpjs)):
+            if v is not None:
+                out[c] = v
+    return out
+
+
+def documentos(ent, sai, emp, fca):
+    """Grava d/{cnpj}.json; devolve os códigos de emissor com documento novo nos últimos 3 dias."""
+    cias, fiis = {}, {}
+    for t, a in A.items():
+        tp = a.meta.get("tipo")
+        if tp in ("Ação", "Unit"):
+            c = fca.get(t) or emp.get(t[:4], {}).get("cnpj")
+            if c:
+                cias.setdefault(c, set()).add(t[:4])
+        elif tp in ("FII", "Fiagro", "FI-Infra") and a.fii and a.fii.get("cnpj"):
+            fiis.setdefault(a.fii["cnpj"], set()).add(t[:4])
+    pd_ = os.path.join(sai, "d")
+    os.makedirs(pd_, exist_ok=True)
+    velho = os.path.join(ent, "d")
+    novos, recente = 0, (HOJE - dt.timedelta(days=3)).isoformat()
+    ativos_cod = set()
+    for fonte, mapa, func in (("CVM", cias, docs_companhias), ("B3 Fundos.NET", fiis, docs_fundos_listados)):
+        try:
+            res = func(set(mapa))
+        except Exception as e:  # noqa: BLE001
+            DIAG["docs_" + fonte] = str(e)[:200]
+            res = {}
+        for c in mapa:
+            v = res.get(c)
+            if v is None:                         # falhou agora: mantém o que já estava publicado
+                j = FU.ler_json(os.path.join(velho, c + ".json"), None)
+                if j:
+                    FU.gravar(os.path.join(pd_, c + ".json"), j)
+                continue
+            FU.gravar(os.path.join(pd_, c + ".json"), {"cnpj": c, "fonte": fonte, "docs": v})
+            novos += 1
+            if any(d[0][:10] >= recente for d in v):
+                ativos_cod |= mapa[c]
+    log("documentos:", novos, "emissores;", len(ativos_cod), "com documento nos últimos 3 dias")
+    return ativos_cod
+
+
 def principal():
     ent, sai = sys.argv[1], sys.argv[2]
     est, emp = carregar(ent)
@@ -857,7 +968,15 @@ def principal():
         except Exception as e:  # noqa: BLE001
             DIAG[f"fca_{y}"] = str(e)[:150]
 
-    # 5) proventos e cadastro na B3 (por emissor; cada um revisto a cada 6 dias)
+    # 4b) documentos: fatos relevantes, comunicados e avisos (CVM e B3 Fundos.NET)
+    try:
+        com_docs = documentos(ent, sai, emp, fca)
+    except Exception as e:  # noqa: BLE001
+        DIAG["documentos"] = str(e)[:200]
+        com_docs = set()
+
+    # 5) proventos e cadastro na B3 (por emissor). Revisto a cada execução quem publicou documento
+    #    nos últimos 3 dias ou tem provento recente/a pagar; os demais, a cada 3 dias
     cods = {}
     for t, a in A.items():
         tp = a.meta["tipo"]
@@ -865,15 +984,37 @@ def principal():
             cods.setdefault(("E", t[:4]), []).append(t)
         elif tp in ("FII", "Fiagro", "FI-Infra", "ETF"):
             cods.setdefault(("F", t[:4]), []).append(t)
-    fila = sorted(cods, key=lambda k: (emp.get(k[1], {}).get("t", ""), k))
+    agora = dt.datetime.now()
+    lim_ev = (HOJE - dt.timedelta(days=45)).isoformat()
+    lim_freq = (HOJE - dt.timedelta(days=400)).isoformat()
+
+    def prioridade(k):
+        if k[1] in com_docs:
+            return True
+        evs = [e for t in cods[k] if t in A for e in A[t].ev if e[1] in ("D", "J", "R", "A")]
+        if any(e[0] >= lim_ev or (len(e) > 3 and e[3] and e[3] >= HOJE.isoformat()) for e in evs):
+            return True
+        return sum(1 for e in evs if e[0] >= lim_freq) >= 4        # paga com frequência (mensal ou trimestral)
+    prio = {k for k in cods if prioridade(k)}
+
+    def vencido(k):
+        info = emp.get(k[1], {})
+        if k in prio:
+            ts = info.get("ts") or (info.get("t", "") + "T00:00:00" if info.get("t") else "")
+            return not ts or agora - dt.datetime.fromisoformat(ts) > dt.timedelta(hours=10)
+        return info.get("t", "") < (HOJE - dt.timedelta(days=3)).isoformat()
+    fila = sorted(cods, key=lambda k: (k not in prio, emp.get(k[1], {}).get("ts") or emp.get(k[1], {}).get("t", ""), k))
     feitos = 0
+    log("emissores prioritários (documento ou provento recente):", len(prio), "de", len(cods))
     for k in fila:
         info = emp.setdefault(k[1], {})
-        if info.get("t", "") >= (HOJE - dt.timedelta(days=6)).isoformat():
+        if not vencido(k):
             continue
         if time.time() > LIMITE - 200:
             break
         ok = atualizar_empresa(k[1], info, cods[k], por_isin) if k[0] == "E" else atualizar_fundo_listado(k[1], info, por_isin)
+        if ok:
+            info["ts"] = agora.isoformat(timespec="seconds")
         feitos += 1 if ok else 0
     log("emissores atualizados na B3:", feitos, "de", len(fila))
     if not est.get("bdr_t") or est["bdr_t"] < (HOJE - dt.timedelta(days=20)).isoformat():
@@ -952,6 +1093,8 @@ def principal():
             nome = info.get("nome") or nome
             setor, sub = info.get("setor") or "", info.get("sub") or ""
             cn = fca.get(t) or info.get("cnpj")
+            if cn:
+                reg["cnpj"] = cn
             f = fund.get(cn) if cn else None
             if f:
                 reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn}
