@@ -957,6 +957,22 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 }
 
 .fxmulti{position:relative}
+
+.sprfe{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+
+.sprfe select{min-height:34px;padding:4px 8px;font-size:.85rem;max-width:150px}
+
+.sprfe .affix{width:120px;display:inline-flex}
+
+.sprfe input{min-height:34px;padding:4px 8px;text-align:right;min-width:0}
+
+.fvsync{margin-top:12px}
+
+.fvsync summary .fnq{margin-left:6px}
+
+.fvsyncbox{padding-top:6px}
+
+.fvsyncbox code{font-size:.82em}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -4339,7 +4355,7 @@ function atHead(A){
   if(fi){add("Nome no informe da CVM",esc(fi.nome||""));add("Segmento",esc(fi.seg||""));add("Administrador",esc(fi.adm||""));add("Público-alvo",esc(fi.pub||""));add("Início",fi.ini?fdate(Date.parse(fi.ini+"T00:00:00Z")):"");add("CNPJ",fnCnpjF(fi.cnpj))}
   if(A.fund&&A.fund.cnpj)add("CNPJ",fnCnpjF(A.fund.cnpj));
   add("ISIN",esc(A.meta&&A.meta.isin||""));
-  if(A.tipo==="Tesouro Direto"){add("Vencimento",A.venc?fdate(Date.parse(A.venc+"T00:00:00Z")):"");add("Preço usado",'preço de resgate (PU de venda) do Tesouro Transparente; cupons semestrais reinvestidos no retorno'+(/RENDA|EDUCA/.test(A.t)?'. Na fase de pagamentos mensais do RendA+ e do Educa+, o preço cai a cada parcela paga e as parcelas não entram no retorno':''))}
+  if(A.tipo==="Tesouro Direto"){add("Vencimento",A.venc?fdate(Date.parse(A.venc+"T00:00:00Z")):"");add("Preço usado",'preço de resgate (PU de venda) do Tesouro Transparente; cupons semestrais reinvestidos no retorno'+(/RENDA|EDUCA/.test(A.t)?'. Na fase de pagamentos mensais do RendA+ e do Educa+, cada parcela entra no retorno como provento, com valor estimado pela queda do preço no dia do pagamento':''))}
   if(it.length)h+='<dl class="fninfo">'+it.join("")+'</dl>';
   return h+'</section>';
 }
@@ -4358,7 +4374,7 @@ function atProvHtml(A){
   if(!ev.length)return A.tipo==="ETF"||A.tipo.startsWith("BDR")?"":'<section class="panel"><h3>Proventos</h3><p class="sub">Nenhum provento registrado na B3 para este ativo.</p></section>';
   const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));
   const fac=ix=>spl.reduce((a,e)=>e[0]>ix?a*e[1]:a,1); // converte valores antigos para a base de ações de hoje
-  const NM={D:"Dividendo",J:"JCP",R:"Rendimento",E:"Rendimento (estimado)",A:"Amortização",C:"Cupom"};const PAG={};(A.evc||[]).forEach(e=>{if(e[3])PAG[e[0]+"|"+e[1]+"|"+(+e[2]).toFixed(8)]=e[3]});
+  const NM={D:"Dividendo",J:"JCP",R:"Rendimento",E:"Rendimento (estimado)",A:"Amortização",C:/RENDA|EDUCA/.test(A.t)?"Parcela mensal (estimada)":"Cupom"};const PAG={};(A.evc||[]).forEach(e=>{if(e[3])PAG[e[0]+"|"+e[1]+"|"+(+e[2]).toFixed(8)]=e[3]});
   const anos={};ev.forEach(e=>{if(e.tp==="A")return;const y=+e.dc.slice(0,4);anos[y]=(anos[y]||0)+e.v*fac(e.ix)});
   const yrs=Object.keys(anos).map(Number).sort((a,b)=>a-b).slice(-12);
   const pxY=y=>{let best=null;for(let x=0;x<A.I.length;x++){const d=new Date(AT.T[A.I[x]]);if(d.getUTCFullYear()===y)best=x}return best==null?null:A.R[best]*fac(A.I[best])};
@@ -4712,7 +4728,7 @@ const SP_REB=[["0","Sem rebalanceamento"],["1","Mensal"],["3","Trimestral"],["6"
 try{const c=JSON.parse(localStorage.getItem("spCarts")||"null");if(Array.isArray(c)&&c.length)SP.carts=c;SP.cur=Math.min(+(localStorage.getItem("spCur")||0),Math.max(0,SP.carts.length-1))}catch(e){}
 if(!SP.carts.length)SP.carts=[spNova("Carteira 1")];
 function spNova(nome){return {nome,itens:[],valor:100000,aporte:0,ini:"",fim:"",reb:"12",base:"m",ir:1,hz:10,meta:"",omax:100,bm:{cdi:1,ibov:0,ipca:0,ifix:0,usd:0,spx:0},ipcax:""}}
-function spSave(){try{localStorage.setItem("spCarts",JSON.stringify(SP.carts));localStorage.setItem("spCur",String(SP.cur))}catch(e){}}
+function spSave(){try{localStorage.setItem("spCarts",JSON.stringify(SP.carts));localStorage.setItem("spCur",String(SP.cur))}catch(e){}if(typeof syncMark==="function")syncMark()}
 const spC=()=>SP.carts[SP.cur];
 function spBoot(){return Promise.all([FN.idx?null:fnBoot(),AT.idx?null:atBoot()])}
 function spCalc(){
@@ -4723,6 +4739,9 @@ function spCalc(){
   spTopHtml();spRun();
 }
 function spItemNome(it){return it.n||it.k}
+const spRfLab=(rf,x)=>rf==="cdi"?fx(x,1)+"% do CDI":rf==="cdimais"?"CDI + "+fx(x,2)+"% a.a.":rf==="ipca"?"IPCA + "+fx(x,2)+"% a.a.":"Prefixado "+fx(x,2)+"% a.a.";
+function spRfEd(it,j){ // taxa da renda fixa editável (útil para CDB, LCI e LCA importados com taxa estimada)
+  return '<span class="sprfe"><select data-sprfe="'+j+'" aria-label="Indexador">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(it.rf===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s"><input inputmode="decimal" data-sprfv="'+j+'" value="'+fx(+it.x||0,2)+'" aria-label="Taxa"><span class="suf">'+(it.rf==="cdi"?"% CDI":"% a.a.")+'</span></span>'+(it.est?'<small class="warn" style="display:block">taxa estimada na importação: ajuste para a taxa real</small>':'')+'</span>'}
 function spTopHtml(){
   const c=spC(),tot=c.itens.reduce((a,x)=>a+(+x.w||0),0);
   let h='<section class="panel"><h3>Simulador de carteiras</h3><p class="sub">Monte carteiras com fundos, ações, FIIs, ETFs, BDRs e renda fixa, e veja como teriam se saído no passado. As carteiras ficam salvas só neste navegador.</p>';
@@ -4733,7 +4752,7 @@ function spTopHtml(){
   h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
   if(c.itens.length){
     h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Item</th><th class="c-ph" style="text-align:left">Tipo</th><th>Peso</th><th class="c-ph">Valor inicial</th><th></th></tr></thead><tbody>';
-    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it)))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small>'+(it.t==="s"?'<label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label>':'')+'</td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
+    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it))+spRfEd(it,j))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small>'+(it.t==="s"?'<label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label>':'')+'</td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
     h+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b class="'+(Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph">'+brl(+c.valor||0)+'</td><td></td></tr></tfoot></table></div>'
       +'<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
   }
@@ -4815,9 +4834,9 @@ function spSim(c,it,D){
   const reg=D.map(x=>x.reg),ccRate=r=>r==="lp"?0.15:r==="cp"?0.2:0;
   let V=w.map(x=>x*v0),idx=1,inv=v0,n=0;
   let Vn=V.slice(),base=V.slice(),ccb=V.slice(),cc=w.map(()=>0),nidx=1,lvPrev=null;
-  const liq=(meses)=>{let tot=0;Vn.forEach((v,i)=>{const r=reg[i];let rate=0;
-      if(r==="lp"||r==="rf")rate=meses<=6?0.225:meses<=12?0.2:meses<=24?0.175:0.15;else if(r==="cp")rate=meses<=6?0.225:0.2;else if(r==="acoes")rate=0.15;else if(r==="fii")rate=0.2*(SP_FIIPRICE[i]==null?1:SP_FIIPRICE[i]);
-      const ganho=v+cc[i]-base[i],devido=Math.max(0,ganho*rate-cc[i]);tot+=v-devido});return tot};
+  const aliq=(i,meses)=>{const r=reg[i];if(r==="lp"||r==="rf")return meses<=6?0.225:meses<=12?0.2:meses<=24?0.175:0.15;if(r==="cp")return meses<=6?0.225:0.2;if(r==="acoes")return 0.15;if(r==="fii")return 0.2*(SP_FIIPRICE[i]==null?1:SP_FIIPRICE[i]);return 0};
+  const liq=(meses)=>{let tot=0;Vn.forEach((v,i)=>{const ganho=v+cc[i]-base[i],devido=Math.max(0,ganho*aliq(i,meses)-cc[i]);tot+=v-devido});return tot};
+  let irReb=0;
   const SP_FIIPRICE=D.map((x,i)=>{if(reg[i]!=="fii"||!x.pm)return null;const a0=G.mOf(K[j0]),a1=G.mOf(K[j1]);const p0=x.pm.get(a0),p1=x.pm.get(a1),q0=x.m.get(a0),q1=x.m.get(a1);if(!p0||!p1||!q0||!q1)return 1;const pr=p1/p0-1,tr=q1/q0-1;return tr>0?Math.max(0,Math.min(1,pr/tr)):0});
   const pts=[{k:K[j0],t:G.tOf(K[j0]),v:v0,idx:1,inv,liq:v0,nidx:1}],rets=[],contrib=w.map(()=>0),irets=w.map(()=>[]);
   lvPrev=v0;
@@ -4830,14 +4849,16 @@ function spSim(c,it,D){
     if(novoMes){n++;const mesAnt=G.mOf(K[j-1])%12;
       if(ir&&(mesAnt===4||mesAnt===10))Vn.forEach((x,i)=>{const t=ccRate(reg[i]);if(!t)return;const g=x-ccb[i];if(g>0){const tx=g*t;Vn[i]-=tx;cc[i]+=tx}ccb[i]=Vn[i]});
       if(ap>0){V=V.map((x,i)=>x+ap*w[i]);Vn=Vn.map((x,i)=>x+ap*w[i]);base=base.map((x,i)=>x+ap*w[i]);ccb=ccb.map((x,i)=>x+ap*w[i]);inv+=ap;aj=ap}
-      if(reb&&n%reb===0){const T=V.reduce((a,x)=>a+x,0);V=w.map(x=>x*T);const Tn=Vn.reduce((a,x)=>a+x,0);
+      if(reb&&n%reb===0){const T=V.reduce((a,x)=>a+x,0);V=w.map(x=>x*T);
+        if(ir){const T0=Vn.reduce((a,x)=>a+x,0);Vn.forEach((x,i)=>{const alvo=w[i]*T0;if(alvo<x&&x>0){const fs=(x-alvo)/x,dev=fs*Math.max(0,(x+cc[i]-base[i])*aliq(i,n)-cc[i]);if(dev>0){Vn[i]-=dev;irReb+=dev}}})}
+        const Tn=Vn.reduce((a,x)=>a+x,0);
         Vn.forEach((x,i)=>{const alvo=w[i]*Tn;if(alvo<x&&x>0){const f=alvo/x;base[i]*=f;ccb[i]*=f;cc[i]*=f}else{base[i]+=alvo-x;ccb[i]+=alvo-x}Vn[i]=alvo})}}
     rets.push({k:K[j],t:G.tOf(K[j]),m:G.mOf(K[j]),r:rp});
     const L=ir?liq(n):Vn.reduce((a,x)=>a+x,0);nidx*=lvPrev?(L-aj)/lvPrev:1;lvPrev=L;
     pts.push({k:K[j],t:G.tOf(K[j]),v:V.reduce((a,x)=>a+x,0),idx,inv,liq:L,nidx});
   }
   const per=G.lv.map(x=>(x.arr[j1]/x.arr[j0]-1)*100);
-  return {G,j0,j1,k0:K[j0],last:K[j1],m0:G.mOf(K[j0]),m1:G.mOf(K[j1]),pts,rets,irets,contrib:contrib.map(x=>x*100),per,w,reg,meses:n,diaria:G.diaria,ir};
+  return {G,j0,j1,k0:K[j0],last:K[j1],m0:G.mOf(K[j0]),m1:G.mOf(K[j1]),pts,rets,irets,contrib:contrib.map(x=>x*100),per,w,reg,meses:n,diaria:G.diaria,ir,irReb};
 }
 function spCdiLv(R){ // nível do CDI em cada ponto da grade
   if(R.diaria){const a=FN.L.d.cdi||[],ix=new Map(FN.cal.map((d,i)=>[d,i]));return k=>{const i=ix.get(k);return i==null?null:a[i]}}
@@ -4870,7 +4891,7 @@ function spResHtml(c,it,R){
   if(+c.aporte>0||R.ir)h+='<div class="label" style="margin-top:10px">Patrimônio e valor investido</div>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"});
   let pk=1,v=1;const dd=[[R.pts[0].t,0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([x.t,(v/pk-1)*100])});
   h+='<div class="label" style="margin-top:10px">Perda a partir do pico (drawdown)</div>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});
-  h+='<p class="sub" style="font-size:.8rem">Simulação '+(R.diaria?'diária (cotas e cotações de cada dia útil, desde 2019)':'mensal (fechamentos de fim de mês, desde 2005)')+': cota dos fundos (CVM), cotação com proventos dos ativos (B3), Tesouro Direto (preço de resgate) e índices do Banco Central. '+(R.ir?'O valor líquido estima o IR se tudo fosse resgatado na data: come-cotas em maio e novembro nos fundos, tabela regressiva na renda fixa, 15% em ações, ETFs e BDRs e 20% sobre o ganho de preço dos FIIs. Rebalanceamentos não geram IR na simulação. ':'Valores brutos, sem IR. ')+'Sem corretagem e custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
+  h+='<p class="sub" style="font-size:.8rem">Simulação '+(R.diaria?'diária (cotas e cotações de cada dia útil, desde 2019)':'mensal (fechamentos de fim de mês, desde 2005)')+': cota dos fundos (CVM), cotação com proventos dos ativos (B3), Tesouro Direto (preço de resgate) e índices do Banco Central. '+(R.ir?'O valor líquido estima o IR se tudo fosse resgatado na data: come-cotas em maio e novembro nos fundos, tabela regressiva na renda fixa, 15% em ações, ETFs e BDRs e 20% sobre o ganho de preço dos FIIs. Nos rebalanceamentos, a parte vendida de cada item paga IR sobre o ganho proporcional (sem a isenção de R$ 20 mil mensais em ações)'+(R.irReb>0?': '+brl(R.irReb)+' no período':'')+'. ':'Valores brutos, sem IR. ')+'Sem corretagem e custódia. Os pesos voltam ao alvo no rebalanceamento; os aportes seguem os pesos-alvo.</p></section>';
   // ano a ano
   const anos=[...new Set(R.rets.map(x=>Math.floor(x.m/12)))].sort((a,b)=>b-a);
   const yrC=y=>{let v2=1,ok=false;R.rets.forEach(x=>{if(Math.floor(x.m/12)!==y)return;v2*=1+x.r;ok=true});return ok?(v2-1)*100:null};
@@ -5022,6 +5043,10 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activ
   else if(t.dataset.spiso!=null&&t.dataset.spiso!==undefined&&t.type==="checkbox"){const it=c.itens[+t.dataset.spiso];if(it){it.isento=t.checked?1:0;spSave();spCalc()}}
   else if(t.dataset.spbm){c.bm=c.bm||{};c.bm[t.dataset.spbm]=t.checked?1:0;spSave();spCalc()}
   else if(t.dataset.sprft){SP.rf.tipo=t.value;spTopHtml()}
+  else if(t.dataset.sprfe!=null||t.dataset.sprfv!=null){const j=+(t.dataset.sprfe!=null?t.dataset.sprfe:t.dataset.sprfv),it=c.itens[j];if(!it||it.t!=="s")return;
+    if(t.dataset.sprfe!=null)it.rf=t.value;else{const v=num(t.value);if(v==null)return;it.x=v}
+    const base=String(it.n||"").replace(/\s*\((estimado: )?[^()]*\)\s*$/,"").trim(),lab=spRfLab(it.rf,+it.x||0);
+    it.n=base&&!/^(\d|CDI|IPCA|Prefixado)/.test(base)?base+" ("+lab+")":lab;it.k=it.rf+":"+it.x+":"+j;delete it.est;SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.sprfx){SP.rf.taxa=t.value}
 });
 let SP_QT=null;
@@ -5200,14 +5225,14 @@ async function impArquivo(file){
           const k=code&&y?"TD-"+code+"-"+y:null;if(k&&AT.idx&&atRow(k)){itens.push({t:"a",k,n:atRow(k)[1],tipo:"Tesouro Direto",v});return}}
         const cn=cCnpj>=0?String(r[cCnpj]||"").replace(/\D/g,""):"";if(cn.length===14&&FN.idx&&fnRow(cn)){itens.push({t:"f",k:cn,n:fnRow(cn)[1],tipo:"Fundo",v});return}
         if(/renda fixa/.test(aba)||cIdx>=0){const ix=cIdx>=0?fnNorm(String(r[cIdx]||"")):"";const rf=/ipca/.test(ix)?"ipca":/pre/.test(ix)?"pre":"cdi",x=rf==="cdi"?100:rf==="ipca"?6:12;
-          itens.push({t:"s",k:rf+":"+x+":"+itens.length,rf,x,n:(prod||"Renda fixa")+" (estimado: "+(rf==="cdi"?"100% do CDI":rf==="ipca"?"IPCA + 6%":"pré 12%")+")",tipo:"Renda fixa",v});return}
+          itens.push({t:"s",est:1,k:rf+":"+x+":"+itens.length,rf,x,n:(prod||"Renda fixa")+" (estimado: "+(rf==="cdi"?"100% do CDI":rf==="ipca"?"IPCA + 6%":"pré 12%")+")",tipo:"Renda fixa",v});return}
         nao.push(prod||cod)})});
     if(!itens.length){msg('<span class="warn">Não reconheci nenhum investimento nessa planilha. Use o arquivo de posição exportado da Área do Investidor da B3 (Extratos › Posição › baixar em Excel).</span>');return}
     // junta repetidos e transforma valores em pesos
     const mp=new Map();itens.forEach(x=>{const key=x.t+"|"+x.k;if(mp.has(key))mp.get(key).v+=x.v;else mp.set(key,Object.assign({},x))});
     const L=[...mp.values()].sort((a,b)=>b.v-a.v).slice(0,CMP_MAX),tot=L.reduce((a,x)=>a+x.v,0);
     const c=spNova("Posição importada "+new Date().toLocaleDateString("pt-BR"));c.valor=Math.round(tot*100)/100;
-    c.itens=L.map(x=>({t:x.t,k:x.k,n:x.n.slice(0,80),tipo:x.tipo,rf:x.rf,x:x.x,w:Math.round(x.v/tot*1000)/10}));
+    c.itens=L.map(x=>({t:x.t,k:x.k,n:x.n.slice(0,80),tipo:x.tipo,rf:x.rf,x:x.x,est:x.est,w:Math.round(x.v/tot*1000)/10}));
     const d=100-c.itens.reduce((a,x)=>a+x.w,0);if(c.itens.length)c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;
     SP.carts.push(c);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();
     alertLite(c.itens.length+" investimentos importados"+(nao.length?"; não reconhecidos: "+nao.slice(0,5).join(", ")+(nao.length>5?"…":""):"")+". A posição fica só neste navegador.");
@@ -5243,7 +5268,7 @@ document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#re
 const FV={l:[],a:[],edit:null,boot:{}};
 try{const l=JSON.parse(localStorage.getItem("favs")||"[]");if(Array.isArray(l))FV.l=l.filter(x=>x&&typeof x.k==="string").slice(0,60)}catch(e){}
 try{const a=JSON.parse(localStorage.getItem("alertas")||"[]");if(Array.isArray(a))FV.a=a.filter(x=>x&&x.k&&x.c)}catch(e){}
-function fvSave(){try{localStorage.setItem("favs",JSON.stringify(FV.l));localStorage.setItem("alertas",JSON.stringify(FV.a))}catch(e){}}
+function fvSave(){try{localStorage.setItem("favs",JSON.stringify(FV.l));localStorage.setItem("alertas",JSON.stringify(FV.a))}catch(e){}if(typeof syncMark==="function")syncMark()}
 const fvHas=k=>FV.l.some(x=>x.k===k);
 const fvCurto=s=>{s=String(s||"").replace(/\s+/g," ").trim();return s.length>56?s.slice(0,54).replace(/\s\S*$/,"")+"…":s};
 const FV_TD={NTNB:"IPCAJ",NTNBP:"IPCA",RENDA:"RENDA",EDUCA:"EDUCA",LTN:"PRE",NTNF:"PREJ",LFT:"SELIC"};
@@ -5297,7 +5322,8 @@ function fvInner(){
   // títulos do Tesouro
   const td=typeof TD_ALL==="object"&&TD_ALL?Object.keys(TD_ALL).filter(k=>KIND[k.split("|")[0]]&&!fvHas("t:"+k)).sort((a,b)=>{const ka=a.split("|"),kb=b.split("|");return (KIND[ka[0]].td||"").localeCompare(KIND[kb[0]].td||"")||ka[1].localeCompare(kb[1])}):[];
   if(td.length)h+='<div class="fnfilt" style="margin-top:10px"><div class="field"><label for="fvTd">Adicionar título do Tesouro</label><select id="fvTd"><option value="">Escolha o título…</option>'+td.map(k=>{const [kd,d]=k.split("|");return '<option value="'+k+'">'+esc(fvTdName(kd,d))+(TD_ALL[k].buy!=null?'':' (fora de venda)')+'</option>'}).join("")+'</select></div></div>';
-  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). '+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
+  h+=syncHtml();
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+(SYNC.tok?'Favoritos, alertas e carteiras simuladas ficam no seu repositório privado do GitHub e aparecem iguais em todos os aparelhos conectados. Com o app aberto, os alertas são conferidos sempre que os dados se atualizam; com o app fechado, o robô do repositório confere a cada 30 minutos no horário de mercado e o GitHub avisa por e-mail e pelo app do GitHub. ':'Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). ')+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
   if(need.size)setTimeout(()=>fvNeed(need),0);
   return h;
 }
@@ -5343,7 +5369,7 @@ document.addEventListener("click",e=>{
   if(g("[data-fvperm]")){if("Notification" in window)Notification.requestPermission().then(()=>fvRefresh()).catch(()=>{});return}
   if(g("[data-fvtoast]")){const d=document.querySelector(".fvtoast");if(d)d.hidden=true;return}
 });
-document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="fvTd"&&t.value){const k=t.value,[kd,d]=k.split("|");FV.l.push({k:"t:"+k,n:fvTdName(kd,d)});fvSave();fvRefresh()}});
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="fvTd"&&t.value){if(typeof SYNC!=="undefined")delete SYNC.del["f|t:"+t.value];const k=t.value,[kd,d]=k.split("|");FV.l.push({k:"t:"+k,n:fvTdName(kd,d)});fvSave();fvRefresh()}});
 
 /* ----- documentos do ativo: fatos relevantes, comunicados, avisos, resultados e relatórios */
 const DOCS={m:new Map(),f:"todos"};
@@ -5366,6 +5392,80 @@ function docsFill(){
   el.innerHTML=h;el.hidden=false;
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-docf]");if(x){DOCS.f=x.dataset.docf;docsFill()}});
+
+/* ----- sincronização com o repositório privado do GitHub (favoritos, alertas e carteiras simuladas) */
+const SYNC_REPO="wagneria206-app/dados-mercado-config",SYNC_URL="https://api.github.com/repos/"+SYNC_REPO+"/contents/config.json";
+const SYNC={tok:null,sha:null,at:null,st:"",dirty:false,t:null,run:null,del:{}};
+try{SYNC.tok=localStorage.getItem("ghTok")||null;SYNC.at=localStorage.getItem("ghSyncAt")||null;SYNC.dirty=localStorage.getItem("ghDirty")==="1";SYNC.del=JSON.parse(localStorage.getItem("ghDel")||"{}")||{}}catch(e){}
+function syncLs(){try{if(SYNC.tok)localStorage.setItem("ghTok",SYNC.tok);else localStorage.removeItem("ghTok");localStorage.setItem("ghSyncAt",SYNC.at||"");localStorage.setItem("ghDirty",SYNC.dirty?"1":"0");localStorage.setItem("ghDel",JSON.stringify(SYNC.del))}catch(e){}}
+const syncB64d=b=>new TextDecoder().decode(Uint8Array.from(atob(String(b).replace(/\s/g,"")),c=>c.charCodeAt(0)));
+const syncB64e=t=>{const u=new TextEncoder().encode(t);let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+async function syncApi(metodo,corpo){
+  const r=await fetch(SYNC_URL+(metodo==="GET"?"?t="+Date.now():""),{method:metodo,cache:"no-store",headers:Object.assign({"Authorization":"Bearer "+SYNC.tok,"Accept":"application/vnd.github+json"},corpo?{"Content-Type":"application/json"}:{}),body:corpo?JSON.stringify(corpo):undefined});
+  if(r.status===404&&metodo==="GET")return null;
+  if(!r.ok){const e=new Error(r.status===401?"token inválido ou expirado":r.status===403?"o token não tem permissão de gravar (Contents: Read and write)":r.status===404?"repositório "+SYNC_REPO+" não encontrado para este token":"GitHub respondeu "+r.status);e.status=r.status;throw e}
+  return r.json();
+}
+function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del}}
+function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
+  const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
+  const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del};
+}
+function syncApply(D){
+  const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
+  FV.l=(D.favs||[]).filter(x=>x&&typeof x.k==="string").slice(0,60);FV.a=(D.alertas||[]).filter(x=>x&&x.k&&x.c).map(a=>Object.assign({},a,{ult:ult.get(a.id)}));
+  SYNC.del=D.del||{};
+  if(Array.isArray(D.carts)&&D.carts.length){SP.carts=D.carts;SP.cur=Math.min(SP.cur,SP.carts.length-1);if(typeof SP_CMP!=="undefined")SP_CMP=null}
+  try{localStorage.setItem("favs",JSON.stringify(FV.l));localStorage.setItem("alertas",JSON.stringify(FV.a));localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(e){}
+  fvRefresh();if(typeof activeMod!=="undefined"&&activeMod==="sp")spCalc();
+}
+async function syncNow(forcar){
+  if(!SYNC.tok)return;if(SYNC.run)return SYNC.run;
+  SYNC.run=(async()=>{
+    try{SYNC.st="sincronizando…";syncShow();
+      for(let tent=0;tent<3;tent++){
+        const j=await syncApi("GET");let R={favs:[],alertas:[],carts:[],del:{}};
+        if(j){SYNC.sha=j.sha;try{R=JSON.parse(syncB64d(j.content))}catch(e){}}else SYNC.sha=null;
+        const novoRemoto=!!(R.atualizadoEm&&R.atualizadoEm!==SYNC.at);
+        if(!SYNC.dirty&&!forcar){if(novoRemoto)syncApply(R);SYNC.at=R.atualizadoEm||SYNC.at;break}
+        const M=syncMerge(syncLocal(),R);M.v=1;M.atualizadoEm=new Date().toISOString();
+        try{const r=await syncApi("PUT",{message:"Configurações do app ("+new Date().toLocaleString("pt-BR")+")",content:syncB64e(JSON.stringify(M,null,1)),sha:SYNC.sha||undefined});SYNC.sha=r&&r.content&&r.content.sha;SYNC.at=M.atualizadoEm;SYNC.dirty=false;syncApply(M);break}
+        catch(e){if(e.status===409||e.status===422)continue;throw e}
+      }
+      SYNC.st="sincronizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});SYNC.err=null;
+    }catch(e){SYNC.st="";SYNC.err=e.message}
+    syncLs();syncShow();
+  })().finally(()=>{SYNC.run=null});
+  return SYNC.run;
+}
+function syncMark(){if(!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
+function syncHtml(){
+  let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
+  if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
+  else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
+  h+='<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-bkp="1">Baixar cópia (arquivo)</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
+  return h+'</div></details>';
+}
+function syncShow(){const el=$("syncSt");if(el)el.textContent=SYNC.err?"":SYNC.st;if(SYNC.err||!el)document.querySelectorAll(".fvbox").forEach(b=>{const d=b.querySelector(".fvsync");if(d)d.outerHTML=syncHtml()})}
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);
+  if(g("[data-syncon]")){const v=($("syncTok").value||"").trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){SYNC.err="isso não parece um token do GitHub";syncShow();return}SYNC.tok=v;SYNC.err=null;SYNC.dirty=true;syncLs();syncNow(true).then(()=>{if(SYNC.err){SYNC.tok=null;syncLs();syncShow()}});return}
+  if(g("[data-syncnow]")){syncNow(true);return}
+  if(g("[data-syncoff]")){SYNC.tok=null;SYNC.sha=null;SYNC.st="";SYNC.err=null;syncLs();fvRefresh();return}
+  if(g("[data-bkp]")){const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}),null,1);const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download="mercado-favoritos-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
+});
+document.addEventListener("change",async e=>{const t=e.target;if(!t||t.id!=="bkpIn"||!t.files||!t.files[0])return;
+  try{const D=JSON.parse(await t.files[0].text());if(!D||!Array.isArray(D.favs))throw new Error("arquivo inválido");syncApply(syncMerge(syncLocal(),D));fvSave();try{localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(x){}}
+  catch(x){SYNC.err="não deu para ler o arquivo: "+x.message;syncShow()}t.value=""});
+// apagar um favorito, alerta ou carteira registra a exclusão para os outros aparelhos
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;const agora=Date.now();
+  if((x=g("[data-fvrm]")))SYNC.del["f|"+x.dataset.fvrm]=agora;
+  else if((x=g("[data-fvdel]")))SYNC.del["a|"+x.dataset.fvdel]=agora;
+  else if((x=g("[data-fav]"))){if(fvHas(x.dataset.fav))SYNC.del["f|"+x.dataset.fav]=agora;else delete SYNC.del["f|"+x.dataset.fav]}
+  else if((x=g("[data-spdel]"))&&x.dataset.ok==="1"){const c=SP.carts[SP.cur];if(c&&c.id)SYNC.del["c|"+c.id]=agora}
+  else return;syncLs()},true);
+if(SYNC.tok){setTimeout(()=>syncNow(),1500);setInterval(()=>{if(document.visibilityState==="visible")syncNow()},5*60000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncNow()})}
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
