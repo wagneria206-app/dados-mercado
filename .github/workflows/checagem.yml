@@ -1,10 +1,9 @@
 name: Checagem do app
 
 # Abre o app num navegador sem tela, com os dados reais, e percorre todas as abas.
-# Roda em toda alteração do app (pull request e main) e uma vez por dia depois dos robôs.
+# Roda em todo pull request (exigida pela proteção do main), em mudanças do app no main e uma vez por dia.
 on:
-  pull_request:
-    paths: ["index.html", "sw.js", "manifest.webmanifest", "tests/**", ".github/workflows/checagem.yml"]
+  pull_request:   # em todo pull request: a checagem é obrigatória para entrar no main
   push:
     branches: [main]
     paths: ["index.html", "sw.js", "manifest.webmanifest", "tests/**"]
