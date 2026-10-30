@@ -38,23 +38,28 @@ jobs:
       - name: Restaurar os dados da última coleta (ramo "site")
         run: |
           if git fetch -q --depth=1 origin site; then git restore --source=FETCH_HEAD --worktree -- data 2>/dev/null || git checkout FETCH_HEAD -- data && git reset -q; fi
-          git restore --source=HEAD --worktree -- data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json 2>/dev/null || true
-          git restore --source=HEAD --worktree -- data/curvas_hist.json 2>/dev/null || true
+          # estado do robô (termos lidos, cronogramas, históricos): ramo "estado"; na primeira vez, o que está no main
+          SRC=HEAD; if git fetch -q --depth=1 origin estado; then SRC=FETCH_HEAD; fi
+          for p in data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json data/curvas_hist.json; do git restore --source=$SRC --worktree -- $p 2>/dev/null || true; done
       - name: Buscar dados
         env:
           FONTES: ${{ github.event.inputs.fontes }}
         run: if [ -n "$FONTES" ]; then python scripts/atualizar.py --so "$FONTES"; else python scripts/atualizar.py; fi
 
-      - name: Gravar o estado do robô no main (termos lidos e cronogramas)
+      - name: Gravar o estado do robô no ramo "estado" (o main é protegido)
         if: always()
+        env:
+          TOKEN: ${{ github.token }}
         run: |
+          rm -rf /tmp/estado && mkdir -p /tmp/estado/data
+          for p in termos cri_cra_cronogramas.json papeis_cadastrados.json curvas_hist.json fundos_hist; do if [ -e "data/$p" ]; then cp -r "data/$p" /tmp/estado/data/; fi; done
+          cd /tmp/estado
+          git init -q -b estado
           git config user.name "robo-dados"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data
-          if git diff --cached --quiet; then echo "Estado sem mudança."; else
-            git commit -q -m "Estado do robô $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
-            for t in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q && break; sleep 5; done
-          fi
+          git add -A
+          git commit -q -m "Estado do robô $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" estado
       - name: Publicar os dados do dia no ramo "site"
         if: always()
         env:
