@@ -25,7 +25,9 @@ jobs:
       - name: Restaurar os dados da última coleta (ramo "site")
         run: |
           if git fetch -q --depth=1 origin site; then git restore --source=FETCH_HEAD --worktree -- data 2>/dev/null || git checkout FETCH_HEAD -- data && git reset -q; fi
-          git restore --source=HEAD --worktree -- data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json 2>/dev/null || true
+          # estado do robô (termos lidos, cronogramas, históricos): ramo "estado"; na primeira vez, o que está no main
+          SRC=HEAD; if git fetch -q --depth=1 origin estado; then SRC=FETCH_HEAD; fi
+          for p in data/termos data/cri_cra_cronogramas.json data/papeis_cadastrados.json data/curvas_hist.json; do git restore --source=$SRC --worktree -- $p 2>/dev/null || true; done
       - name: Buscar Tesouro Direto
         run: python scripts/atualizar.py --rapido
       - name: Publicar os dados do dia no ramo "site"
