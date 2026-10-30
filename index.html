@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-rkkfLQem5XuhjOmJVAn0IXNcci6B7QNdIJRf+8zrNuM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-Uj/vHQDQUYR4FizYK4KyDaRtujNmNFpumHxV/ABn090='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1004,6 +1004,71 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 .relsecs input{min-height:0;margin-top:3px}
 
 .relbox{max-height:92vh;overflow:auto}
+
+/* celular: tabelas de comparação viram cartões (sem rolagem lateral) */
+@media (max-width:760px){
+.cmpwrap{overflow-x:visible!important}
+.cmptab{min-width:0!important;width:100%}
+.cmptab thead{display:none}
+.cmptab,.cmptab tbody{display:block}
+.cmptab tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px 10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.cmptab td{display:block;border:0!important;padding:0!important;text-align:left!important;white-space:normal!important}
+.cmptab td.cmpn{grid-column:1/-1;position:static!important;max-width:none!important;white-space:normal!important}
+.cmptab .cmpn .link{max-width:none!important;white-space:normal!important}
+.cmptab td[data-l]::before{content:attr(data-l);display:block;font-size:.7rem;color:var(--muted);text-transform:none;letter-spacing:0}
+.cmpcor thead{display:none}
+.cmpcor,.cmpcor tbody{display:block;width:100%;min-width:0!important}
+.cmpcor tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:4px 6px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.cmpcor td{display:block;border:0!important;padding:0!important;text-align:left!important}
+.cmpcor td.cmpn{grid-column:1/-1;position:static!important;max-width:none!important;white-space:normal!important}
+.cmpcor td[data-l]::before{content:"com " attr(data-l);display:block;font-size:.68rem;color:var(--muted)}
+}
+
+/* "Como calculamos e fontes" é da calculadora de títulos: só aparece na área Calcular */
+.wrap:not([data-area="calc"]) #methodBox{display:none!important}
+
+/* sem rolagem lateral: tabelas do comparador se ajustam à largura (cabeçalhos quebram linha,células mais compactas) */
+.cmptab,.cmpcor{width:100%;font-size:.82rem}
+
+.cmptab th{white-space:normal!important;vertical-align:bottom;line-height:1.2}
+
+.cmptab th,.cmptab td{padding:6px 5px!important}
+
+.cmptab .cmpn,.cmpcor .cmpn{max-width:200px}
+
+.cmptab .cmpn .link{max-width:190px}
+
+.cmpcor td,.cmpcor th{padding:4px 2px!important;font-size:.72rem}
+
+.ctab{width:100%}
+
+.ctab th{white-space:normal}
+
+.ctab td.tw,.ctab td .tw,.fnrk .fnnm{white-space:normal!important}
+@media (max-width:1150px){.ctab{font-size:.76rem}.ctab th,.ctab td{padding:4px 4px!important}.ctab .c-md{display:none!important}}
+@media (max-width:900px){.ctab .c-sm{display:none!important}.ctab{font-size:.74rem}}
+@media (max-width:1100px){.cmptab .cmpn,.cmpcor .cmpn{max-width:150px}.cmptab .cmpn .link{max-width:140px}}
+
+/* gráficos: legenda em cima,linhas finas,caixa de valores com barras coloridas */
+.fnleg{margin:4px 0 6px;gap:6px 16px}
+
+.legend i{width:14px!important;height:3px!important;border-radius:2px}
+
+.cvtip{font-size:.78rem;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+
+.cvtip b{text-align:center;border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:5px;font-size:.8rem}
+
+.cvtip span{gap:6px;line-height:1.5}
+
+.cvtip i.cvbar{width:3px!important;height:13px!important;border-radius:1px}
+
+.cvtip strong{font-weight:700;min-width:62px;font-variant-numeric:tabular-nums}
+
+.cvtip em{font-style:normal;color:var(--muted);max-width:240px;overflow:hidden;text-overflow:ellipsis}
+
+.fnrk th:first-child,.fnrk td:first-child{width:1%;white-space:nowrap}
+
+.fnrk .fnnm,.fnrk td.tw{min-width:220px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -2123,7 +2188,7 @@ function setMod(m){
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mod===m?"true":"false"));
   $("modPub").hidden=m!=="pub";$("modPc").hidden=m!=="pc";$("modBank").hidden=m!=="bank";$("notesBank").hidden=m!=="bank";$("modFund").hidden=m!=="fund";$("notesFund").hidden=m!=="fund";$("modSim").hidden=m!=="sim";$("notesSim").hidden=m!=="sim";$("modSc").hidden=m!=="sc";$("notesPub").hidden=m!=="pub";$("notesPc").hidden=m!=="pc";$("notesSc").hidden=m!=="sc";$("modTx").hidden=m!=="tx";$("modFx").hidden=m!=="fx";$("modMk").hidden=!MKM.has(m);$("modFn").hidden=!FNM.has(m);$("notesTx").hidden=m!=="tx";
   $("secChart").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";$("secFlow").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";
-  if(m==="fx"){$("secChart").hidden=true;$("secFlow").hidden=true}
+  if(m==="fx"){$("secChart").hidden=true;$("secFlow").hidden=true}{const mb=$("methodBox");if(mb)mb.style.display=m==="pub"?"":"none"}
   try{localStorage.setItem("mod2",m)}catch(e){}
   if(FNM.has(m))fnCalc(m);else if(MKM.has(m))mkCalc();else if(m==="pub")calc();else if(m==="pc")pcCalc();else if(m==="bank")bkCalc();else if(m==="fund")fdCalc();else if(m==="sim")simCalc();else if(m==="tx"){oppRender();txCalc()}else if(m==="fx")fxCalc();else{scRefreshSources();if(!LAST.pub&&LAST.pc)$("scSrc").value="pc";scCalc()}
 }
@@ -3100,7 +3165,7 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(rsHtml())+P(agendaHtml())+P(basesHtml());
+  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
@@ -3842,9 +3907,10 @@ let FX_TOP=null;
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
 const FN_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/";
 const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","ag","sp"]);
-const FN_BM={cdi:{lab:"CDI",col:"var(--flat)",dash:"5 4"},ibov:{lab:"Ibovespa",col:"var(--s3)"},ipca:{lab:"IPCA",col:"var(--s2)"},usd:{lab:"Dólar",col:"var(--s4)"},ifix:{lab:"IFIX",col:"var(--gold)"}};
-Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#0e7490"},imab5:{lab:"IMA-B 5",col:"#0891b2"},imab5p:{lab:"IMA-B 5+",col:"#155e75"},irfm:{lab:"IRF-M",col:"#7c3aed"},imas:{lab:"IMA-S",col:"#64748b"},imag:{lab:"IMA-Geral",col:"#9d174d"}});
-const FN_COLS=["var(--accent)","var(--loss)","var(--s4)","var(--s3)","var(--s2)","var(--gold)"];
+const FN_BM={cdi:{lab:"CDI",col:"#7c8aa5"},ibov:{lab:"Ibovespa",col:"#f97316"},ipca:{lab:"IPCA",col:"#eab308"},usd:{lab:"Dólar",col:"#22c55e"},ifix:{lab:"IFIX",col:"#a16207"}};
+Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#06b6d4"},imab5:{lab:"IMA-B 5",col:"#38bdf8"},imab5p:{lab:"IMA-B 5+",col:"#0f766e"},irfm:{lab:"IRF-M",col:"#c026d3"},imas:{lab:"IMA-S",col:"#94a3b8"},imag:{lab:"IMA-Geral",col:"#ec4899"}});
+const FN_COLS=["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2"];
+const FN_BML=()=>new Set(Object.values(FN_BM).map(x=>x.lab).concat(["CDI","IPCA","Ibovespa"]));
 const FN_PER=[["mes","No mês"],["ano","No ano"],["6","6 meses"],["12","12 meses"],["24","24 meses"],["36","36 meses"],["60","60 meses"],["tudo","Desde o início"]];
 const FN={idx:null,C:null,sk:null,T:null,cal:null,B:null,L:null,files:new Map(),load:null,err:null,view:null,cur:null,per:"12",bm:{cdi:1,ibov:0,ipca:0,usd:0,ifix:0},tabCmp:"pcdi",rper:"12",
   rk:{tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:""},cmp:[],cper:"12",q:"",jan:12,gu:""};
@@ -3990,14 +4056,14 @@ function fnBmMonth(b,k){const m=FN.L&&FN.L.m[b];if(!m||m[k]==null||m[k-1]==null)
 /* ---------- gráficos */
 function fnChart(S,opt){
   opt=opt||{};const NW=window.innerWidth<640,W=NW?420:760,H=opt.h||(NW?260:230),PL=NW?50:58,PR=10,PT=12,PB=26;
-  S=S.filter(s=>s.pts&&s.pts.length);let lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;
+  S=S.filter(s=>s.pts&&s.pts.length);const BML=FN_BML();let lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;
   S.forEach(s=>s.pts.forEach(([t,v])=>{if(v==null||!isFinite(v))return;lo=Math.min(lo,v);hi=Math.max(hi,v);t0=Math.min(t0,t);t1=Math.max(t1,t)}));
   if(!isFinite(lo))return '<p class="sub">Sem dados para o período.</p>';
   if(opt.zero){lo=Math.min(lo,0);hi=Math.max(hi,0)}
   const pad=(hi-lo)*0.06||Math.abs(hi)*0.05||1;lo-=pad;hi+=pad;const st=niceStep((hi-lo)/5);lo=Math.floor(lo/st)*st;hi=Math.ceil(hi/st)*st;
   if(opt.bars){t0-=15*DAY;t1+=15*DAY}
   const X=t=>PL+(t-t0)/Math.max(1,t1-t0)*(W-PL-PR),Y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);
-  const fv=v=>opt.fmt==="brl"?fx(v,v>=100?0:2):opt.fmt==="money"?fnMoney(v).replace("R$ ",""):opt.fmt==="int"?fx(v,0):fx(v,st>=1?0:st>=0.1?1:2)+(opt.fmt==="pct"?"%":"");
+  const fv=v=>opt.fmt==="num"?fx(v,Number.isInteger(st)?0:1):opt.fmt==="brl"?fx(v,v>=100?0:2):opt.fmt==="money"?fnMoney(v).replace("R$ ",""):opt.fmt==="int"?fx(v,0):fx(v,st>=1?0:st>=0.1?1:2)+(opt.fmt==="pct"?"%":"");
   let g='';for(let v=lo;v<=hi+st/2;v+=st){const y=Y(v);g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="var(--line)"'+(Math.abs(v)<st/1e6?'':' stroke-dasharray="2 4"')+'/><text x="'+(PL-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+fv(Math.abs(v)<st/1e6?0:v)+'</text>'}
   const ny=(t1-t0)/DAY/365.25,ticks=[];
   if(ny<0.4){const nd=Math.max(1,Math.round((t1-t0)/DAY/(NW?4:7)));for(let t=t0;t<=t1;t+=nd*DAY)ticks.push([t,fdate(t).slice(0,5)])}
@@ -4007,21 +4073,27 @@ function fnChart(S,opt){
   if(opt.bars){const s=S[0],bw=Math.max(2,Math.min(18,(W-PL-PR)/Math.max(1,s.pts.length)*0.7));s.pts.forEach(([t,v])=>{if(v==null)return;const y0=Y(0),y=Y(v);g+='<rect x="'+(X(t)-bw/2).toFixed(1)+'" y="'+Math.min(y,y0).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,Math.abs(y-y0)).toFixed(1)+'" fill="'+(v>=0?"var(--gain)":"var(--loss)")+'" opacity=".85"/>'})}
   else S.slice().reverse().forEach(s=>{let d='',pen=false;s.pts.forEach(([t,v])=>{if(v==null||!isFinite(v)){pen=false;return}d+=(pen?'L':'M')+X(t).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true});
     if(opt.fill&&s===S[0]){const f=s.pts.filter(p=>p[1]!=null);if(f.length)g+='<path d="'+d+'L'+X(f[f.length-1][0]).toFixed(1)+' '+Y(0).toFixed(1)+' L'+X(f[0][0]).toFixed(1)+' '+Y(0).toFixed(1)+' Z" fill="'+s.col+'" opacity=".14"/>'}
-    g+='<path d="'+d+'" fill="none" stroke="'+s.col+'" stroke-width="'+(s.w||1.8)+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+' stroke-linejoin="round"/>'});
+    const bm=BML.has(String(s.lab).replace(/ \(.*$/,"")),dash=s.dash||(bm?"4 3":null);g+='<path d="'+d+'" fill="none" stroke="'+s.col+'" stroke-width="'+((s.w||1.8)*(bm?0.6:0.7)).toFixed(2)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linejoin="round" stroke-linecap="round"/>'});
   g+='<line class="cvx" x1="0" x2="0" y1="'+PT+'" y2="'+(H-PB)+'" stroke="var(--ink)" stroke-width="1" opacity="0"/>';
-  const meta={W,PL,PR,t0,t1,f:opt.fmt||"pct",m:!!opt.months,S:S.map(s=>({l:s.lab,c:s.col,p:s.pts.filter(p=>p[1]!=null&&isFinite(p[1])).map(p=>[p[0],+p[1].toFixed(opt.fmt==="money"||opt.fmt==="int"?0:opt.fmt==="brl"?4:3)])}))};
-  return '<div class="fnchart" data-fnc=\''+JSON.stringify(meta).replace(/'/g,"&#39;")+'\'><svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opt.aria||"Gráfico")+'">'+g+'<rect x="'+PL+'" y="'+PT+'" width="'+(W-PL-PR)+'" height="'+(H-PT-PB)+'" fill="transparent"/></svg><div class="cvtip" hidden></div></div>'+((S.length>1||opt.legend)&&!opt.noLegend?'<div class="legend">'+S.map(s=>'<span><i style="background:'+s.col+'"></i>'+esc(s.lab)+'</span>').join("")+'</div>':'');
+  const meta={W,H,PT,PB,lo,hi,PL,PR,t0,t1,f:opt.fmt||"pct",m:!!opt.months,b:!!opt.bars,S:S.map(s=>({l:s.lab,c:s.col,p:s.pts.filter(p=>p[1]!=null&&isFinite(p[1])).map(p=>[p[0],+p[1].toFixed(opt.fmt==="money"||opt.fmt==="int"?0:opt.fmt==="brl"?4:3)])}))};
+  return ((S.length>1||opt.legend)&&!opt.noLegend?'<div class="legend fnleg">'+S.map(s=>'<span><i style="background:'+s.col+'"></i>'+esc(s.lab)+'</span>').join("")+'</div>':'')+'<div class="fnchart" data-fnc=\''+JSON.stringify(meta).replace(/'/g,"&#39;")+'\'><svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opt.aria||"Gráfico")+'">'+g+'<rect x="'+PL+'" y="'+PT+'" width="'+(W-PL-PR)+'" height="'+(H-PT-PB)+'" fill="transparent"/></svg><div class="cvtip" hidden></div></div>';
 }
 function fnTip(e){
   const box=e.target.closest&&e.target.closest(".fnchart");
-  document.querySelectorAll(".fnchart").forEach(b=>{if(b!==box){const t=b.querySelector(".cvtip");if(t&&!t.hidden)t.hidden=true;const l=b.querySelector(".cvx");if(l)l.setAttribute("opacity","0")}});
+  document.querySelectorAll(".fnchart").forEach(b=>{if(b!==box){const t=b.querySelector(".cvtip");if(t&&!t.hidden)t.hidden=true;const l=b.querySelector(".cvx");if(l)l.setAttribute("opacity","0");const g=b.querySelector(".cvdots");if(g)g.remove()}});
   if(!box)return;let M;try{M=JSON.parse(box.dataset.fnc)}catch(x){return}
   const svg=box.querySelector("svg"),R=svg.getBoundingClientRect(),sx=R.width/M.W,cx=(e.touches?e.touches[0].clientX:e.clientX),px=(cx-R.left)/sx,t=M.t0+(px-M.PL)/(M.W-M.PL-M.PR)*(M.t1-M.t0);
   let bt=null;M.S.forEach(s=>s.p.forEach(p=>{if(bt==null||Math.abs(p[0]-t)<Math.abs(bt-t))bt=p[0]}));if(bt==null)return;
   const X=M.PL+(bt-M.t0)/Math.max(1,M.t1-M.t0)*(M.W-M.PL-M.PR),ln=box.querySelector(".cvx");ln.setAttribute("x1",X);ln.setAttribute("x2",X);ln.setAttribute("opacity",".35");
-  const F=v=>M.f==="brl"?"R$ "+fx(v,2):M.f==="money"?fnMoney(v):M.f==="int"?fx(v,0):(v<0?"−":"")+fx(Math.abs(v),2)+"%";
-  const tip=box.querySelector(".cvtip");tip.innerHTML='<b>'+(M.m?mname(new Date(bt).getUTCFullYear()*12+new Date(bt).getUTCMonth()):fdate(bt))+'</b>'+M.S.map(s=>{let q=null;s.p.forEach(p=>{if(q==null||Math.abs(p[0]-bt)<Math.abs(q[0]-bt))q=p});return q&&Math.abs(q[0]-bt)<20*DAY?'<span><i style="background:'+s.c+'"></i>'+esc(s.l)+': '+F(q[1])+'</span>':''}).join("");
-  tip.hidden=false;const bx=box.getBoundingClientRect(),left=X*sx+12;tip.style.top="8px";tip.style.left=(left+tip.offsetWidth>bx.width?Math.max(0,X*sx-tip.offsetWidth-12):left)+"px";
+  const F=v=>M.f==="num"?(v<0?"−":"")+fx(Math.abs(v),2):M.f==="brl"?"R$ "+fx(v,2):M.f==="money"?fnMoney(v):M.f==="int"?fx(v,0):(v<0?"−":"")+fx(Math.abs(v),2)+"%";
+  const rows=[];M.S.forEach(s=>{let q=null;s.p.forEach(p=>{if(q==null||Math.abs(p[0]-bt)<Math.abs(q[0]-bt))q=p});if(q&&Math.abs(q[0]-bt)<20*DAY)rows.push({s,v:q[1]})});
+  rows.sort((a,b)=>b.v-a.v);
+  // bolinhas sobre as linhas no ponto do mouse
+  let g=svg.querySelector(".cvdots");if(g)g.remove();
+  if(!M.b&&M.H&&M.hi>M.lo){g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","cvdots");
+    rows.forEach(r=>{const c=document.createElementNS("http://www.w3.org/2000/svg","circle"),Y=M.PT+(M.hi-r.v)/(M.hi-M.lo)*(M.H-M.PT-M.PB);c.setAttribute("cx",X.toFixed(1));c.setAttribute("cy",Y.toFixed(1));c.setAttribute("r","3.4");c.setAttribute("fill",r.s.c);c.setAttribute("stroke","var(--surface)");c.setAttribute("stroke-width","1.5");g.appendChild(c)});svg.appendChild(g)}
+  const tip=box.querySelector(".cvtip");tip.innerHTML='<b>'+(M.m?mname(new Date(bt).getUTCFullYear()*12+new Date(bt).getUTCMonth()):fdate(bt))+'</b>'+rows.map(r=>'<span><i class="cvbar" style="background:'+r.s.c+'"></i><strong style="color:'+r.s.c+'">'+F(r.v)+'</strong><em>'+esc(r.s.l)+'</em></span>').join("");
+  tip.hidden=false;const bx=box.getBoundingClientRect(),left=X*sx+14;tip.style.top="8px";tip.style.left=(left+tip.offsetWidth>bx.width?Math.max(0,X*sx-tip.offsetWidth-14):left)+"px";
 }
 document.addEventListener("mousemove",fnTip);document.addEventListener("touchstart",fnTip,{passive:true});
 
@@ -4243,11 +4315,11 @@ function fnRkList(){
 }
 function fnRkTable(){
   const t=$("fnRkT");if(!t)return;const C=FN.C,rk=FN.rk,L=fnRkList();
-  const cols=[["nome","Fundo",""],["pl","PL",""],["cotistas","Cotistas","c-ph"],["rm","Mês","c-ph"],["ra","Ano",""],["r12","12m",""],["r24","24m","c-ph"],["r36","36m",""],["v12","Vol. 12m","c-ph"],["sharpe","Sharpe 12m","c-ph"],["dd36","Perda máx. 36m","c-ph"],["capt12","Captação 12m","c-ph"],["tadm","Taxa adm.","c-ph"],["amin","Aplic. mín.","c-ph"],["dres","Resgate","c-ph"]];
+  const cols=[["nome","Fundo",""],["pl","PL",""],["cotistas","Cotistas","c-ph c-md"],["rm","Mês","c-ph c-sm"],["ra","Ano",""],["r12","12m",""],["r24","24m","c-ph c-sm"],["r36","36m",""],["v12","Vol. 12m","c-ph"],["sharpe","Sharpe 12m","c-ph c-sm"],["dd36","Perda máx. 36m","c-ph"],["capt12","Captação 12m","c-ph c-md"],["tadm","Taxa adm.","c-ph"],["amin","Aplic. mín.","c-ph c-md"],["dres","Resgate","c-ph c-md"]];
   let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' fundos. CDI em 12 meses: '+fnPctT(FN.idx.cdi12)+'.</p><div class="tablewrap" style="max-height:none"><table class="ctab fnrk"><thead><tr><th>#</th>'+cols.map(([c,l,cl])=>'<th data-fnsort="'+c+'" class="'+cl+'"'+(c==="nome"?' style="text-align:left"':'')+'>'+l+(rk.sort===c?(rk.dir<0?' ▾':' ▴'):'')+'</th>').join("")+'<th></th></tr></thead><tbody>';
   L.slice(0,rk.n).forEach((r,j)=>{h+='<tr><td><small>'+(j+1)+'</small></td><td class="tw" style="text-align:left;min-width:180px"><button type="button" class="link fnnm" data-fnopen="'+r[0]+'">'+esc(r[1])+'</button><small>'+esc(FN.idx.gestores[r[C.gestor]]||"")+(FN.idx.anbima[r[C.anbima]]?' · '+esc(FN.idx.anbima[r[C.anbima]]):'')+'</small></td>'
-    +'<td>'+fnMoney(r[C.pl])+'</td><td class="c-ph">'+fnInt(r[C.cotistas])+'</td><td class="c-ph">'+fnPct(r[C.rm])+'</td><td>'+fnPct(r[C.ra])+'</td><td><b>'+fnPct(r[C.r12])+'</b></td><td class="c-ph">'+fnPct(r[C.r24])+'</td><td>'+fnPct(r[C.r36])+'</td>'
-    +'<td class="c-ph">'+(r[C.v12]!=null?fx(r[C.v12],2)+'%':'—')+'</td><td class="c-ph">'+(r[C.sharpe]!=null?fx(r[C.sharpe],2):'—')+'</td><td class="c-ph">'+fnPct(r[C.dd36])+'</td><td class="c-ph">'+fnMoney(r[C.capt12])+'</td><td class="c-ph">'+(r[C.tadm]!=null?fx(r[C.tadm],2)+'%':'—')+'</td><td class="c-ph">'+(C.amin!=null&&r[C.amin]!=null?(r[C.amin]?fnMoney(r[C.amin]):'—'):'—')+'</td><td class="c-ph">'+(C.dres!=null&&r[C.dres]!=null?'D+'+fx(r[C.dres],0):'—')+'</td>'
+    +'<td>'+fnMoney(r[C.pl])+'</td><td class="c-ph c-md">'+fnInt(r[C.cotistas])+'</td><td class="c-ph c-sm">'+fnPct(r[C.rm])+'</td><td>'+fnPct(r[C.ra])+'</td><td><b>'+fnPct(r[C.r12])+'</b></td><td class="c-ph c-sm">'+fnPct(r[C.r24])+'</td><td>'+fnPct(r[C.r36])+'</td>'
+    +'<td class="c-ph">'+(r[C.v12]!=null?fx(r[C.v12],2)+'%':'—')+'</td><td class="c-ph c-sm">'+(r[C.sharpe]!=null?fx(r[C.sharpe],2):'—')+'</td><td class="c-ph">'+fnPct(r[C.dd36])+'</td><td class="c-ph c-md">'+fnMoney(r[C.capt12])+'</td><td class="c-ph">'+(r[C.tadm]!=null?fx(r[C.tadm],2)+'%':'—')+'</td><td class="c-ph c-md">'+(C.amin!=null&&r[C.amin]!=null?(r[C.amin]?fnMoney(r[C.amin]):'—'):'—')+'</td><td class="c-ph c-md">'+(C.dres!=null&&r[C.dres]!=null?'D+'+fx(r[C.dres],0):'—')+'</td>'
     +'<td><button type="button" class="link" data-fncmp="'+r[0]+'" title="Adicionar ao comparador">'+(FN.cmp.includes(r[0])?'✓':'+')+'</button></td></tr>'});
   h+='</tbody></table></div>'+(L.length>rk.n?'<button type="button" class="btn sec" data-fnmore="1" style="margin-top:10px">Mostrar mais 50</button>':'');
   t.innerHTML=h;
@@ -4415,7 +4487,7 @@ function atProvHtml(A){
   const pxY=y=>{let best=null;for(let x=0;x<A.I.length;x++){const d=new Date(AT.T[A.I[x]]);if(d.getUTCFullYear()===y)best=x}return best==null?null:A.R[best]*fac(A.I[best])};
   let h='<section class="panel"><h3>Proventos</h3>';
   if(yrs.length>1)h+='<div class="label">Proventos por ano (R$ por '+(AT_FUNDO.has(A.tipo)?'cota':'ação')+', na base de ações de hoje)</div>'+fnChart([{lab:"Proventos",col:"var(--gain)",pts:yrs.map(y=>[Date.UTC(y,6,1),anos[y]])}],{fmt:"brl",bars:true,zero:true,h:170,aria:"Proventos por ano"});
-  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+yrs.slice().reverse().map(y=>'<th>'+y+'</th>').join("")+'</tr></thead><tbody><tr><td style="text-align:left">Total por ação</td>'+yrs.slice().reverse().map(y=>'<td>R$ '+fx(anos[y],2)+'</td>').join("")+'</tr><tr><td style="text-align:left">Dividend yield <small>(sobre o preço de fim de ano)</small></td>'+yrs.slice().reverse().map(y=>{const p=pxY(y);return '<td>'+(p?fx(anos[y]/p*100,2)+'%':'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+yrs.slice().reverse().map((y,j)=>'<th'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>'+y+'</th>').join("")+'</tr></thead><tbody><tr><td style="text-align:left">Total por ação</td>'+yrs.slice().reverse().map((y,j)=>'<td'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>R$ '+fx(anos[y],2)+'</td>').join("")+'</tr><tr><td style="text-align:left">Dividend yield <small>(sobre o preço de fim de ano)</small></td>'+yrs.slice().reverse().map((y,j)=>{const p=pxY(y);return '<td'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>'+(p?fx(anos[y]/p*100,2)+'%':'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
   if(AT_FUNDO.has(A.tipo)){const L=ev.filter(e=>e.tp!=="A").slice(-24);if(L.length>3)h+='<div class="label" style="margin-top:10px">Rendimento mensal por cota</div>'+fnChart([{lab:"Rendimento",col:"var(--gain)",pts:L.map(e=>[Date.parse(e.dc+"T00:00:00Z"),e.v*fac(e.ix)])}],{fmt:"brl",bars:true,zero:true,h:160,aria:"Rendimentos"})}
   h+='<div class="label" style="margin-top:10px">Últimos proventos</div><div class="tablewrap" style="max-height:340px"><table class="ctab"><thead><tr><th style="text-align:left">Data com</th><th style="text-align:left" class="c-ph">Pagamento</th><th style="text-align:left">Tipo</th><th>Valor</th><th>% do preço</th></tr></thead><tbody>';
   ev.slice().reverse().slice(0,40).forEach(e=>{const pg=PAG[e.dc+"|"+e.tp+"|"+(+e.v).toFixed(8)];h+='<tr><td style="text-align:left">'+fdate(Date.parse(e.dc+"T00:00:00Z"))+'</td><td style="text-align:left" class="c-ph">'+(pg&&pg<"9000"?fdate(Date.parse(pg+"T00:00:00Z")):pg?'a definir':'—')+'</td><td style="text-align:left">'+(NM[e.tp]||e.tp)+'</td><td>R$ '+fx(e.v,e.v<0.1?4:2)+'</td><td>'+fx((1-e.f)*100,2)+'%</td></tr>'});
@@ -4434,8 +4506,8 @@ function atFundHtml(A){
   const an=f.a||{},ys=Object.keys(an).sort();
   if(ys.length>1){
     h+='<div class="label" style="margin-top:12px">Receita e lucro líquido por ano</div>'+fnChart([{lab:"Receita",col:FN_COLS[0],w:2.2,pts:ys.map(y=>[Date.UTC(+y,11,31),an[y][0]])},{lab:"Lucro líquido",col:"var(--gain)",w:2.2,pts:ys.map(y=>[Date.UTC(+y,11,31),an[y][2]])}],{fmt:"money",zero:true,h:200,aria:"Resultados"});
-    h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+ys.slice().reverse().map(y=>'<th>'+y+'</th>').join("")+'</tr></thead><tbody>';
-    const row=(lab,f2)=>'<tr><td style="text-align:left">'+lab+'</td>'+ys.slice().reverse().map(y=>'<td>'+f2(an[y])+'</td>').join("")+'</tr>';
+    h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+ys.slice().reverse().map((y,j)=>'<th'+(j>=6?' class="c-md"':j>=4?' class="c-sm"':'')+'>'+y+'</th>').join("")+'</tr></thead><tbody>';
+    const row=(lab,f2)=>'<tr><td style="text-align:left">'+lab+'</td>'+ys.slice().reverse().map((y,j)=>'<td'+(j>=6?' class="c-md"':j>=4?' class="c-sm"':'')+'>'+f2(an[y])+'</td>').join("")+'</tr>';
     h+=row("Receita",v=>fnMoney(v[0]))+row("EBIT",v=>fnMoney(v[1]))+row("Lucro líquido",v=>fnMoney(v[2]))+row("Margem líquida",v=>v[0]&&v[2]!=null?fnPctT(v[2]/v[0]*100,1):"—")+row("ROE",v=>v[3]&&v[2]!=null?fnPctT(v[2]/v[3]*100,1):"—")+row("Patrimônio líquido",v=>fnMoney(v[3]))+row("Dívida líquida",v=>v[6]!=null?fnMoney((v[6]||0)-(v[5]||0)):"—");
     h+='</tbody></table></div>'}
   h+='<p class="sub" style="font-size:.8rem">Demonstrações consolidadas entregues à CVM (DFP anual e ITR trimestral)'+(i.ltm?'; últimos 12 meses até '+fdate(Date.parse(i.ltm+"T00:00:00Z")):'')+'. Valor de mercado = ações em circulação (sem tesouraria) × cotação de cada classe. Bancos e seguradoras têm estrutura de resultado diferente: EBIT e dívida não se aplicam.</p></section>';
@@ -4469,7 +4541,7 @@ function atSrcHtml(){return '<p class="sub" style="font-size:.78rem;margin:4px 4
 
 /* ---------- ranking */
 const AT_RKCOLS={
-  acao:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano","c-ph"],["r12","12m",""],["dy","DY",""],["pl","P/L",""],["pvp","P/VP","c-ph"],["roe","ROE","c-ph"],["ml","Marg. líq.","c-ph"],["dlebit","DL/EBIT","c-ph"],["evebit","EV/EBIT","c-ph"],["mcap","Valor de mercado","c-ph"],["liq","Liquidez/dia","c-ph"],["v12","Vol. 12m","c-ph"]],
+  acao:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano","c-ph"],["r12","12m",""],["dy","DY",""],["pl","P/L",""],["pvp","P/VP","c-ph"],["roe","ROE","c-ph"],["ml","Marg. líq.","c-ph c-sm"],["dlebit","DL/EBIT","c-ph c-md"],["evebit","EV/EBIT","c-ph c-md"],["mcap","Valor de mercado","c-ph"],["liq","Liquidez/dia","c-ph c-sm"],["v12","Vol. 12m","c-ph c-md"]],
   fii:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano","c-ph"],["r12","12m",""],["dy","DY",""],["pvp","P/VP",""],["mcap","Valor de mercado","c-ph"],["cot","Cotistas","c-ph"],["liq","Liquidez/dia","c-ph"],["v12","Vol. 12m","c-ph"]],
   out:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano",""],["r12","12m",""],["r36","36m","c-ph"],["v12","Vol. 12m","c-ph"],["dd36","Perda máx. 36m","c-ph"],["beta","Beta","c-ph"],["liq","Liquidez/dia",""]]};
 function atRk(){
@@ -4521,7 +4593,7 @@ window.addEventListener("hashchange",()=>{if(AT.idx)atHash();else{const m=/ativo
 
 /* ===== Comparador (fundos e ativos, até 20), janelas móveis, similares, gross-up, gestoras ===== */
 const CMP_MAX=20;
-const CMP_COLS=["#2563eb","#dc2626","#16a34a","#9333ea","#ea580c","#0891b2","#db2777","#65a30d","#7c3aed","#b45309","#0d9488","#e11d48","#4f46e5","#ca8a04","#059669","#c026d3","#0284c7","#a16207","#64748b","#f97316"];
+const CMP_COLS=["#2563eb","#16a34a","#dc2626","#9333ea","#f59e0b","#0891b2","#db2777","#65a30d","#4f46e5","#ea580c","#0d9488","#be123c","#854d0e","#0284c7","#7c3aed","#4d7c0f","#e879f9","#1e3a8a","#14b8a6","#64748b"];
 const CMPST={f:{tab:"ret",per:"12",hide:{},ini:"",fim:"",same:1,jan:12,sort:{}},a:{tab:"ret",per:"12",hide:{},ini:"",fim:"",same:1,jan:12,sort:{}}};
 try{const c=JSON.parse(localStorage.getItem("cmpSt")||"null");if(c&&c.f&&c.a){Object.assign(CMPST.f,c.f,{hide:{}});Object.assign(CMPST.a,c.a,{hide:{}})}}catch(e){}
 function cmpSave(){try{localStorage.setItem("cmpSt",JSON.stringify({f:Object.assign({},CMPST.f,{hide:{}}),a:Object.assign({},CMPST.a,{hide:{}})}))}catch(e){}}
@@ -4613,19 +4685,19 @@ function cmpTable(K,st,rows,bmRows,ref){
     const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,k)=>{if(b.has(k)){xs.push(v);ys.push(b.get(k))}});if(xs.length<30)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
     const M=ok.map((x,i)=>ok.map((y,j)=>i===j?1:j<i?null:cor(D[i],D[j])));for(let i=0;i<ok.length;i++)for(let j=0;j<i;j++)M[i][j]=M[j][i];
     let h='<div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+ok.map((x,j)=>'<th title="'+esc(K.name(x.F))+'"><i class="fndot" style="background:'+col(x.j)+'"></i>'+(x.j+1)+'</th>').join("")+'</tr></thead><tbody>'
-      +ok.map((x,i)=>'<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i>'+(x.j+1)+'. '+esc(K.name(x.F).slice(0,32))+'</td>'+M[i].map(c=>'<td>'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>').join("")+'</tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Correlação dos retornos diários no período. Perto de 1: andam juntos; perto de 0: sem relação; negativo: movimentos opostos.</p>';
+      +ok.map((x,i)=>'<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i>'+(x.j+1)+'. '+esc(K.name(x.F).slice(0,32))+'</td>'+M[i].map((c,j)=>'<td data-l="'+(ok[j].x===undefined?(ok[j].j+1):(ok[j].j+1))+'">'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>').join("")+'</tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Correlação dos retornos diários no período. Perto de 1: andam juntos; perto de 0: sem relação; negativo: movimentos opostos.</p>';
     return {html:h,csv:[[""].concat(ok.map(x=>K.name(x.F)))].concat(ok.map((x,i)=>[K.name(x.F)].concat(M[i].map(c=>c==null?"":c.toFixed(4)))))};
   }
   const cols=cmpCols(K,st),vals=rows.map(x=>({x,v:x.sem&&st.tab!=="info"&&st.tab!=="jan"?{}:cmpVals(K,st,x)}));
   const so=st.sort[st.tab];if(so){const [c,d]=so;vals.sort((a,b)=>{const p=a.v[c],q=b.v[c];if(p==null&&q==null)return 0;if(p==null)return 1;if(q==null)return -1;return typeof p==="string"?d*p.localeCompare(q):d*(p-q)})}
   let h='';if(st.tab==="jan")h+='<div class="fnrow">'+fnSeg("cmpjan",[["12","12 meses"],["24","24 meses"],["36","36 meses"]],String(st.jan))+'</div>';
   h+='<div class="tablewrap cmpwrap" style="max-height:none"><table class="ctab cmptab"><thead><tr><th class="cmpn" style="text-align:left">'+(K.kind==="f"?"Fundo":"Ativo")+'</th>'+cols.map(([l,c])=>'<th data-cmpsort="'+K.kind+'|'+c+'">'+l+(so&&so[0]===c?(so[1]<0?' ▾':' ▴'):'')+'</th>').join("")+'</tr></thead><tbody>';
-  vals.forEach(({x,v})=>{h+='<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(x.F)+'">'+esc(K.name(x.F).slice(0,52))+'</button></td>'+cols.map(([l,c,f])=>'<td>'+(v[c]===undefined?'—':f(v[c]))+'</td>').join("")+'</tr>'});
+  vals.forEach(({x,v})=>{h+='<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(x.F)+'">'+esc(K.name(x.F).slice(0,52))+'</button></td>'+cols.map(([l,c,f])=>'<td data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(v[c]===undefined?'—':f(v[c]))+'</td>').join("")+'</tr>'});
   // índices de referência
   if(ref&&(st.tab==="ret"||st.tab==="jan"))bmRows.forEach(b=>{const o={};if(st.tab==="ret"){const a={t:ref.p0.t,i:fnCalIdx(ref.p0.t),k:ref.p0.k},z={t:ref.p1.t,i:fnCalIdx(ref.p1.t),k:ref.p1.k};o.r=fnBmRet(b,a,z);const cd=fnBmRet("cdi",a,z);o.pcdi=o.r!=null&&cd>0?o.r/cd*100:null;
       const l=fnLast(ref.F);[["mes","rm"],["ano","ra"],["12","r12"],["24","r24"],["36","r36"],["60","r60"]].forEach(([p,c])=>{const s=fnStart(ref.F,p);o[c]=s?fnBmRet(b,s,l):null})}
     else{const fake={MK:[],M:new Map()};const m=FN.L.m[b]||{};Object.keys(m).map(Number).sort((a,c)=>a-c).forEach(k=>{if(fnMt(k)<=ref.p1.t+5*DAY){fake.MK.push(k);fake.M.set(k,{q:m[k]})}});Object.assign(o,cmpJan(fake,st.jan,null))}
-    h+='<tr class="cmpbm"><td class="cmpn"><i class="fndot" style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</td>'+cols.map(([l,c,f])=>'<td>'+(o[c]===undefined?'':f(o[c]))+'</td>').join("")+'</tr>'});
+    h+='<tr class="cmpbm"><td class="cmpn"><i class="fndot" style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</td>'+cols.map(([l,c,f])=>'<td data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(o[c]===undefined?'':f(o[c]))+'</td>').join("")+'</tr>'});
   h+='</tbody></table></div>';
   if(st.tab==="jan"){const S=[];rows.forEach(x=>{if(x.sem||st.hide[K.key(x.F)])return;S.push({lab:K.name(x.F).slice(0,30),col:col(x.j),w:1.6,pts:cmpJanSeries(x.F,st.jan).filter(p=>p[0]<=x.p1.t+5*DAY)})});
     const m=FN.L.m.cdi||{},cs=[];Object.keys(m).map(Number).sort((a,b)=>a-b).forEach(k=>{if(m[k-st.jan])cs.push([fnMt(k),(m[k]/m[k-st.jan]-1)*100])});const t0=Math.min(...S.flatMap(s=>s.pts.map(p=>p[0])));S.push({lab:"CDI",col:"var(--flat)",dash:"5 4",w:1.4,pts:cs.filter(p=>p[0]>=t0&&(!ref||p[0]<=ref.p1.t+5*DAY))});
@@ -4741,7 +4813,7 @@ document.addEventListener("click",e=>{if(!(e.target.closest&&e.target.closest("#
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="fgQ"){FN.gp.q=e.target.value;FN.gp.n=50;clearTimeout(FN_QT);FN_QT=setTimeout(fnGestTable,150)}});
 
 /* ---------- S&P 500 em reais (IVVB11, B3) como índice de referência */
-FN_BM.spx={lab:"S&P 500 (IVVB11)",col:"#a16207"};
+FN_BM.spx={lab:"S&P 500 (IVVB11)",col:"#ef4444"};
 let EXT_SPX=null;
 async function extSpx(){
   if(EXT_SPX)return EXT_SPX;
@@ -4973,7 +5045,7 @@ function spCorHtml(it,R){
   const ret=R.irets;
   const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,j)=>{if(isFinite(v)&&isFinite(b[j])){xs.push(v);ys.push(b[j])}});if(xs.length<12)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
   let h='<div class="label" style="margin-top:12px">Correlação dos retornos '+(R.diaria?'diários':'mensais')+'</div><div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+it.map((x,j)=>'<th><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>';
-  it.forEach((x,i)=>{h+='<tr><td class="cmpn">'+(i+1)+'. '+esc(spItemNome(x).slice(0,30))+'</td>'+it.map((y,j)=>{const c=i===j?1:cor(ret[i],ret[j]);return '<td>'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>'}).join("")+'</tr>'});
+  it.forEach((x,i)=>{h+='<tr><td class="cmpn">'+(i+1)+'. '+esc(spItemNome(x).slice(0,30))+'</td>'+it.map((y,j)=>{const c=i===j?1:cor(ret[i],ret[j]);return '<td data-l="'+(j+1)+'">'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>'}).join("")+'</tr>'});
   return h+'</tbody></table></div>';
 }
 /* ----- retornos mensais (agrega a base diária) */
@@ -5532,7 +5604,7 @@ function docsFill(){
   h+='<div class="tablewrap" style="max-height:420px;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Entrega</th><th style="text-align:left">Documento</th></tr></thead><tbody>';
   if(!V.length)h+='<tr><td colspan="2" class="sub" style="text-align:left">Nada neste grupo.</td></tr>';
   V.forEach(d=>{const t=Date.parse(d[0].slice(0,10)+"T00:00:00Z"),novo=hoje-t<4*864e5;const tit=[d[2],d[3]&&d[3]!==d[2]?d[3]:"",d[4]].filter(Boolean).join(" · ");
-    h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left"><a href="'+esc(/^https:\/\/(www\.rad\.cvm\.gov\.br|fnet\.bmfbovespa\.com\.br)\//.test(d[6])?d[6]:"#")+'" target="_blank" rel="noopener noreferrer">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
+    h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left" class="tw"><a href="'+esc(/^https:\/\/(www\.rad\.cvm\.gov\.br|fnet\.bmfbovespa\.com\.br)\//.test(d[6])?d[6]:"#")+'" target="_blank" rel="noopener noreferrer">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
   h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Os '+L.length+' documentos mais recentes'+(j.fonte==="CVM"?' (fatos relevantes, comunicados, avisos aos acionistas, resultados, assembleias e reuniões do conselho)':'')+'. Fonte: '+esc(j.fonte||"")+'.</p>';
   el.innerHTML=h;el.hidden=false;
 }
@@ -5614,11 +5686,11 @@ if(SYNC.tok){setTimeout(()=>syncNow(),1500);setInterval(()=>{if(document.visibil
 
 /* ===== Risco-país implícito: cupom cambial de 1 ano (DI futuro × dólar futuro, B3) menos o juro dos EUA (SOFR) =====
    Substitui o EMBI+ Brasil, cuja série pública (Ipeadata/J.P. Morgan) foi encerrada em 2024. */
-const RISCO={di:null,load:null};
+const RISCO={di:null,load:null,fxf:null,fxj:null,load2:null};
 function riscoSerie(){
-  const DI=(typeof MK==="object"&&MK.di)||RISCO.di;if(!FXF||!DI||!DI.dias)return null;
-  const J=FXJ&&FXJ.mensal?FXJ.mensal:{},us={};[J.treasury_2a,J.fed_funds,J.juro_eua].forEach(o=>Object.assign(us,o||{}));const out=[];
-  Object.keys(FXF.dias).sort().forEach(d=>{const Ld=DI.dias[d],Lf=FXF.dias[d];if(!Array.isArray(Ld)||!Array.isArray(Lf))return;
+  const DI=(typeof MK==="object"&&MK.di)||RISCO.di,FF=FXF||RISCO.fxf,FJ=FXJ||RISCO.fxj;if(!FF||!FF.dias||!DI||!DI.dias)return null;
+  const J=FJ&&FJ.mensal?FJ.mensal:{},us={};[J.treasury_2a,J.fed_funds,J.juro_eua].forEach(o=>Object.assign(us,o||{}));const out=[];
+  Object.keys(FF.dias).sort().forEach(d=>{const Ld=DI.dias[d],Lf=FF.dias[d];if(!Array.isArray(Ld)||!Array.isArray(Lf))return;
     const t=Date.parse(d+"T00:00:00Z"),pu={},fw={};Ld.forEach(r=>{if(r&&+r[1]>0)pu[r[0]]=+r[1]});Lf.forEach(r=>{if(r&&+r[1]>0)fw[r[0]]=+r[1]});
     const cs=Object.keys(fw).filter(c=>pu[c]).map(c=>({c,e:fxExp(c)})).filter(x=>x.e>t+20*DAY).sort((a,b)=>a.e-b.e);if(cs.length<2)return;
     const m1=cs[0];let m2=null;cs.forEach(x=>{if(!m2||Math.abs(x.e-m1.e-365*DAY)<Math.abs(m2.e-m1.e-365*DAY))m2=x});if(!m2||m2.e-m1.e<300*DAY||m2.e-m1.e>430*DAY)return;
@@ -5628,7 +5700,7 @@ function riscoSerie(){
   return out.length?out:null;
 }
 function fxRiscoHtml(){
-  if(!FXF)return "";
+  if(!FXF&&!RISCO.fxf)return "";
   if(!(typeof MK==="object"&&MK.di)&&!RISCO.di){if(!RISCO.load)RISCO.load=fetch(ROBO+"di_futuro.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{RISCO.di=j;const el=$("fxRisco");if(el)el.outerHTML=fxRiscoHtml()}).catch(()=>{});return '<div id="fxRisco"></div>'}
   const S=riscoSerie();if(!S)return '<div id="fxRisco"></div>';const u=S[S.length-1],a30=S.find(x=>x.t>=u.t-30*DAY),a1y=S[0];
   let h='<div id="fxRisco"><div class="label" style="margin-top:16px">Risco-país implícito (cupom cambial de 1 ano − juro dos EUA)</div>';
@@ -5650,6 +5722,28 @@ function ibgeCalHtml(){
   const vis=new Set(),U=L.filter(x=>{const k=x.tit+"|"+x.t;if(vis.has(k))return false;vis.add(k);return true}).slice(0,14);
   if(!U.length)return "";
   return '<h3>Próximas divulgações do IBGE</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Divulgação</th></tr></thead><tbody>'+U.map(x=>'<tr><td style="text-align:left;white-space:nowrap">'+fdate(x.t)+(x.h?' <small>'+x.h+'</small>':'')+'</td><td style="text-align:left">'+esc(x.tit)+'</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Fonte: calendário de divulgações do IBGE.</p>';
+}
+
+/* ===== Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito ===== */
+const FLX={d:null,load:null};
+function fluxoLoad(){
+  if(FLX.load)return;const g=f=>fetch(ROBO+f,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  FLX.load=Promise.all([g("fluxo_estrangeiro.json"),FXF?null:g("dolar_futuro.json"),FXJ?null:g("dolar_fundamentos.json"),(typeof MK==="object"&&MK.di)||RISCO.di?null:g("di_futuro.json")]).then(([f,a,b,c])=>{FLX.d=f||{};if(a)RISCO.fxf=a;if(b)RISCO.fxj=b;if(c)RISCO.di=c;if(typeof activeMod!=="undefined"&&activeMod==="rs"&&typeof mkCalc==="function")mkCalc()});
+}
+function fluxoHtml(){
+  if(!FLX.d){fluxoLoad();return ""}
+  let h='<h3>Capital estrangeiro e risco-país</h3>';const M=FLX.d.mensal||{},A=M.acoes||{},RF=M.renda_fixa||{},ks=Object.keys(A).sort();
+  const t=k=>Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,15),bi=v=>(v<0?"−":"")+"US$ "+fx(Math.abs(v)/1000,1)+" bi";
+  if(ks.length>24){const u=ks[ks.length-1],soma=(D,n)=>{const kk=Object.keys(D).sort().slice(-n);return kk.reduce((a,k)=>a+(+D[k]||0),0)},ano=(D)=>Object.keys(D).filter(k=>k.slice(0,4)===u.slice(0,4)).reduce((a,k)=>a+(+D[k]||0),0);
+    const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b class="'+(/−/.test(b)?'neg':'pos')+'">'+b+'</b><small>'+c+'</small></div>';
+    h+='<div class="fnkpis">'+kp("Ações · "+mname((+u.slice(0,4))*12+(+u.slice(5,7))-1),bi(+A[u]),"no ano "+bi(ano(A)))+kp("Ações · 12 meses",bi(soma(A,12)),"entrada líquida de estrangeiros")+kp("Renda fixa · "+mname((+u.slice(0,4))*12+(+u.slice(5,7))-1),RF[u]!=null?bi(+RF[u]):"—","no ano "+bi(ano(RF)))+kp("Renda fixa · 12 meses",bi(soma(RF,12)),"títulos no mercado doméstico")+'</div>';
+    const ult=ks.slice(-36);h+='<div class="label" style="margin-top:8px">Investimento estrangeiro em ações no Brasil, por mês (US$ bilhões)</div>'+fnChart([{lab:"Ações",col:"var(--gain)",pts:ult.map(k=>[t(k),(+A[k]||0)/1000])}],{bars:true,zero:true,months:true,h:180,fmt:"num",aria:"Fluxo estrangeiro mensal em ações"});
+    const roll=D=>{const kk=Object.keys(D).sort();return kk.map((k,i)=>i<11?null:[t(k),kk.slice(i-11,i+1).reduce((a,x)=>a+(+D[x]||0),0)/1000]).filter(Boolean).filter(p=>p[0]>=Date.UTC(2010,0,1))};
+    h+='<div class="label" style="margin-top:8px">Acumulado em 12 meses (US$ bilhões)</div>'+fnChart([{lab:"Ações",col:"var(--gain)",w:2,pts:roll(A)},{lab:"Renda fixa",col:"var(--s3)",w:1.6,pts:roll(RF)}],{zero:true,months:false,h:200,fmt:"num",aria:"Fluxo estrangeiro acumulado em 12 meses"});
+    h+='<p class="sub" style="font-size:.8rem">Fonte: Banco Central, balanço de pagamentos (investimentos em carteira de não residentes: ações e cotas de fundos no país; títulos de dívida negociados no mercado doméstico), saldo líquido mensal, divulgado com cerca de um mês de defasagem. O saldo diário por tipo de investidor da B3 não entra aqui: o site da B3 não permite coleta automática.</p>'}
+  else h+='<p class="sub">O fluxo do capital estrangeiro aparece depois da próxima coleta do robô de mercado.</p>';
+  const R=fxRiscoHtml();if(R&&R!=='<div id="fxRisco"></div>')h+=R.replace('margin-top:16px','margin-top:18px');
+  return h;
 }
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
@@ -5856,7 +5950,7 @@ function fxMulti(S,opt){
   else if(ny<2.5){const d=new Date(t0);let k=d.getUTCFullYear()*12+d.getUTCMonth()+1;const sm=Math.max(1,Math.ceil(ny*12/(NW?4:8)));for(;;k+=sm){const t=Date.UTC(Math.floor(k/12),k%12,1);if(t>t1)break;ticks.push([t,mname(k)])}}
   else{const sy=ny>16?4:ny>8?2:1;for(let y=Math.ceil(new Date(t0).getUTCFullYear()/sy)*sy;y<=new Date(t1).getUTCFullYear();y+=sy){const t=Date.UTC(y,0,1);if(t>=t0)ticks.push([t,String(y)])}}
   ticks.forEach(([t,l])=>{g+='<text x="'+X(t).toFixed(1)+'" y="'+(H-PB+16)+'" text-anchor="middle">'+l+'</text>'});
-  S.slice().reverse().forEach(s=>{let d='',pen=false;s.pts.forEach(([t,v])=>{if(!isFinite(v)){pen=false;return}d+=(pen?'L':'M')+X(t).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true});g+='<path d="'+d+'" fill="none" stroke="'+s.col+'" stroke-width="'+(s.w||1.8)+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+' stroke-linejoin="round"/>';if(opt.dots)s.pts.forEach(([t,v])=>{if(isFinite(v))g+='<circle cx="'+X(t).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="'+s.col+'"/>'})});
+  S.slice().reverse().forEach(s=>{let d='',pen=false;s.pts.forEach(([t,v])=>{if(!isFinite(v)){pen=false;return}d+=(pen?'L':'M')+X(t).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true});g+='<path d="'+d+'" fill="none" stroke="'+s.col+'" stroke-width="'+((s.w||1.8)*0.7).toFixed(2)+'"'+(s.dash?' stroke-dasharray="'+s.dash+'"':'')+' stroke-linejoin="round"/>';if(opt.dots)s.pts.forEach(([t,v])=>{if(isFinite(v))g+='<circle cx="'+X(t).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="'+s.col+'"/>'})});
   g+='<line class="cvx" x1="0" x2="0" y1="'+PT+'" y2="'+(H-PB)+'" stroke="var(--ink)" stroke-width="1" opacity="0"/>';
   const meta={W,PL,PR,t0,t1,u:opt.unit==null?"R$":opt.unit,months:!!opt.months,S:S.map(s=>({lab:s.lab,col:s.col,pts:s.pts.filter(p=>isFinite(p[1])).map(p=>[p[0],+p[1].toFixed(4)])}))};
   return '<div class="fxmulti" data-fxm=\''+JSON.stringify(meta).replace(/'/g,"&#39;")+'\'><svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img">'+g+'<rect x="'+PL+'" y="'+PT+'" width="'+(W-PL-PR)+'" height="'+(H-PT-PB)+'" fill="transparent"/></svg><div class="cvtip" hidden></div></div><div class="legend">'+S.map(s=>'<span><i style="background:'+s.col+'"></i>'+esc(s.lab)+'</span>').join("")+'</div>';
