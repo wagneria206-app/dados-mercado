@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-Uj/vHQDQUYR4FizYK4KyDaRtujNmNFpumHxV/ABn090='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-mz20aDCU0Vk3V44QIQMPkynB+7yA+TpVtppNsfvBKQQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1069,6 +1069,12 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 .fnrk th:first-child,.fnrk td:first-child{width:1%;white-space:nowrap}
 
 .fnrk .fnnm,.fnrk td.tw{min-width:220px}
+
+/* comparador: colunas secundárias aparecem conforme a largura da tela (no celular,todas em cartões) */
+@media (min-width:761px) and (max-width:1400px){.cmptab .c-lg{display:none!important}}
+@media (min-width:761px) and (max-width:1150px){.cmptab .c-md{display:none!important}}
+@media (min-width:761px) and (max-width:900px){.cmptab .c-sm{display:none!important}}
+@media (max-width:760px){.cmptab .c-md,.cmptab .c-sm,.cmptab .c-lg{display:block!important}}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -3914,7 +3920,7 @@ const FN_BML=()=>new Set(Object.values(FN_BM).map(x=>x.lab).concat(["CDI","IPCA"
 const FN_PER=[["mes","No mês"],["ano","No ano"],["6","6 meses"],["12","12 meses"],["24","24 meses"],["36","36 meses"],["60","60 meses"],["tudo","Desde o início"]];
 const FN={idx:null,C:null,sk:null,T:null,cal:null,B:null,L:null,files:new Map(),load:null,err:null,view:null,cur:null,per:"12",bm:{cdi:1,ibov:0,ipca:0,usd:0,ifix:0},tabCmp:"pcdi",rper:"12",
   rk:{tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:""},cmp:[],cper:"12",q:"",jan:12,gu:""};
-try{const c=JSON.parse(localStorage.getItem("fnCmp")||"[]");if(Array.isArray(c))FN.cmp=c.slice(0,20)}catch(e){}
+try{const c=JSON.parse(localStorage.getItem("fnCmp")||"[]");if(Array.isArray(c))FN.cmp=c.slice(0,25)}catch(e){}
 try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="object")Object.assign(FN.rk,r,{n:50})}catch(e){}
 try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
 function fnSave(){try{localStorage.setItem("fnCmp",JSON.stringify(FN.cmp));localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
@@ -4104,7 +4110,7 @@ function fnShell(m){
   if(FN.view!==m){FN.view=m;
     if(m==="fa")o.innerHTML='<section class="panel fnsrch"><label class="label" for="fnQ">Buscar fundo</label><div class="fnqbox"><input id="fnQ" autocomplete="off" placeholder="Nome, CNPJ ou gestora" value="'+esc(FN.q)+'"><div id="fnRes" class="fnres" hidden></div></div><p class="sub" style="margin-top:6px;font-size:.82rem">Todos os fundos com cota diária informada à CVM. Dados oficiais da CVM (informe diário, cadastro, lâmina e carteira), CDI e IPCA do Banco Central e índices da B3.</p></section><div id="fnBody"></div>';
     else if(m==="fr")o.innerHTML='<section class="panel"><h3>Ranking de fundos</h3><p class="sub">Compare fundos da mesma categoria. Clique numa coluna para ordenar e no fundo para abrir a análise.</p><div id="fnRkF"></div><div id="fnRkT"></div></section>';
-    else o.innerHTML='<section class="panel"><h3>Comparar fundos</h3><p class="sub">Escolha até 20 fundos para comparar rentabilidade, risco, janelas móveis e características no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="fnCq" autocomplete="off" placeholder="Adicionar fundo: nome ou CNPJ"><div id="fnCres" class="fnres" hidden></div></div><div id="fnCbody"></div></section>';
+    else o.innerHTML='<section class="panel"><h3>Comparar fundos</h3><p class="sub">Escolha até 25 fundos para comparar rentabilidade, risco, janelas móveis e características no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="fnCq" autocomplete="off" placeholder="Adicionar fundo: nome ou CNPJ"><div id="fnCres" class="fnres" hidden></div></div><div id="fnCbody"></div></section>';
   }
   return o;
 }
@@ -4369,7 +4375,7 @@ window.addEventListener("hashchange",()=>{if(FN.idx)fnHash();else{const m=/fundo
 const AT_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/ativos/";
 const AT={idx:null,C:null,sk:null,T:null,cal:null,L:null,files:new Map(),load:null,err:null,cur:null,q:"",pview:"ret",cmp:[],
   rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50}};
-try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,20)}catch(e){}
+try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,25)}catch(e){}
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
 function atSave(){try{localStorage.setItem("atCmp",JSON.stringify(AT.cmp));localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
@@ -4406,7 +4412,7 @@ function atShell(m){
   if(FN.view!==m){FN.view=m;
     if(m==="aa")o.innerHTML='<section class="panel fnsrch"><label class="label" for="atQ">Buscar ativo</label><div class="fnqbox"><input id="atQ" autocomplete="off" placeholder="Código ou nome: PETR4, HGLG11, BOVA11, Itaú…" value="'+esc(AT.q)+'"><div id="atRes" class="fnres" hidden></div></div><p class="sub" style="margin-top:6px;font-size:.82rem">Ações, units, FIIs, Fiagros, ETFs e BDRs negociados na B3. Cotações e proventos da B3, balanços e informes dos FIIs da CVM.</p></section><div id="atBody"></div>';
     else if(m==="ar")o.innerHTML='<section class="panel"><h3>Ranking de ativos</h3><p class="sub">Filtre por tipo e setor e ordene por qualquer indicador. Clique no ativo para abrir a análise.</p><div id="atRkF"></div><div id="atRkT"></div></section>';
-    else o.innerHTML='<section class="panel"><h3>Comparar ativos</h3><p class="sub">Escolha até 20 ativos (ações, FIIs, ETFs ou BDRs) para comparar retorno com proventos, risco e indicadores no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="atCq" autocomplete="off" placeholder="Adicionar ativo: código ou nome"><div id="atCres" class="fnres" hidden></div></div><div id="atCbody"></div></section>';
+    else o.innerHTML='<section class="panel"><h3>Comparar ativos</h3><p class="sub">Escolha até 25 ativos (ações, FIIs, ETFs ou BDRs) para comparar retorno com proventos, risco e indicadores no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="atCq" autocomplete="off" placeholder="Adicionar ativo: código ou nome"><div id="atCres" class="fnres" hidden></div></div><div id="atCbody"></div></section>';
   }
   return o;
 }
@@ -4591,9 +4597,9 @@ document.addEventListener("input",e=>{
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="atQ"&&AT.idx){const js=atSearch(e.target.value,1);if(js.length){e.preventDefault();atOpen(AT.idx.rows[js[0]][0])}}});
 window.addEventListener("hashchange",()=>{if(AT.idx)atHash();else{const m=/ativo=([A-Z0-9-]{4,16})/i.exec(location.hash||"");if(m){AT.cur=m[1].toUpperCase();if(activeMod!=="aa")setMod("aa")}}});
 
-/* ===== Comparador (fundos e ativos, até 20), janelas móveis, similares, gross-up, gestoras ===== */
-const CMP_MAX=20;
-const CMP_COLS=["#2563eb","#16a34a","#dc2626","#9333ea","#f59e0b","#0891b2","#db2777","#65a30d","#4f46e5","#ea580c","#0d9488","#be123c","#854d0e","#0284c7","#7c3aed","#4d7c0f","#e879f9","#1e3a8a","#14b8a6","#64748b"];
+/* ===== Comparador (fundos e ativos, até 25), janelas móveis, similares, gross-up, gestoras ===== */
+const CMP_MAX=25;
+const CMP_COLS=["#2563eb","#16a34a","#dc2626","#9333ea","#f59e0b","#0891b2","#db2777","#65a30d","#4f46e5","#ea580c","#0d9488","#be123c","#854d0e","#0284c7","#7c3aed","#4d7c0f","#e879f9","#1e3a8a","#14b8a6","#64748b","#facc15","#831843","#22d3ee","#a3a3a3","#b91c1c"];
 const CMPST={f:{tab:"ret",per:"12",hide:{},ini:"",fim:"",same:1,jan:12,sort:{}},a:{tab:"ret",per:"12",hide:{},ini:"",fim:"",same:1,jan:12,sort:{}}};
 try{const c=JSON.parse(localStorage.getItem("cmpSt")||"null");if(c&&c.f&&c.a){Object.assign(CMPST.f,c.f,{hide:{}});Object.assign(CMPST.a,c.a,{hide:{}})}}catch(e){}
 function cmpSave(){try{localStorage.setItem("cmpSt",JSON.stringify({f:Object.assign({},CMPST.f,{hide:{}}),a:Object.assign({},CMPST.a,{hide:{}})}))}catch(e){}}
@@ -4654,7 +4660,7 @@ const CMP_LAST={},CMP_CTX={};
 function cmpCols(K,st){
   const pct=v=>fnPct(v),pt=v=>fnPctT(v),n2=v=>v==null||!isFinite(v)?'—':fx(v,2);
   if(st.tab==="ret")return [["Período","r",pct],["% do CDI","pcdi",v=>v==null?'—':fx(v,0)+'%'],["Anualizado","ann",pt],["No mês","rm",pct],["No ano","ra",pct],["12 meses","r12",pct],["24 meses","r24",pct],["36 meses","r36",pct],["60 meses","r60",pct]];
-  if(st.tab==="risk")return [["Volatilidade","vol",v=>v==null?'—':fx(v,2)+'%'],["Sharpe","sharpe",n2],["Sortino","sortino",n2],["Perda máxima","dd",pct],["Recuperação (dias)","rec",v=>v==null?'—':v<0?'não recuperou':fx(v,0)],["Beta (Ibov.)","beta",n2],["Alfa de Jensen","alpha",pct],["Treynor","treynor",pt],["Tracking error","te",v=>v==null?'—':fx(v,2)+'%'],["Information ratio","ir",n2],["VaR 95% (dia)","var95",pct],["Meses positivos","mpos",v=>v==null?'—':fx(v,0)+'%'],["Meses acima do CDI","mcdi",v=>v==null?'—':fx(v,0)+'%']];
+  if(st.tab==="risk")return [["Volatilidade","vol",v=>v==null?'—':fx(v,2)+'%'],["Sharpe","sharpe",n2],["Sortino","sortino",n2,"c-sm"],["Perda máxima","dd",pct],["Recuperação (dias)","rec",v=>v==null?'—':v<0?'não recuperou':fx(v,0),"c-md"],["Beta (Ibov.)","beta",n2],["Alfa de Jensen","alpha",pct,"c-md"],["Treynor","treynor",pt,"c-lg"],["Tracking error","te",v=>v==null?'—':fx(v,2)+'%',"c-lg"],["Information ratio","ir",n2,"c-lg"],["VaR 95% (dia)","var95",pct,"c-md"],["Meses positivos","mpos",v=>v==null?'—':fx(v,0)+'%',"c-sm"],["Meses acima do CDI","mcdi",v=>v==null?'—':fx(v,0)+'%']];
   if(st.tab==="jan")return [["Janelas","jn",v=>v==null?'—':fx(v,0)],["Acima do CDI","jcdi",v=>v==null?'—':fx(v,0)+'%'],["Positivas","jpos",v=>v==null?'—':fx(v,0)+'%'],["Média","jmed",pct],["Mediana","jmd",pct],["Pior","jmin",pct],["Melhor","jmax",pct],["Média do CDI","jc",pt]];
   if(st.tab==="info"&&K.kind==="f")return [["Categoria","anb",v=>'<small>'+esc(v||"")+'</small>'],["Gestora","ges",v=>'<small>'+esc(v||"")+'</small>'],["Patrimônio","pl",fnMoney],["Cotistas","cot",fnInt],["Captação 12m","cap",fnMoney],["Taxa adm.","tadm",v=>v==null?'—':fx(v,2)+'%'],["Performance","tperf",v=>v==null?'—':v?fx(v,0)+'%':'não cobra'],["Aplicação mín.","amin",v=>v==null?'—':v?brl(v):'sem mínimo'],["Resgate","dres",v=>v==null?'—':'D+'+fx(v,0)],["Tributação","trib",v=>esc(v||"—")],["Início","ini",v=>v?fdate(v):'—']];
   if(st.tab==="info")return [["Tipo","tipo",v=>esc(v||"")],["Setor","setor",v=>'<small>'+esc(v||"")+'</small>'],["Preço","preco",v=>v==null?'—':'R$ '+fx(v,2)],["DY 12m","dy",pt],["P/L","plr",v=>v==null?'—':fx(v,1)],["P/VP","pvp",n2],["ROE","roe",pt],["Margem líq.","ml",pt],["DL/EBIT","dle",n2],["Valor de mercado","mcap",fnMoney],["Liquidez/dia","liq",fnMoney]];
@@ -4691,13 +4697,13 @@ function cmpTable(K,st,rows,bmRows,ref){
   const cols=cmpCols(K,st),vals=rows.map(x=>({x,v:x.sem&&st.tab!=="info"&&st.tab!=="jan"?{}:cmpVals(K,st,x)}));
   const so=st.sort[st.tab];if(so){const [c,d]=so;vals.sort((a,b)=>{const p=a.v[c],q=b.v[c];if(p==null&&q==null)return 0;if(p==null)return 1;if(q==null)return -1;return typeof p==="string"?d*p.localeCompare(q):d*(p-q)})}
   let h='';if(st.tab==="jan")h+='<div class="fnrow">'+fnSeg("cmpjan",[["12","12 meses"],["24","24 meses"],["36","36 meses"]],String(st.jan))+'</div>';
-  h+='<div class="tablewrap cmpwrap" style="max-height:none"><table class="ctab cmptab"><thead><tr><th class="cmpn" style="text-align:left">'+(K.kind==="f"?"Fundo":"Ativo")+'</th>'+cols.map(([l,c])=>'<th data-cmpsort="'+K.kind+'|'+c+'">'+l+(so&&so[0]===c?(so[1]<0?' ▾':' ▴'):'')+'</th>').join("")+'</tr></thead><tbody>';
-  vals.forEach(({x,v})=>{h+='<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(x.F)+'">'+esc(K.name(x.F).slice(0,52))+'</button></td>'+cols.map(([l,c,f])=>'<td data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(v[c]===undefined?'—':f(v[c]))+'</td>').join("")+'</tr>'});
+  h+='<div class="tablewrap cmpwrap" style="max-height:none"><table class="ctab cmptab"><thead><tr><th class="cmpn" style="text-align:left">'+(K.kind==="f"?"Fundo":"Ativo")+'</th>'+cols.map(([l,c,,cl])=>'<th'+(cl?' class="'+cl+'"':'')+' data-cmpsort="'+K.kind+'|'+c+'">'+l+(so&&so[0]===c?(so[1]<0?' ▾':' ▴'):'')+'</th>').join("")+'</tr></thead><tbody>';
+  vals.forEach(({x,v})=>{h+='<tr><td class="cmpn"><i class="fndot" style="background:'+col(x.j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(x.F)+'">'+esc(K.name(x.F).slice(0,52))+'</button></td>'+cols.map(([l,c,f,cl])=>'<td'+(cl?' class="'+cl+'"':'')+' data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(v[c]===undefined?'—':f(v[c]))+'</td>').join("")+'</tr>'});
   // índices de referência
   if(ref&&(st.tab==="ret"||st.tab==="jan"))bmRows.forEach(b=>{const o={};if(st.tab==="ret"){const a={t:ref.p0.t,i:fnCalIdx(ref.p0.t),k:ref.p0.k},z={t:ref.p1.t,i:fnCalIdx(ref.p1.t),k:ref.p1.k};o.r=fnBmRet(b,a,z);const cd=fnBmRet("cdi",a,z);o.pcdi=o.r!=null&&cd>0?o.r/cd*100:null;
       const l=fnLast(ref.F);[["mes","rm"],["ano","ra"],["12","r12"],["24","r24"],["36","r36"],["60","r60"]].forEach(([p,c])=>{const s=fnStart(ref.F,p);o[c]=s?fnBmRet(b,s,l):null})}
     else{const fake={MK:[],M:new Map()};const m=FN.L.m[b]||{};Object.keys(m).map(Number).sort((a,c)=>a-c).forEach(k=>{if(fnMt(k)<=ref.p1.t+5*DAY){fake.MK.push(k);fake.M.set(k,{q:m[k]})}});Object.assign(o,cmpJan(fake,st.jan,null))}
-    h+='<tr class="cmpbm"><td class="cmpn"><i class="fndot" style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</td>'+cols.map(([l,c,f])=>'<td data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(o[c]===undefined?'':f(o[c]))+'</td>').join("")+'</tr>'});
+    h+='<tr class="cmpbm"><td class="cmpn"><i class="fndot" style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</td>'+cols.map(([l,c,f,cl])=>'<td'+(cl?' class="'+cl+'"':'')+' data-l="'+esc(String(l).replace(/<[^>]+>/g,""))+'">'+(o[c]===undefined?'':f(o[c]))+'</td>').join("")+'</tr>'});
   h+='</tbody></table></div>';
   if(st.tab==="jan"){const S=[];rows.forEach(x=>{if(x.sem||st.hide[K.key(x.F)])return;S.push({lab:K.name(x.F).slice(0,30),col:col(x.j),w:1.6,pts:cmpJanSeries(x.F,st.jan).filter(p=>p[0]<=x.p1.t+5*DAY)})});
     const m=FN.L.m.cdi||{},cs=[];Object.keys(m).map(Number).sort((a,b)=>a-b).forEach(k=>{if(m[k-st.jan])cs.push([fnMt(k),(m[k]/m[k-st.jan]-1)*100])});const t0=Math.min(...S.flatMap(s=>s.pts.map(p=>p[0])));S.push({lab:"CDI",col:"var(--flat)",dash:"5 4",w:1.4,pts:cs.filter(p=>p[0]>=t0&&(!ref||p[0]<=ref.p1.t+5*DAY))});
@@ -4878,7 +4884,7 @@ function spTopHtml(){
   h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
   if(c.itens.length){
     h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Item</th><th class="c-ph" style="text-align:left">Tipo</th><th>Peso</th><th class="c-ph">Valor inicial</th><th></th></tr></thead><tbody>';
-    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it))+spRfEd(it,j))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small>'+(it.t==="s"?'<label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label>':'')+'</td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
+    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it))+spRfEd(it,j))+'</td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small>'+(it.t==="s"?'<label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label>':'')+'</td><td><span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span></td><td class="c-ph">'+brl((+c.valor||0)*(+it.w||0)/100)+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'});
     h+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b class="'+(Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph">'+brl(+c.valor||0)+'</td><td></td></tr></tfoot></table></div>'
       +'<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
   }
@@ -5033,7 +5039,7 @@ function spResHtml(c,it,R){
   // contribuição por item
   const totC=R.contrib.reduce((a,x)=>a+x,0);
   h+='<section class="panel" data-reltit="Contribuição de cada item e correlação"><h3>Contribuição de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno do item</th><th>Contribuição</th><th class="c-ph">% do resultado</th>'+(R.ir?'<th class="c-ph" style="text-align:left">Tributação considerada</th>':'')+'</tr></thead><tbody>';
-  it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fnPct(R.per[i])+'</td><td>'+fnPct(R.contrib[i])+' <small>p.p.</small></td><td class="c-ph">'+(totC?fx(R.contrib[i]/totC*100,0)+'%':'—')+'</td>'+(R.ir?'<td class="c-ph tw" style="text-align:left"><small>'+esc(SP_IR[R.reg[i]]||"")+'</small></td>':'')+'</tr>'});
+  it.forEach((x,i)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%CMP_COLS.length]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+fnPct(R.per[i])+'</td><td>'+fnPct(R.contrib[i])+' <small>p.p.</small></td><td class="c-ph">'+(totC?fx(R.contrib[i]/totC*100,0)+'%':'—')+'</td>'+(R.ir?'<td class="c-ph tw" style="text-align:left"><small>'+esc(SP_IR[R.reg[i]]||"")+'</small></td>':'')+'</tr>'});
   h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Contribuição: quanto cada item somou ao retorno da carteira, em pontos percentuais, considerando o peso que ele tinha a cada momento.</p>';
   if(it.length>1)h+=spCorHtml(it,R);
   h+='</section>';
@@ -5044,7 +5050,7 @@ function spResHtml(c,it,R){
 function spCorHtml(it,R){
   const ret=R.irets;
   const cor=(a,b)=>{const xs=[],ys=[];a.forEach((v,j)=>{if(isFinite(v)&&isFinite(b[j])){xs.push(v);ys.push(b[j])}});if(xs.length<12)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null};
-  let h='<div class="label" style="margin-top:12px">Correlação dos retornos '+(R.diaria?'diários':'mensais')+'</div><div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+it.map((x,j)=>'<th><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>';
+  let h='<div class="label" style="margin-top:12px">Correlação dos retornos '+(R.diaria?'diários':'mensais')+'</div><div class="tablewrap" style="max-height:none"><table class="ctab cmpcor"><thead><tr><th></th>'+it.map((x,j)=>'<th><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+(j+1)+'</th>').join("")+'</tr></thead><tbody>';
   it.forEach((x,i)=>{h+='<tr><td class="cmpn">'+(i+1)+'. '+esc(spItemNome(x).slice(0,30))+'</td>'+it.map((y,j)=>{const c=i===j?1:cor(ret[i],ret[j]);return '<td data-l="'+(j+1)+'">'+(c==null?'—':'<span class="fncor" style="--a:'+Math.abs(c).toFixed(2)+'">'+fx(c,2)+'</span>')+'</td>'}).join("")+'</tr>'});
   return h+'</tbody></table></div>';
 }
@@ -5119,10 +5125,10 @@ async function spCmpCarts(){
   const first=r=>Math.max(...r.D.map(x=>Math.min(...x.m.keys())));const k0=Math.max(...res.map(first));
   const out=res.map(r=>Object.assign(r,{R:spSim(Object.assign({},r.c,{ini:mname2(k0),fim:"",aporte:0,base:"m",ir:0}),r.it,r.D)}));
   const ok=out.filter(r=>!r.R.erro);if(ok.length<2){box.innerHTML='<p class="sub">Não há período em comum entre as carteiras.</p>';return}const last=Math.min(...ok.map(r=>r.R.last));
-  let h=fnUse(FN,()=>{const S=ok.map((r,j)=>({lab:r.c.nome,col:CMP_COLS[j%20],w:2,pts:r.R.pts.filter(p=>p.k<=last).map(p=>[p.t,(p.idx-1)*100])}));
+  let h=fnUse(FN,()=>{const S=ok.map((r,j)=>({lab:r.c.nome,col:CMP_COLS[j%CMP_COLS.length],w:2,pts:r.R.pts.filter(p=>p.k<=last).map(p=>[p.t,(p.idx-1)*100])}));
     let x=fnChart(S,{fmt:"pct",zero:true,months:true,aria:"Carteiras"});
     x+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Carteira</th><th>Retorno</th><th>% do CDI</th><th>Ao ano</th><th>Volatilidade</th><th>Sharpe</th><th>Perda máxima</th><th class="c-ph">Meses acima do CDI</th></tr></thead><tbody>';
-    ok.forEach((r,j)=>{const rr=r.R.rets.filter(q=>q.k<=last),idx=rr.reduce((a,q)=>a*(1+q.r),1),s=spStats(r.R,rr,idx);x+='<tr><td style="text-align:left"><i class="fndot" style="background:'+CMP_COLS[j%20]+'"></i>'+esc(r.c.nome)+'</td><td><b>'+fnPct(s.tot)+'</b></td><td>'+(s.pcdi!=null?fx(s.pcdi,0)+'%':'—')+'</td><td>'+fnPctT(s.ann)+'</td><td>'+fx(s.vol,2)+'%</td><td>'+(s.sharpe!=null?fx(s.sharpe,2):'—')+'</td><td>'+fnPct(s.dd)+'</td><td class="c-ph">'+(s.acima!=null?fx(s.acima,0)+'%':'—')+'</td></tr>'});
+    ok.forEach((r,j)=>{const rr=r.R.rets.filter(q=>q.k<=last),idx=rr.reduce((a,q)=>a*(1+q.r),1),s=spStats(r.R,rr,idx);x+='<tr><td style="text-align:left"><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+esc(r.c.nome)+'</td><td><b>'+fnPct(s.tot)+'</b></td><td>'+(s.pcdi!=null?fx(s.pcdi,0)+'%':'—')+'</td><td>'+fnPctT(s.ann)+'</td><td>'+fx(s.vol,2)+'%</td><td>'+(s.sharpe!=null?fx(s.sharpe,2):'—')+'</td><td>'+fnPct(s.dd)+'</td><td class="c-ph">'+(s.acima!=null?fx(s.acima,0)+'%':'—')+'</td></tr>'});
     return x+'</tbody></table></div><p class="sub" style="font-size:.8rem">De '+mname(ok[0].R.k0)+' a '+mname(last)+', base mensal, sem aportes e sem IR.</p>'});
   SP_CMP=h;box.innerHTML=h;
 }
@@ -5220,7 +5226,7 @@ function spEfHtml(c,it,E,stP){
   const S=[{lab:"Carteira",col:FN_COLS[0],w:2.4,pts:E.pts.map(p=>[p.t,(p.idx-1)*100])}],cdi=E.diaria?spBmDaily("cdi",c):spBmSeries("cdi",c);
   if(cdi&&cdi.get(E.k0)){const b0=cdi.get(E.k0);S.push({lab:"CDI",col:FN_BM.cdi.col,dash:"5 4",w:1.5,pts:E.pts.map(p=>{const v=cdi.get(p.k);return [p.t,v?(v/b0-1)*100:null]})})}
   h+=fnChart(S,{fmt:"pct",zero:true,months:!E.diaria,aria:"Desde a efetivação"});
-  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno desde a aplicação</th><th>Contribuição</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(E.w[i]*100,1)+'%</td><td>'+fnPct(E.per[i])+'</td><td>'+fnPct(E.contrib[i])+' <small>p.p.</small></td></tr>').join("")+'</tbody></table></div>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso-alvo</th><th>Retorno desde a aplicação</th><th>Contribuição</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%CMP_COLS.length]+'"></i>'+esc(spItemNome(x))+'</td><td>'+fx(E.w[i]*100,1)+'%</td><td>'+fnPct(E.per[i])+'</td><td>'+fnPct(E.contrib[i])+' <small>p.p.</small></td></tr>').join("")+'</tbody></table></div>';
   return h+'<p class="sub" style="font-size:.8rem">Valores calculados com as cotas e cotações oficiais a partir da data informada, sem custos de corretagem. Não substitui o extrato da instituição.</p></section>';
 }
 function spClasse(x){
@@ -5232,7 +5238,7 @@ function spCompHtml(c,it,R){
   const v0=+c.valor||0,grp=new Map();it.forEach((x,i)=>{const g=spClasse(x),k=[...grp.keys()].find(y=>fnNorm(y)===fnNorm(g))||g;grp.set(k,(grp.get(k)||0)+R.w[i])});
   const G=[...grp.entries()].sort((a,b)=>b[1]-a[1]),cols=["var(--accent)","var(--s2)","var(--s3)","var(--s4)","var(--gold)","var(--loss)","#0e7490","#64748b"];
   let h='<section class="panel" data-reltit="Composição da carteira"><h3>Composição da carteira</h3><div class="spbar" role="img" aria-label="Composição por tipo">'+G.map(([g,w],j)=>'<i style="width:'+(w*100).toFixed(2)+'%;background:'+cols[j%cols.length]+'" title="'+esc(g)+' '+fx(w*100,1)+'%"></i>').join("")+'</div><div class="legend">'+G.map(([g,w],j)=>'<span><i style="background:'+cols[j%cols.length]+'"></i>'+esc(g)+' · '+fx(w*100,1)+'%</span>').join("")+'</div>';
-  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left" class="c-ph">Tipo</th><th>Peso</th><th>Valor</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+(x.t==="f"?'<small style="display:block;color:var(--muted)">'+fnCnpjF(x.k)+'</small>':'')+'</td><td style="text-align:left" class="c-ph"><small>'+esc(spClasse(x))+'</small></td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+brl(v0*R.w[i])+'</td></tr>').join("")+'<tr class="cmpbm"><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b>100%</b></td><td><b>'+brl(v0)+'</b></td></tr></tbody></table></div></section>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left" class="c-ph">Tipo</th><th>Peso</th><th>Valor</th></tr></thead><tbody>'+it.map((x,i)=>'<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%CMP_COLS.length]+'"></i>'+esc(spItemNome(x))+(x.t==="f"?'<small style="display:block;color:var(--muted)">'+fnCnpjF(x.k)+'</small>':'')+'</td><td style="text-align:left" class="c-ph"><small>'+esc(spClasse(x))+'</small></td><td>'+fx(R.w[i]*100,1)+'%</td><td>'+brl(v0*R.w[i])+'</td></tr>').join("")+'<tr class="cmpbm"><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b>100%</b></td><td><b>'+brl(v0)+'</b></td></tr></tbody></table></div></section>';
   return h;
 }
 function spItensHtml(c,it,R){
@@ -5241,7 +5247,7 @@ function spItensHtml(c,it,R){
     if(x.t==="a"){const r=AT.idx&&atRow(x.k),C=AT.C;if(!r)return null;return {r12:r[C.r12],r24:r[C.r24],r36:r[C.r36],v:r[C.v12],sh:r[C.sharpe],dd:r[C.dd36],tx:r[C.dy]!=null?"DY "+fx(r[C.dy],2)+"%":"—",res:r[C.tipo]==="Tesouro Direto"?"D+1":"D+2",pl:r[C.liq]?fnMoney(r[C.liq])+"/dia":"—"}}
     return {r12:null,r24:null,r36:null,v:null,sh:null,dd:null,tx:spRfLab(x.rf,+x.x||0),res:"—",pl:"—"}};
   let h='<section class="panel" data-reltit="Rentabilidade e risco de cada item"><h3>Rentabilidade e risco de cada item</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>12 meses</th><th>24 meses</th><th>36 meses</th><th>Volatilidade 12m</th><th>Sharpe</th><th>Perda máx. 36m</th><th class="c-ph">Taxa / DY</th><th class="c-ph">Resgate</th><th class="c-ph">PL / liquidez</th></tr></thead><tbody>';
-  it.forEach(x=>{const L=lin(x)||{};const P=v=>v==null?"—":fnPct(v);h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%20]+'"></i>'+esc(spItemNome(x))+'</td><td>'+P(L.r12)+'</td><td>'+P(L.r24)+'</td><td>'+P(L.r36)+'</td><td>'+(L.v!=null?fx(L.v,2)+"%":"—")+'</td><td>'+(L.sh!=null?fx(L.sh,2):"—")+'</td><td>'+P(L.dd)+'</td><td class="c-ph">'+esc(L.tx||"—")+'</td><td class="c-ph">'+esc(L.res||"—")+'</td><td class="c-ph">'+esc(L.pl||"—")+'</td></tr>'});
+  it.forEach(x=>{const L=lin(x)||{};const P=v=>v==null?"—":fnPct(v);h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(x)%CMP_COLS.length]+'"></i>'+esc(spItemNome(x))+'</td><td>'+P(L.r12)+'</td><td>'+P(L.r24)+'</td><td>'+P(L.r36)+'</td><td>'+(L.v!=null?fx(L.v,2)+"%":"—")+'</td><td>'+(L.sh!=null?fx(L.sh,2):"—")+'</td><td>'+P(L.dd)+'</td><td class="c-ph">'+esc(L.tx||"—")+'</td><td class="c-ph">'+esc(L.res||"—")+'</td><td class="c-ph">'+esc(L.pl||"—")+'</td></tr>'});
   return h+'</tbody></table></div><p class="sub" style="font-size:.8rem">Números de cada item até a data mais recente da base (fundos: CVM; ativos: B3). Resgate: prazo de cotização mais pagamento informado na lâmina. Renda fixa aparece pela taxa contratada.</p></section>';
 }
 function spFichasHtml(c,it){
@@ -5331,7 +5337,7 @@ html,body{background:#fff!important;color:#0E1B2C}body{margin:0;padding:0 2px;fo
 .panel,.relsec{box-shadow:none!important;border:1px solid #E1E5EB!important;border-radius:8px!important;padding:12px 14px!important;margin:0 0 10px!important;break-inside:auto}
 .fnchart,.fnkpis,.fninfo div,tr,.fnh1,.label,.legend,.cmpleg{break-inside:avoid;page-break-inside:avoid}.label{break-after:avoid;page-break-after:avoid}.panel h3,.relsec h3{break-after:avoid;page-break-after:avoid}
 .panel h3,.relsec h3{color:${cor};font-size:14px;margin:0 0 6px}
-.ctab{font-size:10.5px!important}.ctab th,.ctab td{padding:4px 5px!important}.ctab .c-ph{display:table-cell!important}
+.ctab{font-size:10px!important}.ctab th,.ctab td{padding:3px 4px!important}.ctab .c-ph,.ctab .c-md,.ctab .c-sm,.ctab .c-lg{display:table-cell!important}
 .tablewrap{max-height:none!important;overflow:visible!important}
 .cmptab .cmpn,.cmpcor .cmpn{position:static!important;max-width:none!important}.cmptab .cmpn span{white-space:normal!important;max-width:none!important}
 .fnkpis{grid-template-columns:repeat(5,1fr)!important}.fninfo{grid-template-columns:repeat(3,1fr)!important}.fnrisk{grid-template-columns:repeat(4,1fr)!important}
