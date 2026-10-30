@@ -52,7 +52,7 @@ jobs:
           TOKEN: ${{ github.token }}
         run: |
           rm -rf /tmp/estado && mkdir -p /tmp/estado/data
-          for p in termos cri_cra_cronogramas.json papeis_cadastrados.json curvas_hist.json fundos_hist; do [ -e "data/$p" ] && cp -r "data/$p" /tmp/estado/data/; done
+          for p in termos cri_cra_cronogramas.json papeis_cadastrados.json curvas_hist.json fundos_hist; do if [ -e "data/$p" ]; then cp -r "data/$p" /tmp/estado/data/; fi; done
           cd /tmp/estado
           git init -q -b estado
           git config user.name "robo-dados"
