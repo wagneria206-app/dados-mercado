@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-mz20aDCU0Vk3V44QIQMPkynB+7yA+TpVtppNsfvBKQQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-oVANLzPbudZldMnEyAuuhqrNE1JGgx2AIoZRB1JojsU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3923,7 +3923,7 @@ const FN={idx:null,C:null,sk:null,T:null,cal:null,B:null,L:null,files:new Map(),
 try{const c=JSON.parse(localStorage.getItem("fnCmp")||"[]");if(Array.isArray(c))FN.cmp=c.slice(0,25)}catch(e){}
 try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="object")Object.assign(FN.rk,r,{n:50})}catch(e){}
 try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
-function fnSave(){try{localStorage.setItem("fnCmp",JSON.stringify(FN.cmp));localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
+function fnSave(){const j=JSON.stringify(FN.cmp);try{if(j!==localStorage.getItem("fnCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("fnCmp",j);localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
 const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
 async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
 const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
@@ -4377,7 +4377,7 @@ const AT={idx:null,C:null,sk:null,T:null,cal:null,L:null,files:new Map(),load:nu
   rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50}};
 try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,25)}catch(e){}
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
-function atSave(){try{localStorage.setItem("atCmp",JSON.stringify(AT.cmp));localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
+function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
 async function atGet(p){const r=await fetch(atUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
 const AT_FUNDO=new Set(["FII","Fiagro","FI-Infra"]);
@@ -5546,7 +5546,7 @@ function fvInner(){
   const td=typeof TD_ALL==="object"&&TD_ALL?Object.keys(TD_ALL).filter(k=>KIND[k.split("|")[0]]&&!fvHas("t:"+k)).sort((a,b)=>{const ka=a.split("|"),kb=b.split("|");return (KIND[ka[0]].td||"").localeCompare(KIND[kb[0]].td||"")||ka[1].localeCompare(kb[1])}):[];
   if(td.length)h+='<div class="fnfilt" style="margin-top:10px"><div class="field"><label for="fvTd">Adicionar título do Tesouro</label><select id="fvTd"><option value="">Escolha o título…</option>'+td.map(k=>{const [kd,d]=k.split("|");return '<option value="'+k+'">'+esc(fvTdName(kd,d))+(TD_ALL[k].buy!=null?'':' (fora de venda)')+'</option>'}).join("")+'</select></div></div>';
   h+=syncHtml();
-  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+(SYNC.tok?'Favoritos, alertas e carteiras simuladas ficam no seu repositório privado do GitHub e aparecem iguais em todos os aparelhos conectados. Com o app aberto, os alertas são conferidos sempre que os dados se atualizam; com o app fechado, o robô do repositório confere a cada 30 minutos no horário de mercado e o GitHub avisa por e-mail e pelo app do GitHub. ':'Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). ')+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+(SYNC.tok?'Favoritos, alertas, carteiras simuladas e as listas do comparador ficam no seu repositório privado do GitHub e aparecem iguais em todos os aparelhos conectados. Com o app aberto, os alertas são conferidos sempre que os dados se atualizam; com o app fechado, o robô do repositório confere a cada 30 minutos no horário de mercado e o GitHub avisa por e-mail e pelo app do GitHub. ':'Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). ')+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
   if(need.size)setTimeout(()=>fvNeed(need),0);
   return h;
 }
@@ -5630,11 +5630,14 @@ async function syncApi(metodo,corpo){
   return r.json();
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del}}
+function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()}}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
-  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del};
+  // listas do comparador: vale a alteração mais recente (sem juntar, para que tirar um item também valha nos outros aparelhos)
+  const lc=L.cmp||{},rc=R.cmp||{},cmp=(+rc.at||0)>(+lc.at||0)?rc:lc;
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp};
 }
 function syncApply(D){
   const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
@@ -5642,7 +5645,11 @@ function syncApply(D){
   SYNC.del=D.del||{};
   if(Array.isArray(D.carts)&&D.carts.length){SP.carts=D.carts;SP.cur=Math.min(SP.cur,SP.carts.length-1);if(typeof SP_CMP!=="undefined")SP_CMP=null}
   try{localStorage.setItem("favs",JSON.stringify(FV.l));localStorage.setItem("alertas",JSON.stringify(FV.a));localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(e){}
-  fvRefresh();if(typeof activeMod!=="undefined"&&activeMod==="sp")spCalc();
+  let mudouCmp=false;const C=D.cmp;
+  if(C&&(+C.at||0)>syncCmpAt()&&Array.isArray(C.f)&&Array.isArray(C.a)){const f=C.f.filter(x=>typeof x==="string").slice(0,25),a=C.a.filter(x=>typeof x==="string").slice(0,25);
+    mudouCmp=JSON.stringify(f)!==JSON.stringify(FN.cmp)||JSON.stringify(a)!==JSON.stringify(AT.cmp);FN.cmp=f;AT.cmp=a;
+    try{localStorage.setItem("fnCmp",JSON.stringify(f));localStorage.setItem("atCmp",JSON.stringify(a));localStorage.setItem("cmpAt",String(+C.at))}catch(e){}}
+  fvRefresh();if(typeof activeMod!=="undefined"){if(activeMod==="sp")spCalc();else if(mudouCmp&&(activeMod==="fc"||activeMod==="ac"))fnCalc(activeMod)}
 }
 async function syncNow(forcar){
   if(!SYNC.tok)return;if(SYNC.run)return SYNC.run;
