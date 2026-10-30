@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-luhrJWWIGAOMwb7sVC6JkkXbf5up6BjdERwV7CJrXxU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-X+8QHl5qz9FivNij8+VY8W/CLgUN4nJQwzlJB3OiJrQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -5945,8 +5945,11 @@ function euTabela(keys){
   keys.forEach(k=>{const P=EU.S[k];if(!P||P.length<3)return;const u=P[P.length-1];h+='<tr><td style="text-align:left">'+esc(EU_SER[k][0])+' <small>'+fdate(u[0]).slice(0,5)+'</small></td><td class="c-ph">'+(k==="cdi"?"—":euFmtV(k,u[1]))+'</td>'+cols.map(c=>'<td class="'+c[2]+'">'+euFmtD(k,euVar(P,k,euBase(P,c[0])))+'</td>').join("")+'</tr>'});
   return h+'</tbody></table></div>'}
 /* painel resumo (Mercado › Resumo e Bolsa › EUA) */
+/* PTAX do dia (robô de mercado, Banco Central) entra antes de a base da Bolsa ter o pregão de hoje */
+function euUsdHoje(){try{const d=(typeof FX_TOP!=="undefined"&&FX_TOP)||null,U=EU.S&&EU.S.usd;if(!d||!d.data||!(+d.venda>0)||!U||!U.length)return;const t=Date.parse(d.data+"T00:00:00Z");if(t>U[U.length-1][0])U.push([t,+d.venda]);else if(t===U[U.length-1][0])U[U.length-1][1]=+d.venda}catch(e){}}
 function painelHtml(modo){
   if(!EU.S){euBoot();return EU.err&&!EU.load?'':'<p class="sub">Carregando o painel de índices…</p>'}
+  euUsdHoje();
   const eua=modo==="eua";
   const cards=eua?["spx","comp","djia","ndx","vix","t10","t2","usd"]:["ibov","ifix","spx","comp","djia","usd","spxbrl","vix","t10","cdi"];
   let h='<span class="label">'+(eua?'Bolsa americana hoje':'Painel de índices')+'</span><p class="sub" style="margin-top:4px">'+(eua?'Fechamento mais recente de cada índice, com a variação no dia, no mês, no ano e em 12 meses. Juros e VIX mostram a variação em pontos.':'Bolsas do Brasil e dos EUA, dólar e juros: fechamento mais recente de cada um, com a variação no dia, no mês, no ano e em 12 meses (a data aparece ao lado do nome).')+'</p>';
@@ -5954,7 +5957,7 @@ function painelHtml(modo){
   const keys=eua?["spx","comp","djia","ndx","ibov","spxbrl"]:["ibov","spx","comp","djia","spxbrl","usd","cdi"];
   h+='<div class="label" style="margin-top:14px">Desempenho comparado (%)</div>'+euPerfChart(keys,["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2","#64748b"]);
   h+=euTabela(eua?["spx","comp","djia","ndx","vix","t10","t2","t3m","usd","spxbrl","ibov"]:["ibov","ifix","spx","comp","djia","ndx","spxbrl","usd","vix","t10","cdi"]);
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Índices de preço (sem dividendos), cada um no fechamento do seu mercado. S&P 500 em reais = S&P 500 × dólar PTAX do mesmo dia (o que um investidor brasileiro teria sem proteção cambial). Fontes: B3 (Ibovespa e IFIX), Banco Central (dólar PTAX e CDI), Cboe (S&P 500, VIX e Dow Jones, pelo índice DJX × 100), Nasdaq (Nasdaq Composite e Nasdaq-100) e Departamento do Tesouro dos EUA (juros dos Treasuries). bps = centésimos de ponto percentual.</p>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Índices de preço (sem dividendos), cada um no último fechamento disponível (a data aparece ao lado). Ibovespa e IFIX entram com o fechamento oficial da B3, publicado na manhã do dia seguinte. S&P 500 em reais = S&P 500 × dólar PTAX do mesmo dia (o que um investidor brasileiro teria sem proteção cambial). Fontes: B3 (Ibovespa e IFIX), Banco Central (dólar PTAX e CDI), Cboe (S&P 500, VIX e Dow Jones, pelo índice DJX × 100), Nasdaq (Nasdaq Composite e Nasdaq-100) e Departamento do Tesouro dos EUA (juros dos Treasuries). bps = centésimos de ponto percentual.</p>';
   return h;
 }
 
