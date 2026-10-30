@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-vimebLbPWoA0yhtiuAGBs37PmU5yqeVKIJmUpoyyWo4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-luhrJWWIGAOMwb7sVC6JkkXbf5up6BjdERwV7CJrXxU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -698,7 +698,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .debq .field{flex:1;min-width:180px}
 
-.wrap[data-area="bolsa"] .tabs button[data-mod="aa"],.wrap[data-area="bolsa"] .tabs button[data-mod="ar"],.wrap[data-area="bolsa"] .tabs button[data-mod="ac"],.wrap[data-area="simu"] .tabs button[data-mod="sp"],.wrap[data-area="bolsa"] .tabs button[data-mod="ag"],.wrap[data-area="fnd"] .tabs button[data-mod="fg"],.wrap[data-area="fnd"] .tabs button[data-mod="fa"],.wrap[data-area="fnd"] .tabs button[data-mod="fr"],.wrap[data-area="fnd"] .tabs button[data-mod="fc"]{display:inline-flex;align-items:center}
+.wrap[data-area="bolsa"] .tabs button[data-mod="aa"],.wrap[data-area="bolsa"] .tabs button[data-mod="ar"],.wrap[data-area="bolsa"] .tabs button[data-mod="ac"],.wrap[data-area="simu"] .tabs button[data-mod="sp"],.wrap[data-area="bolsa"] .tabs button[data-mod="ag"],.wrap[data-area="bolsa"] .tabs button[data-mod="au"],.wrap[data-area="fnd"] .tabs button[data-mod="fg"],.wrap[data-area="fnd"] .tabs button[data-mod="fa"],.wrap[data-area="fnd"] .tabs button[data-mod="fr"],.wrap[data-area="fnd"] .tabs button[data-mod="fc"]{display:inline-flex;align-items:center}
 
 #modFn .panel{margin-bottom:16px}
 
@@ -1083,6 +1083,27 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 .spmov .ctab{margin:4px 0 6px;max-width:520px}
 
 .spmov .sprow{margin-top:4px}
+
+.pnlg{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:8px;margin-top:10px}
+
+.pnlc{background:var(--sunk);border-radius:10px;padding:10px 12px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+
+.pnlc span{font-size:.76rem;color:var(--muted)}
+
+.pnlc span em{font-style:normal;opacity:.75;margin-left:4px}
+
+.pnlc b{font-size:1.1rem;font-variant-numeric:tabular-nums}
+
+.pnlc b i{font-style:normal;font-size:.82rem;font-weight:600;margin-left:4px}
+
+.pnlc small{font-size:.72rem;color:var(--muted);line-height:1.35}
+
+.pnlc small span,.pnlc b i span{font-size:inherit;color:inherit}
+
+.pnlc small span.pos,.pnlc b i span.pos{color:var(--gain)}.pnlc small span.neg,.pnlc b i span.neg{color:var(--loss)}
+
+.pnlc svg{display:block;width:100%;height:26px;margin-top:4px}
+@media (max-width:640px){.pnlg{grid-template-columns:1fr 1fr}.pnlc b{font-size:1rem}}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -1105,7 +1126,7 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
   </nav>
   <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -2193,7 +2214,7 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",fv:"mkt"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",au:"bolsa",fv:"mkt"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
 const MKM=new Set(["rs","fv","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
@@ -3179,7 +3200,7 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
+  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(painelHtml())+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
@@ -3920,7 +3941,7 @@ document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkCli
 let FX_TOP=null;
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
 const FN_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/";
-const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","ag","sp"]);
+const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","au","ag","sp"]);
 const FN_BM={cdi:{lab:"CDI",col:"#7c8aa5"},ibov:{lab:"Ibovespa",col:"#f97316"},ipca:{lab:"IPCA",col:"#eab308"},usd:{lab:"Dólar",col:"#22c55e"},ifix:{lab:"IFIX",col:"#a16207"}};
 Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#06b6d4"},imab5:{lab:"IMA-B 5",col:"#38bdf8"},imab5p:{lab:"IMA-B 5+",col:"#0f766e"},irfm:{lab:"IRF-M",col:"#c026d3"},imas:{lab:"IMA-S",col:"#94a3b8"},imag:{lab:"IMA-Geral",col:"#ec4899"}});
 const FN_COLS=["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2"];
@@ -4124,7 +4145,7 @@ function fnShell(m){
 }
 function fnRender(){if(activeMod==="aa")atAa();else if(activeMod==="ac")atCmp();else if(activeMod==="fa")fnFa();else if(activeMod==="fc")fnCmp()}
 function fnCalc(m){
-  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="fg")return fnGest();if(m==="sp")return spCalc();if(m==="ag")return agCalc();const o=fnShell(m);if(!o)return;
+  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="au")return euCalc();if(m==="fg")return fnGest();if(m==="sp")return spCalc();if(m==="ag")return agCalc();const o=fnShell(m);if(!o)return;
   const body=m==="fa"?$("fnBody"):m==="fr"?$("fnRkT"):$("fnCbody");
   if(!FN.idx){
     if(FN.err){const h='<section class="panel"><p class="warn">A base de fundos ainda não está disponível ('+esc(FN.err.message||FN.err)+'). Na primeira vez o robô leva cerca de uma hora para montar o histórico de todos os fundos da CVM. Tente de novo em alguns minutos.</p><button type="button" class="btn sec" data-fnretry="1">Tentar de novo</button></section>';if(body)body.innerHTML=h;else o.innerHTML=h}
@@ -4394,7 +4415,7 @@ function atBoot(){
   AT.load=Promise.all([atGet("idx.json"),atGet("cal.json"),atGet("bench.json")]).then(([i,c,b])=>{
     AT.idx=i;AT.C={};i.cols.forEach((n,k)=>AT.C[n]=k);
     AT.sk=i.rows.map(r=>fnNorm(r[0]+" "+r[1]+" "+(i.setores[r[AT.C.setor]]||"")));
-    AT.cal=c.d;AT.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));AT.L=lvBuild(AT.cal,b);AT.load=null;atHash();if(FNM.has(activeMod))fnCalc();extApply();
+    AT.cal=c.d;AT.B=b;AT.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));AT.L=lvBuild(AT.cal,b);AT.load=null;atHash();if(FNM.has(activeMod))fnCalc();extApply();
   }).catch(e=>{AT.err=e;AT.load=null;if(FNM.has(activeMod))fnCalc()});
   return AT.load;
 }
@@ -4447,7 +4468,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml());docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml());docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -4588,7 +4609,7 @@ document.addEventListener("click",e=>{
   if(!(e.target.closest&&e.target.closest("#modFn")))return;const g=a=>e.target.closest("["+a+"]");let x;
   if((x=g("data-atopen"))){atOpen(x.dataset.atopen);return}
   if((x=g("data-atretry"))){AT.err=null;atCalc(activeMod);return}
-  if((x=g("data-atcmp"))){atCmpToggle(x.dataset.atcmp);if(activeMod==="aa")atAa();else if(activeMod==="ar")atRkTable();else atCmp();return}
+  if((x=g("data-atcmp"))){atCmpToggle(x.dataset.atcmp);if(activeMod==="aa")atAa();else if(activeMod==="ar")atRkTable();else if(activeMod==="au")euRkTable();else atCmp();return}
   if((x=g("data-atrm"))){atCmpToggle(x.dataset.atrm);atCmp();return}
   if((x=g("data-atadd"))){const k=x.dataset.atadd;if(!AT.cmp.includes(k))atCmpToggle(k);const q=$("atCq");if(q)q.value="";$("atCres").hidden=true;atCmp();return}
   if((x=g("data-atsort"))){const c=x.dataset.atsort;if(AT.rk.sort===c)AT.rk.dir*=-1;else{AT.rk.sort=c;AT.rk.dir=["t","pl","pvp","evebit","dlebit","v12"].includes(c)?1:-1}AT.rk.n=50;atSave();atRkTable();return}
@@ -5868,6 +5889,186 @@ document.addEventListener("click",e=>{
   if((x=g("data-spmovgen"))){const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d:c.ef.data,v:Math.round((+c.ef.valor||0)*(+y.w)/tot*100)/100}]});spSave();spCalc();return}
 });
 
+/* ===== Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) ===== */
+const EU_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/eua/";
+const EU={ix:null,idx:null,C:null,S:null,B:null,cal:null,emp:new Map(),load:null,err:null,per:"12",
+  rk:{setor:"",liq:1e5,txt:"",sort:"mcap",dir:-1,n:50}};
+try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="object")Object.assign(EU.rk,r,{n:50})}catch(e){}
+try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
+function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
+const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
+function euRefresh(){if(typeof activeMod==="undefined")return;if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euBoot(){
+  if(EU.S||EU.load)return EU.load;EU.err=null;
+  const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);
+  EU.load=Promise.all([euGet("indices.json").catch(e=>{EU.err=e;return null}),euGet("idx.json").catch(()=>null),b3]).then(([ix,idx,[c,b]])=>{
+    EU.ix=ix;if(idx){EU.idx=idx;EU.C={};idx.cols.forEach((n,k)=>EU.C[n]=k)}
+    const S={},T=d=>Date.parse(d+"T00:00:00Z");
+    if(ix&&ix.d){const t=ix.d.map(T);Object.keys(ix.s).forEach(k=>{const a=ix.s[k],o=[];for(let i=0;i<a.length;i++)if(a[i]!=null)o.push([t[i],a[i]]);S[k]=o})}
+    if(c&&c.d&&b&&b.d){const t=c.d.map(T);["ibov","ifix","usd"].forEach(k=>{const a=b.d[k];if(!a)return;const o=[];let ult=null;for(let i=0;i<a.length;i++){if(a[i]==null||a[i]===ult&&k!=="usd")continue;o.push([t[i],a[i]]);ult=a[i]}S[k]=o});
+      if(b.d.cdi){const o=[];let v=1;for(let i=0;i<t.length;i++){const r=b.d.cdi[i];if(r==null)continue;v*=1+r/100;if(r>0||!o.length)o.push([t[i],v])}S.cdi=o}}
+    if(S.spx&&S.usd){const U=S.usd;S.spxbrl=S.spx.map(([t,v])=>{const u=euAt(U,t);return u?[t,v*u[1]]:null}).filter(Boolean)}
+    EU.S=S;EU.load=null;euRefresh();
+  }).catch(e=>{EU.err=e;EU.load=null;euRefresh()});
+  return EU.load;
+}
+function euAt(P,t){if(!P||!P.length||P[0][0]>t)return null;let lo=0,hi=P.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(P[m][0]<=t)lo=m;else hi=m-1}return P[lo]}
+function euMoney(v,cur){if(v==null||!isFinite(v))return "—";const p=(!cur||cur==="USD")?"US$ ":cur+" ",a=Math.abs(v),s=v<0?"−":"";return a>=1e12?s+p+fx(a/1e12,2)+" tri":a>=1e9?s+p+fx(a/1e9,1)+" bi":a>=1e6?s+p+fx(a/1e6,0)+" mi":s+p+fx(a,0)}
+const EU_SER={ibov:["Ibovespa","B3","pts"],ifix:["IFIX","B3","pts"],usd:["Dólar (PTAX)","Banco Central","brl"],spx:["S&P 500","Cboe","pts"],comp:["Nasdaq Composite","Nasdaq","pts"],
+  djia:["Dow Jones","Cboe (DJX × 100)","pts"],ndx:["Nasdaq-100","Nasdaq","pts"],vix:["VIX (volatilidade do S&P 500)","Cboe","vix"],t10:["Treasury 10 anos","Tesouro dos EUA","tx"],
+  t2:["Treasury 2 anos","Tesouro dos EUA","tx"],t3m:["Treasury 3 meses","Tesouro dos EUA","tx"],spxbrl:["S&P 500 em reais","Cboe × PTAX","pts"],cdi:["CDI","Banco Central","idx"]};
+/* variação entre o último ponto e o último ponto antes de 'ini' (ou no máximo em 'ate') */
+function euVar(P,k,base){if(!P||P.length<2||!base)return null;const u=P[P.length-1],tx=EU_SER[k][2]==="tx"||EU_SER[k][2]==="vix";return tx?u[1]-base[1]:(u[1]/base[1]-1)*100}
+function euBase(P,per){if(!P||P.length<2)return null;const u=P[P.length-1],d=new Date(u[0]);
+  if(per==="dia")return P[P.length-2];
+  if(per==="mes")return euAt(P,Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)-1);
+  if(per==="ano")return euAt(P,Date.UTC(d.getUTCFullYear(),0,1)-1);
+  const n=+per,t=Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-n,d.getUTCDate());if(P[0][0]>t+7*DAY)return null;return euAt(P,t)}
+function euFmtV(k,v){const f=EU_SER[k][2];return f==="tx"?fx(v,2)+"%":f==="brl"?"R$ "+fx(v,4):f==="vix"?fx(v,2):f==="idx"?fx(v,4):fx(v,v>=1000?0:2)}
+function euFmtD(k,v){if(v==null||!isFinite(v))return "—";const f=EU_SER[k][2];if(f==="tx"){const b=Math.round(v*100);return '<span class="'+(b>0?"neg":b<0?"pos":"")+'">'+(b>0?"+":b<0?"−":"")+Math.abs(b)+' bps</span>'}if(f==="vix")return '<span class="'+(v>0?"neg":v<0?"pos":"")+'">'+(v>0?"+":v<0?"−":"")+fx(Math.abs(v),2)+'</span>';return fnPct(v)}
+function euSpark(P,k){const L=P.slice(-66);if(L.length<5)return "";let lo=Infinity,hi=-Infinity;L.forEach(p=>{lo=Math.min(lo,p[1]);hi=Math.max(hi,p[1])});const W=120,H=28,t0=L[0][0],t1=L[L.length-1][0];
+  const up=L[L.length-1][1]>=L[0][1],bad=EU_SER[k][2]==="tx"||EU_SER[k][2]==="vix"?up:!up;
+  const d=L.map((p,i)=>(i?"L":"M")+((p[0]-t0)/Math.max(1,t1-t0)*W).toFixed(1)+" "+(H-2-(p[1]-lo)/Math.max(1e-9,hi-lo)*(H-4)).toFixed(1)).join(" ");
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+(bad?"var(--loss)":"var(--gain)")+'" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>'}
+function euCard(k){const P=EU.S&&EU.S[k];if(!P||P.length<3)return "";const u=P[P.length-1],[nome]=EU_SER[k];
+  if(k==="cdi"){const r12=euVar(P,k,euBase(P,"12")),ra=euVar(P,k,euBase(P,"ano"));return '<div class="pnlc"><span>CDI acumulado</span><b>'+(r12!=null?fx(r12,2)+'%':'—')+'</b><small>12 meses · no ano '+(ra!=null?fx(ra,2)+'%':'—')+'</small>'+euSpark(P,k)+'</div>'}
+  const dd=euVar(P,k,euBase(P,"dia")),dm=euVar(P,k,euBase(P,"mes")),da=euVar(P,k,euBase(P,"ano")),d12=euVar(P,k,euBase(P,"12"));
+  return '<div class="pnlc"><span>'+esc(nome)+' <em>'+fdate(u[0]).slice(0,5)+'</em></span><b>'+euFmtV(k,u[1])+' <i>'+euFmtD(k,dd)+'</i></b><small>mês '+euFmtD(k,dm)+' · ano '+euFmtD(k,da)+' · 12m '+euFmtD(k,d12)+'</small>'+euSpark(P,k)+'</div>'}
+const EU_PERS=[["1","1 mês"],["6","6 meses"],["ano","No ano"],["12","12 meses"],["36","3 anos"],["60","5 anos"]];
+function euPerfChart(keys,cols){
+  const S=EU.S,out=[];let tA=0;keys.forEach(k=>{const P=S[k];if(P&&P.length)tA=Math.max(tA,P[P.length-1][0])});
+  keys.forEach((k,j)=>{const P=S[k];if(!P||P.length<3)return;const b=euBase(P,EU.per);if(!b)return;const pts=P.filter(p=>p[0]>b[0]).map(p=>[p[0],(p[1]/b[1]-1)*100]);pts.unshift([b[0],0]);out.push({lab:EU_SER[k][0],col:cols[j],w:k==="cdi"?1.6:2,dash:k==="cdi"?"4 3":null,pts:fnThin(pts.map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v])})});
+  return fnSeg("euper",EU_PERS,EU.per)+fnChart(out,{fmt:"pct",zero:true,h:240,legend:true,aria:"Desempenho comparado"})}
+function euTabela(keys){
+  const cols=[["dia","Dia",""],["mes","Mês",""],["ano","Ano",""],["12","12m",""],["36","36m","c-ph"],["60","60m","c-ph"]];
+  let h='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab"><thead><tr><th style="text-align:left">Índice</th><th class="c-ph">Último</th>'+cols.map(c=>'<th class="'+c[2]+'">'+c[1]+'</th>').join("")+'</tr></thead><tbody>';
+  keys.forEach(k=>{const P=EU.S[k];if(!P||P.length<3)return;const u=P[P.length-1];h+='<tr><td style="text-align:left">'+esc(EU_SER[k][0])+' <small>'+fdate(u[0]).slice(0,5)+'</small></td><td class="c-ph">'+(k==="cdi"?"—":euFmtV(k,u[1]))+'</td>'+cols.map(c=>'<td class="'+c[2]+'">'+euFmtD(k,euVar(P,k,euBase(P,c[0])))+'</td>').join("")+'</tr>'});
+  return h+'</tbody></table></div>'}
+/* painel resumo (Mercado › Resumo e Bolsa › EUA) */
+function painelHtml(modo){
+  if(!EU.S){euBoot();return EU.err&&!EU.load?'':'<p class="sub">Carregando o painel de índices…</p>'}
+  const eua=modo==="eua";
+  const cards=eua?["spx","comp","djia","ndx","vix","t10","t2","usd"]:["ibov","ifix","spx","comp","djia","usd","spxbrl","vix","t10","cdi"];
+  let h='<span class="label">'+(eua?'Bolsa americana hoje':'Painel de índices')+'</span><p class="sub" style="margin-top:4px">'+(eua?'Fechamento mais recente de cada índice, com a variação no dia, no mês, no ano e em 12 meses. Juros e VIX mostram a variação em pontos.':'Bolsas do Brasil e dos EUA, dólar e juros: fechamento mais recente de cada um, com a variação no dia, no mês, no ano e em 12 meses (a data aparece ao lado do nome).')+'</p>';
+  h+='<div class="pnlg">'+cards.map(euCard).join("")+'</div>';
+  const keys=eua?["spx","comp","djia","ndx","ibov","spxbrl"]:["ibov","spx","comp","djia","spxbrl","usd","cdi"];
+  h+='<div class="label" style="margin-top:14px">Desempenho comparado (%)</div>'+euPerfChart(keys,["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2","#64748b"]);
+  h+=euTabela(eua?["spx","comp","djia","ndx","vix","t10","t2","t3m","usd","spxbrl","ibov"]:["ibov","ifix","spx","comp","djia","ndx","spxbrl","usd","vix","t10","cdi"]);
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Índices de preço (sem dividendos), cada um no fechamento do seu mercado. S&P 500 em reais = S&P 500 × dólar PTAX do mesmo dia (o que um investidor brasileiro teria sem proteção cambial). Fontes: B3 (Ibovespa e IFIX), Banco Central (dólar PTAX e CDI), Cboe (S&P 500, VIX e Dow Jones, pelo índice DJX × 100), Nasdaq (Nasdaq Composite e Nasdaq-100) e Departamento do Tesouro dos EUA (juros dos Treasuries). bps = centésimos de ponto percentual.</p>';
+  return h;
+}
+
+/* ---------- Bolsa › EUA */
+function euCalc(){
+  const o=$("fnOut");if(!o)return;
+  if(FN.view!=="au"){FN.view="au";o.innerHTML='<section class="panel" id="euPainel"></section><section class="panel" id="euJuros"></section><section class="panel"><h3>Empresas americanas com BDR na B3</h3><p class="sub">Indicadores calculados com os balanços entregues à SEC (órgão regulador dos EUA) e a cotação em Nova York. Clique no BDR para abrir a análise completa, com retorno em dólar e documentos.</p><div id="euRkF"></div><div id="euRkT"></div></section>'}
+  if(!EU.S){$("euPainel").innerHTML=EU.err&&!EU.load?'<p class="warn">A base da Bolsa americana ainda não está disponível ('+esc(EU.err.message||EU.err)+'). Tente de novo mais tarde.</p>':'<p class="sub">Carregando os dados da Bolsa americana…</p>';euBoot();return}
+  $("euPainel").innerHTML=painelHtml("eua");$("euJuros").innerHTML=euJurosHtml();
+  if(!AT.idx){$("euRkT").innerHTML='<p class="sub">Carregando a lista de BDRs da B3…</p>';atBoot().then(()=>{if(activeMod==="au")euCalc()});return}
+  euRk();
+}
+function euJurosHtml(){
+  const S=EU.S,cut=Date.now()-5*365.25*DAY,f=k=>(S[k]||[]).filter(p=>p[0]>=cut);if(!S.t10)return "";
+  const th=fnThin;const tt=k=>th(f(k).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
+  const u10=S.t10[S.t10.length-1],u2=S.t2&&S.t2[S.t2.length-1];
+  let h='<h3>Juros e volatilidade nos EUA</h3>';
+  if(u2)h+='<p class="sub">Inclinação da curva (10 anos − 2 anos): <b>'+(u10[1]-u2[1]>=0?'+':'−')+Math.abs(Math.round((u10[1]-u2[1])*100))+' bps</b>'+(u10[1]<u2[1]?' — curva invertida: o mercado espera juros menores à frente, sinal que costuma anteceder desaceleração.':'.')+'</p>';
+  h+='<div class="label" style="margin-top:8px">Juros dos títulos do Tesouro americano, 5 anos (% a.a.)</div>'+fnChart([{lab:"10 anos",col:"#2563eb",w:2,pts:tt("t10")},{lab:"2 anos",col:"#dc2626",w:2,pts:tt("t2")},{lab:"3 meses",col:"#16a34a",w:1.8,pts:tt("t3m")}],{fmt:"pct",h:220,aria:"Juros do Tesouro americano"});
+  if(S.vix)h+='<div class="label" style="margin-top:12px">VIX, 5 anos (volatilidade esperada do S&P 500 para 30 dias)</div>'+fnChart([{lab:"VIX",col:"#9333ea",w:1.8,pts:tt("vix")}],{fmt:"num",h:180,aria:"VIX"})+'<p class="sub" style="font-size:.8rem">VIX acima de 30 costuma indicar estresse no mercado; abaixo de 15, calmaria.</p>';
+  return h;
+}
+const EU_RKCOLS=[["t","BDR",""],["setor","Setor","c-ph c-md"],["px","Preço US$","c-ph"],["d1","Dia (EUA)","c-ph c-sm"],["mcap","Valor de mercado","c-ph"],["pl","P/L",""],["pvp","P/VP","c-ph"],["roe","ROE","c-ph"],["ml","Marg. líq.","c-ph c-sm"],["crec","Receita 12m","c-ph c-sm"],["dy","DY (EUA)","c-ph c-md"],["r12","BDR 12m (R$)",""],["liq","Liquidez BDR","c-ph c-md"]];
+function euRows(){const I=EU.idx,C=EU.C,A=AT.C;if(!I)return [];return I.rows.map(r=>{const a=atRow(r[0]);return {r,a,t:r[0],setor:r[C.setor]||"",px:r[C.px],d1:r[C.d1],mcap:r[C.mcap],pl:r[C.pl],pvp:r[C.pvp],roe:r[C.roe],ml:r[C.ml],crec:r[C.crec],dy:r[C.dy],r12:a?a[A.r12]:null,liq:a?a[A.liq]:null}})}
+function euRk(){
+  const f=$("euRkF");if(!f)return;if(!EU.idx){$("euRkT").innerHTML='<p class="sub">A lista de empresas aparece depois da primeira coleta do robô da Bolsa americana.</p>';return}
+  const rk=EU.rk,L=euRows(),set=new Map();L.forEach(x=>{if(x.setor)set.set(x.setor,(set.get(x.setor)||0)+1)});
+  const sel=(id,lab,opts,v)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-eurk="'+id+'">'+opts.map(([a,b])=>'<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>';
+  f.innerHTML='<div class="fnfilt">'+sel("euSet","Setor",[["","Todos"]].concat([...set.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([s,n])=>[s,s+" ("+n+")"])),rk.setor)
+    +sel("euLiq","Liquidez mínima do BDR por dia",[[0,"Qualquer"],[1e4,"R$ 10 mil"],[1e5,"R$ 100 mil"],[1e6,"R$ 1 milhão"],[1e7,"R$ 10 milhões"]],rk.liq)
+    +'<div class="field"><label for="euTxt">Código ou nome</label><input id="euTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>';
+  euRkTable();
+}
+function euRkTable(){
+  const t=$("euRkT");if(!t||!EU.idx)return;const rk=EU.rk,C=EU.C,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
+  const L=euRows().filter(x=>(!rk.setor||x.setor===rk.setor)&&(x.liq||0)>=+rk.liq&&(!tx.length||tx.every(w=>fnNorm(x.t+" "+x.r[C.tk]+" "+x.r[C.nome]+" "+(x.a?x.a[1]:"")).includes(w))));
+  const k=rk.sort,d=rk.dir;L.sort((a,b)=>{const x=a[k],y=b[k];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return typeof x==="string"?d*x.localeCompare(y):d*(x-y)});
+  const cell=(x,c)=>{const v=x[c];if(c==="t")return '<button type="button" class="link" style="font-weight:600;font-size:.84rem;text-align:left" data-atopen="'+x.t+'">'+x.t+'</button><small>'+esc(x.r[C.tk])+' · '+esc(x.r[C.nome]||"")+'</small>';
+    if(c==="setor")return esc(v||"—");if(c==="px")return v!=null?"US$ "+fx(v,2):"—";if(c==="mcap")return euMoney(v);if(c==="liq")return fnMoney(v);
+    if(["d1","roe","ml","crec","dy","r12"].includes(c))return fnPct(v,c==="dy"?2:1);return v!=null?fx(v,1):"—"};
+  let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' empresas.</p><div class="tablewrap" style="max-height:none"><table class="ctab fnrk"><thead><tr><th>#</th>'+EU_RKCOLS.map(([c,l,cl])=>'<th data-eusort="'+c+'" class="'+cl+'"'+(c==="t"?' style="text-align:left"':'')+'>'+l+(rk.sort===c?(rk.dir<0?' ▾':' ▴'):'')+'</th>').join("")+'<th></th></tr></thead><tbody>';
+  L.slice(0,rk.n).forEach((x,j)=>{h+='<tr><td><small>'+(j+1)+'</small></td>'+EU_RKCOLS.map(([c,,cl])=>'<td class="'+cl+(c==="t"?'" style="text-align:left;min-width:110px;max-width:220px;white-space:normal;overflow-wrap:break-word':'')+'">'+cell(x,c)+'</td>').join("")+'<td><button type="button" class="link" data-atcmp="'+x.t+'">'+(AT.cmp.includes(x.t)?'✓':'+')+'</button></td></tr>'});
+  h+='</tbody></table></div>'+(L.length>rk.n?'<button type="button" class="btn sec" data-eumore="1" style="margin-top:10px">Mostrar mais 50</button>':'')+'<p class="sub" style="font-size:.8rem;margin-top:6px">P/L, P/VP e DY usam o valor de mercado em Nova York e os últimos 12 meses dos balanços entregues à SEC; ficam em branco quando o balanço tem mais de 15 meses ou não é em dólar. DY (EUA) = dividendos pagos pela empresa em 12 meses ÷ valor de mercado, antes de impostos (o investidor de BDR recebe já com o imposto retido nos EUA, em geral 30%). Receita 12m = crescimento da receita sobre os 12 meses anteriores. BDR 12m = retorno do BDR na B3, em reais, com proventos. Setor pela classificação da Nasdaq.</p>';
+  t.innerHTML=h;
+}
+
+/* ---------- página do BDR: dados da empresa nos EUA */
+function euEmpHtml(A){
+  if(A.tipo!=="BDR")return "";
+  return '<div id="euEmp" data-t="'+esc(A.t)+'">'+euEmpInner(A)+'</div>';
+}
+function euEmpFill(){const el=$("euEmp");if(!el)return;const t=el.dataset.t,A=AT.files.get(t);if(!A)return;try{el.innerHTML=fnUse(AT,()=>euEmpInner(A))}catch(e){el.innerHTML="";console.error(e)}}
+function euEmpInner(A){
+  if(!EU.S&&!EU.err){euBoot();return ""}
+  if(!EU.idx)return "";const r=EU.idx.rows.find(x=>x[0]===A.t);if(!r)return "";const C=EU.C,cik=r[C.cik];
+  if(!EU.emp.has(cik)){EU.emp.set(cik,null);euGet("s/"+cik+".json").then(j=>{EU.emp.set(cik,j);euEmpFill()}).catch(()=>{EU.emp.set(cik,{err:1})});return '<section class="panel"><p class="sub">Carregando os dados da empresa na SEC…</p></section>'}
+  const e=EU.emp.get(cik);if(!e)return '<section class="panel"><p class="sub">Carregando os dados da empresa na SEC…</p></section>';if(e.err)return "";
+  const cur=e.moeda||"USD",M=v=>euMoney(v,cur),ix={};(e.cols||[]).forEach((c,k)=>ix[c]=k+1);const g=(row,c)=>row&&ix[c]!=null?row[ix[c]]:null;
+  const t=e.ttm||{},kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
+  let h='<section class="panel"><h3>A empresa nos EUA</h3><div class="fnsub">'+esc(e.nome||r[C.nome]||"")+' · '+esc(r[C.tk])+(r[C.ex]?' ('+esc(r[C.ex])+')':'')+(r[C.setor]?' · '+esc(r[C.setor]):'')+(r[C.ind]?' / '+esc(r[C.ind]):'')+'</div>';
+  h+='<div class="fnkpis">'+kp("Cotação em Nova York",r[C.px]!=null?"US$ "+fx(r[C.px],2):"—",r[C.d1]!=null?fnPctT(r[C.d1])+" no dia":"")+kp("Valor de mercado",euMoney(r[C.mcap]),"")+kp("P/L · P/VP",(r[C.pl]!=null?fx(r[C.pl],1):"—")+" · "+(r[C.pvp]!=null?fx(r[C.pvp],2):"—"),r[C.roe]!=null?"ROE "+fnPctT(r[C.roe],1):"")
+    +kp("Receita 12 meses",M(t.rec),r[C.crec]!=null?fnPctT(r[C.crec],1)+" sobre os 12 meses anteriores":"")+kp("Lucro líquido 12 meses",M(t.ll),r[C.ml]!=null?"margem "+fnPctT(r[C.ml],1):"")+'</div>';
+  // retorno em dólar
+  const per=FN.per,p0=fnStart(A,per),U=AT.B&&AT.B.d&&AT.B.d.usd;
+  if(p0&&U&&EU.S.spx){const out=[],usd=[],brl=[];for(let x=0;x<A.I.length;x++){const tt=AT.T[A.I[x]];if(tt<p0.t)continue;const u=U[A.I[x]];if(!u)continue;usd.push([tt,A.Q[x]/u]);brl.push([tt,A.Q[x]])}
+    if(usd.length>5){const nz=P=>P.map(p=>[p[0],(p[1]/P[0][1]-1)*100]),sb=euAt(EU.S.spx,usd[0][0]),sp=sb?EU.S.spx.filter(p=>p[0]>sb[0]).map(p=>[p[0],(p[1]/sb[1]-1)*100]):[];if(sb)sp.unshift([usd[0][0],0]);
+      const th=P=>fnThin(P.map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
+      out.push({lab:A.t+" em US$",col:"#2563eb",w:2.2,pts:th(nz(usd))},{lab:A.t+" em R$",col:"#f59e0b",w:1.8,pts:th(nz(brl))},{lab:"S&P 500",col:"#64748b",w:1.6,pts:th(sp)});
+      h+='<div class="label" style="margin-top:12px">Retorno em dólar × em reais × S&P 500 ('+esc((FN_PER.find(x=>x[0]===per)||[,""])[1]).toLowerCase()+')</div>'+fnChart(out,{fmt:"pct",zero:true,h:220,aria:"Retorno em dólar"})+'<p class="sub" style="font-size:.8rem">BDR com proventos, convertido pelo dólar PTAX do dia; a distância entre as linhas em dólar e em reais é o efeito do câmbio. S&P 500 sem dividendos. Mude o período no gráfico de retorno acima.</p>'}}
+  // resultados anuais
+  const an=(e.a||[]).filter(x=>g(x,"rec")!=null||g(x,"ll")!=null);
+  if(an.length){const ys=an.slice(-10);
+    if(ys.length>1)h+='<div class="label" style="margin-top:12px">Receita e lucro líquido por ano fiscal ('+(cur==="USD"?"US$":cur)+' bilhões)</div>'+fnChart([{lab:"Receita",col:"#2563eb",w:2.2,pts:ys.map(x=>[Date.parse(x[0]+"T00:00:00Z"),(g(x,"rec")||0)/1e9])},{lab:"Lucro líquido",col:"var(--gain)",w:2.2,pts:ys.map(x=>[Date.parse(x[0]+"T00:00:00Z"),g(x,"ll")!=null?g(x,"ll")/1e9:null])}],{fmt:"num",zero:true,h:200,aria:"Resultados anuais"});
+    const rv=ys.slice().reverse(),cl=j=>j>=6?' class="c-md"':j>=4?' class="c-sm"':j>=2?' class="c-ph"':'';
+    h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano fiscal até</th>'+rv.map((x,j)=>'<th'+cl(j)+'>'+fdate(Date.parse(x[0]+"T00:00:00Z")).slice(3)+'</th>').join("")+'</tr></thead><tbody>';
+    const row=(lab,f)=>{const v=rv.map(f);if(v.every(z=>z==="—"))return "";return '<tr><td style="text-align:left">'+lab+'</td>'+v.map((z,j)=>'<td'+cl(j)+'>'+z+'</td>').join("")+'</tr>'};
+    const fcl=x=>g(x,"fco")!=null&&g(x,"capex")!=null?g(x,"fco")-g(x,"capex"):null;
+    h+=row("Receita",x=>M(g(x,"rec")))+row("Lucro operacional",x=>M(g(x,"lop")))+row("Lucro líquido",x=>M(g(x,"ll")))+row("Margem líquida",x=>g(x,"rec")&&g(x,"ll")!=null?fnPctT(g(x,"ll")/g(x,"rec")*100,1):"—")
+      +row("Lucro por ação (diluído)",x=>g(x,"lpa")!=null?fx(g(x,"lpa"),2):"—")+row("ROE",x=>g(x,"pl")>0&&g(x,"ll")!=null?fnPctT(g(x,"ll")/g(x,"pl")*100,1):"—")
+      +row("Geração de caixa operacional",x=>M(g(x,"fco")))+row("Investimentos (capex)",x=>M(g(x,"capex")))+row("Fluxo de caixa livre",x=>M(fcl(x)))
+      +row("Dividendos pagos",x=>M(g(x,"divpg")))+row("Recompra de ações",x=>M(g(x,"recompra")))+row("Dividendo por ação",x=>g(x,"dps")!=null?fx(g(x,"dps"),2):"—")
+      +row("Caixa",x=>M(g(x,"caixa")))+row("Dívida de longo prazo",x=>M(g(x,"divida")))+row("Patrimônio líquido",x=>M(g(x,"pl")));
+    h+='</tbody></table></div>'}
+  const qs=(e.q||[]).filter(x=>g(x,"rec")!=null||g(x,"ll")!=null).slice(-8);
+  if(qs.length>2){const rv=qs.slice().reverse(),cl=j=>j>=6?' class="c-md"':j>=4?' class="c-sm"':j>=2?' class="c-ph"':'';
+    h+='<div class="label" style="margin-top:12px">Últimos trimestres</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Trimestre até</th>'+rv.map((x,j)=>'<th'+cl(j)+'>'+fdate(Date.parse(x[0]+"T00:00:00Z")).slice(3)+'</th>').join("")+'</tr></thead><tbody>';
+    const row=(lab,f)=>'<tr><td style="text-align:left">'+lab+'</td>'+rv.map((x,j)=>'<td'+cl(j)+'>'+f(x)+'</td>').join("")+'</tr>';
+    h+=row("Receita",x=>M(g(x,"rec")))+row("Lucro líquido",x=>M(g(x,"ll")))+row("Margem líquida",x=>g(x,"rec")&&g(x,"ll")!=null?fnPctT(g(x,"ll")/g(x,"rec")*100,1):"—")+row("Lucro por ação",x=>g(x,"lpa")!=null?fx(g(x,"lpa"),2):"—");
+    h+='</tbody></table></div>'}
+  const it=[];const add=(a,b)=>{if(b)it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
+  add("Atividade (SEC)",esc(e.sicd||""));add("Fim do ano fiscal",e.fye&&/^\d{4}$/.test(e.fye)?e.fye.slice(2)+"/"+e.fye.slice(0,2):"");add("Sede legal",esc(e.uf||""));add("Moeda dos balanços",cur==="USD"?"dólar":esc(cur));add("Último balanço",t.fim?fdate(Date.parse(t.fim+"T00:00:00Z")):"");add("CIK na SEC",String(cik));
+  if(it.length)h+='<dl class="fninfo" style="margin-top:12px">'+it.join("")+'</dl>';
+  h+=euDocsHtml(e);
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">Demonstrações consolidadas entregues à SEC em formato XBRL (10-K e 10-Q; empresas estrangeiras, 20-F, só anual). Valores em '+(cur==="USD"?"dólares":esc(cur))+'. Os trimestres que a empresa só informa acumulados no ano foram obtidos pela diferença entre os acumulados. Cotação e valor de mercado: Nasdaq, no fechamento mais recente. Cada BDR equivale a uma fração ou a um múltiplo da ação americana, por isso o preço em reais não é o preço em dólar convertido.</p></section>';
+  return h;
+}
+const EU_FORM={"10-K":"Relatório anual","10-K/A":"Relatório anual (retificação)","10-Q":"Relatório trimestral","10-Q/A":"Relatório trimestral (retificação)","8-K":"Comunicado relevante","20-F":"Relatório anual (empresa estrangeira)","20-F/A":"Relatório anual (retificação)","40-F":"Relatório anual (empresa canadense)","6-K":"Comunicado (empresa estrangeira)","DEF 14A":"Convocação da assembleia","S-1":"Registro de oferta"};
+const EU_ITEM={"1.01":"contrato relevante","1.02":"fim de contrato relevante","2.01":"compra ou venda de ativos","2.02":"resultado do trimestre","2.03":"nova dívida","2.05":"reestruturação","2.06":"baixa contábil","3.01":"listagem","3.02":"emissão de ações","4.01":"troca de auditor","5.02":"mudança na diretoria ou conselho","5.03":"alteração do estatuto","5.07":"votação em assembleia","7.01":"comunicado ao mercado","8.01":"outros eventos","9.01":"anexos"};
+function euDocsHtml(e){const D=(e.docs||[]).slice(0,15);if(!D.length)return "";
+  let h='<div class="label" style="margin-top:12px">Documentos entregues à SEC</div><div class="tablewrap" style="max-height:340px"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Documento</th><th style="text-align:left" class="c-ph">Assunto</th></tr></thead><tbody>';
+  D.forEach(([form,data,ref,items,desc,url])=>{const its=String(items||"").split(",").map(s=>EU_ITEM[s.trim()]).filter(Boolean).join("; ");
+    h+='<tr><td style="text-align:left;white-space:nowrap">'+fdate(Date.parse(data+"T00:00:00Z"))+'</td><td style="text-align:left"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(EU_FORM[form]||form)+'</a> <small>'+esc(form)+'</small></td><td style="text-align:left" class="c-ph">'+esc(its||(ref?"referente a "+fdate(Date.parse(ref+"T00:00:00Z")):""))+'</td></tr>'});
+  return h+'</tbody></table></div><p class="sub" style="font-size:.78rem">Os documentos abrem no site da SEC, em inglês.</p>'}
+
+/* ---------- eventos */
+document.addEventListener("click",e=>{const g=a=>e.target.closest&&e.target.closest("["+a+"]");let x;
+  if((x=g("data-euper"))){EU.per=x.dataset.euper;euSave();if(activeMod==="au"){$("euPainel").innerHTML=painelHtml("eua")}else if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc();return}
+  if((x=g("data-eusort"))){const c=x.dataset.eusort;if(EU.rk.sort===c)EU.rk.dir*=-1;else{EU.rk.sort=c;EU.rk.dir=["t","setor","pl","pvp"].includes(c)?1:-1}EU.rk.n=50;euSave();euRkTable();return}
+  if((x=g("data-eumore"))){EU.rk.n+=50;euRkTable();return}
+});
+document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.eurk))return;const m={euSet:"setor",euLiq:"liq"}[t.id];EU.rk[m]=t.value;EU.rk.n=50;euSave();euRkTable()});
+let EU_QT=null;
+document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="euTxt")return;EU.rk.txt=t.value;EU.rk.n=50;clearTimeout(EU_QT);EU_QT=setTimeout(()=>{euSave();euRkTable()},200)});
+
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
@@ -6221,7 +6422,7 @@ scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","ag","sp"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","au","ag","sp"].includes(m0)?m0:"rs");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
