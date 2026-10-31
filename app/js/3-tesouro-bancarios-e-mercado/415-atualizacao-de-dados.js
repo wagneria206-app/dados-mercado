@@ -2,7 +2,7 @@
 const rstat=$("rstat"),btn=$("refresh");
 function setStat(text,cls){rstat.textContent=text;rstat.className="rstat"+(cls?" "+cls:"")}
 function refreshAll(){buildOptions();applyFam();renderMkt();pcMemo.clear();RAWC.clear();PIF_CACHE.clear();if(MKM.has(activeMod))return mkCalc();if(activeMod==='pub')calc();else if(activeMod==='pc')pcCalc();else if(activeMod==='bank')bkCalc();else if(activeMod==='fund')fdCalc();else if(activeMod==='sim')simCalc();else if(activeMod==='tx'){oppRender();txCalc()}else if(activeMod==='fx')fxCalc();else{scRefreshSources();scCalc()}}
-let mcpNs=null,requestedAt=0;
+let requestedAt=0;
 function onDoc(doc){
   if(!doc)return;
   const newer=doc.refDate&&doc.anbima&&(doc.refDate>DATA_INFO.refDate||(doc.updatedAt&&doc.updatedAt!==DATA_INFO.updatedAt));

@@ -3,7 +3,7 @@ function fnBoot(){
   if(FN.idx||FN.load)return FN.load;
   FN.err=null;
   FN.load=Promise.all([fnGet("idx_p.json").catch(()=>fnGet("idx.json")),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
-    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);FN.full=!i.resto;FN.more=null;
+    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);i.rows.forEach(r=>{r[1]=nomeCx(r[1])});i.gestores=(i.gestores||[]).map(nomeCx);if(i.adms)i.adms=i.adms.map(nomeCx);FN.full=!i.resto;FN.more=null;
     FN.sk=i.rows.map(r=>fnNorm(r[1]+" "+r[0]+" "+(i.gestores[r[FN.C.gestor]]||"")));
     FN.cal=c.d;FN.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));FN.B=b;fnLevels();
     FN.load=null;fnHash();fnCalc();extApply();if(!FN.full)setTimeout(fnMore,2500);
@@ -18,7 +18,7 @@ function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada dep
   return FN.more;
 }
 function fnMoreAdd(rows){
-  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
+  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
   if(!FNM.has(activeMod))return;
   if(activeMod==="fr"||activeMod==="fg"||(activeMod==="fa"&&miss))fnCalc();
   const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
@@ -54,6 +54,7 @@ function fnDecode(j){
     (j.mq||[]).forEach((q,n)=>{if(q==null)return;const k=k0+n,o=d0!=null?k-d0:-1,g=a=>a&&o>=0&&o<a.length?a[o]:null;
       M.set(k,{q,pl:j.mpl&&j.mpl[n]!=null?j.mpl[n]*1e3:null,cot:g(j.mc),ca:g(j.mca)!=null?g(j.mca)*1e3:null,re:g(j.mre)!=null?g(j.mre)*1e3:null})})}
   const MK=[...M.keys()].sort((a,b)=>a-b);
+  ["n","nf","fan","ges","adm","cus","aud"].forEach(k=>{if(typeof j[k]==="string")j[k]=nomeCx(j[k])});
   return Object.assign(j,{I,Q,M,MK});
 }
 const fnMk=t=>{const d=new Date(t);return d.getUTCFullYear()*12+d.getUTCMonth()};
