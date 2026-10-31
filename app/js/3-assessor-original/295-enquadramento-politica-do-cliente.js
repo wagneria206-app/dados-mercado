@@ -1,4 +1,0 @@
-/* ================= Enquadramento (política do cliente) ================= */
-
-
-

@@ -1,4 +1,0 @@
-/* ================= Rebalanceamento com aporte ================= */
-
-
-

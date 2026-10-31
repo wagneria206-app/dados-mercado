@@ -3,7 +3,7 @@ const ST={ima:null,load:null,sel:0};
 function stIma(){const I=(typeof MK==="object"&&MK.ima)||ST.ima;if(I||ST.load)return I;ST.load=fetch(ROBO+"ima.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{ST.ima=j;ST.load=null;if(activeMod==="sp"&&typeof spRun==="function")spRun()}).catch(()=>{ST.load=null});return null}
 /* duração modificada (anos) de um índice ANBIMA */
 function stDur(nome,pad){const I=stIma(),x=I&&I.indices&&I.indices.find(r=>String(r.nome).toUpperCase()===nome);return x&&x.duration?x.duration/252/(1+(x.yield||x.taxa||10)/100):pad}
-const ST_FAT=["ibov","usd","imab","irfm","spx"],ST_NF=5;
+const ST_NF=5;
 function stSolve(A,b){const n=b.length,M=A.map((r,i)=>r.concat([b[i]]));for(let p=0;p<n;p++){let mx=p;for(let r=p+1;r<n;r++)if(Math.abs(M[r][p])>Math.abs(M[mx][p]))mx=r;[M[p],M[mx]]=[M[mx],M[p]];if(Math.abs(M[p][p])<1e-14)return null;for(let r=p+1;r<n;r++){const f=M[r][p]/M[p][p];for(let c=p;c<=n;c++)M[r][c]-=f*M[p][c]}}const x=new Array(n).fill(0);for(let p=n-1;p>=0;p--){let t=M[p][n];for(let c=p+1;c<n;c++)t-=M[p][c]*x[c];x[p]=t/M[p][p]}return x}
 /* retorno mensal de cada fator: Ibovespa, IMA-B e IRF-M em excesso ao CDI; dólar e S&P 500 em dólar (IVVB11 ÷ dólar) sem descontar o CDI */
 function stFat(k,p,c){const L=FN.L,g=(f,kk)=>(L.m[f]||{})[kk];const r=f=>g(f,k)&&g(f,p)?g(f,k)/g(f,p)-1:null;const su=g("spx",k)&&g("spx",p)&&g("usd",k)&&g("usd",p)?(g("spx",k)/g("usd",k))/(g("spx",p)/g("usd",p))-1:null;
