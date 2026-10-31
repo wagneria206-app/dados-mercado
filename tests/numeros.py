@@ -203,6 +203,32 @@ async def main():
         confere("exterior: BDR", r[1], bdr - (bdr - 100000) * 0.15, 1e-6)
         confere("exterior: conta nos EUA", r[2], (con - (con - ida) * 0.15) * (1 - 0.0038 - 0.005), 1e-6)
 
+        # calendário dos EUA: horário de Brasília (8h30 de Nova York com e sem horário de verão americano)
+        h = await J("return [A.euaHoraBr('2026-11-06'),A.euaHoraBr('2027-03-10'),A.euaHoraBr('2027-03-31'),A.euaHoraBr('2027-11-05'),A.euaHoraBr('2027-11-10')]")
+        confere("EUA: 06/11/2026 (sem horário de verão)", h[0], "10h30")
+        confere("EUA: 10/03/2027 (antes do horário de verão)", h[1], "10h30")
+        confere("EUA: 31/03/2027 (horário de verão)", h[2], "9h30")
+        confere("EUA: 05/11/2027 (ainda no horário de verão)", h[3], "9h30")
+        confere("EUA: 10/11/2027 (depois do horário de verão)", h[4], "10h30")
+        # calendários embutidos em ordem e válidos por pelo menos 60 dias (avisa a tempo de atualizar)
+        cal = await J("const t=Date.now()+60*864e5,ok=a=>a.every((x,i)=>!i||a[i-1]<=x);const E=A.EUA_CAL.map(x=>x[0]);return {eua:[ok(E),Date.parse(E[E.length-1]+'T00:00:00Z')>t],copom:[ok(A.COPOM),A.COPOM[A.COPOM.length-1]>t],fomc:[ok(A.FOMC),A.FOMC[A.FOMC.length-1]>t]}")
+        for k, nome in (("eua", "divulgações dos EUA"), ("copom", "reuniões do Copom"), ("fomc", "reuniões do Fed")):
+            confere(f"calendário de {nome} em ordem", cal[k][0], True)
+            confere(f"calendário de {nome} com datas para mais de 60 dias (atualizar com o calendário oficial do ano seguinte)", cal[k][1], True)
+        # agenda de proventos por período (segunda 02/11/2026 como "hoje")
+        g = await J("return [A.agGrupo('2026-11-06','2026-11-02',false)[1],A.agGrupo('2026-11-09','2026-11-02',false)[1],A.agGrupo('2026-12-20','2026-11-02',false)[1],A.agGrupo('2026-10-28','2026-11-02',true)[1]]")
+        confere("agenda: mesma semana", g[0], "Esta semana")
+        confere("agenda: semana seguinte", g[1], "Próxima semana")
+        confere("agenda: mês", g[2], "Dezembro de 2026")
+        confere("agenda: semana passada", g[3], "Semana passada")
+        # relatório mensal: meses da carteira, do mais recente ao primeiro
+        confere("relatório mensal: meses", await J("return A.rmMeses({d0:'2026-02-10',dv:'2026-05-03'})"), ["2026-05", "2026-04", "2026-03", "2026-02"])
+        # criptografia do token e da cópia em arquivo: volta igual com a senha certa e recusa a errada
+        c = await J("return (async()=>{const o=await A.segCifra('github_pat_teste','senha-certa');let errada='aceitou';try{await A.segDecifra(o,'senha-errada')}catch(e){errada='recusou'}return [await A.segDecifra(o,'senha-certa'),errada,o.c.includes('github')]})()")
+        confere("cripto: senha certa recupera o texto", c[0], "github_pat_teste")
+        confere("cripto: senha errada é recusada", c[1], "recusou")
+        confere("cripto: texto não aparece no arquivo", c[2], False)
+
         if erros:
             falhas.extend("erro de JavaScript: " + e for e in erros)
         await nav.close()

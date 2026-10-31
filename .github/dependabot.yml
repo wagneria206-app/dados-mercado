@@ -1,0 +1,9 @@
+# Avisa (com um pull request) quando sair versão nova das ferramentas usadas nos robôs do GitHub Actions.
+# Os pull requests passam pela checagem automática antes de poderem entrar.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3

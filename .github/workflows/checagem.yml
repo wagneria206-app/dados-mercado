@@ -36,6 +36,8 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Cálculos dos robôs (casos conhecidos)
         run: python -u tests/robos.py
+      - name: Contratos dos dados (campos que o app usa em cada arquivo dos robôs)
+        run: python -u tests/contratos.py
       - name: Números do app (casos conhecidos e preços publicados do Tesouro)
         run: python -u tests/numeros.py index.html
       - name: Percorrer todas as abas

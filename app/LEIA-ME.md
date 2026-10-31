@@ -23,6 +23,7 @@ justamente para sobrar espaço). O número não pode se repetir; a montagem avis
 ```
 python app/build.py              # monta o index.html
 python tests/robos.py            # cálculos dos robôs (sem internet)
+python tests/contratos.py        # campos que o app usa em cada arquivo publicado pelos robôs
 python tests/numeros.py          # números do app: preços, impostos, TIR, risco… (abre o app num navegador sem tela)
 python tests/checagem.py         # percorre todas as telas procurando erros, gráficos fora de escala e rolagem lateral;
                                  # testa a busca, os ajustes e o modo apresentação
@@ -63,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (13 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (15 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -193,8 +194,9 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 - `530-agenda-de-proventos-situacao-das.js` — Agenda de proventos, situação das bases, app instalável e importação de posição (13 KB)
 - `533-saude-das-fontes.js` — Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) (6 KB)
-- `535-fv.js` (25 KB)
+- `535-fv.js` (24 KB)
 - `536-alertas-de-economia.js` (4 KB)
+- `538-seguranca-deste-aparelho.js` (9 KB)
 - `540-risco.js` (3 KB)
 
 **`js/8-mercado-eua-economia/`** — Mercado › Resumo, posição real, Bolsa americana, economia, estresse e exterior
@@ -222,6 +224,6 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `620-pcrebase.js` (2 KB)
 - `621-indice-e-blocos-recolhiveis.js` (5 KB)
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
-- `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (12 KB)
+- `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (15 KB)
 - `624-fontes-e-metodologia.js` — "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes (12 KB)
 - `625-dados-do-robo-github-lidos.js` — dados do robô (GitHub) lidos direto pela página (13 KB)

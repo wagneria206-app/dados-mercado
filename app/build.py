@@ -10,6 +10,7 @@ nomes são compartilhados entre os arquivos como num arquivo só. O hash do scri
 segurança (CSP) do cabeçalho, para que o navegador só execute este código.
 
 A montagem também confere o código e mantém o guia em dia:
+  - erro de sintaxe no código é recusado (com o Node.js, quando instalado);
   - duas funções com o mesmo nome em módulos diferentes são recusadas (num arquivo só, a segunda apagaria a
     primeira sem aviso);
   - a lista de módulos e estilos de app/LEIA-ME.md é refeita a partir dos arquivos (a descrição de cada um vem
@@ -25,7 +26,10 @@ import glob
 import hashlib
 import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(RAIZ, "app")
@@ -96,6 +100,21 @@ def guia_novo():
     return texto[:i] + "\n".join(linhas) + "\n"
 
 
+def conferir_sintaxe(js):
+    """Erro de digitação no código (parêntese a mais, vírgula faltando) aparece aqui, antes de abrir o navegador."""
+    node = shutil.which("node")
+    if not node:
+        return
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as f:
+        f.write(js)
+    try:
+        r = subprocess.run([node, "--check", f.name], capture_output=True, text=True)
+    finally:
+        os.unlink(f.name)
+    if r.returncode:
+        raise SystemExit("erro de sintaxe no código do app:\n" + (r.stderr or r.stdout)[-1500:])
+
+
 def montar():
     shell = ler(os.path.join(APP, "shell.html"))
     css = "".join(ler(p) for p in sorted(glob.glob(os.path.join(APP, "css", "*.css"))))
@@ -105,6 +124,7 @@ def montar():
     if len(set(nums)) != len(nums):
         raise SystemExit("há dois módulos com o mesmo número: " + ", ".join(sorted({n for n in nums if nums.count(n) > 1})))
     js = "".join(ler(p) for p in arqs)
+    conferir_sintaxe(js)
     for m in ("/*@CSS*/", "/*@JS*/", "'sha256-@HASH'"):
         if shell.count(m) != 1:
             raise SystemExit(f"shell.html precisa ter exatamente um marcador {m}")

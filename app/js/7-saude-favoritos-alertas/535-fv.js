@@ -139,7 +139,7 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
 const SYNC_REPO="wagneria206-app/dados-mercado-config",SYNC_URL="https://api.github.com/repos/"+SYNC_REPO+"/contents/config.json";
 const SYNC={tok:null,sha:null,at:null,st:"",dirty:false,t:null,run:null,del:{}};
 try{SYNC.tok=localStorage.getItem("ghTok")||null;SYNC.at=localStorage.getItem("ghSyncAt")||null;SYNC.dirty=localStorage.getItem("ghDirty")==="1";SYNC.del=JSON.parse(localStorage.getItem("ghDel")||"{}")||{}}catch(e){}
-function syncLs(){try{if(SYNC.tok)localStorage.setItem("ghTok",SYNC.tok);else localStorage.removeItem("ghTok");localStorage.setItem("ghSyncAt",SYNC.at||"");localStorage.setItem("ghDirty",SYNC.dirty?"1":"0");localStorage.setItem("ghDel",JSON.stringify(SYNC.del))}catch(e){}}
+function syncLs(){try{if(SYNC.tok&&!segProtegido())localStorage.setItem("ghTok",SYNC.tok);else localStorage.removeItem("ghTok");localStorage.setItem("ghSyncAt",SYNC.at||"");localStorage.setItem("ghDirty",SYNC.dirty?"1":"0");localStorage.setItem("ghDel",JSON.stringify(SYNC.del))}catch(e){}}
 const syncB64d=b=>new TextDecoder().decode(Uint8Array.from(atob(String(b).replace(/\s/g,"")),c=>c.charCodeAt(0)));
 const syncB64e=t=>{const u=new TextEncoder().encode(t);let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
 async function syncApi(metodo,corpo){
@@ -194,19 +194,15 @@ function syncHtml(){
   let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
   if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
   else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
-  h+='<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-bkp="1">Baixar cópia (arquivo)</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
   return h+'</div></details>';
 }
 function syncShow(){const el=$("syncSt");if(el)el.textContent=SYNC.err?"":SYNC.st;if(SYNC.err||!el)document.querySelectorAll(".fvbox").forEach(b=>{const d=b.querySelector(".fvsync");if(d)d.outerHTML=syncHtml()})}
 document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);
-  if(g("[data-syncon]")){const v=($("syncTok").value||"").trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){SYNC.err="isso não parece um token do GitHub";syncShow();return}SYNC.tok=v;SYNC.err=null;SYNC.dirty=true;syncLs();syncNow(true).then(()=>{if(SYNC.err){SYNC.tok=null;syncLs();syncShow()}});return}
+  if(g("[data-syncon]")){const v=($("syncTok").value||"").trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){SYNC.err="isso não parece um token do GitHub";syncShow();return}try{localStorage.removeItem("ghTokC")}catch(x){}SYNC.tok=v;SYNC.err=null;SYNC.dirty=true;syncLs();syncNow(true).then(()=>{if(SYNC.err){SYNC.tok=null;syncLs();syncShow()}});return}
   if(g("[data-syncnow]")){syncNow(true);return}
-  if(g("[data-syncoff]")){SYNC.tok=null;SYNC.sha=null;SYNC.st="";SYNC.err=null;syncLs();fvRefresh();return}
-  if(g("[data-bkp]")){const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}),null,1);const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download="mercado-favoritos-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
+  if(g("[data-syncoff]")){try{localStorage.removeItem("ghTokC")}catch(x){}SYNC.tok=null;SYNC.sha=null;SYNC.st="";SYNC.err=null;syncLs();fvRefresh();return}
 });
-document.addEventListener("change",async e=>{const t=e.target;if(!t||t.id!=="bkpIn"||!t.files||!t.files[0])return;
-  try{const D=JSON.parse(await t.files[0].text());if(!D||!Array.isArray(D.favs))throw new Error("arquivo inválido");syncApply(syncMerge(syncLocal(),D));fvSave();try{localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(x){}}
-  catch(x){SYNC.err="não deu para ler o arquivo: "+x.message;syncShow()}t.value=""});
+// restaurar a cópia em arquivo: em 538-seguranca-deste-aparelho.js
 // apagar um favorito, alerta ou carteira registra a exclusão para os outros aparelhos
 document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;const agora=Date.now();
   if((x=g("[data-fvrm]")))SYNC.del["f|"+x.dataset.fvrm]=agora;
