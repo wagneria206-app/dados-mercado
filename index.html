@@ -1214,6 +1214,10 @@ html.apres .apressai:hover{opacity:1}
 /* ---------- variações do dólar e quadros de totais: mesmo fundo dos cartões de indicador */
 .fxvar>div{border:0;background:var(--sunk);border-radius:10px}
 .tot>div{border-radius:10px}
+
+/* ---------- menu principal em telas estreitas: os botões encolhem em vez de alargar a página */
+.areas button{min-width:0}
+.areas button span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
