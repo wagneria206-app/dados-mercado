@@ -149,6 +149,22 @@ confere("Fundos.NET: fonte fora do ar continua sendo falha", st.get("ok"), False
 st, t = termos({}, {"1": {"ok": True}, "2": {"ok": False, "erro": "PDF sem texto (provavelmente escaneado)", "tentativas": 1}, "3": {"ok": True}})
 confere("Fundos.NET: registro antigo de PDF sem texto sai da fila", st.get("ok"), True)
 
+# ---------------- inflação dos EUA: BLS, depois FRED, depois a última coleta (até 75 dias)
+cpi = {f"{a}-{m:02d}": 100.0 + a for a in range(1995, 2027) for m in range(1, 13) if f"{a}-{m:02d}" <= "2026-09"}
+def falha(*a, **k):
+    raise RuntimeError("recusado")
+atualizar.bls_cpi = lambda: cpi
+confere("CPI EUA: BLS no ar", atualizar.cpi_eua_com_reserva([])[1], "BLS")
+atualizar.bls_cpi = falha
+atualizar.fred = lambda s: {k + "-01": v for k, v in cpi.items()}
+confere("CPI EUA: BLS fora, usa o FRED", atualizar.cpi_eua_com_reserva([])[1][:4], "FRED")
+atualizar.fred = falha
+atualizar.ler_json = lambda n, d: {"mensal": {"cpi_eua": cpi}} if n == "dolar_fundamentos.json" else d
+atualizar.HOJE = dt.date(2026, 10, 31)
+confere("CPI EUA: os dois fora, usa a última coleta recente", atualizar.cpi_eua_com_reserva([])[1][:6], "última")
+atualizar.HOJE = dt.date(2027, 1, 31)
+confere("CPI EUA: última coleta velha demais não vale", atualizar.cpi_eua_com_reserva([])[0], None)
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")
