@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-McYmPT8XuY8tlvNDFS66HcodEqBqAKgoeSvaa+p+gVo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-jMPiTYhuhAEkU8hqWzdg9koHMkmeEk8RVai3U7Owa5o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -927,7 +927,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .fvtoast .btn{justify-self:end;min-height:34px;padding:4px 12px}
 
-.wrap[data-area="mkt"] .tabs button[data-mod="fv"]{display:inline-flex;align-items:center}
+.wrap[data-area="mkt"] .tabs button[data-mod="fv"],.wrap[data-area="mkt"] .tabs button[data-mod="ec"],.wrap[data-area="mkt"] .tabs button[data-mod="mu"]{display:inline-flex;align-items:center}
 
 .fvtab .link{text-align:left}
 @media (max-width:640px){
@@ -1129,7 +1129,7 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
   </nav>
   <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -2217,8 +2217,8 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",au:"bolsa",fv:"mkt"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
-const MKM=new Set(["rs","fv","ju","cr","in","ix"]);
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Simular",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const MKM=new Set(["rs","fv","ec","mu","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
@@ -3205,9 +3205,11 @@ function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
   try{if(activeMod==="rs")h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
   else if(activeMod==="fv")h=favHtml();
+  else if(activeMod==="ec")h=economiaHtml().map(P).join("");
+  else if(activeMod==="mu")h=mundoHtml().map(P).join("");
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml()+euTreasuryHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
-  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+P(ibgeCalHtml());
+  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+'<p class="sub" style="margin:4px 4px 12px">O calendário das próximas divulgações do IBGE está na aba Economia.</p>';
   else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
   o.innerHTML=h;const s=$("piMode");if(s)s.value=PI_MODE}
 let TX_BACK=null;
@@ -5766,7 +5768,7 @@ const IBGECAL={d:null,load:null,err:false};
 function ibgeCalHtml(){
   if(IBGECAL.err)return "";
   if(!IBGECAL.d){if(!IBGECAL.load){const hj=new Date(),f=d=>String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+"-"+d.getFullYear(),ate=new Date(hj.getTime()+75*864e5);
-      IBGECAL.load=fetch("https://servicodados.ibge.gov.br/api/v3/calendario/?qtd=300&de="+f(hj)+"&ate="+f(ate)).then(r=>r.ok?r.json():Promise.reject()).then(j=>{IBGECAL.d=j;if(typeof activeMod!=="undefined"&&activeMod==="in"&&typeof mkCalc==="function")mkCalc()}).catch(()=>{IBGECAL.err=true})}
+      IBGECAL.load=fetch("https://servicodados.ibge.gov.br/api/v3/calendario/?qtd=300&de="+f(hj)+"&ate="+f(ate)).then(r=>r.ok?r.json():Promise.reject()).then(j=>{IBGECAL.d=j;if(typeof activeMod!=="undefined"&&(activeMod==="in"||activeMod==="ec")&&typeof mkCalc==="function")mkCalc()}).catch(()=>{IBGECAL.err=true})}
     return ""}
   const L=(Array.isArray(IBGECAL.d)?IBGECAL.d:IBGECAL.d.items||[]).map(x=>{const tit=String(x.titulo||x.nome_produto||x.titulo_produto||""),dd=String(x.data_divulgacao||x.data||"");const m=/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/.exec(dd);return m?{tit,t:Date.UTC(+m[3],+m[2]-1,+m[1]),h:m[4]?m[4]+"h"+m[5]:""}:null})
     .filter(x=>x&&/IPCA|INPC|PIB|Contas Nacionais|PNAD|Produção Industrial|Pesquisa Mensal de Comércio|Pesquisa Mensal de Serviços|Desocupação|IPP/i.test(x.tit)).sort((a,b)=>a.t-b.t);
@@ -5905,7 +5907,7 @@ try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="o
 try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
 function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
 const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
-function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
 function euBoot(){
   if(EU.S||EU.load)return EU.load;EU.err=null;
   const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);
@@ -6084,6 +6086,183 @@ document.addEventListener("click",e=>{const g=a=>e.target.closest&&e.target.clos
 document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.eurk))return;const m={euSet:"setor",euLiq:"liq"}[t.id];EU.rk[m]=t.value;EU.rk.n=50;euSave();euRkTable()});
 let EU_QT=null;
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="euTxt")return;EU.rk.txt=t.value;EU.rk.n=50;clearTimeout(EU_QT);EU_QT=setTimeout(()=>{euSave();euRkTable()},200)});
+
+/* ===== Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA ===== */
+const MC_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/macro/";
+const MC={d:null,load:null,err:null};
+function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
+function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu")&&typeof mkCalc==="function")mkCalc()}
+/* datas: "2026-09" (mês), "202609" (mês do IBGE), "202602" com trimestre (PIB) */
+const mcTm=s=>{s=String(s);return s.length===7?Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,15):Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,15)};
+const mcTq=s=>{s=String(s);return Date.UTC(+s.slice(0,4),(+s.slice(4,6)-1)*3+1,15)};
+const mcTd=s=>Date.parse(s+"T00:00:00Z");
+const mcLast=L=>L&&L.length?L[L.length-1]:null;
+const mcMes=s=>{const t=mcTm(s),d=new Date(t);return mname(d.getUTCFullYear()*12+d.getUTCMonth())};
+const mcTri=s=>String(s).slice(5,6)+"º tri/"+String(s).slice(2,4);
+const mcSig=(v,d,suf)=>v==null||!isFinite(v)?"—":'<span class="'+(v>0?"pos":v<0?"neg":"")+'">'+(v>0?"+":v<0?"−":"")+fx(Math.abs(v),d==null?1:d)+(suf==null?"%":suf)+'</span>';
+const mcKp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
+const mcCut=(P,anos)=>{const c=Date.now()-anos*365.25*DAY;return P.filter(p=>p[0]>=c)};
+function mcYoY(L,lag){lag=lag||12;const out=[];for(let i=lag;i<L.length;i++)if(L[i-lag][1])out.push([L[i][0],(L[i][1]/L[i-lag][1]-1)*100]);return out}
+function mcWait(){if(!MC.d){mcBoot();return MC.err&&!MC.load?'<p class="warn">A base de economia ainda não está disponível ('+esc(MC.err.message||MC.err)+'). Tente de novo mais tarde.</p>':'<p class="sub">Carregando os dados de economia…</p>'}return null}
+
+/* ---------- Economia (Brasil) */
+function economiaHtml(){
+  const w=mcWait();if(w)return [w];const D=MC.d,F=D.focus||{},B=D.br||{},out=[];
+  out.push(mcFocusHtml(F));out.push(mcAtivHtml(B));out.push(mcFiscalHtml(B,F));out.push(mcCredHtml(B));
+  if(typeof ibgeCalHtml==="function")out.push(ibgeCalHtml());
+  return out.filter(Boolean);
+}
+function mcFocusSer(F,ind,ref){const A=F.anuais&&F.anuais[ind];return A&&A[ref]?A[ref]:null}
+function mcFocusVar(L){if(!L||L.length<2)return null;const u=L[L.length-1],t=mcTd(u[0])-28*DAY;let a=null;for(const p of L)if(mcTd(p[0])<=t)a=p;return a?{u:u[1],a:a[1],d:u[1]-a[1]}:null}
+function mcFocusHtml(F){
+  if(!F||!F.anuais)return "";const y=new Date().getUTCFullYear(),Y=[String(y),String(y+1),String(y+2)];
+  let h='<h3>Expectativas do mercado (Focus) × preços de mercado</h3><p class="sub">O Boletim Focus reúne as projeções de cerca de 150 bancos, gestoras e consultorias, coletadas pelo Banco Central. Os preços de mercado (DI futuro e títulos públicos) mostram o que os investidores de fato estão pagando. Quando os dois divergem, um deles está errado — e é aí que surgem oportunidades e riscos na renda fixa. A inflação implícita nos títulos inclui um prêmio pelo risco de a inflação surpreender, por isso costuma ficar acima do Focus; quando a diferença é grande, o mercado está pagando caro por proteção contra inflação (IPCA+ relativamente mais caro, prefixado relativamente mais barato).</p>';
+  // IPCA 12 meses: Focus × inflação implícita
+  const i12=mcLast(F.ipca12);let impl=null;try{const W=curvWins(),b=W&&W[0]&&W[0].b;if(b&&b.pre&&b.ipca)impl=((1+nssY(b.pre,1)/100)/(1+nssY(b.ipca,1)/100)-1)*100}catch(e){}
+  const k=[];
+  if(i12)k.push(mcKp("IPCA nos próximos 12 meses",'Focus '+fx(i12[1],2)+'%',impl!=null?'mercado (inflação implícita de 1 ano): '+fx(impl,2)+'%':'Focus de '+fdate(mcTd(i12[0]))));
+  const ip=mcFocusVar(mcFocusSer(F,"IPCA",Y[0])),ip2=mcFocusVar(mcFocusSer(F,"IPCA",Y[1]));
+  if(ip)k.push(mcKp("IPCA "+Y[0]+" (Focus)",fx(ip.u,2)+'%',mcSig(ip.d,2," p.p.")+' em 4 semanas'+(ip2?' · '+Y[1]+': '+fx(ip2.u,2)+'%':'')));
+  const se=mcFocusVar(mcFocusSer(F,"Selic",Y[0])),se2=mcFocusVar(mcFocusSer(F,"Selic",Y[1]));
+  if(se)k.push(mcKp("Selic no fim de "+Y[0]+" (Focus)",fx(se.u,2)+'%',(se2?Y[1]+': '+fx(se2.u,2)+'%':'')+(MK&&MK.inf&&MK.inf.selic_meta?' · hoje '+fx(MK.inf.selic_meta.valor,2)+'%':'')));
+  const pb=mcFocusVar(mcFocusSer(F,"PIB Total",Y[0])),pb2=mcFocusVar(mcFocusSer(F,"PIB Total",Y[1]));
+  if(pb)k.push(mcKp("PIB "+Y[0]+" (Focus)",fx(pb.u,2)+'%',mcSig(pb.d,2," p.p.")+' em 4 semanas'+(pb2?' · '+Y[1]+': '+fx(pb2.u,2)+'%':'')));
+  const cb=mcFocusVar(mcFocusSer(F,"Câmbio",Y[0]));
+  if(cb)k.push(mcKp("Dólar no fim de "+Y[0]+" (Focus)",'R$ '+fx(cb.u,2),FX_TOP&&FX_TOP.venda?'PTAX hoje R$ '+fx(+FX_TOP.venda,2):''));
+  h+='<div class="fnkpis">'+k.join("")+'</div>';
+  // Selic por reunião: Focus × DI
+  const S=F.selic;if(S&&S.reunioes&&S.reunioes.length){
+    let di=[];try{if(MK.di){const ks=Object.keys(MK.di.dias).sort();di=copomImpl(ks[ks.length-1])||[]}}catch(e){}
+    const porAno={};COPOM.forEach(t=>{const yy=new Date(t).getUTCFullYear();(porAno[yy]=porAno[yy]||[]).push(t)});
+    const dataR=r=>{const m=/R(\d)\/(\d{4})/.exec(r);if(!m)return null;const L=(porAno[+m[2]]||[]).slice().sort((a,b)=>a-b),i=+m[1]-(8-L.length)-1;return i>=0&&i<L.length?L[i]:null};
+    const ant={};(S.ant&&S.ant.reunioes||[]).forEach(r=>ant[r[0]]=r[1]);
+    const rows=S.reunioes.slice(0,8).map(r=>{const t=dataR(r[0]),m=t!=null?di.find(o=>o.d===t):null;return {r:r[0],t,f:r[1],a:ant[r[0]],m:m?m.r+0.1:null}});
+    h+='<div class="label" style="margin-top:12px">Selic em cada reunião do Copom: Focus × juros futuros</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Reunião</th><th>Focus hoje</th><th class="c-ph">Focus 4 semanas antes</th><th>Precificado no DI</th><th>Diferença</th></tr></thead><tbody>'
+      +rows.map(x=>'<tr><td style="text-align:left">'+(x.t!=null?fdate(x.t):esc(x.r))+'</td><td>'+fx(x.f,2)+'%</td><td class="c-ph">'+(x.a!=null?fx(x.a,2)+'%':'—')+'</td><td>'+(x.m!=null?fx(x.m,2)+'%':'—')+'</td><td>'+(x.m!=null?mcSig(x.m-x.f,2," p.p."):'—')+'</td></tr>').join("")+'</tbody></table></div>'
+      +'<p class="sub" style="font-size:.8rem">Focus de '+fdate(mcTd(S.data))+(S.ant?' e de '+fdate(mcTd(S.ant.data)):'')+' (mediana). "Precificado no DI": Selic que torna os contratos de DI futuro da B3 coerentes entre uma reunião e a seguinte (mesmo cálculo da aba Juros). Diferença positiva = o mercado cobra juros mais altos do que os economistas projetam.</p>'}
+  // gráficos
+  const ser=[[Y[0],"#2563eb"],[Y[1],"#dc2626"],[Y[2],"#16a34a"]].map(([r,c])=>{const L=mcFocusSer(F,"IPCA",r);return L?{lab:"IPCA "+r,col:c,w:2,pts:L.map(p=>[mcTd(p[0]),p[1]])}:null}).filter(Boolean);
+  if(ser.length)h+='<div class="label" style="margin-top:12px">Projeção do Focus para o IPCA de cada ano (%)</div>'+fnChart(ser,{fmt:"pct",h:200,aria:"Focus IPCA"});
+  const IPC=(MC.d.br&&MC.d.br.ipca)||(MK.inf&&MK.inf.sgs&&MK.inf.sgs.ipca);
+  if(F.ipca12&&IPC){const ipc=IPC,real=[];for(let i=11;i<ipc.length;i++){const v=m12(ipc,i);if(isFinite(v))real.push([mcTm(ipc[i][0]),v])}
+    const exp=F.ipca12.map(p=>[mcTd(p[0])+365*DAY,p[1]]);const c0=Date.UTC(2015,0,1);
+    h+='<div class="label" style="margin-top:12px">Inflação esperada × inflação que aconteceu (IPCA em 12 meses, %)</div>'+fnChart([{lab:"IPCA realizado em 12 meses",col:"#dc2626",w:2,pts:real.filter(p=>p[0]>=c0)},{lab:"Esperado pelo Focus 12 meses antes",col:"#2563eb",w:2,pts:exp.filter(p=>p[0]>=c0&&p[0]<=Date.now()+400*DAY)}],{fmt:"pct",h:220,aria:"IPCA esperado e realizado"})
+      +'<p class="sub" style="font-size:.8rem">Cada ponto azul é o que o Focus esperava, 12 meses antes, para a inflação daquela data; a linha avança um ano à frente de hoje. Quando a vermelha fica acima da azul, a inflação surpreendeu para cima — o que historicamente favoreceu títulos IPCA+ sobre prefixados.</p>'}
+  h+='<p class="sub" style="font-size:.8rem">Fonte: Banco Central (Sistema de Expectativas de Mercado — Focus, medianas; última pesquisa de '+(i12?fdate(mcTd(i12[0])):'—')+'), B3 (DI futuro) e ANBIMA (inflação implícita).</p>';
+  return h;
+}
+function mcAtivHtml(B){
+  if(!B||!B.pib_aa)return "";const L=mcLast,k=[];
+  const pa=L(B.pib_aa),pt=L(B.pib_tt);if(pa)k.push(mcKp("PIB · "+mcTri(pa[0]),mcSig(pt?pt[1]:null,1),'sobre o trimestre anterior · '+mcSig(pa[1],1)+' em 12 meses'));
+  if(B.ibcbr&&B.ibcbr.length>2){const I=B.ibcbr,u=I[I.length-1],p=I[I.length-2],y=mcYoY(B.ibcbr_ns||[]);k.push(mcKp("IBC-Br · "+mcMes(u[0]),mcSig((u[1]/p[1]-1)*100,1),'no mês (dessazonalizado)'+(y.length?' · '+mcSig(mcLast(y)[1],1)+' em 12 meses':'')))}
+  const de=L(B.desemp);if(de){const a=B.desemp.length>12?B.desemp[B.desemp.length-13]:null;k.push(mcKp("Desemprego · trimestre até "+mcMes(de[0]),fx(de[1],1)+'%',a?mcSig(de[1]-a[1],1," p.p.").replace('class="pos"','class="tmp"').replace('class="neg"','class="pos"').replace('class="tmp"','class="neg"')+' em 12 meses':''))}
+  [["pim","Indústria"],["pmc","Varejo"],["pms","Serviços"]].forEach(([n,l])=>{const m=L(B[n+"_mm"]),a=L(B[n+"_aa"]);if(m)k.push(mcKp(l+" · "+mcMes(m[0]),mcSig(m[1],1),'no mês (dessazonalizado) · '+(a?mcSig(a[1],1):'—')+' em 12 meses'))});
+  let h='<h3>Atividade econômica</h3><p class="sub">Como está a economia real: produção, consumo, serviços e emprego. Atividade forte sustenta lucros das empresas (bom para a Bolsa), mas pode pressionar a inflação e manter os juros altos.</p><div class="fnkpis">'+k.join("")+'</div>';
+  if(B.pib_aa)h+='<div class="label" style="margin-top:12px">PIB: crescimento sobre o mesmo trimestre do ano anterior (%)</div>'+fnChart([{lab:"PIB",col:"var(--gain)",pts:B.pib_aa.slice(-24).map(p=>[mcTq(p[0]),p[1]])}],{bars:true,zero:true,h:180,fmt:"pct",aria:"PIB"});
+  const yy=n=>(B[n+"_aa"]||[]).map(p=>[mcTm(p[0]),p[1]]).filter(p=>p[0]>=Date.UTC(new Date().getUTCFullYear()-5,0,1));
+  h+='<div class="label" style="margin-top:12px">Indústria, varejo e serviços: variação sobre o mesmo mês do ano anterior (%)</div>'+fnChart([{lab:"Indústria",col:"#2563eb",w:1.8,pts:yy("pim")},{lab:"Varejo",col:"#dc2626",w:1.8,pts:yy("pmc")},{lab:"Serviços",col:"#16a34a",w:1.8,pts:yy("pms")}],{fmt:"pct",zero:true,h:210,aria:"Atividade"});
+  if(B.desemp)h+='<div class="label" style="margin-top:12px">Taxa de desemprego (%, trimestre móvel)</div>'+fnChart([{lab:"Desemprego",col:"#9333ea",w:2,pts:B.desemp.map(p=>[mcTm(p[0]),p[1]])}],{fmt:"pct",h:180,aria:"Desemprego"});
+  return h+'<p class="sub" style="font-size:.8rem">Fontes: IBGE (Contas Nacionais Trimestrais, PNAD Contínua, Pesquisa Industrial Mensal, Pesquisa Mensal de Comércio — varejo restrito — e Pesquisa Mensal de Serviços) e Banco Central (IBC-Br, prévia mensal do PIB).</p>';
+}
+function mcFiscalHtml(B,F){
+  if(!B||!B.dbgg)return "";const L=mcLast,y=String(new Date().getUTCFullYear()),k=[];
+  const db=L(B.dbgg),dl=L(B.dlsp),pr=L(B.nfsp_prim),no=L(B.nfsp_nom);
+  const a12=(S)=>S&&S.length>12?S[S.length-13][1]:null;
+  if(db)k.push(mcKp("Dívida bruta · "+mcMes(db[0]),fx(db[1],1)+'% do PIB',a12(B.dbgg)!=null?mcSig(db[1]-a12(B.dbgg),1," p.p.").replace('"pos"','"x"').replace('"neg"','"pos"').replace('"x"','"neg"')+' em 12 meses':''));
+  if(dl){const fd=mcFocusSer(F,"Dívida líquida do setor público",y);k.push(mcKp("Dívida líquida",fx(dl[1],1)+'% do PIB',fd?'Focus para dez/'+y.slice(2)+': '+fx(mcLast(fd)[1],1)+'%':''))}
+  if(pr){const fp=mcFocusSer(F,"Resultado primário",y);k.push(mcKp("Resultado primário em 12 meses",mcSig(-pr[1],2,"% do PIB"),(fp?'Focus '+y+': '+fx(mcLast(fp)[1],2)+'% do PIB':'')))}
+  if(no)k.push(mcKp("Resultado nominal em 12 meses",mcSig(-no[1],2,"% do PIB"),'inclui os juros da dívida'));
+  let h='<h3>Contas públicas</h3><p class="sub">O risco fiscal é hoje o principal motor do risco-país e dos juros longos: dívida subindo e déficit persistente fazem o mercado cobrar taxas maiores nos títulos IPCA+ e prefixados longos.</p><div class="fnkpis">'+k.join("")+'</div>';
+  const m=S=>(S||[]).map(p=>[mcTm(p[0]),p[1]]);
+  h+='<div class="label" style="margin-top:12px">Dívida pública (% do PIB)</div>'+fnChart([{lab:"Dívida bruta do governo geral",col:"#dc2626",w:2,pts:m(B.dbgg)},{lab:"Dívida líquida do setor público",col:"#2563eb",w:2,pts:m(B.dlsp)}],{fmt:"pct",h:200,aria:"Dívida pública"});
+  h+='<div class="label" style="margin-top:12px">Resultado do setor público em 12 meses (% do PIB; negativo = déficit)</div>'+fnChart([{lab:"Primário",col:"#16a34a",w:2,pts:m(B.nfsp_prim).map(p=>[p[0],-p[1]])},{lab:"Nominal (com juros)",col:"#9333ea",w:2,pts:m(B.nfsp_nom).map(p=>[p[0],-p[1]])}],{fmt:"pct",zero:true,h:200,aria:"Resultado fiscal"});
+  return h+'<p class="sub" style="font-size:.8rem">Fonte: Banco Central (estatísticas fiscais; resultado = necessidade de financiamento do setor público com sinal invertido, sem desvalorização cambial; dívida bruta pela metodologia de 2008) e Focus.</p>';
+}
+function mcCredHtml(B){
+  if(!B||!B.inad)return "";const L=mcLast,k=[],c=B.concessoes||[];
+  if(c.length>24){const s12=i=>c.slice(i-11,i+1).reduce((a,p)=>a+p[1],0),n=c.length-1;k.push(mcKp("Concessões de crédito · "+mcMes(c[n][0]),fnMoney(c[n][1]*1e6),'12 meses: '+fnMoney(s12(n)*1e6)+' · '+mcSig((s12(n)/s12(n-12)-1)*100,1)+' sobre os 12 meses anteriores'))}
+  [["inad","Inadimplência total"],["inad_pf","Pessoas físicas"],["inad_pj","Empresas"]].forEach(([n,l])=>{const u=L(B[n]);if(u){const a=B[n].length>12?B[n][B[n].length-13][1]:null;k.push(mcKp(l+" · "+mcMes(u[0]),fx(u[1],2)+'%',a!=null?mcSig(u[1]-a,2," p.p.").replace('"pos"','"x"').replace('"neg"','"pos"').replace('"x"','"neg"')+' em 12 meses':''))}});
+  const m=S=>(S||[]).map(p=>[mcTm(p[0]),p[1]]);
+  return '<h3>Crédito</h3><p class="sub">Inadimplência subindo costuma anteceder spreads maiores no crédito privado (debêntures, CRI, CRA) e lucros menores dos bancos.</p><div class="fnkpis">'+k.join("")+'</div>'
+    +'<div class="label" style="margin-top:12px">Inadimplência (% da carteira com atraso acima de 90 dias)</div>'+fnChart([{lab:"Total",col:"#2563eb",w:2,pts:m(B.inad)},{lab:"Pessoas físicas",col:"#dc2626",w:1.8,pts:m(B.inad_pf)},{lab:"Empresas",col:"#16a34a",w:1.8,pts:m(B.inad_pj)}],{fmt:"pct",h:200,aria:"Inadimplência"})
+    +'<p class="sub" style="font-size:.8rem">Fonte: Banco Central (estatísticas de crédito do sistema financeiro).</p>';
+}
+
+/* ---------- EUA e mundo */
+function mundoHtml(){
+  const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
+  return [mcTransHtml(),mcEuaHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
+}
+const MC_W0=Date.UTC(1970,0,5);
+function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
+function mcCm(k){const C=MC.d&&MC.d.cm;if(!C||!C[k])return [];const o=[];C.d.forEach((d,i)=>{const v=C[k][i];if(v!=null)o.push([mcTd(d),v])});return o}
+function mcSer(k){if(k==="dxy"||k==="brent")return MC.d[k]?MC.d[k].s.map(p=>[mcTd(p[0]),p[1]]):[];if(k==="real10"||k==="pre5"||k==="real5"||k==="pre3")return mcCm(k);return (EU.S&&EU.S[k])||[]}
+/* regressão das variações semanais: y = a + b·x */
+function mcReg(kx,ky,tx,ty,semanas){
+  const X=mcWk(mcSer(kx)),Y=mcWk(mcSer(ky)),ks=[...X.keys()].filter(k=>Y.has(k)&&X.has(k-1)&&Y.has(k-1)).sort((a,b)=>a-b).slice(-semanas);
+  if(ks.length<30)return null;const ch=(M,k,t)=>t==="p"?(M.get(k)/M.get(k-1)-1)*100:t==="b"?(M.get(k)-M.get(k-1))*100:M.get(k)-M.get(k-1);
+  const x=ks.map(k=>ch(X,k,tx)),y=ks.map(k=>ch(Y,k,ty)),n=x.length,mx=x.reduce((a,b)=>a+b,0)/n,my=y.reduce((a,b)=>a+b,0)/n;
+  let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my);sxx+=(x[i]-mx)**2;syy+=(y[i]-my)**2}
+  return {b:sxy/sxx,r:sxy/Math.sqrt(sxx*syy),n}}
+function mcRollCorr(kx,ky,jan){
+  const X=mcWk(mcSer(kx)),Y=mcWk(mcSer(ky)),ks=[...X.keys()].filter(k=>Y.has(k)&&X.has(k-1)&&Y.has(k-1)).sort((a,b)=>a-b);
+  const rx=ks.map(k=>(X.get(k)/X.get(k-1)-1)),ry=ks.map(k=>(Y.get(k)/Y.get(k-1)-1)),out=[];
+  for(let i=jan;i<ks.length;i++){let sx=0,sy=0,sxy=0,sxx=0,syy=0;for(let j=i-jan+1;j<=i;j++){sx+=rx[j];sy+=ry[j]}const mx=sx/jan,my=sy/jan;for(let j=i-jan+1;j<=i;j++){sxy+=(rx[j]-mx)*(ry[j]-my);sxx+=(rx[j]-mx)**2;syy+=(ry[j]-my)**2}out.push([MC_W0+ks[i]*7*DAY+4*DAY,sxy/Math.sqrt(sxx*syy)])}
+  return out}
+function mcForca(r){const a=Math.abs(r);return a>=0.6?"forte":a>=0.3?"moderada":"fraca"}
+function mcTransHtml(){
+  let h='<h3>Como o exterior afeta o Brasil</h3><p class="sub">Sensibilidade dos mercados brasileiros aos movimentos lá fora, medida com as variações semanais dos últimos 2 anos. Ajuda a responder perguntas como "se os juros americanos subirem, o que acontece com o meu IPCA+?".</p>';
+  const R=[["spx","p","ibov","p","Ibovespa × S&P 500","Quando o S&P 500 sobe ou cai 1% na semana, o Ibovespa varia em média",v=>mcSig(v,2)],
+    ["dxy","p","usd","p","Dólar/real × dólar no mundo","Quando o dólar se valoriza 1% contra as principais moedas, o dólar/real varia em média",v=>mcSig(v,2)],
+    ["vix","n","usd","p","Dólar/real × aversão a risco (VIX)","Quando o VIX sobe 1 ponto, o dólar/real varia em média",v=>mcSig(v,2)],
+    ["t10","b","real10","b","Juro real 10 anos (Brasil) × Treasury 10 anos","Quando o Treasury de 10 anos sobe 10 bps, o juro real de 10 anos no Brasil varia em média",v=>mcSig(v*10,0," bps")],
+    ["t10","b","pre5","b","Prefixado 5 anos (Brasil) × Treasury 10 anos","Quando o Treasury de 10 anos sobe 10 bps, o prefixado de 5 anos varia em média",v=>mcSig(v*10,0," bps")],
+    ["brent","p","ibov","p","Ibovespa × petróleo (Brent)","Quando o petróleo sobe 1% na semana, o Ibovespa varia em média",v=>mcSig(v,2)]];
+  const rows=R.map(([kx,tx,ky,ty,tit,txt,f])=>{const g=mcReg(kx,ky,tx,ty,104);return g?'<tr><td style="text-align:left"><b>'+tit+'</b><small style="display:block;color:var(--muted)">'+txt+' <b>'+f(g.b)+'</b>.</small></td><td>'+fx(g.r,2)+'</td><td class="c-ph">'+mcForca(g.r)+'</td></tr>':''}).filter(Boolean);
+  if(rows.length)h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Relação</th><th>Correlação</th><th class="c-ph">Força</th></tr></thead><tbody>'+rows.join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Correlação de −1 a +1: perto de zero = os dois andam sem relação; acima de 0,6 (ou abaixo de −0,6) = relação forte. É uma média do passado recente: em crises a ligação costuma ficar mais forte.</p>';
+  const c=mcRollCorr("spx","ibov",26).filter(p=>p[0]>=Date.UTC(2010,0,1));
+  if(c.length>20)h+='<div class="label" style="margin-top:12px">Correlação entre S&P 500 e Ibovespa (janela móvel de 6 meses, retornos semanais)</div>'+fnChart([{lab:"Correlação",col:"#2563eb",w:1.8,pts:c}],{fmt:"num",zero:true,h:180,aria:"Correlação S&P 500 e Ibovespa"});
+  const t10=mcCut(mcSer("t10"),10),r10=mcCut(mcSer("real10"),10),p5=mcCut(mcSer("pre5"),10);
+  if(t10.length&&r10.length){const th=P=>fnThin(P.map(p=>({t:p[0],v:p[1]})),600).map(p=>[p.t,p.v]);
+    h+='<div class="label" style="margin-top:12px">Juros longos: EUA × Brasil, 10 anos (% a.a.)</div>'+fnChart([{lab:"Treasury 10 anos (EUA)",col:"#64748b",w:1.8,pts:th(t10)},{lab:"Juro real 10 anos (Brasil, IPCA+)",col:"#dc2626",w:2,pts:th(r10)},{lab:"Prefixado 5 anos (Brasil)",col:"#2563eb",w:1.8,pts:th(p5)}],{fmt:"pct",h:230,aria:"Juros longos EUA e Brasil"})
+      +'<p class="sub" style="font-size:.8rem">Juro real e prefixado do Brasil com prazo constante, calculados com as taxas do Tesouro Direto (interpolação entre os vencimentos vizinhos). O juro real brasileiro paga muito acima do americano por causa do risco-país; os dois tendem a subir juntos quando os juros nos EUA sobem.</p>'}
+  const dx=mcCut(mcSer("dxy"),5),us=mcCut(mcSer("usd"),5);
+  if(dx.length&&us.length){const b=(P)=>{const t0=Math.max(dx[0][0],us[0][0]),p0=euAt(P,t0);return p0?fnThin(P.filter(p=>p[0]>=t0).map(p=>({t:p[0],v:p[1]/p0[1]*100})),500).map(p=>[p.t,p.v]):[]};
+    h+='<div class="label" style="margin-top:12px">Dólar no mundo × dólar/real, 5 anos (base 100)</div>'+fnChart([{lab:"Índice amplo do dólar (Fed)",col:"#64748b",w:1.8,pts:b(dx)},{lab:"Dólar/real (PTAX)",col:"#16a34a",w:2,pts:b(us)}],{fmt:"num",h:210,aria:"Dólar global e real"})
+      +'<p class="sub" style="font-size:.8rem">Quando as duas linhas sobem juntas, o real está só acompanhando o dólar forte no mundo; quando o dólar/real sobe sozinho, a causa é doméstica (fiscal, política, juros).</p>'}
+  return h+'<p class="sub" style="font-size:.8rem">Fontes: Cboe (S&P 500 e VIX), B3 (Ibovespa), Banco Central (PTAX), Federal Reserve (índice amplo do dólar, H.10), Departamento do Tesouro dos EUA (Treasuries), Tesouro Nacional (Tesouro Direto) e EIA (Brent).</p>';
+}
+function mcEuaHtml(){
+  const U=MC.d.us;if(!U||!U.cpi)return "";const L=mcLast,k=[],cy=mcYoY(U.cpi),co=mcYoY(U.core),sa=U.cpi_sa||[],pay=U.payroll||[],sal=mcYoY(U.salario||[]);
+  const u=L(cy);if(u)k.push(mcKp("Inflação (CPI) · "+mcMes(u[0]),fx(u[1],1)+'% em 12 meses',sa.length>1?mcSig((sa[sa.length-1][1]/sa[sa.length-2][1]-1)*100,2)+' no mês':''));
+  const c=L(co);if(c)k.push(mcKp("Núcleo da inflação",fx(c[1],1)+'% em 12 meses','sem alimentos e energia'));
+  if(pay.length>3){const d=(pay[pay.length-1][1]-pay[pay.length-2][1]),m3=(pay[pay.length-1][1]-pay[pay.length-4][1])/3;k.push(mcKp("Empregos criados (payroll) · "+mcMes(pay[pay.length-1][0]),(d>=0?'+':'−')+fx(Math.abs(d),0)+' mil','média de 3 meses: '+(m3>=0?'+':'−')+fx(Math.abs(m3),0)+' mil'))}
+  const de=L(U.desemp);if(de)k.push(mcKp("Desemprego",fx(de[1],1)+'%',U.desemp.length>12?mcSig(de[1]-U.desemp[U.desemp.length-13][1],1," p.p.").replace('"pos"','"x"').replace('"neg"','"pos"').replace('"x"','"neg"')+' em 12 meses':''));
+  const s=L(sal);if(s)k.push(mcKp("Salário por hora",fx(s[1],1)+'% em 12 meses','pressão de custos sobre a inflação'));
+  const m=S=>S.map(p=>[mcTm(p[0]),p[1]]).filter(p=>p[0]>=Date.UTC(new Date().getUTCFullYear()-10,0,1));
+  let h='<h3>Economia americana</h3><p class="sub">Inflação e emprego nos EUA decidem os juros do Fed, que movem o dólar, os Treasuries e o apetite por risco no mundo — e, por tabela, o câmbio, os juros e a Bolsa no Brasil.</p><div class="fnkpis">'+k.join("")+'</div>';
+  h+='<div class="label" style="margin-top:12px">Inflação nos EUA em 12 meses (%)</div>'+fnChart([{lab:"CPI",col:"#dc2626",w:2,pts:m(cy)},{lab:"Núcleo",col:"#2563eb",w:2,pts:m(co)}],{fmt:"pct",h:200,aria:"Inflação EUA"});
+  if(pay.length>40){const ch=[];for(let i=1;i<pay.length;i++)ch.push([mcTm(pay[i][0]),pay[i][1]-pay[i-1][1]]);h+='<div class="label" style="margin-top:12px">Empregos criados por mês (payroll, milhares)</div>'+fnChart([{lab:"Empregos",col:"var(--gain)",pts:ch.slice(-36)}],{bars:true,zero:true,h:170,fmt:"num",aria:"Payroll"})}
+  if(U.desemp)h+='<div class="label" style="margin-top:12px">Desemprego nos EUA (%)</div>'+fnChart([{lab:"Desemprego",col:"#9333ea",w:2,pts:m(U.desemp)}],{fmt:"pct",h:170,aria:"Desemprego EUA"});
+  return h+'<p class="sub" style="font-size:.8rem">Fonte: U.S. Bureau of Labor Statistics (CPI-U, núcleo sem alimentos e energia, emprego não agrícola e taxa de desemprego; dados com ajuste sazonal na variação mensal).</p>';
+}
+function mcFedHtml(){
+  const F=MC.d.fed;if(!F||!F.mediana||!F.anos)return "";const N={ffr:"Juro do Fed (fim de ano)",pce:"Inflação (PCE)",core:"Núcleo da inflação (PCE)",pib:"Crescimento do PIB",desemp:"Desemprego (fim de ano)"};
+  const ff=FXJ&&FXJ.ultimo&&FXJ.ultimo.fed_funds;
+  let h='<h3>Projeções do Fed</h3><p class="sub">Mediana das projeções dos dirigentes do banco central americano, divulgadas em '+fdate(mcTd(F.data))+'. O juro de fim de ano mostra quantos cortes ou altas o próprio Fed espera'+(ff?' (hoje: '+fx(ff.valor,2)+'% ao ano)':'')+'.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">%</th>'+F.anos.map((a,j)=>'<th'+(j>=3?' class="c-ph"':'')+'>'+esc(a)+'</th>').join("")+'</tr></thead><tbody>';
+  ["ffr","pce","core","pib","desemp"].forEach(n=>{const v=F.mediana[n],a=(F.anterior||{})[n];if(!v)return;h+='<tr><td style="text-align:left">'+N[n]+'</td>'+v.map((x,j)=>'<td'+(j>=3?' class="c-ph"':'')+'>'+(x==null?'—':fx(x,1)+(a&&a[j]!=null&&a[j]!==x?' <small>('+(x>a[j]?'+':'−')+fx(Math.abs(x-a[j]),1)+')</small>':''))+'</td>').join("")+'</tr>'});
+  return h+'</tbody></table></div><p class="sub" style="font-size:.8rem">Entre parênteses, a mudança sobre a projeção anterior (reunião de 3 meses antes). Fonte: Federal Reserve, Summary of Economic Projections. A próxima atualização sai na reunião do Fed de março, junho, setembro ou dezembro — veja a agenda no Resumo.</p>';
+}
+function mcGlobalHtml(){
+  const br=mcSer("brent"),dx=mcSer("dxy");if(!br.length&&!dx.length)return "";const k=[];
+  const v=(P,n)=>{const u=P[P.length-1],a=euAt(P,u[0]-n*DAY);return a?(u[1]/a[1]-1)*100:null};
+  if(br.length){const u=br[br.length-1];k.push(mcKp("Petróleo Brent · "+fdate(u[0]).slice(0,5),'US$ '+fx(u[1],2),mcSig(v(br,30),1)+' em 30 dias · '+mcSig(v(br,365),1)+' em 12 meses'))}
+  if(dx.length){const u=dx[dx.length-1];k.push(mcKp("Dólar no mundo (índice do Fed) · "+fdate(u[0]).slice(0,5),fx(u[1],2),mcSig(v(dx,30),1)+' em 30 dias · '+mcSig(v(dx,365),1)+' em 12 meses'))}
+  const th=P=>fnThin(mcCut(P,5).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
+  return '<h3>Petróleo e dólar no mundo</h3><p class="sub">Petróleo caro ajuda Petrobras e a balança comercial, mas pressiona a inflação. Dólar forte no mundo costuma tirar dinheiro de países emergentes como o Brasil.</p><div class="fnkpis">'+k.join("")+'</div>'
+    +(br.length?'<div class="label" style="margin-top:12px">Petróleo Brent, 5 anos (US$ por barril)</div>'+fnChart([{lab:"Brent",col:"#0f172a",w:1.8,pts:th(br)}],{fmt:"num",h:190,aria:"Brent"}):'')
+    +'<p class="sub" style="font-size:.8rem">Fontes: EIA (Brent à vista) e Federal Reserve (índice amplo nominal do dólar contra as moedas dos principais parceiros comerciais dos EUA, jan/2006 = 100). Commodities em geral (IC-Br) estão na aba Dólar.</p>';
+}
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
@@ -6437,7 +6616,7 @@ scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","au","ag","sp"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","aa","ar","ac","au","ag","sp"].includes(m0)?m0:"rs");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
