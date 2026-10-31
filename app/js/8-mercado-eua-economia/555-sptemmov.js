@@ -68,9 +68,10 @@ function spPosCalc(c,its,Ds){
 function spPosHtml(c,its,Ds){
   let X;try{X=spPosCalc(c,its,Ds)}catch(e){console.error(e);return '<section class="panel"><p class="err">Não deu para calcular a posição: '+esc(e.message)+'</p></section>'}
   if(!X)return "";if(X.erro)return '<section class="panel" data-reltit="Posição atual"><h3>Posição atual</h3><p class="warn">'+esc(X.erro)+'</p></section>';
+  SP_POS={c,X};
   const {P,T,dv,d0,pts}=X,kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>',pct=v=>v==null?'—':fnPct(v),pa=v=>v==null?'—':fnPctT(v*100)+' a.a.';
   const dvs=fdate(Date.parse(dv+"T00:00:00Z")),d0s=fdate(Date.parse(d0+"T00:00:00Z"));
-  let h='<section class="panel" data-reltit="Posição atual (aplicações reais)"><h3>Posição atual</h3><p class="sub">Com as aplicações e os resgates informados, de '+d0s+' até '+dvs+' (último dia com dados de todos os itens).</p>';
+  let h='<section class="panel" data-reltit="Posição atual (aplicações reais)"><h3>Posição atual</h3><p class="sub">Com as aplicações e os resgates informados, de '+d0s+' até '+dvs+' (último dia com dados de todos os itens).</p>'+rmSel(X);
   h+='<div class="fnkpis">'+kp("Valor aplicado",brl(T.apl),T.resg?'resgatado '+brl(T.resg):'')+kp("Valor atual",brl(T.v),'líquido de IR (estimado) '+brl(T.liq))+kp("Ganho",'<span class="'+(T.ganho>=0?'pos':'neg')+'">'+brl(T.ganho)+'</span>','se estivesse no CDI: '+brl(T.seCdi))
     +kp("Rentabilidade da carteira",pct(T.twr),T.cdi!=null&&T.twr!=null&&T.cdi>0?(T.twr>0?fx(T.twr/T.cdi*100,0)+'% do CDI':'CDI '+fnPctT(T.cdi)):'por cotas, sem efeito dos aportes')
     +kp("Rentabilidade do cliente (TIR)",pa(T.tir),T.tirLiq!=null?'líquida de IR '+pa(T.tirLiq):'')

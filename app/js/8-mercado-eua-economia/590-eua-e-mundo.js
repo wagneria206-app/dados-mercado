@@ -1,7 +1,7 @@
 /* ---------- EUA e mundo */
 function mundoHtml(){
   const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
-  return [mcTransHtml(),mcEuaHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
+  return [mcTransHtml(),mcEuaHtml(),euaCalHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
 }
 const MC_W0=Date.UTC(1970,0,5);
 function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
