@@ -6,7 +6,7 @@ const TOUR=[
   [".busca","Busca","Ache qualquer fundo, ação, FII, ETF, BDR, título do Tesouro ou tela do app. No computador, a tecla / leva direto para cá."],
   ["#mkOut .rsgrid>div,#mkOut .pnlc","De onde vem cada número","Toque no pequeno i de um cartão para ver a fonte oficial. Se uma fonte atrasar, um aviso amarelo aparece no topo da tela."],
   [".tabs button[data-mod=fv]","Favoritos e alertas","Acompanhe fundos, ativos, títulos e indicadores de economia (Focus, IPCA, dólar…) e crie alertas. Com a sincronização, os avisos chegam até com o app fechado."],
-  ["#btAjustes","Ajustes e apresentação","Tema claro ou escuro, tela inicial, blocos do Resumo, sincronização e segurança (proteja o token com senha). Ao lado: Metodologia e fontes e o modo apresentação para reuniões."]];
+  ["#btAjustes","Ajustes e apresentação","Tema claro ou escuro, tela inicial, blocos do Resumo, sincronização e segurança (proteja o token com senha). Ao lado: a saúde das fontes (uma bolinha vermelha aparece quando algo falha), Metodologia e fontes e o modo apresentação para reuniões."]];
 const TR={i:0,on:false};
 function tourAbre(){if(TR.on)return;TR.on=true;TR.i=0;if(activeMod!=="rs"){try{setMod("rs")}catch(e){}}setTimeout(tourPasso,350)}
 function tourFecha(){TR.on=false;document.querySelectorAll(".tourhl,.tourbx").forEach(e=>e.remove());lsSet("tourVisto","1")}

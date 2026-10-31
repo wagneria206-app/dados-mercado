@@ -146,6 +146,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 - `530-agenda-de-proventos-situacao-das.js` — Agenda de proventos, situação das bases, app instalável e importação de posição (13 KB)
 - `533-saude-das-fontes.js` — Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) (6 KB)
+- `534-saude-no-cabecalho.js` — saúde das fontes no cabeçalho: um ícone com a cor da situação (verde, amarelo, vermelho) que abre o painel completo (2 KB)
 - `535-fv.js` (24 KB)
 - `536-alertas-de-economia.js` (4 KB)
 - `538-seguranca-deste-aparelho.js` (9 KB)
