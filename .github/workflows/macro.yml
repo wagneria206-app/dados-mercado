@@ -1,0 +1,63 @@
+name: Atualizar economia (Focus, IBGE, Banco Central, BLS, Fed e EIA)
+
+on:
+  schedule:
+    - cron: "50 21 * * 1-5"    # 18h50 de Brasília
+    - cron: "20 12 * * 1-6"    # 9h20 de Brasília (Focus sai às 8h25 de segunda)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: atualizar-macro
+  cancel-in-progress: false
+
+jobs:
+  macro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.1.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests==2.32.3
+      - name: Restaurar a última publicação (ramo "macro")
+        run: |
+          mkdir -p /tmp/ent /tmp/sai
+          if git fetch -q --depth=1 origin macro; then git --work-tree=/tmp/ent checkout FETCH_HEAD -- . && git reset -q; fi
+          ls /tmp/ent | head
+      - name: Coletar
+        run: python scripts/macro.py /tmp/ent /tmp/sai
+      - name: Publicar no ramo "macro"
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          cd /tmp/sai
+          du -sh . ; ls -la
+          git init -q -b macro
+          git config user.name "robo-dados"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Bolsa americana de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" macro
+      - name: Avisar falha (issue no GitHub)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          N=$(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[0].number' 2>/dev/null || true)
+          MSG="A execução de $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M') falhou: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -n "$N" ]; then gh issue comment "$N" -R "${{ github.repository }}" --body "$MSG"; else gh issue create -R "${{ github.repository }}" --title "$T" --body "$MSG
+
+          O app continua mostrando os últimos dados publicados. Este aviso fecha sozinho quando o robô voltar a rodar sem erro."; fi
+      - name: Fechar aviso de falha anterior
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T="Falha no robô: ${{ github.workflow }}"
+          for N in $(gh issue list -R "${{ github.repository }}" --state open --search "in:title \"$T\"" --json number --jq '.[].number' 2>/dev/null); do gh issue close "$N" -R "${{ github.repository }}" --comment "Voltou a funcionar em $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M')."; done
