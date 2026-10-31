@@ -1121,3 +1121,4 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 /* cabeçalho enxuto: Selic,IPCA e dólar ficam no painel de índices e nas abas próprias */
 .appbar .mktbar{display:none}
 .sdfaixa{display:inline-flex;gap:2px;vertical-align:middle}.sdfaixa i{display:block;width:6px;height:14px;border-radius:2px;background:var(--line)}.sdfaixa i.ok{background:var(--gain)}.sdfaixa i.fa{background:var(--loss)}.sdfaixa i.pa{background:var(--gold)}
+.fonteaviso{margin:0 0 12px;padding:9px 14px;border-radius:10px;background:var(--warn-bg,#FFF4E5);color:var(--ink);border:1px solid var(--gold);font-size:.86rem;line-height:1.45}.fonteaviso small{color:var(--muted)}.fonteaviso .link{font-size:.86rem;margin-left:4px}

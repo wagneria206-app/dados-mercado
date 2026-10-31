@@ -227,7 +227,7 @@ async function pcFetch(){
 const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
 const MKM=new Set(["rs","fv","ec","mu","ju","cr","in","ix"]);
 function setMod(m){
-  if(m==="mk")m="rs";activeMod=m;if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
+  if(m==="mk")m="rs";activeMod=m;try{fonteAviso(m)}catch(e){}if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
   if($("areaTitle"))$("areaTitle").textContent=AREA_T[ar];
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mod===m?"true":"false"));

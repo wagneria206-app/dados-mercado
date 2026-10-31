@@ -460,8 +460,23 @@ def bcb(mercado):
 
 @fonte("ibge_ipca")
 def ipca(mercado):
-    r = baixar(URL_SIDRA_IPCA)
-    dados = r.json()[1:]
+    try:
+        r = baixar(URL_SIDRA_IPCA)
+        dados = r.json()[1:]
+    except Exception as e:  # noqa: BLE001
+        # fonte reserva: variação mensal do IPCA no SGS do Banco Central (série 433), encadeada sobre o último número-índice
+        base = dict(mercado.get("ipca") or {})
+        if not base:
+            raise
+        ult = max(base)
+        for d, v in sgs(433, 120):
+            per = d[:4] + d[5:7]
+            ant = f"{int(per[:4]) - (per[4:] == '01')}{12 if per[4:] == '01' else int(per[4:]) - 1:02d}"
+            if per > ult and ant in base and v is not None:
+                base[per] = round(base[ant] * (1 + v / 100), 2)
+                ult = per
+        mercado["ipca"] = base
+        return {"ultimo_mes": max(base), "reserva": f"SIDRA fora do ar ({str(e)[:80]}); IPCA do SGS encadeado ao último número-índice"}
     saida = {}
     for x in dados:
         periodo = next((v for k, v in x.items() if k.endswith("C") and re.fullmatch(r"\d{6}", str(v))), None)
@@ -792,13 +807,24 @@ def bcb_dolar(mercado):
     dolar = ler_json("dolar.json", {})
     ser = dict((r[0], r) for r in dolar.get("serie", []))
     ini = dt.date(1995, 1, 2) if len(ser) < 5000 else HOJE - dt.timedelta(days=40)
-    L = olinda("CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"
-               + ini.strftime("%m-%d-%Y") + "'&@dataFinalCotacao='" + HOJE.strftime("%m-%d-%Y")
-               + "'&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao")
-    for x in L:
-        d = x["dataHoraCotacao"][:10]
-        if x.get("cotacaoVenda"):
-            ser[d] = [d, x["cotacaoCompra"], x["cotacaoVenda"]]
+    reserva = None
+    try:
+        L = olinda("CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"
+                   + ini.strftime("%m-%d-%Y") + "'&@dataFinalCotacao='" + HOJE.strftime("%m-%d-%Y")
+                   + "'&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao")
+        for x in L:
+            d = x["dataHoraCotacao"][:10]
+            if x.get("cotacaoVenda"):
+                ser[d] = [d, x["cotacaoCompra"], x["cotacaoVenda"]]
+    except Exception as e:  # noqa: BLE001
+        # fonte reserva: as mesmas cotações PTAX publicadas no SGS do Banco Central (séries 1 = venda e 10813 = compra)
+        if len(ser) < 5000:
+            raise
+        venda, compra = dict(sgs(1, 40)), dict(sgs(10813, 40))
+        for d, v in venda.items():
+            if d and v and compra.get(d):
+                ser[d] = [d, compra[d], v]
+        reserva = f"API PTAX fora do ar ({str(e)[:80]}); usada a série PTAX do SGS"
     if len(ser) < 5000:
         raise RuntimeError(f"PTAX: série incompleta ({len(ser)} dias)")
     dolar = {"fonte": "Banco Central do Brasil – PTAX (fechamento: média dos 4 boletins do dia)",
@@ -807,7 +833,10 @@ def bcb_dolar(mercado):
     dolar["atualizadoEm"] = AGORA.isoformat(timespec="seconds")
     gravar_json("dolar.json", dolar)
     mercado["dolar"] = dolar_resumo(dolar)
-    return {"dias": len(dolar["serie"]), "ultimo": dolar["serie"][-1], "boletins_hoje": n}
+    info = {"dias": len(dolar["serie"]), "ultimo": dolar["serie"][-1], "boletins_hoje": n}
+    if reserva:
+        info["reserva"] = reserva
+    return info
 
 
 
