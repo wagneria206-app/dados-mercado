@@ -152,7 +152,7 @@ def brasil():
         d = sidra(tab, var, 120, clas)
         a, b = var.split(",")
         out[nome + "_mm"], out[nome + "_aa"] = d.get(a, []), d.get(b, [])
-    for nome, cod in (("ibcbr", 24364), ("ibcbr_ns", 24363), ("dbgg", 13762), ("dlsp", 4513), ("nfsp_prim", 5793),
+    for nome, cod in (("ipca", 433), ("ibcbr", 24364), ("ibcbr_ns", 24363), ("dbgg", 13762), ("dlsp", 4513), ("nfsp_prim", 5793),
                       ("nfsp_nom", 5727), ("concessoes", 20631), ("inad", 21082), ("inad_pf", 21084), ("inad_pj", 21083)):
         try:
             out[nome] = sgs(cod)
@@ -201,7 +201,7 @@ def prazo_constante():
         if not abaixo or not acima:
             return None
         a, b = abaixo[-1], acima[0]
-        if T - a[0] > 3 or b[0] - T > 3:
+        if T - a[0] > 6 or b[0] - T > 8:
             return None
         if b[0] == a[0]:
             return round(a[1], 3)
