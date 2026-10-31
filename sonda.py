@@ -1,9 +1,10 @@
 import urllib.request,json
-MZ={"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) Chrome/124 Safari/537.36"}
+H={"User-Agent":"Mozilla/5.0","Accept":"application/json"}
 out=[]
-for c in [24363,24364,24369,21859,21862,28503,1455,1473,1499,13762,4513,5793,5727,20631,21082,21084,21083,22099,22109,4380,4382,24082,24086,7326,28561]:
+for t,c in [("5932","/c11255/90707"),("6381",""),("8888","/c544/129314"),("8880","/c11046/56734"),("5906","/c11046/56726")]:
+    u=f"https://apisidra.ibge.gov.br/values/t/{t}/n1/all/v/all/p/last%201{c}"
     try:
-        j=json.load(urllib.request.urlopen(urllib.request.Request(f"https://dadosabertos.bcb.gov.br/api/3/action/package_search?q=name:{c}-*&rows=3",headers=MZ),timeout=30))
-        out.append(f"{c}: "+" | ".join(r["name"][:110] for r in j["result"]["results"]))
-    except Exception as e: out.append(f"{c}: ERRO {e}")
+        j=json.load(urllib.request.urlopen(urllib.request.Request(u,headers=H),timeout=60))
+        out.append(t+" "+json.dumps(j[0],ensure_ascii=False)[:400]);[out.append("   "+r.get("D2C","")+" "+r.get("D2N","")[:90]+" | "+r.get("D3N","")+" = "+r.get("V","")+" "+r.get("MN","")) for r in j[1:]]
+    except Exception as e: out.append(f"{t} ERRO {e} {getattr(e,'read',lambda:b'')()[:200]!r}")
 open("sonda.txt","w").write("\n".join(out))
