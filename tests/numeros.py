@@ -167,6 +167,29 @@ async def main():
         confere("retorno anualizado", r["ann"], ((1 + tot) ** (252 / (n - 1)) - 1) * 100, 1e-9)
         confere("perda máxima", r["dd"], dd * 100, 1e-9)
 
+        # ---------------- posição real da carteira (aplicações e resgates, cotas, TIR e IR)
+        for final, ir_esp in ((108.9, 0.0), (121.0, (121.0 * 10 - 1100) * 0.15)):
+            js = """const ds=['2025-01-02','2025-01-03','2025-01-06','2025-01-07'],vs=[100,110,99,%s],T=ds.map(d=>Date.parse(d+'T00:00:00Z'));
+              const X={T,L:{d:{cdi:[1,1.0005,1.001,1.0015],ipca:[1,1,1.001,1.001]},m:{}},cal:ds};
+              const D={d:new Map(ds.map((d,i)=>[d,vs[i]])),m:new Map(),reg:'acoes'};
+              const it={t:'a',k:'TESTE',n:'Teste',w:0,mov:[{d:'2025-01-02',v:1000},{d:'2025-01-03',v:1100},{d:'2025-01-06',v:-990}]};
+              return A.fnUse(X,()=>{const R=A.spPosCalc({itens:[it]},[it],[D]);return {twr:R.T.twr,v:R.T.v,ganho:R.T.ganho,ir:R.T.ir,tir:R.T.tir,apl:R.T.apl,resg:R.T.resg}})""" % final
+            r = await J(js)
+            confere(f"posição: valor final (cota {final})", r["v"], 10 * final, 1e-6)
+            confere(f"posição: rentabilidade por cotas (cota {final})", r["twr"], (final / 100 - 1) * 100, 1e-6)
+            confere(f"posição: aplicado e resgatado (cota {final})", (r["apl"], r["resg"]), (2100, 990))
+            confere(f"posição: ganho (cota {final})", r["ganho"], 10 * final + 990 - 2100, 1e-6)
+            confere(f"posição: IR do lote restante (cota {final})", r["ir"], ir_esp, 1e-6)
+            cf = [(0, -1000), (1, -1100), (4, 990), (5, 10 * final)]
+            g = lambda x: sum(v / (1 + x) ** (d / 365) for d, v in cf)  # noqa: E731
+            lo, hi = -0.99, 50.0
+            for _ in range(300):
+                m = (lo + hi) / 2
+                lo, hi = (m, hi) if (g(m) > 0) == (g(lo) > 0) else (lo, m)
+            esp = (lo + hi) / 2
+            # acima de 1.000% ao ano (prazos de poucos dias) o app não mostra a TIR
+            confere(f"posição: TIR (cota {final})", r["tir"] if esp <= 10 else (r["tir"] is None), esp if esp <= 10 else True, 1e-4)
+
         # ---------------- estresse e exterior
         confere("sistema linear (estresse)", await J("return A.stSolve([[2,1,0],[1,3,1],[0,1,4]],[3,5,5]).map(x=>+x.toFixed(9)).join(',')"), "1,1,1")
         confere("choque com Bolsa e dólar compostos", await J("return A.stImp([1,1,0,0,1],[-0.1,0.2,0,0,-0.3],0)"), (1 - 0.1) * 1.2 * 0.7 - 1, 1e-12)
