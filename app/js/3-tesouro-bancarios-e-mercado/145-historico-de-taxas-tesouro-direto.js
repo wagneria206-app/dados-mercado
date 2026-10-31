@@ -78,7 +78,7 @@ function txCalc(){
     '<div><span class="n">'+(endT>=S.now?'Última taxa de '+(side==="c"?"compra":"venda"):'Última taxa de '+(side==="c"?"compra":"venda")+' ofertada')+'</span><span class="v">'+txFmt(n,st.last.r)+'</span><span class="n">em '+fdate(st.last.t)+'</span></div>'+
     '<div><span class="n">'+(yrs?'Primeira taxa do período':'Primeira taxa (lançamento)')+'</span><span class="v">'+txFmt(n,st.first.r)+'</span><span class="n">em '+fdate(st.first.t)+(yrs?'':(full.first&&full.first.t<=Date.parse("2005-01-03")?' (início da série)':''))+'</span></div>';
   txDraw(s,side,from,st,n);
-  txTable(S,n,side);try{watchRender()}catch(e){}
+  txTable(S,n,side);
 }
 let TXPTS=[];
 function txDraw(s,side,from,st,n){

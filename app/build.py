@@ -43,8 +43,8 @@ def ler(p):
 GUIA = os.path.join(APP, "LEIA-ME.md")
 PASTAS = {
     "1-nucleo": "Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos",
-    "2-calculadora": "Calculadora de títulos, crédito privado, IR/IOF e cenários",
-    "3-assessor-original": "Carteiras e ferramentas do assessor (versão original do app)",
+    "2-calculadora": "Calculadora de títulos, crédito privado, IR/IOF, cenários, estado compartilhado e utilitários",
+    "3-tesouro-bancarios-e-mercado": "Histórico do Tesouro, bancários, fundos e previdência, equivalência e escada, curvas de juros e dados do cabeçalho",
     "4-fundos": "Fundos (CVM)",
     "5-bolsa": "Bolsa (B3 e CVM)",
     "6-comparador-carteiras": "Comparador, simulador de carteiras e relatório em PDF",
