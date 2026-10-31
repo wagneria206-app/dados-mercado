@@ -201,7 +201,7 @@ def prazo_constante():
         if not abaixo or not acima:
             return None
         a, b = abaixo[-1], acima[0]
-        if T - a[0] > 6 or b[0] - T > 8:
+        if T - a[0] > 6 or b[0] - T > 12:
             return None
         if b[0] == a[0]:
             return round(a[1], 3)
