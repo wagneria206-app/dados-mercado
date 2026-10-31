@@ -3,7 +3,7 @@
 Estrutura:
   app/shell.html   página (cabeçalho, menus e marcação), com os marcadores /*@CSS*/ e /*@JS*/
   app/css/*.css    estilos, na ordem alfabética dos arquivos
-  app/js/*.js      código, na ordem numérica dos arquivos (o número no início do nome define a ordem)
+  app/js/**/*.js   código, em pastas por área; a ordem de montagem é a do número no início do nome do arquivo
 
 Todo o código roda dentro de uma única função (aberta em js/000 e fechada no último arquivo), então os
 nomes são compartilhados entre os arquivos como num arquivo só. O hash do script vai para a política de
@@ -31,7 +31,11 @@ def ler(p):
 def montar():
     shell = ler(os.path.join(APP, "shell.html"))
     css = "".join(ler(p) for p in sorted(glob.glob(os.path.join(APP, "css", "*.css"))))
-    js = "".join(ler(p) for p in sorted(glob.glob(os.path.join(APP, "js", "*.js"))))
+    arqs = sorted(glob.glob(os.path.join(APP, "js", "**", "*.js"), recursive=True), key=os.path.basename)
+    nums = [os.path.basename(p)[:3] for p in arqs]
+    if len(set(nums)) != len(nums):
+        raise SystemExit("há dois módulos com o mesmo número: " + ", ".join(sorted({n for n in nums if nums.count(n) > 1})))
+    js = "".join(ler(p) for p in arqs)
     for m in ("/*@CSS*/", "/*@JS*/", "'sha256-@HASH'"):
         if shell.count(m) != 1:
             raise SystemExit(f"shell.html precisa ter exatamente um marcador {m}")
@@ -51,7 +55,7 @@ def main():
         return
     with open(alvo, "w", encoding="utf-8", newline="") as f:
         f.write(html)
-    print(f"index.html gerado ({len(html) // 1024} KB, {len(glob.glob(os.path.join(APP, 'js', '*.js')))} módulos JS).")
+    print(f"index.html gerado ({len(html) // 1024} KB, {len(glob.glob(os.path.join(APP, 'js', '**', '*.js'), recursive=True))} módulos JS).")
 
 
 if __name__ == "__main__":

@@ -9,14 +9,14 @@ O app publicado é um único arquivo, `index.html`, montado a partir dos módulo
 |---|---|
 | `shell.html` | A página: cabeçalho, menus e a marcação das telas. Tem três marcadores: `/*@CSS*/`, `/*@JS*/` e `'sha256-@HASH'`. |
 | `css/*.css` | Os estilos, juntados em ordem alfabética no lugar de `/*@CSS*/`. |
-| `js/NNN-nome.js` | O código, juntado na ordem do número (`000`, `005`, …) no lugar de `/*@JS*/`. |
+| `js/<área>/NNN-nome.js` | O código, em pastas por área, juntado na ordem do número (`000`, `005`, …) no lugar de `/*@JS*/`. A pasta não muda a ordem: só o número. |
 | `build.py` | Faz a montagem e calcula o hash do script para a política de segurança (CSP). |
 
 Todo o código roda dentro de uma única função, aberta em `js/000-…` e fechada no último arquivo. Por isso os
 módulos enxergam os nomes uns dos outros, como se fossem um arquivo só, e **a ordem importa**: uma constante
 (`const`, `let`) só pode ser usada depois do arquivo em que é declarada; funções (`function`) podem ser usadas
 de qualquer lugar. Para um módulo novo, escolha um número livre na posição certa (os números vão de 5 em 5
-justamente para sobrar espaço).
+justamente para sobrar espaço). O número não pode se repetir; a montagem avisa se isso acontecer.
 
 ## Rotina para qualquer mudança
 
@@ -36,7 +36,7 @@ sem passar.
 
 Abre o app com `?teste=1`, que expõe as funções de cálculo em `window.APPT` (o gancho fica em
 `js/622-ganchos-de-teste.js`; sem `?teste=1` nada é exposto), e confere contra casos com resposta conhecida:
-dias úteis de 2024 e 2025 (253 e 252), feriados, IR regressivo, tabela oficial do IOF, preços de LTN, NTN-F e
+dias úteis de 2024 e 2025 (253 e 252), a posição real de uma carteira com aplicações e resgates (cotas, ganho, IR por lote e TIR), feriados, IR regressivo, tabela oficial do IOF, preços de LTN, NTN-F e
 NTN-B refeitos de forma independente pela metodologia da ANBIMA, **os preços publicados do dia pelo Tesouro
 Direto e pela ANBIMA** (pelo menos 95% precisam bater), TIR, curva Nelson-Siegel-Svensson, equivalência
 LCI × CDB, volatilidade, retorno e perda máxima numa série sintética, teste de estresse e o comparador de
@@ -46,9 +46,10 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 
 ## Módulos
 
-**Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos**
 
-- `000-inicio-day.js`  (1 KB)
+**`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
+
+- `000-inicio-day.js` (1 KB)
 - `005-series-historicas-embutidas.js` — séries históricas embutidas (3 KB)
 - `010-retrato-de-mercado-embutido-substituido.js` — retrato de mercado embutido (substituído pelo botão Atualizar) (7 KB)
 - `015-calendario.js` — calendário (1 KB)
@@ -62,11 +63,11 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `055-fluxo.js` — fluxo (1 KB)
 - `060-grafico.js` — gráfico (4 KB)
 
-**Calculadora de títulos, crédito privado, IR/IOF e cenários**
+**`js/2-calculadora/`** — Calculadora de títulos, crédito privado, IR/IOF e cenários
 
 - `065-credito-privado-motor-de-calculo.js` — Crédito privado: motor de cálculo (1 KB)
-- `070-dados-cdi-runs-raw.js`  (24 KB)
-- `075-cdi-runs-end.js`  (14 KB)
+- `070-dados-cdi-runs-raw.js` (24 KB)
+- `075-cdi-runs-end.js` (14 KB)
 - `080-credito-privado-interface.js` — Crédito privado: interface (27 KB)
 - `085-cenarios-de-juros.js` — Cenários de juros (17 KB)
 - `090-ir-iof-e-custodia.js` — IR, IOF e custódia (2 KB)
@@ -78,11 +79,11 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `120-historico.js` — Histórico (1 KB)
 - `125-alertas.js` — Alertas (1 KB)
 
-**Carteiras e ferramentas do assessor (versão original do app)**
+**`js/3-assessor-original/`** — Carteiras e ferramentas do assessor (versão original do app)
 
 - `130-nota-de-corretagem.js` — Nota de corretagem (1 KB)
-- `135-dados-tx.js`  (378 KB)
-- `140-inicio.js`  (1 KB)
+- `135-dados-tx.js` (378 KB)
+- `140-inicio.js` (1 KB)
 - `145-historico-de-taxas-tesouro-direto.js` — Histórico de taxas (Tesouro Direto, dia a dia) (12 KB)
 - `150-renda-fixa-bancaria-cdb-rdb.js` — Renda fixa bancária (CDB, RDB, LCI, LCA, LC, LCD, LIG, LF) (4 KB)
 - `155-aba.js` — aba (4 KB)
@@ -140,7 +141,7 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `415-atualizacao-de-dados.js` — atualização de dados (1 KB)
 - `420-curvas-de-juros-ettj-anbima.js` — Curvas de juros (ETTJ ANBIMA): atual, 1 dia, 1 semana, 1 mês e 1 ano atrás (11 KB)
 
-**Fundos (CVM)**
+**`js/4-fundos/`** — Fundos (CVM)
 
 - `425-fundos-analise-ranking-e-comparador.js` — Fundos: análise, ranking e comparador com os dados oficiais da CVM (2 KB)
 - `430-carga.js` — carga (4 KB)
@@ -148,9 +149,9 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `440-indicadores-de-risco.js` — indicadores de risco (3 KB)
 - `445-graficos.js` — gráficos (6 KB)
 - `450-telas.js` — telas (27 KB)
-- `455-fnrklist.js`  (7 KB)
+- `455-fnrklist.js` (7 KB)
 
-**Bolsa (B3 e CVM)**
+**`js/5-bolsa/`** — Bolsa (B3 e CVM)
 
 - `460-bolsa-acoes-units-fiis-fiagros.js` — Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) (3 KB)
 - `465-casca-e-carga.js` — casca e carga (2 KB)
@@ -158,7 +159,7 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `475-ranking.js` — ranking (4 KB)
 - `480-eventos.js` — eventos (2 KB)
 
-**Comparador, simulador de carteiras e relatório em PDF**
+**`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF
 
 - `485-comparador-fundos-e-ativos-ate.js` — Comparador (fundos e ativos, até 25), janelas móveis, similares, gross-up, gestoras (21 KB)
 - `490-janelas-moveis-na-pagina-do.js` — janelas móveis na página do fundo ou ativo (1 KB)
@@ -166,22 +167,22 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `500-gestoras-e-administradoras.js` — gestoras e administradoras (3 KB)
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
 - `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (29 KB)
-- `515-spcorhtml.js`  (25 KB)
-- `520-spclasse.js`  (5 KB)
+- `515-spcorhtml.js` (26 KB)
+- `520-spclasse.js` (5 KB)
 - `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (14 KB)
 
-**Agenda, saúde das fontes, favoritos, alertas e sincronização**
+**`js/7-saude-favoritos-alertas/`** — Agenda, saúde das fontes, favoritos, alertas e sincronização
 
 - `530-agenda-de-proventos-situacao-das.js` — Agenda de proventos, situação das bases, app instalável e importação de posição (11 KB)
-- `533-saude-das-fontes.js` — Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) (3 KB)
-- `535-fv.js`  (24 KB)
-- `540-risco.js`  (3 KB)
+- `533-saude-das-fontes.js` — Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) (6 KB)
+- `535-fv.js` (24 KB)
+- `540-risco.js` (3 KB)
 
-**Mercado › Resumo, posição real, Bolsa americana, economia, estresse e exterior**
+**`js/8-mercado-eua-economia/`** — Mercado › Resumo, posição real, Bolsa americana, economia, estresse e exterior
 
 - `545-proximas-divulgacoes-do-ibge-calendario.js` — Próximas divulgações do IBGE (calendário oficial, lido direto pelo navegador; se não carregar, a seção some) (1 KB)
 - `550-mercado-resumo-capital-estrangeiro-banco.js` — Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito (3 KB)
-- `555-sptemmov.js`  (14 KB)
+- `555-sptemmov.js` (14 KB)
 - `560-painel-de-indices-e-bolsa.js` — Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) (10 KB)
 - `565-bolsa-eua.js` — Bolsa › EUA (6 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)
@@ -192,11 +193,11 @@ constante, o Focus semanal e a leitura das páginas do Fed e da EIA.
 - `595-carteira-exposicoes-e-teste-de.js` — Carteira: exposições e teste de estresse (modelo de fatores com retornos mensais) (9 KB)
 - `600-bolsa-eua-comparar-formas-de.js` — Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil (7 KB)
 
-**Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; inicialização**
+**`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; inicialização
 
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (26 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (15 KB)
-- `620-pcrebase.js`  (1 KB)
+- `620-pcrebase.js` (1 KB)
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
 - `625-dados-do-robo-github-lidos.js` — dados do robô (GitHub) lidos direto pela página (12 KB)
