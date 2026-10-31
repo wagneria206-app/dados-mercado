@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-w6Mn3nB2cq59FRqsDUvFl518rWwfjCw9bEW41gxOd1o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-UomyJiJ0byZNjh1ko0bBuTC6DsEJ7CV7QUOZvU3bNuA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1264,6 +1264,33 @@ details.aggr>summary{cursor:pointer;padding:8px 2px;list-style:revert;font-size:
 details.aggr>summary .sub{font-size:.82rem;margin-left:6px}
 html.apres .tlidxa,html.apres .rcltg{display:none}
 @media print{.tlidx,.rcltg,.rclmais{display:none!important}table.rclcurta tr.rclx{display:table-row!important}section.rcl.fechado>*{display:revert!important}}
+
+/* ---------- segurança deste aparelho (Ajustes) */
+.segbl{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.segbl:first-child{border-top:0;padding-top:0}
+.segbl>b{font-size:.9rem}
+.segrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.segrow input[type=password]{flex:1 1 220px;max-width:320px}
+.segrow input[type=date]{width:auto}
+.segperigo{color:var(--loss)!important;border-color:var(--loss)!important}
+
+/* ---------- navegação: abas presas logo abaixo do menu ao rolar; botão de voltar ao topo; busca com recentes */
+.wrap>.tabs{align-self:stretch;position:sticky;top:var(--areas-h,62px);z-index:19;background:var(--bg);padding:6px 1px;margin-block:-6px}
+.topo{position:fixed;right:18px;bottom:18px;z-index:70;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:0 6px 18px rgba(8,18,36,.18);display:grid;place-items:center;cursor:pointer;padding:0;min-height:0}
+.topo svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.topo[hidden]{display:none}
+html.apres .topo{bottom:72px}
+.bzlimpa{display:block;margin:6px 10px 4px;font-size:.8rem}
+
+/* ---------- acabamento fino: foco visível ao usar teclado, linhas das tabelas ao passar o mouse, painéis surgem suavemente, carregamento */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctab tbody tr:hover>td{background:color-mix(in srgb,var(--sunk) 70%,transparent)}
+@media (prefers-reduced-motion:no-preference){#mkOut>section.panel,#fnOut>section.panel,#fnBody>section.panel,#atBody>section.panel{animation:surge .22s ease-out both}}
+@keyframes surge{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.carregando{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.carregando::before{content:"";width:16px;height:16px;flex:none;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media print{.topo{display:none!important}}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -2395,6 +2422,7 @@ function setMod(m){
   $("secChart").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";$("secFlow").hidden=FNM.has(m)||m==="sc"||m==="cart"||m==="tx"||m==="bank"||m==="sim"||MKM.has(m)||m==="fund";
   if(m==="fx"){$("secChart").hidden=true;$("secFlow").hidden=true}{const mb=$("methodBox");if(mb)mb.style.display=m==="pub"?"":"none"}
   try{localStorage.setItem("mod2",m)}catch(e){}
+  try{navHist(m)}catch(e){}
   if(FNM.has(m))fnCalc(m);else if(MKM.has(m))mkCalc();else if(m==="pub")calc();else if(m==="pc")pcCalc();else if(m==="bank")bkCalc();else if(m==="fund")fdCalc();else if(m==="sim")simCalc();else if(m==="tx"){oppRender();txCalc()}else if(m==="fx")fxCalc();else{scRefreshSources();if(!LAST.pub&&LAST.pc)$("scSrc").value="pc";scCalc()}
 }
 function pcBind(){
@@ -5875,7 +5903,7 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
 const SYNC_REPO="wagneria206-app/dados-mercado-config",SYNC_URL="https://api.github.com/repos/"+SYNC_REPO+"/contents/config.json";
 const SYNC={tok:null,sha:null,at:null,st:"",dirty:false,t:null,run:null,del:{}};
 try{SYNC.tok=localStorage.getItem("ghTok")||null;SYNC.at=localStorage.getItem("ghSyncAt")||null;SYNC.dirty=localStorage.getItem("ghDirty")==="1";SYNC.del=JSON.parse(localStorage.getItem("ghDel")||"{}")||{}}catch(e){}
-function syncLs(){try{if(SYNC.tok)localStorage.setItem("ghTok",SYNC.tok);else localStorage.removeItem("ghTok");localStorage.setItem("ghSyncAt",SYNC.at||"");localStorage.setItem("ghDirty",SYNC.dirty?"1":"0");localStorage.setItem("ghDel",JSON.stringify(SYNC.del))}catch(e){}}
+function syncLs(){try{if(SYNC.tok&&!segProtegido())localStorage.setItem("ghTok",SYNC.tok);else localStorage.removeItem("ghTok");localStorage.setItem("ghSyncAt",SYNC.at||"");localStorage.setItem("ghDirty",SYNC.dirty?"1":"0");localStorage.setItem("ghDel",JSON.stringify(SYNC.del))}catch(e){}}
 const syncB64d=b=>new TextDecoder().decode(Uint8Array.from(atob(String(b).replace(/\s/g,"")),c=>c.charCodeAt(0)));
 const syncB64e=t=>{const u=new TextEncoder().encode(t);let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
 async function syncApi(metodo,corpo){
@@ -5930,19 +5958,15 @@ function syncHtml(){
   let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
   if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
   else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
-  h+='<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-bkp="1">Baixar cópia (arquivo)</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
   return h+'</div></details>';
 }
 function syncShow(){const el=$("syncSt");if(el)el.textContent=SYNC.err?"":SYNC.st;if(SYNC.err||!el)document.querySelectorAll(".fvbox").forEach(b=>{const d=b.querySelector(".fvsync");if(d)d.outerHTML=syncHtml()})}
 document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);
-  if(g("[data-syncon]")){const v=($("syncTok").value||"").trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){SYNC.err="isso não parece um token do GitHub";syncShow();return}SYNC.tok=v;SYNC.err=null;SYNC.dirty=true;syncLs();syncNow(true).then(()=>{if(SYNC.err){SYNC.tok=null;syncLs();syncShow()}});return}
+  if(g("[data-syncon]")){const v=($("syncTok").value||"").trim();if(!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)){SYNC.err="isso não parece um token do GitHub";syncShow();return}try{localStorage.removeItem("ghTokC")}catch(x){}SYNC.tok=v;SYNC.err=null;SYNC.dirty=true;syncLs();syncNow(true).then(()=>{if(SYNC.err){SYNC.tok=null;syncLs();syncShow()}});return}
   if(g("[data-syncnow]")){syncNow(true);return}
-  if(g("[data-syncoff]")){SYNC.tok=null;SYNC.sha=null;SYNC.st="";SYNC.err=null;syncLs();fvRefresh();return}
-  if(g("[data-bkp]")){const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}),null,1);const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download="mercado-favoritos-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
+  if(g("[data-syncoff]")){try{localStorage.removeItem("ghTokC")}catch(x){}SYNC.tok=null;SYNC.sha=null;SYNC.st="";SYNC.err=null;syncLs();fvRefresh();return}
 });
-document.addEventListener("change",async e=>{const t=e.target;if(!t||t.id!=="bkpIn"||!t.files||!t.files[0])return;
-  try{const D=JSON.parse(await t.files[0].text());if(!D||!Array.isArray(D.favs))throw new Error("arquivo inválido");syncApply(syncMerge(syncLocal(),D));fvSave();try{localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(x){}}
-  catch(x){SYNC.err="não deu para ler o arquivo: "+x.message;syncShow()}t.value=""});
+// restaurar a cópia em arquivo: em 538-seguranca-deste-aparelho.js
 // apagar um favorito, alerta ou carteira registra a exclusão para os outros aparelhos
 document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;const agora=Date.now();
   if((x=g("[data-fvrm]")))SYNC.del["f|"+x.dataset.fvrm]=agora;
@@ -5989,6 +6013,72 @@ function maSelHtml(){
   return '<div class="field"><label for="fvMa">Adicionar indicador de economia</label><select id="fvMa"><option value="">Escolha o indicador…</option>'+L.map(id=>{const r=MA.ok?maVal(id):null;return '<option value="'+id+'">'+esc(maNome(id))+(r?' · hoje '+maFmt(id,r.v):'')+'</option>'}).join("")+'</select></div>'}
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="fvMa"&&t.value){const id=t.value;FV.l.push({k:"m:"+id,n:maNome(id)});fvSave();fvRefresh()}});
 setInterval(()=>{if(FV.l.some(f=>f.k[0]==="m"))maLoad(true).then(()=>{try{fvRefresh()}catch(e){}})},30*60000);
+/* ---------- segurança deste aparelho
+   - token do GitHub protegido por senha: guardado criptografado (AES-GCM, chave PBKDF2-SHA-256 com 310 mil iterações);
+     depois de desbloqueado fica só na memória, até fechar o app;
+   - data de validade do token, com aviso 14 dias antes;
+   - cópia em arquivo criptografada com senha;
+   - apagar todos os dados do app deste aparelho (para aparelho perdido, trocado ou emprestado). */
+const SEG={erro:"",tent:0,apagar:false,bkp:false,rest:null};
+const segB64=u=>{let s="";const a=new Uint8Array(u);for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(s)};
+const segU8=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+async function segChave(senha,sal){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(senha),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt:sal,iterations:310000,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function segCifra(txt,senha){const s=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const c=await crypto.subtle.encrypt({name:"AES-GCM",iv},await segChave(senha,s),new TextEncoder().encode(txt));return {alg:"AES-GCM/PBKDF2-SHA256-310000",s:segB64(s),iv:segB64(iv),c:segB64(c)}}
+async function segDecifra(o,senha){const p=await crypto.subtle.decrypt({name:"AES-GCM",iv:segU8(o.iv)},await segChave(senha,segU8(o.s)),segU8(o.c));return new TextDecoder().decode(p)}
+function segTokC(){try{return JSON.parse(localStorage.getItem("ghTokC")||"null")}catch(e){return null}}
+function segProtegido(){return !!segTokC()}
+function segValidade(){try{return localStorage.getItem("ghTokVal")||""}catch(e){return ""}}
+function segDiasValidade(){const v=segValidade();if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;return Math.floor((Date.parse(v+"T23:59:59Z")-Date.now())/864e5)}
+/* aviso de validade (aparece uma vez por sessão, quando faltam 14 dias ou menos) */
+setTimeout(()=>{const d=segDiasValidade();if(d!=null&&d<=14&&(SYNC.tok||segProtegido())){try{fvToast([d<0?"O token do GitHub deste aparelho venceu: crie um novo e conecte em Ajustes.":"O token do GitHub deste aparelho vence em "+d+(d===1?" dia":" dias")+": crie um novo e troque em Ajustes."])}catch(e){}}},9000);
+
+function segHtml(){
+  const P=segProtegido(),d=segDiasValidade(),v=segValidade();let h='';
+  // token
+  if(SYNC.tok||P){
+    h+='<div class="segbl"><b>Token do GitHub</b>';
+    if(P&&!SYNC.tok)h+='<p class="sub">Protegido por senha e bloqueado. Digite a senha para voltar a sincronizar.</p><div class="segrow"><input id="segSenha" type="password" autocomplete="current-password" placeholder="Senha"><button type="button" class="btn" data-segdesb="1">Desbloquear</button></div>';
+    else if(P)h+='<p class="sub">Guardado criptografado e protegido por senha. Desbloqueado até fechar o app.</p><div class="segrow"><button type="button" class="btn sec" data-segbloq="1">Bloquear agora</button><button type="button" class="link" data-segsem="1">Tirar a proteção</button></div>';
+    else h+='<p class="sub">Guardado neste navegador sem senha. Com uma senha, o token fica criptografado e só é usado depois de desbloqueado; quem pegar o aparelho ou uma extensão do navegador não consegue lê-lo.</p><div class="segrow"><input id="segNova" type="password" autocomplete="new-password" placeholder="Nova senha (mín. 8 caracteres)"><button type="button" class="btn" data-segprot="1">Proteger com senha</button></div>';
+    h+='<div class="segrow"><label for="segVal" class="sub">Validade do token</label><input id="segVal" type="date" value="'+esc(v)+'"><span class="sub">'+(d==null?'informe a data que aparece no GitHub':d<0?'<span class="neg">vencido</span>':d<=14?'<span class="neg">vence em '+d+' dias</span>':'vence em '+d+' dias')+'</span></div></div>'}
+  // cópia criptografada
+  h+='<div class="segbl"><b>Cópia em arquivo</b><p class="sub">Favoritos, alertas e carteiras num arquivo criptografado com senha. Sem a senha ninguém consegue abrir.</p>';
+  h+=SEG.bkp?'<div class="segrow"><input id="segBkpS" type="password" autocomplete="new-password" placeholder="Senha do arquivo (mín. 8 caracteres)"><button type="button" class="btn" data-segbkpok="1">Baixar</button><button type="button" class="link" data-segbkp="0">Cancelar</button></div>'
+    :'<div class="segrow"><button type="button" class="btn sec" data-segbkp="1">Baixar cópia criptografada</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
+  if(SEG.rest)h+='<div class="segrow"><input id="segRestS" type="password" autocomplete="current-password" placeholder="Senha do arquivo"><button type="button" class="btn" data-segrestok="1">Abrir arquivo</button></div>';
+  h+='</div>';
+  // apagar
+  h+='<div class="segbl"><b>Apagar os dados deste aparelho</b><p class="sub">Tira deste navegador o token, favoritos, alertas, carteiras, ajustes e dados guardados. O que está no GitHub não é apagado. Use se o aparelho for trocado ou emprestado; se for perdido, revogue também o token no GitHub.</p><div class="segrow"><button type="button" class="btn sec segperigo" data-segapaga="1">'+(SEG.apagar?'Toque de novo para confirmar':'Apagar dados deste aparelho')+'</button></div></div>';
+  if(SEG.erro)h+='<p class="warn">'+esc(SEG.erro)+'</p>';
+  return h}
+function segRefaz(){SEG.tent=SEG.tent||0;const el=$("segBox");if(el)el.innerHTML=segHtml()}
+function segBaixa(nome,obj){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(obj)],{type:"application/json"}));a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+async function segRestaura(D){syncApply(syncMerge(syncLocal(),D));fvSave();try{localStorage.setItem("spCarts",JSON.stringify(SP.carts))}catch(x){}}
+
+document.addEventListener("click",async e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;
+  if(g("[data-segprot]")){const s=($("segNova").value||"");if(s.length<8){SEG.erro="A senha precisa ter pelo menos 8 caracteres.";segRefaz();return}
+    try{localStorage.setItem("ghTokC",JSON.stringify(await segCifra(SYNC.tok,s)));localStorage.removeItem("ghTok");SEG.erro="";segRefaz()}catch(x){SEG.erro="Não deu para criptografar neste navegador: "+x.message;segRefaz()}return}
+  if(g("[data-segdesb]")){const o=segTokC();if(!o)return;try{SYNC.tok=await segDecifra(o,$("segSenha").value||"");SEG.erro="";SEG.tent=0;segRefaz();syncNow()}
+    catch(x){SEG.tent++;SEG.erro=SEG.tent>=5?"Senha errada 5 vezes: o token protegido foi apagado deste aparelho. Conecte de novo com o token.":"Senha errada.";if(SEG.tent>=5){try{localStorage.removeItem("ghTokC")}catch(y){}}segRefaz()}return}
+  if(g("[data-segbloq]")){SYNC.tok=null;segRefaz();try{fvRefresh()}catch(y){}return}
+  if(g("[data-segsem]")){if(!SYNC.tok)return;try{localStorage.removeItem("ghTokC");localStorage.setItem("ghTok",SYNC.tok)}catch(y){}segRefaz();return}
+  if((x=g("[data-segbkp]"))){SEG.bkp=x.dataset.segbkp==="1";SEG.erro="";segRefaz();const i=$("segBkpS");if(i)i.focus();return}
+  if(g("[data-segbkpok]")){const s=$("segBkpS").value||"";if(s.length<8){SEG.erro="A senha do arquivo precisa ter pelo menos 8 caracteres.";segRefaz();return}
+    const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}));segBaixa("mercado-copia-"+new Date().toISOString().slice(0,10)+".json",{v:2,app:"Mercado e Investimentos",cifrado:await segCifra(txt,s)});SEG.bkp=false;SEG.erro="";segRefaz();return}
+  if(g("[data-segrestok]")){try{const D=JSON.parse(await segDecifra(SEG.rest,$("segRestS").value||""));if(!D||!Array.isArray(D.favs))throw new Error("arquivo inválido");await segRestaura(D);SEG.rest=null;SEG.erro="";segRefaz()}catch(x){SEG.erro="Senha errada ou arquivo inválido.";segRefaz()}return}
+  if(g("[data-segapaga]")){if(!SEG.apagar){SEG.apagar=true;segRefaz();setTimeout(()=>{SEG.apagar=false;segRefaz()},6000);return}
+    try{localStorage.clear();sessionStorage.clear()}catch(y){}try{if(window.caches)(await caches.keys()).forEach(k=>caches.delete(k))}catch(y){}
+    try{if(navigator.serviceWorker)(await navigator.serviceWorker.getRegistrations()).forEach(r=>r.unregister())}catch(y){}
+    location.replace(location.pathname);return}
+});
+document.addEventListener("change",async e=>{const t=e.target;if(!t)return;
+  if(t.id==="segVal"){try{if(t.value)localStorage.setItem("ghTokVal",t.value);else localStorage.removeItem("ghTokVal")}catch(x){}segRefaz();return}
+  if(t.id==="bkpIn"&&t.files&&t.files[0]){e.stopImmediatePropagation();
+    try{const D=JSON.parse(await t.files[0].text());if(D&&D.cifrado){SEG.rest=D.cifrado;SEG.erro="";segRefaz();const i=$("segRestS");if(i)i.focus()}
+      else if(D&&Array.isArray(D.favs)){await segRestaura(D);SEG.erro=""}else throw new Error("arquivo inválido")}
+    catch(x){SEG.erro="Não deu para ler o arquivo: "+x.message;segRefaz()}t.value=""}},true);
 /* ===== Risco-país implícito: cupom cambial de 1 ano (DI futuro × dólar futuro, B3) menos o juro dos EUA (SOFR) =====
    Substitui o EMBI+ Brasil, cuja série pública (Ipeadata/J.P. Morgan) foi encerrada em 2024. */
 const RISCO={di:null,load:null,fxf:null,fxj:null,load2:null};
@@ -7114,7 +7204,7 @@ function agGrupo(d,hoje,rec){
   else{if(dif>=0)return ["s0","Esta semana"];if(dif===-1)return ["s1","Semana passada"]}
   const x=new Date(t);return ["m"+x.getUTCFullYear()+String(x.getUTCMonth()).padStart(2,"0"),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}
 /* ---------- ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço ---------- */
-if(/[?&]teste=1(&|$)/.test(location.search))window.APPT=()=>({du,isBiz,parseDate,price,flowsFrom,irRate,iofRate,IOF_TAB,nssY,spXirr,spAliq,bkFactor,bkTax,eqSolve,stSolve,stImp,exCalc,EX,fnRisk,fnUse,spPosCalc,
+if(/[?&]teste=1(&|$)/.test(location.search))window.APPT=()=>({du,isBiz,parseDate,price,flowsFrom,irRate,iofRate,IOF_TAB,nssY,spXirr,spAliq,bkFactor,bkTax,eqSolve,stSolve,stImp,exCalc,EX,fnRisk,fnUse,spPosCalc,euaHoraBr,EUA_CAL,COPOM,FOMC,agGrupo,segCifra,segDecifra,rmMeses,
   get VAL(){return VAL},get CHK(){return CHK},get TD_N(){return Object.keys(TD_ALL||{}).length}});
 /* ---------- busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação */
 /* Tudo o que se escolhe aqui fica só neste aparelho (localStorage) e não tem nenhum dado pessoal. */
@@ -7149,19 +7239,26 @@ const BZ={q:"",it:[],sel:0};
 function bzTelas(){return [...document.querySelectorAll(".tabs button[data-mod]")].map(b=>({m:b.dataset.mod,t:b.textContent.trim(),a:AREA_T[AREA_OF[b.dataset.mod]]||""}))}
 function bzBusca(){
   const inp=$("busca"),box=$("buscaRes");if(!inp||!box)return;const q=inp.value.trim();BZ.q=q;
-  if(q.length<2){box.hidden=true;BZ.it=[];return}
+  if(q.length<2){bzRecentes();return}
   const w=fnNorm(q).split(/\s+/).filter(Boolean),it=[];let h="";
-  const grupo=(t,rows)=>{if(!rows.length)return;h+='<div class="bzh">'+t+'</div>';rows.forEach(r=>{h+='<button type="button" class="bzi" role="option" data-bzi="'+it.length+'"><b>'+r.t+'</b><small>'+r.s+'</small></button>';it.push(r.go)})};
-  grupo("Telas",bzTelas().filter(x=>w.every(p=>fnNorm(x.t+" "+x.a+" "+(BZ_PAL[x.m]||"")).includes(p))).slice(0,5).map(x=>({t:esc(x.t),s:esc(x.a),go:()=>{setMod(x.m);try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}}})));
-  if(AT.idx)grupo("Bolsa e Tesouro Direto",atSearch(q,6).map(j=>{const r=AT.idx.rows[j],C=AT.C;return {t:esc(r[0])+' · '+esc(r[1]),s:esc(r[C.tipo]||"")+(r[C.preco]!=null?' · R$ '+fx(r[C.preco],2):''),go:()=>atOpen(r[0])}}));
-  if(FN.idx)grupo("Fundos",fnSearch(q,6).map(j=>{const r=FN.idx.rows[j],C=FN.C;return {t:esc(r[1]),s:fnCnpjF(r[0])+' · '+esc(FN.idx.classes[r[C.classe]]||"")+' · PL '+fnMoney(r[C.pl]),go:()=>fnOpen(r[0])}}));
+  const grupo=(t,rows)=>{if(!rows.length)return;h+='<div class="bzh">'+t+'</div>';rows.forEach(r=>{h+='<button type="button" class="bzi" role="option" data-bzi="'+it.length+'"><b>'+r.t+'</b><small>'+r.s+'</small></button>';it.push(r)})};
+  grupo("Telas",bzTelas().filter(x=>w.every(p=>fnNorm(x.t+" "+x.a+" "+(BZ_PAL[x.m]||"")).includes(p))).slice(0,5).map(x=>({t:esc(x.t),s:esc(x.a),d:["t",x.m],go:()=>{setMod(x.m);try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}}})));
+  if(AT.idx)grupo("Bolsa e Tesouro Direto",atSearch(q,6).map(j=>{const r=AT.idx.rows[j],C=AT.C;return {t:esc(r[0])+' · '+esc(r[1]),s:esc(r[C.tipo]||"")+(r[C.preco]!=null?' · R$ '+fx(r[C.preco],2):''),d:["a",r[0]],go:()=>atOpen(r[0])}}));
+  if(FN.idx)grupo("Fundos",fnSearch(q,6).map(j=>{const r=FN.idx.rows[j],C=FN.C;return {t:esc(r[1]),s:fnCnpjF(r[0])+' · '+esc(FN.idx.classes[r[C.classe]]||"")+' · PL '+fnMoney(r[C.pl]),d:["f",r[0]],go:()=>fnOpen(r[0])}}));
   const falta=[!AT.idx&&!AT.err?"ativos":"",!FN.idx&&!FN.err?"fundos":""].filter(Boolean);
   if(falta.length)h+='<div class="bzh bzw">Carregando a base de '+falta.join(" e ")+'…</div>';
   if(!it.length&&!falta.length)h='<div class="bzh bzw">Nada encontrado para “'+esc(q)+'”.</div>';
   BZ.it=it;BZ.sel=0;box.innerHTML=h;box.hidden=false;bzMarca();
 }
 function bzMarca(){document.querySelectorAll("#buscaRes .bzi").forEach((b,i)=>{const on=i===BZ.sel;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");if(on)b.scrollIntoView({block:"nearest"})})}
-function bzVai(i){const f=BZ.it[i];if(!f)return;const inp=$("busca");inp.value="";$("buscaRes").hidden=true;inp.blur();f()}
+function bzVai(i){const r=BZ.it[i];if(!r)return;const inp=$("busca");inp.value="";$("buscaRes").hidden=true;inp.blur();
+  if(r.d){let L=[];try{L=JSON.parse(lsGet("bzRec","[]"))}catch(e){}L=L.filter(x=>x.d.join("|")!==r.d.join("|"));L.unshift({t:r.t,s:r.s,d:r.d});lsSet("bzRec",JSON.stringify(L.slice(0,8)))}
+  r.go()}
+/* busca vazia: mostra o que foi aberto pela busca por último (só neste aparelho) */
+function bzRecentes(){const box=$("buscaRes");let L=[];try{L=JSON.parse(lsGet("bzRec","[]"))}catch(e){}
+  if(!L.length||document.activeElement!==$("busca")){box.hidden=true;BZ.it=[];return}
+  BZ.it=L.map(x=>({t:x.t,s:x.s,d:x.d,go:()=>{const [k,v]=x.d;if(k==="t"){setMod(v);try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}}else if(k==="a"){Promise.resolve(atBoot()).then(()=>atOpen(v))}else{Promise.resolve(fnBoot()).then(()=>fnOpen(v))}}}));
+  BZ.sel=0;box.innerHTML='<div class="bzh">Abertos recentemente</div>'+BZ.it.map((r,i)=>'<button type="button" class="bzi" role="option" data-bzi="'+i+'"><b>'+r.t+'</b><small>'+r.s+'</small></button>').join("")+'<button type="button" class="link bzlimpa" data-bzlimpa="1">Limpar recentes</button>';box.hidden=false;bzMarca()}
 function bzCarrega(){const ps=[];try{if(!AT.idx&&!AT.load&&!AT.err)ps.push(atBoot())}catch(e){}try{if(!FN.idx&&!FN.load&&!FN.err)ps.push(fnBoot())}catch(e){}
   [AT.load,FN.load].forEach(p=>{if(p&&p.then)p.then(()=>{if(BZ.q)bzBusca()},()=>{if(BZ.q)bzBusca()})})}
 
@@ -7183,6 +7280,7 @@ function ajHtml(){
     +Object.values(AREA_T).filter((a,i,s)=>s.indexOf(a)===i&&a!=="Carteira").map(a=>'<optgroup label="'+esc(a)+'">'+telas.filter(x=>x.a===a).map(x=>'<option value="'+x.m+'"'+(ini===x.m?' selected':'')+'>'+esc(x.t)+'</option>').join("")+'</optgroup>').join("")+'</select></section>';
   h+='<section><h3>Blocos de Mercado › Resumo</h3><p class="sub">Marque o que aparece e use as setas para mudar a ordem.</p><ol class="ajbl">'+L.map((x,i)=>'<li><label><input type="checkbox" data-ajbl="'+x[0]+'"'+(x[1]?' checked':'')+'><span>'+esc(D[x[0]][0])+'</span></label><span class="ajmv"><button type="button" class="hbtn" data-ajup="'+i+'" aria-label="Subir"'+(i?'':' disabled')+'><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button><button type="button" class="hbtn" data-ajdn="'+i+'" aria-label="Descer"'+(i<L.length-1?'':' disabled')+'><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></span></li>').join("")+'</ol></section>';
   h+='<section><h3>Sincronizar favoritos entre aparelhos</h3><div class="fvbox">'+syncHtml()+'</div></section>';
+  h+='<section><h3>Segurança deste aparelho</h3><div id="segBox">'+segHtml()+'</div></section>';
   h+='<section><h3>Metodologia e fontes</h3><p class="sub">De onde vem cada dado, como o app calcula e como as fontes são conferidas.</p><button type="button" class="btn sec" data-metodo="1">Abrir metodologia</button></section>';
   h+='<section><h3>Modo apresentação</h3><p class="sub">Para reuniões: esconde notas de rodapé, botões de edição e o cabeçalho, e aumenta um pouco as letras. Saia pelo botão no canto da tela ou com a tecla Esc.</p><button type="button" class="btn" data-ajapres="1">Começar apresentação</button></section>';
   return h}
@@ -7199,6 +7297,8 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
   if(e.target.id==="ajustes"){ajFecha();return} // toque fora da janela
   if((x=g("[data-ajup]"))||(x=g("[data-ajdn]"))){const L=rsBlocos(),i=+(x.dataset.ajup!=null?x.dataset.ajup:x.dataset.ajdn),j=x.dataset.ajup!=null?i-1:i+1;if(j<0||j>=L.length)return;[L[i],L[j]]=[L[j],L[i]];lsSet("rsBlocos",JSON.stringify(L));ajRefaz();return}
   if((x=g("[data-bzi]"))){bzVai(+x.dataset.bzi);return}
+  if(g("[data-bzlimpa]")){lsSet("bzRec",null);const b=$("buscaRes");if(b)b.hidden=true;return}
+  if(g("#topo")){window.scrollTo({top:0,behavior:"smooth"});return}
   if(!g(".busca")){const b=$("buscaRes");if(b)b.hidden=true}
 });
 document.addEventListener("change",e=>{const t=e.target;
@@ -7207,7 +7307,7 @@ document.addEventListener("change",e=>{const t=e.target;
   if(t.dataset&&t.dataset.ajbl){const L=rsBlocos(),x=L.find(y=>y[0]===t.dataset.ajbl);if(x)x[1]=t.checked;lsSet("rsBlocos",JSON.stringify(L));ajRefaz()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="busca"){bzCarrega();bzBusca()}});
-document.addEventListener("focusin",e=>{if(e.target.id==="busca"){bzCarrega();if(e.target.value.trim().length>1)bzBusca()}});
+document.addEventListener("focusin",e=>{if(e.target.id==="busca"){bzCarrega();bzBusca()}});
 document.addEventListener("keydown",e=>{
   if(e.target&&e.target.id==="busca"){const n=BZ.it.length;
     if(e.key==="ArrowDown"&&n){e.preventDefault();BZ.sel=(BZ.sel+1)%n;bzMarca()}
@@ -7222,6 +7322,20 @@ document.addEventListener("keydown",e=>{
 /* ao mudar a largura da janela (girar o tablet, abrir a barra lateral), redesenha a tela para os gráficos ficarem na escala certa */
 let RZ_W=window.innerWidth,RZ_T=null;
 window.addEventListener("resize",()=>{clearTimeout(RZ_T);RZ_T=setTimeout(()=>{const w=window.innerWidth;if(Math.abs(w-RZ_W)<40)return;RZ_W=w;if(activeMod==="tx")return;try{setMod(activeMod)}catch(e){}},250)});
+
+/* ---------- botão Voltar do navegador (e o gesto de voltar do tablet) volta para a tela anterior do app */
+var NAV_POP=false;
+function navHist(m){if(NAV_POP)return;const st=history.state;if(st&&st.mod===m)return;const url=location.pathname+location.search+(m==="fa"||m==="aa"?location.hash:"");
+  try{if(!st||!st.mod)history.replaceState({mod:m},"",url);else history.pushState({mod:m},"",url)}catch(e){}}
+window.addEventListener("popstate",e=>{const m=e.state&&e.state.mod;if(!m||!AREA_OF[m])return;NAV_POP=true;try{setMod(m);window.scrollTo({top:0})}catch(x){}NAV_POP=false});
+
+/* ---------- abas presas logo abaixo do menu ao rolar, e botão para voltar ao topo nas telas longas */
+function navAltura(){const a=document.querySelector(".areas");if(a)document.documentElement.style.setProperty("--areas-h",a.offsetHeight+"px")}
+navAltura();window.addEventListener("resize",navAltura);
+{const b=document.createElement("button");b.type="button";b.id="topo";b.className="topo";b.hidden=true;b.setAttribute("aria-label","Voltar ao topo");b.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>';document.body.appendChild(b);
+  let t=0;window.addEventListener("scroll",()=>{if(t)return;t=requestAnimationFrame(()=>{t=0;b.hidden=window.scrollY<1400})},{passive:true})}
+/* mensagens "Carregando…" ganham um indicador girando (marcadas pela classe .carregando) */
+{let rq=0;new MutationObserver(()=>{if(rq)return;rq=requestAnimationFrame(()=>{rq=0;document.querySelectorAll("#mkOut p.sub,#fnOut p.sub,#mkOut>p,#fnOut .panel>p").forEach(p=>{if(!p.classList.contains("carregando")&&/^Carregando/.test(p.textContent.trim())&&p.textContent.length<90)p.classList.add("carregando")})})}).observe(document.querySelector(".wrap")||document.body,{childList:true,subtree:true})}
 /* ---------- "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes */
 /* fonte pelo rótulo do cartão (a primeira regra que bate vale) */
 const FONTES=[

@@ -177,6 +177,13 @@ async def interface(pg):
         if fech < n:
             problemas.append("Juros: 'Recolher tudo' não recolheu os blocos")
         await pg.evaluate("localStorage.removeItem('rcl_ju')")
+    # botão Voltar do navegador volta para a aba anterior
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=in]').click()")
+    await pg.wait_for_timeout(1500)
+    await pg.go_back()
+    await pg.wait_for_timeout(1500)
+    if not await pg.evaluate("document.querySelector('.tabs button[data-mod=ju]').getAttribute('aria-selected')==='true'"):
+        problemas.append("navegação: o botão Voltar não voltou para a aba anterior (Juros)")
     print("busca, ajustes, tema e apresentação conferidos", flush=True)
 
 

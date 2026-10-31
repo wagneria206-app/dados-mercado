@@ -153,3 +153,30 @@ details.aggr>summary{cursor:pointer;padding:8px 2px;list-style:revert;font-size:
 details.aggr>summary .sub{font-size:.82rem;margin-left:6px}
 html.apres .tlidxa,html.apres .rcltg{display:none}
 @media print{.tlidx,.rcltg,.rclmais{display:none!important}table.rclcurta tr.rclx{display:table-row!important}section.rcl.fechado>*{display:revert!important}}
+
+/* ---------- segurança deste aparelho (Ajustes) */
+.segbl{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.segbl:first-child{border-top:0;padding-top:0}
+.segbl>b{font-size:.9rem}
+.segrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.segrow input[type=password]{flex:1 1 220px;max-width:320px}
+.segrow input[type=date]{width:auto}
+.segperigo{color:var(--loss)!important;border-color:var(--loss)!important}
+
+/* ---------- navegação: abas presas logo abaixo do menu ao rolar; botão de voltar ao topo; busca com recentes */
+.wrap>.tabs{align-self:stretch;position:sticky;top:var(--areas-h,62px);z-index:19;background:var(--bg);padding:6px 1px;margin-block:-6px}
+.topo{position:fixed;right:18px;bottom:18px;z-index:70;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:0 6px 18px rgba(8,18,36,.18);display:grid;place-items:center;cursor:pointer;padding:0;min-height:0}
+.topo svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.topo[hidden]{display:none}
+html.apres .topo{bottom:72px}
+.bzlimpa{display:block;margin:6px 10px 4px;font-size:.8rem}
+
+/* ---------- acabamento fino: foco visível ao usar teclado, linhas das tabelas ao passar o mouse, painéis surgem suavemente, carregamento */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctab tbody tr:hover>td{background:color-mix(in srgb,var(--sunk) 70%,transparent)}
+@media (prefers-reduced-motion:no-preference){#mkOut>section.panel,#fnOut>section.panel,#fnBody>section.panel,#atBody>section.panel{animation:surge .22s ease-out both}}
+@keyframes surge{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.carregando{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.carregando::before{content:"";width:16px;height:16px;flex:none;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media print{.topo{display:none!important}}
