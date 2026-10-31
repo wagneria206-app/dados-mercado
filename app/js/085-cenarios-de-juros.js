@@ -140,7 +140,7 @@ function scCross(L,src){
   out.innerHTML=h;box.hidden=false;
 }
 function drawScChart(rows,L,xlabel){
-  const W=760,H=300,PL=78,PR=16,PT=16,PB=46,svg=$("scChart");
+  const W=chartW(),H=chartH(300,W),PL=78,PR=16,PT=16,PB=46,svg=$("scChart");
   let mn=Math.min(0,...rows.map(r=>r.res)),mx=Math.max(0,...rows.map(r=>r.res));
   const st=niceStep((mx-mn)/5||1);mn=Math.floor(mn/st)*st;mx=Math.ceil(mx/st)*st;if(mx===mn)mx=mn+st;
   const n=rows.length,bw=(W-PL-PR)/n,Y=v=>PT+(mx-v)/(mx-mn)*(H-PT-PB);

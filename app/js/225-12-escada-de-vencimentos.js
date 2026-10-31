@@ -71,7 +71,7 @@ function ladderCalc(){
   out.innerHTML=h;
 }
 function ladderChartY(YR,y0,y1){
-  const W=760,H=210,PL=58,PR=10,PT=12,PB=30,mx=Math.max(...YR.map(o=>o.net),1),st=niceStep(mx/4),top=Math.ceil(mx/st)*st,n=YR.length,bw=(W-PL-PR)/n,Yp=v=>PT+(top-v)/top*(H-PT-PB);
+  const W=chartW(),H=chartH(210,W),PL=58,PR=10,PT=12,PB=30,mx=Math.max(...YR.map(o=>o.net),1),st=niceStep(mx/4),top=Math.ceil(mx/st)*st,n=YR.length,bw=(W-PL-PR)/n,Yp=v=>PT+(top-v)/top*(H-PT-PB);
   const COL={pre:"var(--s2)",ipca:"var(--accent)",selic:"var(--muted)"};
   let g='';for(let v=0;v<=top+st/2;v+=st){const y=Yp(v);g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="var(--line)" stroke-dasharray="2 4"/><text x="'+(PL-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+compact(v)+'</text>'}
   const lab=Math.max(1,Math.ceil(n/18));

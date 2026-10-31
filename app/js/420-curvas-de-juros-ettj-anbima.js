@@ -43,7 +43,7 @@ function curvSeries(W,kind){
 }
 function curvChart(S,kind){
   S=S.filter(s=>s.pts.length>1);if(!S.length)return '<p class="sub">Marque ao menos uma curva acima.</p>';
-  const NW=window.innerWidth<640,W=NW?420:760,H=NW?290:250,PL=NW?44:50,PR=NW?10:14,PT=12,PB=30,tmax=kind==="real"?30:10,tmin=1;
+  const NW=window.innerWidth<640,W=NW?420:chartW(),H=NW?290:chartH(250,W),PL=NW?44:50,PR=NW?10:14,PT=12,PB=30,tmax=kind==="real"?30:10,tmin=1;
   let lo=Infinity,hi=-Infinity;S.forEach(s=>s.pts.forEach(p=>{lo=Math.min(lo,p[1]);hi=Math.max(hi,p[1])}));
   const pad=Math.max(0.15,(hi-lo)*0.08);lo-=pad;hi+=pad;const st=niceStep((hi-lo)/5);lo=Math.floor(lo/st)*st;hi=Math.ceil(hi/st)*st;
   const X=t=>PL+(t-tmin)/(tmax-tmin)*(W-PL-PR),Y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);

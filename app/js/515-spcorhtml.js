@@ -44,7 +44,7 @@ function spOtimHtml(c,it,R){
   if(!pts.length)return "";
   const atual=ev(R.w),minV=pts.reduce((a,b)=>b.v<a.v?b:a),maxS=pts.filter(p=>p.s!=null).reduce((a,b)=>b.s>a.s?b:a,pts[0]);
   SP.otim={minV,maxS};
-  const NW=window.innerWidth<640,W=NW?420:760,H=NW?300:260,PL=46,PR=12,PT=12,PB=30;const vs=pts.map(p=>p.v),rs=pts.map(p=>p.r);
+  const NW=window.innerWidth<640,W=NW?420:chartW(),H=NW?300:chartH(260,W),PL=46,PR=12,PT=12,PB=30;const vs=pts.map(p=>p.v),rs=pts.map(p=>p.r);
   const v0=Math.min(...vs,atual.v)*0.95,v1=Math.max(...vs,atual.v)*1.05,r0=Math.min(...rs,atual.r)-0.5,r1=Math.max(...rs,atual.r)+0.5;
   const Xp=v=>PL+(v-v0)/(v1-v0||1)*(W-PL-PR),Yp=r=>PT+(r1-r)/(r1-r0||1)*(H-PT-PB);
   let g='';const st=niceStep((r1-r0)/5);for(let r=Math.ceil(r0/st)*st;r<=r1;r+=st)g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+Yp(r).toFixed(1)+'" y2="'+Yp(r).toFixed(1)+'" stroke="var(--line)" stroke-dasharray="2 4"/><text x="'+(PL-6)+'" y="'+(Yp(r)+4).toFixed(1)+'" text-anchor="end">'+fx(r,st<1?1:0)+'%</text>';
