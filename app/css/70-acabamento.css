@@ -107,3 +107,21 @@ html.apres .apressai:hover{opacity:1}
 /* ---------- menu principal em telas estreitas: os botões encolhem em vez de alargar a página */
 .areas button{min-width:0}
 .areas button span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- "de onde vem": ícone de fonte nos cartões e o balão com a fonte */
+.rsgrid>div,.pnlc,.fnkp,.tot>div,.fxvar>div{position:relative}
+.fonteic{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:italic 700 .66rem/16px Georgia,serif;text-align:center;padding:0;cursor:pointer;opacity:.55;min-height:0}
+.fonteic:hover,.fonteic:focus-visible{opacity:1;color:var(--accent);border-color:var(--accent)}
+.rsgrid>div>span,.pnlc>span,.fnkp>span{padding-right:18px}
+.fontepop{position:absolute;z-index:90;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(8,18,36,.22);padding:12px 14px;font-size:.84rem;line-height:1.45}
+.fontepop b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.fontepop p{margin:0 0 6px}
+html.apres .fonteic{display:none}
+@media print{.fonteic,.fontepop{display:none!important}}
+
+/* ---------- página Metodologia e fontes e relatório mensal */
+.metdlg{width:min(860px,calc(100vw - 32px))}
+.metl{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.9rem;line-height:1.5}
+.metdlg .tablewrap{margin-top:2px}
+.rmacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}
+.rmacts select{width:auto;min-width:200px}

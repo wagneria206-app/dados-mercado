@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-IXIMGVjD1CpTMQHJlcr0vw6SQTLOzPvfJblZrNdSs/o='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-IcQroWStC+pEdM3o1zqFGEYa3htYSqBrdvOx3aOGH/s='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1218,6 +1218,24 @@ html.apres .apressai:hover{opacity:1}
 /* ---------- menu principal em telas estreitas: os botões encolhem em vez de alargar a página */
 .areas button{min-width:0}
 .areas button span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- "de onde vem": ícone de fonte nos cartões e o balão com a fonte */
+.rsgrid>div,.pnlc,.fnkp,.tot>div,.fxvar>div{position:relative}
+.fonteic{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:italic 700 .66rem/16px Georgia,serif;text-align:center;padding:0;cursor:pointer;opacity:.55;min-height:0}
+.fonteic:hover,.fonteic:focus-visible{opacity:1;color:var(--accent);border-color:var(--accent)}
+.rsgrid>div>span,.pnlc>span,.fnkp>span{padding-right:18px}
+.fontepop{position:absolute;z-index:90;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(8,18,36,.22);padding:12px 14px;font-size:.84rem;line-height:1.45}
+.fontepop b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.fontepop p{margin:0 0 6px}
+html.apres .fonteic{display:none}
+@media print{.fonteic,.fontepop{display:none!important}}
+
+/* ---------- página Metodologia e fontes e relatório mensal */
+.metdlg{width:min(860px,calc(100vw - 32px))}
+.metl{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.9rem;line-height:1.5}
+.metdlg .tablewrap{margin-top:2px}
+.rmacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}
+.rmacts select{width:auto;min-width:200px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -1225,7 +1243,7 @@ html.apres .apressai:hover{opacity:1}
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
       <div class="brand"><h1>Mercado e Investimentos</h1><span>Mercado, economia, fundos, Bolsa e carteiras, com dados oficiais</span></div>
       <div class="busca" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="busca" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" placeholder="Buscar fundo, ação, FII, título ou tela" aria-label="Buscar fundo, ação, FII, título do Tesouro ou tela do app" aria-controls="buscaRes"><kbd aria-hidden="true">/</kbd><div id="buscaRes" class="buscares" role="listbox" hidden></div></div>
-      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
+      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btMetodo" aria-label="Metodologia e fontes" title="Metodologia e fontes"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M8 7h8M8 11h6"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
     </div>
     <div class="mktbar"><div id="mkt"></div></div>
     <div id="healthBar" hidden></div>
@@ -5430,7 +5448,7 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
 try{const c=JSON.parse(localStorage.getItem("relCfg")||"null");if(c&&typeof c==="object")Object.assign(REL.cfg,c)}catch(e){}
 function relSave(){try{localStorage.setItem("relCfg",JSON.stringify(REL.cfg))}catch(e){alertLite("Não deu para guardar o logo neste navegador (espaço insuficiente). Use uma imagem menor.")}}
-const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado"};
+const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado",mes:"Relatório mensal do cliente"};
 function relOpen(kind){
   REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();
   REL.box=relConteudo(kind);if(!REL.box){alertLite(kind==="mk"?"Carregando os dados de mercado. Tente de novo em alguns segundos.":"Abra a análise antes de gerar o relatório.");return}
@@ -5454,7 +5472,7 @@ function relSecoes(box){return [...box.children].filter(e=>/^(SECTION|DIV)$/.tes
 function relFora(kind){try{const a=JSON.parse(localStorage.getItem("relFora_"+kind)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
 const REL_RESUMO=/^(Painel de índices|Resumo do mercado|Expectativas do mercado|Como o exterior|Resumo|Composição|Rentabilidade e risco de cada item|Desde a efetivação|Rentabilidade$|Rentabilidade acumulada|Risco$)/;
 function relClean(root){
-  root.querySelectorAll(".fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
+  root.querySelectorAll(".fonteic,.rmacts,.fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
   root.querySelectorAll("button").forEach(b=>{const s=document.createElement("span");s.innerHTML=b.innerHTML;s.className=b.className.replace(/\b(link|off)\b/g,"").trim();if(b.classList.contains("off"))s.style.opacity=".4";b.replaceWith(s)});
   root.querySelectorAll("details").forEach(d=>d.setAttribute("open",""));
   root.querySelectorAll(".tablewrap").forEach(t=>{t.style.maxHeight="none";t.style.overflow="visible"});
@@ -5464,6 +5482,7 @@ function relConteudo(kind){
   const box=document.createElement("div");
   if(kind==="mk"){if(!EU.S||!MC.d){euBoot();mcBoot();return null}const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
     try{h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+economiaHtml().map(P).join("")+mundoHtml().map(P).join("")}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
+  if(kind==="mes"){const s=$("rmMes");if(!SP_POS||!SP_POS.X||SP_POS.X.erro||!s)return null;REL.mes=s.value;let h;try{h=rmHtml(SP_POS.c,SP_POS.X,REL.mes)}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
   else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML;const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
   else{const k=kind==="fc"?"f":"a",X=CMP_CTX[k];if(!X)return null;const b=$(kind==="fc"?"fnCbody":"atCbody");if(!b)return null;
@@ -5477,6 +5496,7 @@ function relTitulo(kind){
   if(kind==="fa"&&FN.cur&&FN.files.get(FN.cur)){const F=FN.files.get(FN.cur);return [F.fan||F.n||"",fnCnpjF(F.c)]}
   if(kind==="aa"&&AT.cur&&AT.files.get(AT.cur)){const A=AT.files.get(AT.cur);return [A.t+" · "+(A.nome||""),A.tipo+(A.setor?" · "+A.setor:"")]}
   if(kind==="sp"){const c=spC();return [c.nome,c.itens.length+" itens"]}
+  if(kind==="mes"&&SP_POS){const c=SP_POS.c;return ["Relatório mensal · "+rmNome(REL.mes),(c.cli?"Cliente "+c.cli+" · ":"")+c.nome]}
   if(kind==="mk")return ["Panorama do mercado","Brasil, EUA e mundo · "+new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})];
   const L=kind==="fc"?FN.cmp:AT.cmp;return [REL_T[kind],L.length+(kind==="fc"?" fundos":" ativos")];
 }
@@ -5511,7 +5531,7 @@ svg.chart{max-height:250px}
 </style></head><body>`
     +'<div class="relhead"><div>'+(c.logo?'<img src="'+c.logo+'" alt="">':'')+(c.nome?'<div class="of">'+esc(c.nome)+'</div>':'')+'</div><div class="ct" style="text-align:right">'+(c.resp?esc(c.resp)+'<br>':'')+(c.contato?esc(c.contato)+'<br>':'')+hoje+'</div></div>'
     +'<div class="reltit"><h1>'+esc(tit)+'</h1><p>'+esc(REL_T[kind])+(sub?' · '+esc(sub):'')+'</p></div>'
-    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="mk"?fdate(Date.now()):kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
+    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="mk"?fdate(Date.now()):kind==="mes"&&SP_POS?(()=>{const f=new Date(Date.UTC(+REL.mes.slice(0,4),+REL.mes.slice(5,7),0)).toISOString().slice(0,10);return fdate(Date.parse((f<SP_POS.X.dv?f:SP_POS.X.dv)+"T00:00:00Z"))})():kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
     +(REL.obs?'<div class="relobs">'+esc(REL.obs)+'</div>':'')
     +cont.innerHTML
     +'<div class="relfoot">'+(c.rodape?esc(c.rodape)+'<br>':'')+'Fontes: CVM (informe diário, cadastro, lâmina, carteira, demonstrações financeiras e informe dos FIIs), B3 (cotações, proventos e índices) e Banco Central (CDI, IPCA e dólar). Rentabilidade passada não é garantia de rentabilidade futura. Os valores são brutos de impostos, salvo indicação. Este material tem caráter informativo e não constitui recomendação de investimento.</div>'
@@ -5690,7 +5710,7 @@ const fvCurto=s=>{s=String(s||"").replace(/\s+/g," ").trim();return s.length>56?
 const FV_TD={NTNB:"IPCAJ",NTNBP:"IPCA",RENDA:"RENDA",EDUCA:"EDUCA",LTN:"PRE",NTNF:"PREJ",LFT:"SELIC"};
 const FV_C={pa:["a","Preço chegar a","≥","R$"],pb:["a","Preço cair a","≤","R$"],dv:["a","Variação no dia passar de","±","%"],
   ma:["f","Rentabilidade no mês cair abaixo de","≤","%"],r12:["f","Rentabilidade em 12 meses cair abaixo de","≤","%"],
-  ta:["t","Taxa subir a","≥","%"],tb:["t","Taxa cair a","≤","%"]};
+  ta:["t","Taxa subir a","≥","%"],tb:["t","Taxa cair a","≤","%"],xa:["m","Valor subir a","≥",""],xb:["m","Valor cair a","≤",""]};
 function favBtn(k,n){const on=fvHas(k);return '<button type="button" class="btn sec fvbtn" data-fav="'+esc(k)+'" data-favn="'+esc(String(n||"").slice(0,90))+'" aria-pressed="'+on+'">'+(on?'★ Favorito':'☆ Favoritar')+'</button>'}
 
 /* valores atuais de cada favorito */
@@ -5703,16 +5723,20 @@ function fvInfo(k){
     return {n:id+" · "+r[1],sub:r[C.tipo],ult:"R$ "+fx(r[C.preco],2),val:r[C.preco],dia:r[C.d1],mes:r[C.r1m],r12:r[C.r12],stamp:r[C.data]||"",go:"a"}}
   if(tp==="t"){const x=typeof TD_ALL==="object"&&TD_ALL?TD_ALL[id]:null;if(!x)return Object.keys(TD_ALL||{}).length?{nada:1}:{wait:"mercado"};const [kind,d]=id.split("|"),tx=x.buy!=null?x.buy:x.rate;
     return {n:fvTdName(kind,d),sub:"Tesouro Direto · "+(x.buy!=null?"taxa de compra":"taxa de resgate (fora de venda)"),ult:(KIND[kind]&&KIND[kind].fam==="selic"?"Selic + ":KIND[kind]&&KIND[kind].fam==="ipca"?"IPCA + ":"")+fx(tx,2)+"%"+(x.price?" · R$ "+fx(x.price,2):""),val:tx,dia:null,mes:null,r12:null,stamp:new Date().toISOString().slice(0,10),go:"t",td:"TD-"+(FV_TD[kind]||kind)+"-"+String(d).slice(0,4)}}
+  if(tp==="m"){if(!MA.ok)return {wait:"macro"};const r=maVal(id),T=MA_TIPOS[id.split(":")[0]];if(!r||!T)return {nada:1};
+    return {n:maNome(id),sub:"Economia · "+T[2]+(r.d?" · dado de "+fdate(Date.parse(String(r.d).slice(0,10)+"T00:00:00Z")):""),ult:maFmt(id,r.v),val:r.v,dia:null,mes:null,r12:null,stamp:String(r.d||""),go:"m",mod:T[3]}}
   return {nada:1};
 }
 function fvTest(al,I){
   if(!I||I.wait||I.nada)return null;const v=+al.v;let x=null;
-  if(al.c==="pa"||al.c==="pb"||al.c==="ta"||al.c==="tb")x=I.val;else if(al.c==="dv")x=I.dia;else if(al.c==="ma")x=I.mes;else if(al.c==="r12")x=I.r12;
+  if(al.c==="pa"||al.c==="pb"||al.c==="ta"||al.c==="tb"||al.c==="xa"||al.c==="xb")x=I.val;else if(al.c==="dv")x=I.dia;else if(al.c==="ma")x=I.mes;else if(al.c==="r12")x=I.r12;
   if(x==null||!isFinite(x)||!isFinite(v))return null;
-  const ok=al.c==="pa"||al.c==="ta"?x>=v:al.c==="dv"?Math.abs(x)>=v:x<=v;return {ok,x};
+  const ok=al.c==="pa"||al.c==="ta"||al.c==="xa"?x>=v:al.c==="dv"?Math.abs(x)>=v:x<=v;return {ok,x};
 }
-const fvAlTxt=al=>{const c=FV_C[al.c]||["","?","",""];return c[2]+" "+(c[3]==="R$"?"R$ "+fx(+al.v,2):fx(+al.v,2)+"%")};
-const fvAlLong=al=>{const c=FV_C[al.c]||["","?","",""];return c[1]+" "+(c[3]==="R$"?"R$ "+fx(+al.v,2):fx(+al.v,2)+"%")};
+/* valor no formato do alerta: R$, % ou pontos (indicadores de economia usam a unidade de cada indicador) */
+const fvFv=(al,x)=>{const c=FV_C[al.c]||["","?","",""];if(c[0]==="m")return maFmt(al.k.slice(2),x);return c[3]==="R$"?"R$ "+fx(x,2):fx(x,2)+"%"};
+const fvAlTxt=al=>{const c=FV_C[al.c]||["","?","",""];return c[2]+" "+fvFv(al,+al.v)};
+const fvAlLong=al=>{const c=FV_C[al.c]||["","?","",""];return c[1]+" "+fvFv(al,+al.v)};
 
 /* painel */
 function favHtml(){return '<section class="panel fvpanel"><div class="fvbox">'+fvInner()+'</div></section>'}
@@ -5721,7 +5745,7 @@ function fvInner(){
   const perm="Notification" in window?Notification.permission:"x";
   if(FV.a.length&&perm==="default")h+='<button type="button" class="btn sec" data-fvperm="1">Receber avisos neste aparelho</button>';
   h+='</div>';
-  if(!FV.l.length)h+='<p class="sub">Toque em <b>☆ Favoritar</b> na página de um fundo ou de um ativo da Bolsa para acompanhar aqui a variação do dia, do mês e de 12 meses. Os títulos do Tesouro você adiciona logo abaixo. Em cada favorito dá para criar um alerta de preço, taxa ou rentabilidade.</p>';
+  if(!FV.l.length)h+='<p class="sub">Toque em <b>☆ Favoritar</b> na página de um fundo ou de um ativo da Bolsa para acompanhar aqui a variação do dia, do mês e de 12 meses. Títulos do Tesouro e indicadores de economia (Focus, IPCA, Selic, dólar, Ibovespa, S&amp;P 500, juros dos EUA) você adiciona logo abaixo. Em cada favorito dá para criar um alerta de preço, taxa ou rentabilidade.</p>';
   else{
     h+='<div class="tablewrap" style="max-height:none"><table class="ctab fvtab"><thead><tr><th style="text-align:left">Favorito</th><th>Último</th><th>Dia</th><th class="c-ph">Mês</th><th>12 meses</th><th style="text-align:left">Alertas</th><th></th></tr></thead><tbody>';
     FV.l.forEach(f=>{const I=fvInfo(f.k);if(I.wait)need.add(I.wait);
@@ -5729,15 +5753,17 @@ function fvInner(){
       h+='<tr><td style="text-align:left" class="tw fvn"><button type="button" class="link" data-fvgo="'+esc(f.k)+'" title="'+esc(I.n||f.n||f.k)+'">'+esc(fvCurto(I.n||f.n||f.k))+'</button><small style="display:block;color:var(--muted)">'+esc(I.wait?"carregando…":I.nada?"não encontrado na base atual":I.sub||"")+'</small></td>'
         +'<td class="fvu">'+(I.ult||"—")+'</td><td class="fvd" data-l="Dia">'+(I.dia!=null?fnPct(I.dia):"—")+'</td><td class="c-ph" data-l="Mês">'+(I.mes!=null?fnPct(I.mes):"—")+'</td><td class="fvd" data-l="12m">'+(I.r12!=null?fnPct(I.r12):"—")+'</td><td style="text-align:left" class="fva">';
       als.forEach(a=>{const t=fvTest(a,I);h+='<span class="fvchip'+(t&&t.ok?' fvon':'')+'" title="'+esc(fvAlLong(a))+'">'+(t&&t.ok?'● ':'')+fvAlTxt(a)+'<button type="button" data-fvdel="'+esc(a.id)+'" aria-label="Remover alerta">×</button></span>'});
-      h+=(f.k[0]==="f"||f.k[0]==="a"||f.k[0]==="t"?'<button type="button" class="link fvadd" data-fvnew="'+esc(f.k)+'">+ alerta</button>':'')+'</td><td class="fvx"><button type="button" class="link" data-fvrm="'+esc(f.k)+'" aria-label="Tirar dos favoritos">×</button></td></tr>';
+      h+=(f.k[0]==="f"||f.k[0]==="a"||f.k[0]==="t"||f.k[0]==="m"?'<button type="button" class="link fvadd" data-fvnew="'+esc(f.k)+'">+ alerta</button>':'')+'</td><td class="fvx"><button type="button" class="link" data-fvrm="'+esc(f.k)+'" aria-label="Tirar dos favoritos">×</button></td></tr>';
       if(FV.edit===f.k){const tp=f.k[0],ops=Object.keys(FV_C).filter(c=>FV_C[c][0]===tp);
-        h+='<tr class="fvform"><td colspan="7" style="text-align:left"><div class="fnfilt"><div class="field"><label for="fvC">Avisar quando</label><select id="fvC">'+ops.map(c=>'<option value="'+c+'">'+FV_C[c][1]+'</option>').join("")+'</select></div><div class="field"><label for="fvV">Valor</label><input id="fvV" inputmode="decimal" autocomplete="off" placeholder="'+(tp==="a"?"ex.: 35,50":tp==="t"?"ex.: 7,50":"ex.: 0,80")+'"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-fvok="'+esc(f.k)+'">Salvar alerta</button> <button type="button" class="btn sec" data-fvcancel="1">Cancelar</button></div></div></td></tr>'}
+        h+='<tr class="fvform"><td colspan="7" style="text-align:left"><div class="fnfilt"><div class="field"><label for="fvC">Avisar quando</label><select id="fvC">'+ops.map(c=>'<option value="'+c+'">'+FV_C[c][1]+'</option>').join("")+'</select></div><div class="field"><label for="fvV">Valor</label><input id="fvV" inputmode="decimal" autocomplete="off" placeholder="'+(tp==="a"?"ex.: 35,50":tp==="t"?"ex.: 7,50":tp==="m"?"ex.: "+(I.val!=null?fx(I.val,2):"5,00"):"ex.: 0,80")+'"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-fvok="'+esc(f.k)+'">Salvar alerta</button> <button type="button" class="btn sec" data-fvcancel="1">Cancelar</button></div></div></td></tr>'}
     });
     h+='</tbody></table></div>';
   }
   // títulos do Tesouro
   const td=typeof TD_ALL==="object"&&TD_ALL?Object.keys(TD_ALL).filter(k=>KIND[k.split("|")[0]]&&!fvHas("t:"+k)).sort((a,b)=>{const ka=a.split("|"),kb=b.split("|");return (KIND[ka[0]].td||"").localeCompare(KIND[kb[0]].td||"")||ka[1].localeCompare(kb[1])}):[];
-  if(td.length)h+='<div class="fnfilt" style="margin-top:10px"><div class="field"><label for="fvTd">Adicionar título do Tesouro</label><select id="fvTd"><option value="">Escolha o título…</option>'+td.map(k=>{const [kd,d]=k.split("|");return '<option value="'+k+'">'+esc(fvTdName(kd,d))+(TD_ALL[k].buy!=null?'':' (fora de venda)')+'</option>'}).join("")+'</select></div></div>';
+  if(td.length)h+='<div class="fnfilt" style="margin-top:10px"><div class="field"><label for="fvTd">Adicionar título do Tesouro</label><select id="fvTd"><option value="">Escolha o título…</option>'+td.map(k=>{const [kd,d]=k.split("|");return '<option value="'+k+'">'+esc(fvTdName(kd,d))+(TD_ALL[k].buy!=null?'':' (fora de venda)')+'</option>'}).join("")+'</select></div>'+maSelHtml()+'</div>';
+  else h+='<div class="fnfilt" style="margin-top:10px">'+maSelHtml()+'</div>';
+  if(!MA.ok)need.add("macro");
   h+='<p class="sub fvsyncnote">'+(SYNC.tok?'Sincronizado com o GitHub. ':'')+'A sincronização entre aparelhos e a cópia em arquivo ficam em <button type="button" class="link" data-ajustes="1">Ajustes</button>.</p>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:8px">'+(SYNC.tok?'Favoritos, alertas, carteiras simuladas e as listas do comparador ficam no seu repositório privado do GitHub e aparecem iguais em todos os aparelhos conectados. Com o app aberto, os alertas são conferidos sempre que os dados se atualizam; com o app fechado, o robô do repositório confere a cada 30 minutos no horário de mercado e o GitHub avisa por e-mail e pelo app do GitHub. ':'Favoritos e alertas ficam só neste navegador. Os alertas são conferidos sempre que o app está aberto e os dados se atualizam (Bolsa e fundos: fechamento do dia; Tesouro: ao longo do dia). ')+(perm==="granted"?'Avisos deste aparelho ativados.':perm==="denied"?'Os avisos estão bloqueados nas configurações do navegador; os alertas disparados aparecem destacados aqui.':'')+'</p>';
   if(need.size)setTimeout(()=>fvNeed(need),0);
@@ -5746,6 +5772,7 @@ function fvInner(){
 function fvNeed(need){
   if(need.has("fundos")&&!FV.boot.f){FV.boot.f=1;Promise.resolve(fnBoot()).then(()=>fnMore()).then(fvRefresh)}
   if(need.has("bolsa")&&!FV.boot.a){FV.boot.a=1;Promise.resolve(atBoot()).then(fvRefresh)}
+  if(need.has("macro")&&!FV.boot.m){FV.boot.m=1;maLoad().then(fvRefresh)}
 }
 function fvRefresh(){document.querySelectorAll(".fvbox").forEach(b=>{b.innerHTML=fvInner()});fvCheck()}
 
@@ -5764,7 +5791,7 @@ function fvNotify(tit,body){
 function fvCheck(){
   if(!FV.a.length)return;const novos=[],need=new Set();let mud=false;
   FV.a.forEach(a=>{const I=fvInfo(a.k);if(I.wait){need.add(I.wait);return}const t=fvTest(a,I);if(!t)return;
-    const st=I.stamp+"|"+t.ok;if(t.ok&&a.ult!==st){a.ult=st;mud=true;const nome=I.n||a.k;novos.push(fvCurto(nome)+": "+fvAlLong(a).charAt(0).toLowerCase()+fvAlLong(a).slice(1)+" (agora "+(FV_C[a.c][3]==="R$"?"R$ "+fx(t.x,2):fx(t.x,2)+"%")+")");fvNotify(nome,fvAlLong(a)+" — agora "+(FV_C[a.c][3]==="R$"?"R$ "+fx(t.x,2):fx(t.x,2)+"%"))}
+    const st=I.stamp+"|"+t.ok;if(t.ok&&a.ult!==st){a.ult=st;mud=true;const nome=I.n||a.k;novos.push(fvCurto(nome)+": "+fvAlLong(a).charAt(0).toLowerCase()+fvAlLong(a).slice(1)+" (agora "+fvFv(a,t.x)+")");fvNotify(nome,fvAlLong(a)+" — agora "+fvFv(a,t.x))}
     else if(!t.ok&&a.ult&&a.ult.endsWith("|true")){a.ult=st;mud=true}});
   if(mud)fvSave();if(novos.length)fvToast(novos);if(need.size)fvNeed(need);
 }
@@ -5774,7 +5801,7 @@ setTimeout(fvCheck,8000);setInterval(fvCheck,60000);
 document.addEventListener("click",e=>{
   const g=s=>e.target.closest&&e.target.closest(s);let x;
   if((x=g("[data-fav]"))){const k=x.dataset.fav;if(fvHas(k)){FV.l=FV.l.filter(f=>f.k!==k);FV.a=FV.a.filter(a=>a.k!==k)}else FV.l.push({k,n:x.dataset.favn||k});fvSave();const on=fvHas(k);x.setAttribute("aria-pressed",on);x.textContent=on?"★ Favorito":"☆ Favoritar";fvRefresh();return}
-  if((x=g("[data-fvgo]"))){const k=x.dataset.fvgo,id=k.slice(2);if(k[0]==="f")fnOpen(id);else if(k[0]==="a")atOpen(id);else{const I=fvInfo(k);if(I.td){if(AT.idx&&!atRow(I.td))return;atOpen(I.td)}}return}
+  if((x=g("[data-fvgo]"))){const k=x.dataset.fvgo,id=k.slice(2);if(k[0]==="f")fnOpen(id);else if(k[0]==="a")atOpen(id);else if(k[0]==="m"){const I=fvInfo(k);setMod(I.mod||"ec");try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}}else{const I=fvInfo(k);if(I.td){if(AT.idx&&!atRow(I.td))return;atOpen(I.td)}}return}
   if((x=g("[data-fvrm]"))){const k=x.dataset.fvrm;FV.l=FV.l.filter(f=>f.k!==k);FV.a=FV.a.filter(a=>a.k!==k);fvSave();fvRefresh();document.querySelectorAll('[data-fav="'+CSS.escape(k)+'"]').forEach(b=>{b.setAttribute("aria-pressed","false");b.textContent="☆ Favoritar"});return}
   if((x=g("[data-fvnew]"))){FV.edit=x.dataset.fvnew;fvRefresh();const v=$("fvV");if(v)v.focus();return}
   if(g("[data-fvcancel]")){FV.edit=null;fvRefresh();return}
@@ -5890,6 +5917,43 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
   else return;syncLs()},true);
 if(SYNC.tok){setTimeout(()=>syncNow(),1500);setInterval(()=>{if(document.visibilityState==="visible")syncNow()},5*60000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncNow()})}
 
+/* ---------- indicadores de economia nos favoritos e alertas (Focus, IPCA, Selic, dólar, Bolsas, juros dos EUA)
+   Os mesmos cálculos estão no robô de alertas do repositório privado (scripts/alertas.py), para avisar com o app fechado.
+   Chave do favorito: "m:<indicador>" ou "m:<indicador>:<ano>" (Focus de um ano). */
+const MA={ok:false,load:null,t:0,x:null,m:null,i:null,b:null,cal:null};
+const MA_TIPOS={fipca:["Focus: IPCA de ","%","Banco Central, Boletim Focus (mediana)","ec"],fselic:["Focus: Selic no fim de ","%","Banco Central, Boletim Focus (mediana)","ec"],
+  fcambio:["Focus: dólar no fim de ","R$","Banco Central, Boletim Focus (mediana)","ec"],fpib:["Focus: PIB de ","%","Banco Central, Boletim Focus (mediana)","ec"],
+  ipca12:["IPCA em 12 meses","%","IBGE","in"],selic:["Selic efetiva (over)","%","Banco Central","ju"],impl1:["Inflação implícita de 1 ano","%","ANBIMA (curva de juros)","in"],
+  ptax:["Dólar PTAX (venda)","R$","Banco Central","fx"],ibov:["Ibovespa","pts","B3","rs"],spx:["S&P 500","pts","Cboe","mu"],t10:["Treasury 10 anos","%","Departamento do Tesouro dos EUA","mu"],vix:["VIX (volatilidade do S&P 500)","pts","Cboe","mu"]};
+const MA_FOCUS={fipca:"IPCA",fselic:"Selic",fcambio:"Câmbio",fpib:"PIB Total"};
+function maLista(){const y=new Date().getFullYear(),L=[];["fipca","fselic","fcambio","fpib"].forEach(t=>{L.push(t+":"+y);L.push(t+":"+(y+1))});return L.concat(["ipca12","selic","impl1","ptax","ibov","spx","t10","vix"])}
+function maNome(id){const [t,y]=id.split(":"),T=MA_TIPOS[t];return T?T[0]+(y||""):id}
+function maUn(id){const T=MA_TIPOS[id.split(":")[0]];return T?T[1]:""}
+function maFmt(id,v){const u=maUn(id);return u==="R$"?"R$ "+fx(v,u==="R$"&&id.startsWith("ptax")?4:2):u==="%"?fx(v,2)+"%":fx(v,v>=1000?0:2)}
+function maLoad(forca){
+  if(MA.load)return MA.load;if(MA.ok&&!forca&&Date.now()-MA.t<30*60000)return Promise.resolve();
+  const j=u=>fetch(u,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
+  MA.load=Promise.all([j(MC_URL+"macro.json"),j(ROBO+"mercado.json"),j(EU_URL+"indices.json"),j(AT_URL+"bench.json"),j(AT_URL+"cal.json")]).then(([x,m,i,b,c])=>{
+    MA.x=x;MA.m=m;MA.i=i;MA.b=b;MA.cal=c&&c.d;MA.ok=true;MA.t=Date.now();MA.load=null}).catch(()=>{MA.load=null});
+  return MA.load}
+/* valor atual de um indicador: {v, d (data do dado)} ou null */
+function maVal(id){
+  const [t,y]=id.split(":"),X=MA.x,M=MA.m,I=MA.i;
+  const ult=(arr,datas)=>{if(!arr)return null;for(let k=arr.length-1;k>=0;k--)if(arr[k]!=null&&isFinite(arr[k]))return {v:+arr[k],d:datas?datas[k]:null};return null};
+  if(MA_FOCUS[t]){const s=X&&X.focus&&X.focus.anuais&&X.focus.anuais[MA_FOCUS[t]]&&X.focus.anuais[MA_FOCUS[t]][y];if(!s||!s.length)return null;const u=s[s.length-1];return {v:+u[1],d:u[0]}}
+  if(t==="ipca12"){const q=M&&M.ipca;if(!q)return null;const ks=Object.keys(q).sort(),k=ks[ks.length-1];if(!k)return null;const a=+k.slice(0,4),m=+k.slice(4),k0=String(a-1)+String(m).padStart(2,"0");if(!q[k0])return null;return {v:(q[k]/q[k0]-1)*100,d:k.slice(0,4)+"-"+k.slice(4)+"-01"}}
+  if(t==="selic")return M&&isFinite(M.selicOver)?{v:+M.selicOver,d:M.refDate||null}:null;
+  if(t==="impl1"){const a=M&&M.inflacaoImplicita;const r=a&&a.find(p=>p[0]===252);return r?{v:+r[1],d:M.curveDate||M.refDate||null}:null}
+  if(t==="ptax"){const d=M&&M.dolar;return d&&+d.venda>0?{v:+d.venda,d:d.data}:null}
+  if(t==="ibov")return MA.b&&MA.b.d?ult(MA.b.d.ibov,MA.cal):null;
+  if(I&&I.s&&I.s[t])return ult(I.s[t],I.d);
+  return null}
+/* lista para adicionar aos favoritos */
+function maSelHtml(){
+  const L=maLista().filter(id=>!fvHas("m:"+id));if(!L.length)return "";
+  return '<div class="field"><label for="fvMa">Adicionar indicador de economia</label><select id="fvMa"><option value="">Escolha o indicador…</option>'+L.map(id=>{const r=MA.ok?maVal(id):null;return '<option value="'+id+'">'+esc(maNome(id))+(r?' · hoje '+maFmt(id,r.v):'')+'</option>'}).join("")+'</select></div>'}
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.id==="fvMa"&&t.value){const id=t.value;FV.l.push({k:"m:"+id,n:maNome(id)});fvSave();fvRefresh()}});
+setInterval(()=>{if(FV.l.some(f=>f.k[0]==="m"))maLoad(true).then(()=>{try{fvRefresh()}catch(e){}})},30*60000);
 /* ===== Risco-país implícito: cupom cambial de 1 ano (DI futuro × dólar futuro, B3) menos o juro dos EUA (SOFR) =====
    Substitui o EMBI+ Brasil, cuja série pública (Ipeadata/J.P. Morgan) foi encerrada em 2024. */
 const RISCO={di:null,load:null,fxf:null,fxj:null,load2:null};
@@ -5930,6 +5994,36 @@ function ibgeCalHtml(){
   return '<h3>Próximas divulgações do IBGE</h3><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Divulgação</th></tr></thead><tbody>'+U.map(x=>'<tr><td style="text-align:left;white-space:nowrap">'+fdate(x.t)+(x.h?' <small>'+x.h+'</small>':'')+'</td><td style="text-align:left">'+esc(x.tit)+'</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Fonte: calendário de divulgações do IBGE.</p>';
 }
 
+/* ---------- calendário das divulgações dos EUA (datas dos calendários oficiais do BLS e do BEA)
+   BLS: www.bls.gov/schedule (emprego, CPI e PPI); BEA: www.bea.gov/news/schedule (PIB e renda e gastos pessoais, com o PCE).
+   Todas saem às 8h30 de Nova York. Atualizar uma vez por ano, quando os órgãos publicam o calendário seguinte. */
+const EUA_CAL_ATE="2027-12-22";
+const EUA_CAL_T={emp:["Emprego (payroll e desemprego)","BLS"],cpi:["Inflação ao consumidor (CPI)","BLS"],ppi:["Inflação ao produtor (PPI)","BLS"],
+  pib:["PIB","BEA"],pce:["Renda e gastos pessoais, com o PCE","BEA"]};
+const EUA_CAL=[
+  ["2026-11-06","emp","out/26"],["2026-11-10","cpi","out/26"],["2026-11-13","ppi","out/26"],["2026-11-25","pib","3º tri/26, 2ª estimativa"],["2026-11-25","pce","out/26"],
+  ["2026-12-04","emp","nov/26"],["2026-12-10","cpi","nov/26"],["2026-12-15","ppi","nov/26"],["2026-12-23","pib","3º tri/26, 3ª estimativa"],["2026-12-23","pce","nov/26"],
+  ["2027-01-08","emp","dez/26"],["2027-01-13","cpi","dez/26"],["2027-01-14","ppi","dez/26"],["2027-01-28","pib","4º tri/26, prévia"],["2027-01-28","pce","dez/26"],
+  ["2027-02-05","emp","jan/27"],["2027-02-11","cpi","jan/27"],["2027-02-12","ppi","jan/27"],["2027-02-25","pib","4º tri/26, 2ª estimativa"],["2027-02-25","pce","jan/27"],
+  ["2027-03-05","emp","fev/27"],["2027-03-10","cpi","fev/27"],["2027-03-12","ppi","fev/27"],["2027-03-31","pib","4º tri/26, 3ª estimativa"],["2027-03-31","pce","fev/27"],
+  ["2027-04-02","emp","mar/27"],["2027-04-13","cpi","mar/27"],["2027-04-14","ppi","mar/27"],["2027-04-29","pib","1º tri/27, prévia"],["2027-04-29","pce","mar/27"],
+  ["2027-05-07","emp","abr/27"],["2027-05-12","cpi","abr/27"],["2027-05-13","ppi","abr/27"],["2027-05-27","pib","1º tri/27, 2ª estimativa"],["2027-05-27","pce","abr/27"],
+  ["2027-06-04","emp","mai/27"],["2027-06-10","cpi","mai/27"],["2027-06-11","ppi","mai/27"],["2027-06-25","pib","1º tri/27, 3ª estimativa"],["2027-06-25","pce","mai/27"],
+  ["2027-07-02","emp","jun/27"],["2027-07-14","cpi","jun/27"],["2027-07-15","ppi","jun/27"],["2027-07-29","pib","2º tri/27, prévia"],["2027-07-29","pce","jun/27"],
+  ["2027-08-06","emp","jul/27"],["2027-08-10","ppi","jul/27"],["2027-08-11","cpi","jul/27"],["2027-08-25","pib","2º tri/27, 2ª estimativa"],["2027-08-25","pce","jul/27"],
+  ["2027-09-03","emp","ago/27"],["2027-09-10","ppi","ago/27"],["2027-09-14","cpi","ago/27"],["2027-09-30","pib","2º tri/27, 3ª estimativa"],["2027-09-30","pce","ago/27"],
+  ["2027-10-08","emp","set/27"],["2027-10-14","cpi","set/27"],["2027-10-15","ppi","set/27"],["2027-10-28","pib","3º tri/27, prévia"],["2027-10-28","pce","set/27"],
+  ["2027-11-05","emp","out/27"],["2027-11-10","cpi","out/27"],["2027-11-12","ppi","out/27"],["2027-11-24","pib","3º tri/27, 2ª estimativa"],["2027-11-24","pce","out/27"],
+  ["2027-12-03","emp","nov/27"],["2027-12-10","cpi","nov/27"],["2027-12-15","ppi","nov/27"],["2027-12-22","pib","3º tri/27, 3ª estimativa"],["2027-12-22","pce","nov/27"]];
+/* 8h30 em Nova York = 9h30 de Brasília no horário de verão americano (2º domingo de março ao 1º domingo de novembro) e 10h30 no resto do ano */
+function euaHoraBr(d){const y=+d.slice(0,4),dom=(m,n)=>{const p=new Date(Date.UTC(y,m,1)).getUTCDay();return 1+((7-p)%7)+7*(n-1)},ini=Date.UTC(y,2,dom(2,2)),fim=Date.UTC(y,10,dom(10,1)),t=Date.parse(d+"T00:00:00Z");return t>=ini&&t<fim?"9h30":"10h30"}
+function euaCalProx(dias){const hj=new Date().toISOString().slice(0,10),lim=new Date(Date.now()+(dias||9999)*864e5).toISOString().slice(0,10);return EUA_CAL.filter(x=>x[0]>=hj&&x[0]<=lim)}
+function euaCalHtml(){
+  const L=euaCalProx(75).slice(0,14);
+  if(!L.length)return '<h3>Próximas divulgações dos EUA</h3><p class="warn">O calendário embutido termina em '+fdate(Date.parse(EUA_CAL_ATE+"T00:00:00Z"))+'. É preciso incluir as datas do ano seguinte (BLS e BEA).</p>';
+  return '<h3>Próximas divulgações dos EUA</h3><p class="sub">Os dados americanos que mais mexem com juros, dólar e Bolsas. Saem às 8h30 de Nova York (horário de Brasília na tabela).</p><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Divulgação</th><th style="text-align:left">Referência</th><th>Hora (Brasília)</th></tr></thead><tbody>'
+    +L.map(x=>{const t=Date.parse(x[0]+"T00:00:00Z");return '<tr><td style="text-align:left;white-space:nowrap">'+["dom","seg","ter","qua","qui","sex","sáb"][new Date(t).getUTCDay()]+' '+fdate(t)+'</td><td style="text-align:left">'+EUA_CAL_T[x[1]][0]+' <small>'+EUA_CAL_T[x[1]][1]+'</small></td><td style="text-align:left">'+x[2]+'</td><td>'+euaHoraBr(x[0])+'</td></tr>'}).join("")
+    +'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: calendários oficiais do Bureau of Labor Statistics (emprego, CPI e PPI) e do Bureau of Economic Analysis (PIB e PCE). Decisões do Fed na agenda do Resumo.</p>'}
 /* ===== Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito ===== */
 const FLX={d:null,load:null};
 function fluxoLoad(){
@@ -6022,9 +6116,10 @@ function spPosCalc(c,its,Ds){
 function spPosHtml(c,its,Ds){
   let X;try{X=spPosCalc(c,its,Ds)}catch(e){console.error(e);return '<section class="panel"><p class="err">Não deu para calcular a posição: '+esc(e.message)+'</p></section>'}
   if(!X)return "";if(X.erro)return '<section class="panel" data-reltit="Posição atual"><h3>Posição atual</h3><p class="warn">'+esc(X.erro)+'</p></section>';
+  SP_POS={c,X};
   const {P,T,dv,d0,pts}=X,kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>',pct=v=>v==null?'—':fnPct(v),pa=v=>v==null?'—':fnPctT(v*100)+' a.a.';
   const dvs=fdate(Date.parse(dv+"T00:00:00Z")),d0s=fdate(Date.parse(d0+"T00:00:00Z"));
-  let h='<section class="panel" data-reltit="Posição atual (aplicações reais)"><h3>Posição atual</h3><p class="sub">Com as aplicações e os resgates informados, de '+d0s+' até '+dvs+' (último dia com dados de todos os itens).</p>';
+  let h='<section class="panel" data-reltit="Posição atual (aplicações reais)"><h3>Posição atual</h3><p class="sub">Com as aplicações e os resgates informados, de '+d0s+' até '+dvs+' (último dia com dados de todos os itens).</p>'+rmSel(X);
   h+='<div class="fnkpis">'+kp("Valor aplicado",brl(T.apl),T.resg?'resgatado '+brl(T.resg):'')+kp("Valor atual",brl(T.v),'líquido de IR (estimado) '+brl(T.liq))+kp("Ganho",'<span class="'+(T.ganho>=0?'pos':'neg')+'">'+brl(T.ganho)+'</span>','se estivesse no CDI: '+brl(T.seCdi))
     +kp("Rentabilidade da carteira",pct(T.twr),T.cdi!=null&&T.twr!=null&&T.cdi>0?(T.twr>0?fx(T.twr/T.cdi*100,0)+'% do CDI':'CDI '+fnPctT(T.cdi)):'por cotas, sem efeito dos aportes')
     +kp("Rentabilidade do cliente (TIR)",pa(T.tir),T.tirLiq!=null?'líquida de IR '+pa(T.tirLiq):'')
@@ -6052,6 +6147,54 @@ document.addEventListener("click",e=>{
   if((x=g("data-spmovgen"))){const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d:c.ef.data,v:Math.round((+c.ef.valor||0)*(+y.w)/tot*100)/100}]});spSave();spCalc();return}
 });
 
+/* ---------- relatório mensal do cliente: a posição real da carteira (aplicações e resgates informados) num mês
+   Usa o mesmo cálculo da "Posição atual" (spPosCalc): rentabilidade por cotas, CDI, patrimônio e movimentações.
+   O cliente aparece pelo código ou apelido; o nome completo só é digitado na hora do PDF e não fica salvo. */
+let SP_POS=null;   // última posição calculada {c, X}
+const RM_MES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const rmNome=m=>RM_MES[+m.slice(5,7)-1]+" de "+m.slice(0,4);
+function rmMeses(X){const L=[];let y=+X.d0.slice(0,4),m=+X.d0.slice(5,7);const yF=+X.dv.slice(0,4),mF=+X.dv.slice(5,7);
+  while(y<yF||(y===yF&&m<=mF)){L.push(y+"-"+String(m).padStart(2,"0"));m++;if(m>12){m=1;y++}}return L.reverse()}
+function rmSel(X){const L=rmMeses(X);return '<div class="fnacts rmacts"><label class="sub" for="rmMes">Relatório mensal do cliente:</label><select id="rmMes">'+L.map(m=>'<option value="'+m+'">'+rmNome(m)+(m===X.dv.slice(0,7)?' (até '+fdate(Date.parse(X.dv+"T00:00:00Z")).slice(0,5)+')':'')+'</option>').join("")+'</select><button type="button" class="btn sec" data-rel="mes">Gerar PDF</button></div>'}
+/* ponto da série (pts) no fim de um dia: o último com data ≤ d */
+function rmPt(pts,d){let r=null;for(const p of pts){if(p.d<=d)r=p;else break}return r}
+function rmVar(S,a,b){const x=spAt(S,a),y=spAt(S,b);return x&&y&&x[1]?(y[1]/x[1]-1)*100:null}
+function rmHtml(c,X,mes){
+  const {P,T,pts}=X,ini=mes+"-01",d1=new Date(Date.UTC(+mes.slice(0,4),+mes.slice(5,7),0)).toISOString().slice(0,10),fim=d1<X.dv?d1:X.dv;
+  const vesp=new Date(Date.parse(ini+"T00:00:00Z")-DAY).toISOString().slice(0,10),jan=mes.slice(0,4)+"-01-01",vjan=(+mes.slice(0,4)-1)+"-12-31";
+  const pF=rmPt(pts,fim),pI=rmPt(pts,vesp)||{idx:1,v:0,d:X.d0},pA=rmPt(pts,vjan)||{idx:1,v:0,d:X.d0};
+  if(!pF)return '<section class="panel"><p class="warn">Sem dados da carteira em '+rmNome(mes)+'.</p></section>';
+  const rM=(pF.idx/pI.idx-1)*100,rA=(pF.idx/pA.idx-1)*100,rT=(pF.idx-1)*100;
+  const base=d=>d<X.d0?X.d0:d,cM=rmVar(T.cdiS,base(vesp),fim),cA=rmVar(T.cdiS,base(vjan),fim),cT=rmVar(T.cdiS,X.d0,fim);
+  const fl=[];P.forEach(p=>p.mv.forEach(m=>{if(m.d>=ini&&m.d<=fim)fl.push({d:m.d,n:spItemNome(p.x),v:m.v})}));fl.sort((a,b)=>a.d<b.d?-1:1);
+  const liqF=fl.reduce((a,m)=>a+m.v,0),ganho=pF.v-pI.v-liqF;
+  const pc=v=>v==null||!isFinite(v)?'—':fnPct(v),pcd=(r,c0)=>r!=null&&c0>0&&r>0?fx(r/c0*100,0)+'% do CDI':c0!=null?'CDI '+fnPctT(c0):'';
+  const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
+  let h='<section class="panel" data-reltit="Resumo do mês"><h3>Resumo de '+rmNome(mes)+'</h3><p class="sub">Carteira '+esc(c.nome)+(c.cli?' · cliente '+esc(c.cli):'')+', de '+fdate(Date.parse((ini<X.d0?X.d0:ini)+"T00:00:00Z"))+' a '+fdate(Date.parse(fim+"T00:00:00Z"))+'.</p>';
+  h+='<div class="fnkpis">'+kp("Patrimônio no fim do mês",brl(pF.v),'no início '+brl(pI.v))+kp("Ganho no mês",'<span class="'+(ganho>=0?'pos':'neg')+'">'+brl(ganho)+'</span>',fl.length?'aplicações e resgates no mês: '+brl(liqF):'sem aplicações nem resgates')
+    +kp("Rentabilidade no mês",pc(rM),pcd(rM,cM))+kp("No ano",pc(rA),pcd(rA,cA))+kp("Desde o início",pc(rT),pcd(rT,cT))+'</div>';
+  // gráfico do ano: carteira × CDI
+  const pa=pts.filter(p=>p.d>=(pA.d||X.d0)&&p.d<=fim),c0=spAt(T.cdiS,pa.length?pa[0].d:X.d0);
+  if(pa.length>2){const S=[{lab:"Carteira",col:FN_COLS[0],w:2.2,pts:pa.map(p=>[p.t,(p.idx/pa[0].idx-1)*100])}];
+    if(c0)S.push({lab:"CDI",col:FN_BM.cdi.col,w:1.5,pts:pa.map(p=>{const x=spAt(T.cdiS,p.d);return [p.t,x?(x[1]/c0[1]-1)*100:null]})});
+    h+='<div class="label" style="margin-top:8px">Rentabilidade acumulada em '+mes.slice(0,4)+'</div>'+fnChart(S,{fmt:"pct",zero:true,h:200,aria:"Rentabilidade no ano"})}
+  h+='</section>';
+  // itens
+  const cot=(p,d)=>p.mv.reduce((a,m)=>{if(m.d>d)return a;const lv=spAt(p.S,m.d);return lv?a+m.v/lv[1]:a},0);
+  const rows=P.map(p=>{const lvF=spAt(p.S,fim),qF=cot(p,fim),vF=lvF?Math.max(0,qF)*lvF[1]:0,m1=p.mv.find(m=>m.d>=ini&&m.d<=fim),dI=p.mv[0].d<ini?vesp:(m1?m1.d:null);
+    return {n:spItemNome(p.x),vF,r:dI&&p.mv[0].d<=fim?rmVar(p.S,dI,fim):null,ra:p.mv[0].d<=fim?rmVar(p.S,p.mv[0].d<jan?vjan:p.mv[0].d,fim):null}}).filter(r=>r.vF>0.005||r.r!=null);
+  const tot=rows.reduce((a,r)=>a+r.vF,0)||1;
+  h+='<section class="panel" data-reltit="Composição e rentabilidade por item"><h3>Composição no fim do mês</h3><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Valor</th><th>Peso</th><th>No mês</th><th>No ano</th></tr></thead><tbody>'
+    +rows.sort((a,b)=>b.vF-a.vF).map(r=>'<tr><td style="text-align:left" class="tw">'+esc(r.n)+'</td><td>'+brl(r.vF)+'</td><td>'+fx(r.vF/tot*100,1)+'%</td><td>'+pc(r.r)+'</td><td>'+pc(r.ra)+'</td></tr>').join("")
+    +'<tr class="cmpbm"><td style="text-align:left"><b>Carteira</b></td><td><b>'+brl(pF.v)+'</b></td><td>100%</td><td><b>'+pc(rM)+'</b></td><td><b>'+pc(rA)+'</b></td></tr></tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:6px">Rentabilidade de cada item pela cota ou cotação (com proventos reinvestidos nos ativos da Bolsa) no período em que esteve na carteira; a da carteira é por cotas (TWR), sem o efeito do momento das aplicações e resgates. Valores brutos de IR.</p></section>';
+  // movimentações
+  h+='<section class="panel" data-reltit="Movimentações do mês"><h3>Aplicações e resgates no mês</h3>'+(fl.length?'<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Data</th><th>Valor</th></tr></thead><tbody>'+fl.map(m=>'<tr><td style="text-align:left" class="tw">'+esc(m.n)+'</td><td>'+fdate(Date.parse(m.d+"T00:00:00Z"))+'</td><td class="'+(m.v>=0?'':'neg')+'">'+(m.v>=0?'Aplicação ':'Resgate ')+brl(Math.abs(m.v))+'</td></tr>').join("")+'</tbody></table></div>':'<p class="sub">Nenhuma aplicação ou resgate no mês.</p>')+'</section>';
+  // mercado no mês
+  if(EU.S){const L=[["CDI","cdi"],["Ibovespa","ibov"],["IFIX","ifix"],["Dólar (PTAX)","usd"],["S&P 500","spx"],["S&P 500 em reais","spxbrl"]].map(([n,k])=>{const S=EU.S[k];if(!S||!S.length)return null;
+      const at=d=>{let r=null;const t=Date.parse(d+"T00:00:00Z");for(const p of S){if(p[0]<=t)r=p;else break}return r},a=at(vesp),b=at(fim);return a&&b&&a[1]?[n,(b[1]/a[1]-1)*100]:null}).filter(Boolean);
+    if(L.length)h+='<section class="panel" data-reltit="O mercado no mês"><h3>O mercado em '+rmNome(mes)+'</h3><div class="fnkpis">'+L.map(([n,v])=>kp(n,pc(v))).join("")+'</div><p class="sub" style="font-size:.8rem;margin-top:6px">Variação no mês. Fontes: B3 (Ibovespa e IFIX), Banco Central (CDI e dólar PTAX) e Cboe (S&amp;P 500).</p></section>'}
+  else euBoot();
+  return h}
 /* ===== Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) ===== */
 const EU_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/eua/";
 const EU={ix:null,idx:null,C:null,S:null,B:null,cal:null,emp:new Map(),load:null,err:null,per:"12",
@@ -6344,7 +6487,7 @@ function mcCredHtml(B){
 /* ---------- EUA e mundo */
 function mundoHtml(){
   const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
-  return [mcTransHtml(),mcEuaHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
+  return [mcTransHtml(),mcEuaHtml(),euaCalHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
 }
 const MC_W0=Date.UTC(1970,0,5);
 function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
@@ -6672,6 +6815,7 @@ function agendaHtml(){
   const t0=Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),new Date().getUTCDate()),lim=t0+45*DAY,E=[];
   COPOM.forEach(d=>{if(d>=t0&&d<=lim){E.push([d-DAY,"Copom: começa a reunião"]);E.push([d,"Copom: decisão da Selic (fim da tarde)"]);let a=d+DAY;let n=0;while(n<4){if(isBiz(a))n++;if(n<4)a+=DAY}E.push([a,"Ata do Copom"])}});
   FOMC.forEach(d=>{if(d>=t0&&d<=lim)E.push([d,"Fed (EUA): decisão de juros (FOMC), 15h de Brasília"])});
+  euaCalProx(45).forEach(x=>E.push([Date.parse(x[0]+"T00:00:00Z"),"EUA: "+EUA_CAL_T[x[1]][0].replace(/,.*$/,"")+" ("+x[2]+"), "+euaHoraBr(x[0])]));
   for(let k=0;k<3;k++){const m=new Date(t0);let t=Date.UTC(m.getUTCFullYear(),m.getUTCMonth()+k,1);while(!isBiz(t))t+=DAY;if(t>=t0&&t<=lim)E.push([t,"Vencimento do DI futuro e do dólar futuro (B3)"])}
   E.sort((a,b)=>a[0]-b[0]);
   return '<span class="label">Agenda (próximas semanas)</span>'+(E.length?'<ul class="agl">'+E.map(([d,l])=>'<li><b>'+["dom","seg","ter","qua","qui","sex","sáb"][new Date(d).getUTCDay()]+' '+txD2(d)+'</b><span>'+esc(l)+'</span></li>').join("")+'</ul>':'<p class="sub">Nada marcado nas próximas semanas.</p>')+'<p class="sub" style="font-size:.8rem;margin-top:6px">Datas do Copom e do Fed pelos calendários oficiais de 2026 e 2027 (Banco Central e Federal Reserve). A ata do Copom sai na terça-feira seguinte à reunião. IPCA e IPCA-15: o IBGE divulga por volta do dia 10 e do dia 25 de cada mês, às 9h.</p>';
@@ -6967,6 +7111,7 @@ function ajHtml(){
     +Object.values(AREA_T).filter((a,i,s)=>s.indexOf(a)===i&&a!=="Carteira").map(a=>'<optgroup label="'+esc(a)+'">'+telas.filter(x=>x.a===a).map(x=>'<option value="'+x.m+'"'+(ini===x.m?' selected':'')+'>'+esc(x.t)+'</option>').join("")+'</optgroup>').join("")+'</select></section>';
   h+='<section><h3>Blocos de Mercado › Resumo</h3><p class="sub">Marque o que aparece e use as setas para mudar a ordem.</p><ol class="ajbl">'+L.map((x,i)=>'<li><label><input type="checkbox" data-ajbl="'+x[0]+'"'+(x[1]?' checked':'')+'><span>'+esc(D[x[0]][0])+'</span></label><span class="ajmv"><button type="button" class="hbtn" data-ajup="'+i+'" aria-label="Subir"'+(i?'':' disabled')+'><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button><button type="button" class="hbtn" data-ajdn="'+i+'" aria-label="Descer"'+(i<L.length-1?'':' disabled')+'><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></span></li>').join("")+'</ol></section>';
   h+='<section><h3>Sincronizar favoritos entre aparelhos</h3><div class="fvbox">'+syncHtml()+'</div></section>';
+  h+='<section><h3>Metodologia e fontes</h3><p class="sub">De onde vem cada dado, como o app calcula e como as fontes são conferidas.</p><button type="button" class="btn sec" data-metodo="1">Abrir metodologia</button></section>';
   h+='<section><h3>Modo apresentação</h3><p class="sub">Para reuniões: esconde notas de rodapé, botões de edição e o cabeçalho, e aumenta um pouco as letras. Saia pelo botão no canto da tela ou com a tecla Esc.</p><button type="button" class="btn" data-ajapres="1">Começar apresentação</button></section>';
   return h}
 function ajAbre(){const d=$("ajustes");if(!d)return;d.innerHTML=ajHtml();try{d.showModal()}catch(e){d.setAttribute("open","")}}
@@ -7005,6 +7150,100 @@ document.addEventListener("keydown",e=>{
 /* ao mudar a largura da janela (girar o tablet, abrir a barra lateral), redesenha a tela para os gráficos ficarem na escala certa */
 let RZ_W=window.innerWidth,RZ_T=null;
 window.addEventListener("resize",()=>{clearTimeout(RZ_T);RZ_T=setTimeout(()=>{const w=window.innerWidth;if(Math.abs(w-RZ_W)<40)return;RZ_W=w;if(activeMod==="tx")return;try{setMod(activeMod)}catch(e){}},250)});
+/* ---------- "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes */
+/* fonte pelo rótulo do cartão (a primeira regra que bate vale) */
+const FONTES=[
+  [/focus/i,"Banco Central · Boletim Focus (mediana das projeções de cerca de 150 instituições), publicado às segundas-feiras."],
+  [/copom|selic implícita|precificad/i,"B3 · preços de ajuste do DI futuro. O app calcula a Selic implícita em cada reunião do Copom (taxa constante entre reuniões)."],
+  [/^selic meta|^selic\b/i,"Banco Central · meta da taxa Selic definida pelo Copom (SGS 432)."],
+  [/^di (jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)|^di1|juros futuros/i,"B3 · taxa de ajuste do DI futuro do dia."],
+  [/prefixado|juro real|inflação implícita|ettj/i,"ANBIMA · curva de juros (ETTJ, modelo Nelson-Siegel-Svensson) dos títulos públicos prefixados e IPCA+. Inflação implícita = (1 + prefixado) ÷ (1 + juro real) − 1."],
+  [/ima-|irf-m|ima |ima-geral/i,"ANBIMA · índices IMA (carteiras teóricas de títulos públicos), resultado diário."],
+  [/spread|debênture|cri |cra /i,"ANBIMA · taxas indicativas do mercado secundário de debêntures, CRI e CRA."],
+  [/ipca-15/i,"IBGE · IPCA-15 (SIDRA)."],
+  [/ipca|inflação|núcleo|serviços|preços livres|monitorados|comercializáveis/i,"IBGE · IPCA (SIDRA); núcleos e grupos de preços pelo Banco Central (SGS)."],
+  [/tesouro|título/i,"Tesouro Nacional · preços e taxas do Tesouro Direto (Tesouro Transparente e site do Tesouro Direto)."],
+  [/^ações ·|^renda fixa ·|capital estrangeiro/i,"Banco Central · balanço de pagamentos (investimento estrangeiro em carteira)."],
+  [/próximos 12 meses/i,"Banco Central (Boletim Focus) e ANBIMA (inflação implícita na curva de juros)."],
+  [/ibovespa|ifix|ações|bolsa/i,"B3 · fechamento oficial do índice, publicado na manhã do dia seguinte."],
+  [/ptax|dólar \(ptax\)|dólar comercial|boletins/i,"Banco Central · dólar PTAX (média das consultas aos bancos às 10h, 11h, 12h e 13h)."],
+  [/dólar justo|paridade|modelo de fundamentos/i,"Cálculo do app com PTAX e IPCA (Banco Central e IBGE) e CPI (BLS, EUA)."],
+  [/dólar no mundo|índice do fed/i,"Federal Reserve · índice amplo do dólar (Nominal Broad Dollar Index)."],
+  [/s&p 500 em reais/i,"Cboe (S&P 500) × Banco Central (dólar PTAX do mesmo dia)."],
+  [/s&p|vix|dow jones/i,"Cboe · S&P 500, VIX e Dow Jones (pelo índice DJX × 100)."],
+  [/nasdaq/i,"Nasdaq · Nasdaq Composite e Nasdaq-100."],
+  [/treasury|juro dos eua|sofr/i,"Departamento do Tesouro dos EUA · juros dos Treasuries (curva diária); SOFR pelo Fed de Nova York."],
+  [/payroll|desemprego \(eua\)|salário por hora|inflação \(cpi\)|cpi/i,"BLS (Bureau of Labor Statistics) · emprego e inflação dos EUA."],
+  [/petróleo|brent/i,"EIA (Energy Information Administration) · preço semanal do petróleo Brent."],
+  [/cdi/i,"B3 / Banco Central · taxa DI (CDI) diária (SGS 12)."],
+  [/pib|ibc-br/i,"IBGE (PIB, SIDRA) e Banco Central (IBC-Br, SGS)."],
+  [/desemprego/i,"IBGE · PNAD Contínua (SIDRA)."],
+  [/dívida|resultado primário|resultado nominal/i,"Banco Central · estatísticas fiscais (SGS)."],
+  [/concessões|crédito|inadimpl/i,"Banco Central · estatísticas de crédito (SGS)."],
+  [/prêmio implícito|cupom cambial|risco-país/i,"B3 (cupom cambial pelo dólar futuro e DI) e Fed de Nova York (SOFR); cálculo do app."]];
+function fonteDe(rot,ctx){
+  if(ctx&&ctx.closest("#fnBody,#fnRkT,#fnCbody"))return "CVM · informe diário, cadastro, lâmina e carteira dos fundos; CDI e IPCA do Banco Central e IBGE. Indicadores calculados pelo app.";
+  if(ctx&&ctx.closest("#atBody"))return "B3 (cotações e proventos), CVM (balanços e informes dos FIIs) e, nos BDRs, SEC (balanços da empresa nos EUA). Indicadores calculados pelo app.";
+  if(ctx&&ctx.closest(".fxvar"))return "Banco Central · dólar PTAX de venda; variação calculada pelo app.";
+  if(activeMod==="mu"&&/desemprego|inflação|núcleo|pib|salário|payroll|cpi|empregos/i.test(rot))return /pib/i.test(rot)?"BEA (Bureau of Economic Analysis) · PIB dos EUA.":"BLS (Bureau of Labor Statistics) · emprego e inflação dos EUA.";
+  if(ctx&&ctx.closest("#spRes"))return "Cálculo do app com as cotas e cotações oficiais (CVM e B3), CDI (Banco Central) e IPCA (IBGE).";
+  for(const [re,t] of FONTES)if(re.test(rot))return t;return null}
+const FT_SEL=".rsgrid>div,.pnlc,.fnkp,.tot>div,.fxvar>div";
+function fontesMarca(root){(root||document).querySelectorAll(FT_SEL).forEach(c=>{if(c.querySelector(":scope>.fonteic"))return;const sp=c.querySelector(":scope>span");if(!sp)return;
+  const f=fonteDe(sp.textContent.trim(),c);if(!f)return;const b=document.createElement("button");b.type="button";b.className="fonteic";b.setAttribute("aria-label","De onde vem este número");b.dataset.fonte=f;b.textContent="i";c.appendChild(b)})}
+let FT_RAF=0;
+const FT_OBS=new MutationObserver(()=>{cancelAnimationFrame(FT_RAF);FT_RAF=requestAnimationFrame(()=>{["mkOut","fnOut"].forEach(id=>{const el=$(id);if(el)fontesMarca(el)})})});
+["mkOut","fnOut"].forEach(id=>{const el=$(id);if(el)FT_OBS.observe(el,{childList:true,subtree:true})});
+function fontePop(b){let p=document.querySelector(".fontepop");if(!p){p=document.createElement("div");p.className="fontepop";p.setAttribute("role","dialog");document.body.appendChild(p)}
+  p.innerHTML='<b>De onde vem</b><p>'+esc(b.dataset.fonte)+'</p><button type="button" class="link" data-metodo="1">Metodologia e fontes</button>';p.hidden=false;
+  const r=b.getBoundingClientRect(),w=Math.min(320,window.innerWidth-24);p.style.width=w+"px";p.style.left=Math.max(12,Math.min(window.innerWidth-w-12,r.right-w))+"px";p.style.top=(window.scrollY+r.bottom+6)+"px"}
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;
+  if((x=g(".fonteic"))){e.stopPropagation();fontePop(x);return}
+  const p=document.querySelector(".fontepop");if(p&&!g(".fontepop"))p.hidden=true;
+  if(g("[data-metodo]")||g("#btMetodo")){if(p)p.hidden=true;try{ajFecha()}catch(x){}metAbre();return}
+},true);
+
+/* ---------- página Metodologia e fontes */
+function metHtml(){
+  const sec=(t,h)=>'<section><h3>'+t+'</h3>'+h+'</section>',li=a=>'<ul class="metl">'+a.map(x=>'<li>'+x+'</li>').join("")+'</ul>';
+  let h='<div class="ajhd"><h2>Metodologia e fontes</h2><button type="button" class="hbtn" data-metfecha="1" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>';
+  h+=sec("Princípios",li(["Só dados oficiais e públicos: Banco Central, IBGE, B3, CVM, ANBIMA, Tesouro Nacional e, nos EUA, Fed, Tesouro americano, BLS, BEA, EIA, SEC, Cboe e Nasdaq.",
+    "Robôs no GitHub coletam os dados em horários fixos e publicam arquivos que o app lê. Nada é digitado à mão.",
+    "Toque no <b>i</b> de um cartão para ver de onde vem aquele número. Quando uma fonte falha, a tela avisa e mostra os últimos dados válidos.",
+    "Projeções, impostos e valores de venda são estimativas para apoiar a análise. Não são recomendação de investimento."]));
+  h+=sec("Fontes e horários",'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Dado</th><th style="text-align:left">Fonte oficial</th><th style="text-align:left">Atualização</th></tr></thead><tbody>'+[
+    ["Tesouro Direto (preços e taxas)","Tesouro Nacional","durante o dia e no fechamento"],["Curva de juros, IMA, debêntures, CRI e CRA","ANBIMA","dias úteis, à noite"],
+    ["DI futuro, dólar futuro, Ibovespa, IFIX, ações, FIIs, ETFs e BDRs","B3","fechamento; índices na manhã seguinte"],["Selic, CDI, PTAX, Focus, crédito, fiscal, balanço de pagamentos","Banco Central (SGS, PTAX, Expectativas)","diária ou na divulgação"],
+    ["IPCA, IPCA-15, PIB, PNAD, indústria, comércio e serviços","IBGE (SIDRA)","na divulgação"],["Fundos (cotas, patrimônio, cotistas, carteira)","CVM (dados abertos)","diária"],
+    ["Balanços das empresas americanas (BDRs)","SEC (EDGAR)","diária"],["S&amp;P 500, VIX, Dow Jones; Nasdaq","Cboe; Nasdaq","fechamento"],
+    ["Juros dos EUA; Fed; emprego e CPI; PIB e PCE; petróleo","Tesouro dos EUA; Federal Reserve; BLS; BEA; EIA","na divulgação"]].map(r=>'<tr><td style="text-align:left">'+r[0]+'</td><td style="text-align:left">'+r[1]+'</td><td style="text-align:left">'+r[2]+'</td></tr>').join("")+'</tbody></table></div>');
+  h+=sec("Títulos públicos e crédito privado",li(["Preço dos títulos pela metodologia da ANBIMA e do Tesouro: VNA da NTN-B e da LFT atualizado pelo IPCA e pela Selic, dias úteis ÷ 252, com os truncamentos e arredondamentos oficiais. A checagem automática confere todo dia o preço calculado com os preços publicados pelo Tesouro e pela ANBIMA.",
+    "Marcação a mercado: valor presente do fluxo restante na taxa de mercado; curva = na taxa contratada. Ágio ou deságio = diferença entre os dois.",
+    "IR pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima), IOF regressivo nos primeiros 30 dias e custódia da B3 de 0,20% ao ano no Tesouro Direto.",
+    "Debêntures, CRI e CRA: características e agenda de pagamentos do SND e da B3; taxa de mercado pela taxa indicativa da ANBIMA."]));
+  h+=sec("Juros, inflação e câmbio",li(["Curva de juros: ETTJ da ANBIMA (Nelson-Siegel-Svensson). Juros de prazo constante (5 e 10 anos) lidos da curva.",
+    "Selic implícita em cada Copom: taxa constante entre reuniões que torna os DIs futuros coerentes com o preço de ajuste (Selic ≈ CDI + 0,10).",
+    "Inflação implícita: (1 + prefixado) ÷ (1 + juro real) − 1, no mesmo prazo. Inclui o prêmio pelo risco de inflação.",
+    "Dólar justo: paridade do poder de compra (câmbio real médio de períodos longos) e um modelo de fundamentos. São referências, não previsão."]));
+  h+=sec("Fundos e Bolsa",li(["Rentabilidade dos fundos pela variação da cota informada à CVM. Volatilidade anualizada = desvio-padrão dos retornos diários × √252. Sharpe sobre o CDI. Perda máxima = maior queda desde um pico.",
+    "Ações, FIIs e ETFs: retorno com proventos reinvestidos na data com; dividend yield dos últimos 12 meses sobre o preço atual. P/L e P/VP com os balanços da CVM ou, nos BDRs, da SEC (últimos 12 meses).",
+    "Comparações sempre no mesmo período para todos os itens."]));
+  h+=sec("Carteiras",li(["Rentabilidade da carteira por cotas (TWR): neutraliza o efeito do momento das aplicações e resgates. É a que se compara com o CDI.",
+    "Rentabilidade do cliente: TIR dos valores aplicados e resgatados nas datas informadas.",
+    "IR estimado aplicação por aplicação, como se tudo fosse resgatado na data; resgates saem das aplicações mais antigas.",
+    "Teste de estresse: sensibilidade de cada item a juros, Bolsa, dólar e S&amp;P 500 aplicada a choques históricos (2008, 2015, 2020…). Fronteira eficiente pelos retornos mensais históricos.",
+    "Relatório mensal do cliente: patrimônio, ganho, rentabilidade no mês, no ano e desde o início, comparada ao CDI; composição e movimentações do mês."]));
+  h+=sec("Economia e exterior",li(["Focus: mediana das projeções, semana a semana.","Como o exterior afeta o Brasil: correlações e sensibilidades com retornos semanais dos últimos 2 anos.",
+    "Calendário dos EUA: datas oficiais do BLS e do BEA; decisões do Fed pelo calendário do FOMC; Copom pelo calendário do Banco Central."]));
+  h+=sec("Conferências automáticas",li(["A cada 3 horas o robô de saúde confere se cada fonte foi atualizada e compara fontes diferentes que precisam contar a mesma história: Ibovespa × BOVA11, PTAX × dólar futuro, S&amp;P 500 × dólar × IVVB11, CDI × Selic e a data do Focus.",
+    "Se uma fonte falha 2 dias seguidos, abre um aviso no GitHub, que fecha sozinho quando ela volta. PTAX e IPCA têm fonte reserva no próprio Banco Central.",
+    "Antes de qualquer mudança no app entrar no ar, testes conferem os cálculos com casos de resposta conhecida e percorrem todas as telas."]));
+  return h}
+function metAbre(){let d=$("metodo");if(!d){d=document.createElement("dialog");d.id="metodo";d.className="ajdlg metdlg";d.setAttribute("aria-label","Metodologia e fontes");document.body.appendChild(d)}
+  d.innerHTML=metHtml();try{d.showModal()}catch(e){d.setAttribute("open","")}d.scrollTop=0}
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);const d=$("metodo");if(!d)return;
+  if(g("[data-metfecha]")||e.target===d){try{d.close()}catch(x){d.removeAttribute("open")}}});
+if(/#metodologia/.test(location.hash))setTimeout(metAbre,600);
 /* ---------- dados do robô (GitHub) lidos direto pela página ---------- */
 const PAGES=/github\.io$/.test(location.hostname)||!(window.claude&&typeof window.claude.use==="function");
 const ROBO="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/site/data/";

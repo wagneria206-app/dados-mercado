@@ -145,6 +145,7 @@ function agendaHtml(){
   const t0=Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),new Date().getUTCDate()),lim=t0+45*DAY,E=[];
   COPOM.forEach(d=>{if(d>=t0&&d<=lim){E.push([d-DAY,"Copom: começa a reunião"]);E.push([d,"Copom: decisão da Selic (fim da tarde)"]);let a=d+DAY;let n=0;while(n<4){if(isBiz(a))n++;if(n<4)a+=DAY}E.push([a,"Ata do Copom"])}});
   FOMC.forEach(d=>{if(d>=t0&&d<=lim)E.push([d,"Fed (EUA): decisão de juros (FOMC), 15h de Brasília"])});
+  euaCalProx(45).forEach(x=>E.push([Date.parse(x[0]+"T00:00:00Z"),"EUA: "+EUA_CAL_T[x[1]][0].replace(/,.*$/,"")+" ("+x[2]+"), "+euaHoraBr(x[0])]));
   for(let k=0;k<3;k++){const m=new Date(t0);let t=Date.UTC(m.getUTCFullYear(),m.getUTCMonth()+k,1);while(!isBiz(t))t+=DAY;if(t>=t0&&t<=lim)E.push([t,"Vencimento do DI futuro e do dólar futuro (B3)"])}
   E.sort((a,b)=>a[0]-b[0]);
   return '<span class="label">Agenda (próximas semanas)</span>'+(E.length?'<ul class="agl">'+E.map(([d,l])=>'<li><b>'+["dom","seg","ter","qua","qui","sex","sáb"][new Date(d).getUTCDay()]+' '+txD2(d)+'</b><span>'+esc(l)+'</span></li>').join("")+'</ul>':'<p class="sub">Nada marcado nas próximas semanas.</p>')+'<p class="sub" style="font-size:.8rem;margin-top:6px">Datas do Copom e do Fed pelos calendários oficiais de 2026 e 2027 (Banco Central e Federal Reserve). A ata do Copom sai na terça-feira seguinte à reunião. IPCA e IPCA-15: o IBGE divulga por volta do dia 10 e do dia 25 de cada mês, às 9h.</p>';

@@ -136,6 +136,33 @@ async def interface(pg):
     await pg.wait_for_timeout(300)
     if await pg.evaluate("document.documentElement.classList.contains('apres')"):
         problemas.append("apresentação: Esc não saiu do modo")
+    # de onde vem: ícone de fonte nos cartões do Resumo e o balão
+    await pg.evaluate("document.querySelector('.areas button[data-area=mkt]').click()")
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=rs]').click()")
+    await pg.wait_for_timeout(2500)
+    n = await pg.evaluate("document.querySelectorAll('#mkOut .fonteic').length")
+    if n < 10:
+        problemas.append(f"fontes: só {n} cartões do Resumo com o ícone de fonte")
+    else:
+        await pg.evaluate("document.querySelector('#mkOut .fonteic').click()")
+        await pg.wait_for_timeout(300)
+        if "De onde vem".upper() not in (await pg.evaluate("(document.querySelector('.fontepop')||{}).innerText||''")).upper():
+            problemas.append("fontes: o balão com a fonte não abriu")
+    if "EUA:" not in await pg.evaluate("document.getElementById('mkOut').innerText"):
+        problemas.append("agenda: sem as divulgações dos EUA no Resumo")
+    # metodologia
+    await pg.click("#btMetodo")
+    await pg.wait_for_timeout(400)
+    if not await pg.evaluate("!!document.getElementById('metodo')&&document.getElementById('metodo').open&&document.getElementById('metodo').innerText.length>2000"):
+        problemas.append("metodologia: a página não abriu")
+    else:
+        await pg.click("[data-metfecha]")
+    # indicadores de economia nos favoritos
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=fv]').click()")
+    await pg.wait_for_timeout(5000)
+    ops = await pg.evaluate("[...document.querySelectorAll('#fvMa option')].map(o=>o.textContent)")
+    if len(ops) < 10 or not any("hoje" in o for o in ops):
+        problemas.append(f"favoritos: lista de indicadores de economia incompleta ({ops[:3]})")
     print("busca, ajustes, tema e apresentação conferidos", flush=True)
 
 

@@ -2,7 +2,7 @@
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
 try{const c=JSON.parse(localStorage.getItem("relCfg")||"null");if(c&&typeof c==="object")Object.assign(REL.cfg,c)}catch(e){}
 function relSave(){try{localStorage.setItem("relCfg",JSON.stringify(REL.cfg))}catch(e){alertLite("Não deu para guardar o logo neste navegador (espaço insuficiente). Use uma imagem menor.")}}
-const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado"};
+const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado",mes:"Relatório mensal do cliente"};
 function relOpen(kind){
   REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();
   REL.box=relConteudo(kind);if(!REL.box){alertLite(kind==="mk"?"Carregando os dados de mercado. Tente de novo em alguns segundos.":"Abra a análise antes de gerar o relatório.");return}
@@ -26,7 +26,7 @@ function relSecoes(box){return [...box.children].filter(e=>/^(SECTION|DIV)$/.tes
 function relFora(kind){try{const a=JSON.parse(localStorage.getItem("relFora_"+kind)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
 const REL_RESUMO=/^(Painel de índices|Resumo do mercado|Expectativas do mercado|Como o exterior|Resumo|Composição|Rentabilidade e risco de cada item|Desde a efetivação|Rentabilidade$|Rentabilidade acumulada|Risco$)/;
 function relClean(root){
-  root.querySelectorAll(".fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
+  root.querySelectorAll(".fonteic,.rmacts,.fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
   root.querySelectorAll("button").forEach(b=>{const s=document.createElement("span");s.innerHTML=b.innerHTML;s.className=b.className.replace(/\b(link|off)\b/g,"").trim();if(b.classList.contains("off"))s.style.opacity=".4";b.replaceWith(s)});
   root.querySelectorAll("details").forEach(d=>d.setAttribute("open",""));
   root.querySelectorAll(".tablewrap").forEach(t=>{t.style.maxHeight="none";t.style.overflow="visible"});
@@ -36,6 +36,7 @@ function relConteudo(kind){
   const box=document.createElement("div");
   if(kind==="mk"){if(!EU.S||!MC.d){euBoot();mcBoot();return null}const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
     try{h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+economiaHtml().map(P).join("")+mundoHtml().map(P).join("")}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
+  if(kind==="mes"){const s=$("rmMes");if(!SP_POS||!SP_POS.X||SP_POS.X.erro||!s)return null;REL.mes=s.value;let h;try{h=rmHtml(SP_POS.c,SP_POS.X,REL.mes)}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
   else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML;const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
   else{const k=kind==="fc"?"f":"a",X=CMP_CTX[k];if(!X)return null;const b=$(kind==="fc"?"fnCbody":"atCbody");if(!b)return null;
@@ -49,6 +50,7 @@ function relTitulo(kind){
   if(kind==="fa"&&FN.cur&&FN.files.get(FN.cur)){const F=FN.files.get(FN.cur);return [F.fan||F.n||"",fnCnpjF(F.c)]}
   if(kind==="aa"&&AT.cur&&AT.files.get(AT.cur)){const A=AT.files.get(AT.cur);return [A.t+" · "+(A.nome||""),A.tipo+(A.setor?" · "+A.setor:"")]}
   if(kind==="sp"){const c=spC();return [c.nome,c.itens.length+" itens"]}
+  if(kind==="mes"&&SP_POS){const c=SP_POS.c;return ["Relatório mensal · "+rmNome(REL.mes),(c.cli?"Cliente "+c.cli+" · ":"")+c.nome]}
   if(kind==="mk")return ["Panorama do mercado","Brasil, EUA e mundo · "+new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})];
   const L=kind==="fc"?FN.cmp:AT.cmp;return [REL_T[kind],L.length+(kind==="fc"?" fundos":" ativos")];
 }
@@ -83,7 +85,7 @@ svg.chart{max-height:250px}
 </style></head><body>`
     +'<div class="relhead"><div>'+(c.logo?'<img src="'+c.logo+'" alt="">':'')+(c.nome?'<div class="of">'+esc(c.nome)+'</div>':'')+'</div><div class="ct" style="text-align:right">'+(c.resp?esc(c.resp)+'<br>':'')+(c.contato?esc(c.contato)+'<br>':'')+hoje+'</div></div>'
     +'<div class="reltit"><h1>'+esc(tit)+'</h1><p>'+esc(REL_T[kind])+(sub?' · '+esc(sub):'')+'</p></div>'
-    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="mk"?fdate(Date.now()):kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
+    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="mk"?fdate(Date.now()):kind==="mes"&&SP_POS?(()=>{const f=new Date(Date.UTC(+REL.mes.slice(0,4),+REL.mes.slice(5,7),0)).toISOString().slice(0,10);return fdate(Date.parse((f<SP_POS.X.dv?f:SP_POS.X.dv)+"T00:00:00Z"))})():kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
     +(REL.obs?'<div class="relobs">'+esc(REL.obs)+'</div>':'')
     +cont.innerHTML
     +'<div class="relfoot">'+(c.rodape?esc(c.rodape)+'<br>':'')+'Fontes: CVM (informe diário, cadastro, lâmina, carteira, demonstrações financeiras e informe dos FIIs), B3 (cotações, proventos e índices) e Banco Central (CDI, IPCA e dólar). Rentabilidade passada não é garantia de rentabilidade futura. Os valores são brutos de impostos, salvo indicação. Este material tem caráter informativo e não constitui recomendação de investimento.</div>'
