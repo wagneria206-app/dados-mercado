@@ -180,3 +180,16 @@ html.apres .topo{bottom:72px}
 .carregando::before{content:"";width:16px;height:16px;flex:none;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
 @media print{.topo{display:none!important}}
+
+/* ---------- tour de boas-vindas */
+.tourhl{position:absolute;z-index:95;border-radius:12px;box-shadow:0 0 0 3px var(--accent),0 0 0 9999px rgba(8,15,30,.55);pointer-events:none;transition:all .2s}
+.tourhl.tourcheio{position:fixed;inset:0;border-radius:0;box-shadow:none;background:rgba(8,15,30,.55)}
+.tourbx{position:absolute;z-index:96;width:min(360px,calc(100vw - 24px));background:var(--surface);color:var(--ink);border-radius:14px;padding:16px 18px 14px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
+.tourbx.tourmeio{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 24px))}
+.tourbx b{display:block;font:700 1.05rem var(--f-display);margin:2px 0 6px}
+.tourbx p{margin:0 0 12px;font-size:.92rem;line-height:1.5;color:var(--muted)}
+.tourn{font:700 .66rem var(--f-display);text-transform:uppercase;letter-spacing:.09em;color:var(--accent)}
+.tourbt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tourbt>span{display:flex;gap:8px}
+.tourbt .btn{min-height:36px;padding:6px 14px}
+@media print{.tourhl,.tourbx{display:none!important}}
