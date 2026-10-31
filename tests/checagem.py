@@ -231,6 +231,8 @@ async def main():
         print("\nPROBLEMAS ENCONTRADOS:")
         for x in problemas:
             print(" -", x)
+            if os.environ.get("GITHUB_ACTIONS"):  # aparece como anotação na página da execução
+                print("::error::" + x.replace("\n", " ")[:900])
         sys.exit(1)
     print("\nTudo certo: nenhuma aba com erro.")
 
