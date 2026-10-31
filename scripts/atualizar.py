@@ -2073,6 +2073,9 @@ def fundosnet_textos():
     indice = ler_json("termos/indice.json", {})
     feitos = ler_json("termos/textos.json", {})
     anb = ler_json("cri_cra_anbima.json", {}).get("papers", {})
+    for v in feitos.values():  # registros antigos: o erro de PDF sem texto passa a valer como "escaneado"
+        if not v.get("ok") and "sem texto" in str(v.get("erro", "")):
+            v["escaneado"] = True
 
     def ids(cod):
         i = indice.get(cod) or indice.get(cod_cri(cod))
@@ -2090,9 +2093,11 @@ def fundosnet_textos():
     por(sorted(anb), 1)
     por(sorted(indice, key=lambda c: -indice[c]["idFnet"]), 2)
 
-    pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and feitos.get(str(i), {}).get("tentativas", 0) < 3]
+    # escaneados (imagem, sem texto) não têm como ser lidos: saem da fila de vez
+    pend = [(p, i) for p, i in fila if not feitos.get(str(i), {}).get("ok") and not feitos.get(str(i), {}).get("escaneado")
+            and feitos.get(str(i), {}).get("tentativas", 0) < 3]
     limite = time.time() + 10 * 60
-    novos, erros = 0, 0
+    novos, erros, escaneados = 0, 0, 0
     from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
 
     # documento -> séries que ele cobre (o mesmo termo costuma valer para várias séries)
@@ -2134,7 +2139,7 @@ def fundosnet_textos():
         try:
             txt = pdf_para_texto(fnet_pdf(i))
             if len(txt.strip()) < 500:
-                raise RuntimeError("PDF sem texto (provavelmente escaneado)")
+                return i, {"ok": False, "escaneado": True, "erro": "PDF sem texto (provavelmente escaneado)"}, None
             return i, {"ok": True, "paginas": txt.count("\f") + 1, "caracteres": len(txt)}, txt
         except Exception as e:  # noqa: BLE001
             return i, {"ok": False, "erro": str(e)[:200]}, None
@@ -2152,15 +2157,21 @@ def fundosnet_textos():
                 reg.update(res, em=AGORA.isoformat(timespec="seconds"))
                 reg.pop("erro", None)
                 novos += 1
+            elif res.get("escaneado"):
+                reg.update(ok=False, escaneado=True, erro=res["erro"], em=AGORA.isoformat(timespec="seconds"))
+                escaneados += 1
             else:
                 reg.update(ok=False, erro=res["erro"], tentativas=reg.get("tentativas", 0) + 1)
                 erros += 1
     gravar_json("termos/textos.json", feitos)
     gravar_json("cri_cra_cronogramas.json", cronos)
     total_ok = sum(1 for v in feitos.values() if v.get("ok"))
-    if pend and novos == 0 and erros:
-        raise RuntimeError(f"nenhum termo baixado; último erro: {next(v['erro'] for v in feitos.values() if not v.get('ok'))}")
-    return {"novos_agora": novos, "erros_agora": erros, "textos_total": total_ok, "series_com_cronograma": len(cronos), "documentos_na_fila": len(fila),
+    # falha só quando o Fundos.NET não entregou nada (documentos escaneados não são falha da fonte)
+    if pend and novos == 0 and erros and not escaneados:
+        ult = next((v["erro"] for v in feitos.values() if not v.get("ok") and not v.get("escaneado")), "?")
+        raise RuntimeError(f"nenhum termo baixado; último erro: {ult}")
+    return {"novos_agora": novos, "erros_agora": erros, "escaneados_agora": escaneados,
+            "escaneados_total": sum(1 for v in feitos.values() if v.get("escaneado")), "textos_total": total_ok, "series_com_cronograma": len(cronos), "documentos_na_fila": len(fila),
             "pendentes": max(0, len(pend) - novos)}
 
 # ---------------------------------------------------------------- CVM: catálogo de todos os fundos
