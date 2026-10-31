@@ -1,10 +1,6 @@
-import urllib.request,json
-H={"User-Agent":"Mozilla/5.0","Accept":"application/json"}
-out=[]
-for t,c in [("5932","/c11255/90707"),("6381",""),("8888","/c544/129314"),("8880","/c11046/56734"),("5906","/c11046/56726")]:
-    u=f"https://apisidra.ibge.gov.br/values/t/{t}/n1/all/v/all/p/last%201{c}"
-    try:
-        j=json.load(urllib.request.urlopen(urllib.request.Request(u,headers=H),timeout=60))
-        out.append(t+" "+json.dumps(j[0],ensure_ascii=False)[:400]);[out.append("   "+r.get("D2C","")+" "+r.get("D2N","")[:90]+" | "+r.get("D3N","")+" = "+r.get("V","")+" "+r.get("MN","")) for r in j[1:]]
-    except Exception as e: out.append(f"{t} ERRO {e} {getattr(e,'read',lambda:b'')()[:200]!r}")
-open("sonda.txt","w").write("\n".join(out))
+import urllib.request
+MZ={"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) Chrome/124 Safari/537.36"}
+for u,f in [("https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm","sep.html"),("https://www.federalreserve.gov/releases/h10/summary/jrxwtfb_nb.htm","h10.html"),("https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=D","brent.html"),("https://www.bls.gov/schedule/news_release/bls.ics","bls.ics"),("https://www.bls.gov/schedule/2026_sched.htm","blssched.html")]:
+    try: open(f,"wb").write(urllib.request.urlopen(urllib.request.Request(u,headers=MZ),timeout=60).read())
+    except Exception as e: open(f,"w").write("ERRO "+repr(e))
+open("sonda.txt","w").write("ok")

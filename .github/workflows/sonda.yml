@@ -9,4 +9,4 @@ jobs:
       - run: python3 sonda.py || true
       - run: |
           git config user.name robo; git config user.email robo@users.noreply.github.com
-          git checkout --orphan sonda-out; git rm -rqf --cached .; git add -f sonda.txt; git commit -qm sonda; git push -f origin sonda-out
+          git checkout --orphan sonda-out; git rm -rqf --cached .; git add -f sonda.txt *.html *.ics; git commit -qm sonda; git push -f origin sonda-out
