@@ -1036,6 +1036,26 @@ def bls_cpi():
     return out
 
 
+def cpi_eua_com_reserva(falhas):
+    """CPI-U dos EUA: BLS; se o BLS recusar (limite diário de consultas), o FRED (Fed de St. Louis, mesma série do BLS);
+    se os dois falharem, a última série já coletada, enquanto não tiver mais de 75 dias. Devolve (série, fonte)."""
+    try:
+        return bls_cpi(), "BLS"
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"cpi_eua (BLS): {str(e)[:120]}")
+    try:
+        d = {k[:7]: v for k, v in fred("CPIAUCNS").items()}
+        if len(d) >= 300:
+            return d, "FRED (CPIAUCNS, mesma série do BLS)"
+        falhas.append(f"cpi_eua (FRED): só {len(d)} meses")
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"cpi_eua (FRED): {str(e)[:120]}")
+    ant = (ler_json("dolar_fundamentos.json", {}).get("mensal") or {}).get("cpi_eua") or {}
+    if ant and (HOJE - dt.date.fromisoformat(max(ant) + "-01")).days <= 75:
+        return ant, "última coleta guardada (BLS e FRED fora do ar)"
+    return None, None
+
+
 def tesouro_eua(tipo, cols):
     """Taxas diárias do Tesouro americano (ano atual e anterior): {nome: {data: taxa}}."""
     out = {c: {} for c in cols.values()}
@@ -1106,11 +1126,14 @@ def dolar_fundamentos():
         out["mensal"][nome] = mensal(d) if diaria else d
         k = max(d)
         out["ultimo"][nome] = {"data": k if len(k) > 7 else k + "-01", "valor": d[k]}
-    for nome, f, diaria in (("cpi_eua", bls_cpi, False), ("dolar_global", dxy_ptax, True)):
-        try:
-            guarda(nome, f(), diaria)
-        except Exception as e:  # noqa: BLE001
-            falhas.append(f"{nome}: {str(e)[:150]}")
+    cpi, cpi_fonte = cpi_eua_com_reserva(falhas)
+    if cpi:
+        guarda("cpi_eua", cpi, False)
+        out["cpi_fonte"] = cpi_fonte
+    try:
+        guarda("dolar_global", dxy_ptax(), True)
+    except Exception as e:  # noqa: BLE001
+        falhas.append(f"dolar_global: {str(e)[:150]}")
     try:
         T = tesouro_eua("daily_treasury_yield_curve", {"2 Yr": "treasury_2a", "10 Yr": "treasury_10a"})
         for k, v in T.items():
@@ -1167,7 +1190,10 @@ def dolar_fundamentos():
     for k in [k for k in out["ultimo"] if k not in out["mensal"]]:
         out["ultimo"].pop(k)
     gravar_json("dolar_fundamentos.json", out)
-    return {"series": {k: len(v) for k, v in out["mensal"].items()}, "ultimo": out["ultimo"], "falhas": falhas}
+    r = {"series": {k: len(v) for k, v in out["mensal"].items()}, "ultimo": out["ultimo"], "falhas": falhas}
+    if cpi_fonte and cpi_fonte != "BLS":
+        r["reserva"] = "inflação dos EUA pelo " + cpi_fonte
+    return r
 
 
 
