@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-X+8QHl5qz9FivNij8+VY8W/CLgUN4nJQwzlJB3OiJrQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-QK1Vbcc1bF0d8z5W0kquoDoQpxLOYTUAefrVucJUJ7U='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1104,6 +1104,9 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 
 .pnlc svg{display:block;width:100%;height:26px;margin-top:4px}
 @media (max-width:640px){.pnlg{grid-template-columns:1fr 1fr}.pnlc b{font-size:1rem}}
+
+/* notas e textos explicativos usam toda a largura do painel */
+.sub,header p,.notes li,details.method .intro{max-width:none}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -1396,7 +1399,7 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
         <li>VNA da LFT: implícito nos preços ANBIMA da data de referência, recuado até a data da compra com a Selic mensal do Banco Central. Na compra, o valor é aproximado.</li>
         <li>Tesouro IPCA+ sem cupom usa a taxa da NTN-B de mesmo vencimento, o que é uma aproximação.</li>
         <li>Tesouro Direto: taxas e preços de compra e de resgate do arquivo oficial do Tesouro Nacional (Tesouro Transparente). Cada taxa só é usada depois de conferida: ela precisa reproduzir o preço publicado pela metodologia oficial. RendA+ e Educa+ (NTN-B1) usam o VNA da NTN-B e pagam 240 (RendA+) ou 60 (Educa+) parcelas mensais a partir de janeiro do ano do título, cada uma de 1/240 ou 1/60 do VNA.</li>
-        <li>O botão Atualizar dados agora pede ao Claude que busque ANBIMA, IBGE, Banco Central e Tesouro Direto. Leva alguns minutos e funciona com a calculadora aberta no Claude (navegador ou app).</li>
+        <li>O botão Atualizar dados recarrega o que os robôs do app publicaram (ANBIMA, IBGE, Banco Central, Tesouro Direto, B3, CVM e fontes dos EUA). Os robôs rodam sozinhos no GitHub várias vezes por dia; o quadro Situação das bases de dados, em Mercado › Resumo, mostra quando cada um rodou.</li>
         <li>Preços pela metodologia ANBIMA: fator (1 + taxa)^(du/252), dias úteis pelo calendário nacional, cotação truncada em 4 casas e PU em 6.</li>
       </ul>
     </div>
@@ -2436,7 +2439,7 @@ function taxCalc(reg,inv,q,buy,items,saleT,sale){
   if(sale>0)flows.push({t:saleT,amt:sale-taxSale-cust/q});else if(flows.length)flows[flows.length-1].amt-=cust/q;
   return {tax,cust,net,flows,taxSale:taxSale*q};
 }
-function taxNote(reg){return reg.exempt?"Isento de IR para pessoa física (CRI, CRA e debêntures incentivadas)." :"IR pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720, 15% acima), IOF só nos primeiros 30 dias"+(reg.cust==="TD"?", custódia B3 de 0,20% a.a.":reg.cust==="SELIC"?", custódia de 0,20% a.a. acima de R$ 10 mil":reg.cust==="B1"?(reg.early?", custódia de até 0,10% a.a. por vender antes do fim (a B3 isenta resgates de até 4 salários mínimos no Educa+ e 6 no RendA+; aqui é cobrada sobre o valor todo)":", sem custódia levando até o fim"):"")+"."}
+function taxNote(reg){return reg.exempt?"Isento de IR para pessoa física (CRI, CRA e debêntures incentivadas)." :"IR pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720, 15% acima), IOF só nos primeiros 30 dias"+(reg.cust==="TD"?", custódia B3 de 0,20% ao ano":reg.cust==="SELIC"?", custódia de 0,20% a.a. acima de R$ 10 mil":reg.cust==="B1"?(reg.early?", custódia de até 0,10% a.a. por vender antes do fim (a B3 isenta resgates de até 4 salários mínimos no Educa+ e 6 no RendA+; aqui é cobrada sobre o valor todo)":", sem custódia levando até o fim"):"")+"."}
 
 /* ================= Vender agora x manter até o vencimento ================= */
 // r* = rentabilidade líquida anual que o dinheiro da venda precisa render para empatar com manter
@@ -3051,7 +3054,7 @@ function ladderCalc(){
     +'</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td></td><td>'+brl(TT("cpn"))+'</td><td>'+brl(TT("venc"))+'</td><td>'+brl(TT("gross"))+'</td><td>'+brl(TT("gross")-TT("net"))+'</td><td><b>'+brl(TT("net"))+'</b></td><td><b>'+brl(TT("real"))+'</b></td></tr></tfoot></table></div>';
   h+='<div class="label" style="margin-top:12px">Títulos a comprar</div>';
   h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab"><thead><tr><th style="text-align:left">Título</th><th class="c-tx">Taxa de<br>compra</th><th>Qtd.</th><th>Aplicar</th><th>Recebe<br><small>líquido</small></th><th class="c-ph">Em valores<br>de hoje</th></tr></thead><tbody>'+U.map(c=>'<tr><td style="text-align:left"><b>'+esc(c.K.td)+' '+(c.K.b1?Y(parseDate(c.d)):Y(c.mat))+'</b><br><small>'+esc(c.pag)+' · PU '+fx(c.pu,2)+'</small></td><td class="c-tx">'+fr(c.K.fam,c.buy)+'</td><td>'+fx(c.q,2)+'</td><td>'+compactBRL(c.inv)+'</td><td>'+compactBRL(c.net)+'</td><td class="c-ph">'+compactBRL(c.real)+'</td></tr>').join("")+'</tbody></table></div>';
-  h+='<p class="sub" style="font-size:.82rem;margin-top:8px">Títulos usados: '+esc(tipos)+'. '+(mode==="equal"?'Mesmo valor aplicado em cada título que paga dentro do período.':'O app escolhe quanto comprar de cada título para que o valor líquido recebido em cada ano, em reais de hoje, fique o mais igual possível no período (otimização com quantidades não negativas); títulos que não ajudam ficam de fora.')+' Entram os títulos que vencem de '+y0+' a '+y1+'. O RendA+ e o Educa+ ficam de fora: pagam em parcelas mensais e não se comparam aos demais (veja-os em Calcular título). Cupons de títulos com juros semestrais podem cair antes do período. Taxas de compra do Tesouro Direto de '+(TD_DATE?fdate(TD_DATE):fdate(VAL))+'; preço pela metodologia oficial; quantidades arredondadas para baixo em 0,01 título (mínimo de R$ 30 por título). Líquido: IR pela tabela regressiva em cada pagamento e custódia da B3. IPCA+ e Selic usam a projeção escolhida em Mercado ('+esc(piModeName())+').</p>';
+  h+='<p class="sub" style="font-size:.82rem;margin-top:8px">Títulos usados: '+esc(tipos)+'. '+(mode==="equal"?'Mesmo valor aplicado em cada título que paga dentro do período.':'O app escolhe quanto comprar de cada título para que o valor líquido recebido em cada ano, em reais de hoje, fique o mais igual possível no período (otimização com quantidades não negativas); títulos que não ajudam ficam de fora.')+' Entram os títulos que vencem de '+y0+' a '+y1+'. O RendA+ e o Educa+ ficam de fora: pagam em parcelas mensais e não se comparam aos demais (veja-os em Calcular título). Cupons de títulos com juros semestrais podem cair antes do período. Taxas de compra do Tesouro Direto de '+(TD_DATE?fdate(TD_DATE):fdate(VAL))+'; preço pela metodologia oficial; quantidades arredondadas para baixo em 0,01 título (mínimo de R$ 30 por título). Líquido: IR pela tabela regressiva em cada pagamento e custódia da B3. IPCA+ e Selic usam a projeção escolhida em Mercado › Inflação; hoje: '+esc(piModeName())+'.</p>';
   out.innerHTML=h;
 }
 function ladderChartY(YR,y0,y1){
@@ -3200,9 +3203,9 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=(FV.l.length?favHtml():"")+P(painelHtml())+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
+  try{if(activeMod==="rs")h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+P(agendaHtml())+P(basesHtml());
   else if(activeMod==="fv")h=favHtml();
-  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml());
+  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml()+euTreasuryHtml());
   else if(activeMod==="cr")h=P(crHtml())+P(debHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+P(ibgeCalHtml());
   else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
@@ -4409,11 +4412,12 @@ try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="o
 function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
 async function atGet(p){const r=await fetch(atUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const atNm=x=>x==null?x:String(x).replace(/\. (?=(INC|CORP|LTD|LIMITED|PLC|S\.?A|CO|N\.?V)\b)/g,", ").replace(/^Petróleo\. /,"Petróleo, ");
 const AT_FUNDO=new Set(["FII","Fiagro","FI-Infra"]);
 function atBoot(){
   if(AT.idx||AT.load)return AT.load;AT.err=null;
   AT.load=Promise.all([atGet("idx.json"),atGet("cal.json"),atGet("bench.json")]).then(([i,c,b])=>{
-    AT.idx=i;AT.C={};i.cols.forEach((n,k)=>AT.C[n]=k);
+    AT.idx=i;AT.C={};i.cols.forEach((n,k)=>AT.C[n]=k);i.setores=(i.setores||[]).map(atNm);i.rows.forEach(r=>{r[1]=atNm(r[1])});
     AT.sk=i.rows.map(r=>fnNorm(r[0]+" "+r[1]+" "+(i.setores[r[AT.C.setor]]||"")));
     AT.cal=c.d;AT.B=b;AT.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));AT.L=lvBuild(AT.cal,b);AT.load=null;atHash();if(FNM.has(activeMod))fnCalc();extApply();
   }).catch(e=>{AT.err=e;AT.load=null;if(FNM.has(activeMod))fnCalc()});
@@ -4426,6 +4430,7 @@ function atDecode(j){
   for(let x=I.length-1;x>=0;x--){while(k>=0&&adj[k][0]>I[x]){acc*=adj[k][1];k--}Q[x]=R[x]*acc}
   const M=new Map();I.forEach((ix,x)=>{const t=AT.T[ix],d=new Date(t);M.set(d.getUTCFullYear()*12+d.getUTCMonth(),{q:Q[x],p:R[x]})});
   const MK=[...M.keys()].sort((a,b)=>a-b);
+  j.nome=atNm(j.nome);j.setor=atNm(j.setor);j.sub=atNm(j.sub);
   return Object.assign(j,{I,Q,R,M,MK,n:j.t,lab:j.t,rlab:"Desde "+new Date(AT.T[I[0]]).getUTCFullYear(),riskNote:"as cotações diárias com proventos",monNote:"Retorno total (cotação com proventos reinvestidos) calculado com os fechamentos da B3."});
 }
 const atRow=t=>{const R=AT.idx.rows;for(let j=0;j<R.length;j++)if(R[j][0]===t)return R[j];return null};
@@ -4439,7 +4444,7 @@ function atOpen(t){AT.cur=t;AT.q="";try{history.replaceState(null,"","#ativo="+t
 function atShell(m){
   const o=$("fnOut");if(!o)return null;
   if(FN.view!==m){FN.view=m;
-    if(m==="aa")o.innerHTML='<section class="panel fnsrch"><label class="label" for="atQ">Buscar ativo</label><div class="fnqbox"><input id="atQ" autocomplete="off" placeholder="Código ou nome: PETR4, HGLG11, BOVA11, Itaú…" value="'+esc(AT.q)+'"><div id="atRes" class="fnres" hidden></div></div><p class="sub" style="margin-top:6px;font-size:.82rem">Ações, units, FIIs, Fiagros, ETFs e BDRs negociados na B3. Cotações e proventos da B3, balanços e informes dos FIIs da CVM.</p></section><div id="atBody"></div>';
+    if(m==="aa")o.innerHTML='<section class="panel fnsrch"><label class="label" for="atQ">Buscar ativo</label><div class="fnqbox"><input id="atQ" autocomplete="off" placeholder="Código ou nome: PETR4, HGLG11, BOVA11, Itaú…" value="'+esc(AT.q)+'"><div id="atRes" class="fnres" hidden></div></div><p class="sub" style="margin-top:6px;font-size:.82rem">Ações, units, FIIs, Fiagros, ETFs e BDRs negociados na B3. Cotações e proventos da B3, balanços e informes dos FIIs da CVM e, nos BDRs, dados da empresa nos EUA (SEC).</p></section><div id="atBody"></div>';
     else if(m==="ar")o.innerHTML='<section class="panel"><h3>Ranking de ativos</h3><p class="sub">Filtre por tipo e setor e ordene por qualquer indicador. Clique no ativo para abrir a análise.</p><div id="atRkF"></div><div id="atRkT"></div></section>';
     else o.innerHTML='<section class="panel"><h3>Comparar ativos</h3><p class="sub">Escolha até 25 ativos (ações, FIIs, ETFs ou BDRs) para comparar retorno com proventos, risco e indicadores no mesmo período.</p><div class="fnqbox" style="margin-top:8px"><input id="atCq" autocomplete="off" placeholder="Adicionar ativo: código ou nome"><div id="atCres" class="fnres" hidden></div></div><div id="atCbody"></div></section>';
   }
@@ -4468,7 +4473,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml());docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -4513,7 +4518,7 @@ function atPriceHtml(A){
 }
 function atProvHtml(A){
   const ev=(A.adj||[]).filter(e=>!String(e[2]).startsWith("S")).map(e=>({ix:e[0],f:e[1],tp:e[2],v:e[3],dc:e[4]}));
-  if(!ev.length)return A.tipo==="ETF"||A.tipo.startsWith("BDR")?"":'<section class="panel"><h3>Proventos</h3><p class="sub">Nenhum provento registrado na B3 para este ativo.</p></section>';
+  if(!ev.length)return A.tipo==="ETF"||A.tipo.startsWith("BDR")||A.tipo==="Tesouro Direto"?"":'<section class="panel"><h3>Proventos</h3><p class="sub">Nenhum provento registrado na B3 para este ativo.</p></section>';
   const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));
   const fac=ix=>spl.reduce((a,e)=>e[0]>ix?a*e[1]:a,1); // converte valores antigos para a base de ações de hoje
   const NM={D:"Dividendo",J:"JCP",R:"Rendimento",E:"Rendimento (estimado)",A:"Amortização",C:/RENDA|EDUCA/.test(A.t)?"Parcela mensal (estimada)":"Cupom"};const PAG={};(A.evc||[]).forEach(e=>{if(e[3])PAG[e[0]+"|"+e[1]+"|"+(+e[2]).toFixed(8)]=e[3]});
@@ -4521,12 +4526,12 @@ function atProvHtml(A){
   const yrs=Object.keys(anos).map(Number).sort((a,b)=>a-b).slice(-12);
   const pxY=y=>{let best=null;for(let x=0;x<A.I.length;x++){const d=new Date(AT.T[A.I[x]]);if(d.getUTCFullYear()===y)best=x}return best==null?null:A.R[best]*fac(A.I[best])};
   let h='<section class="panel"><h3>Proventos</h3>';
-  if(yrs.length>1)h+='<div class="label">Proventos por ano (R$ por '+(AT_FUNDO.has(A.tipo)?'cota':'ação')+', na base de ações de hoje)</div>'+fnChart([{lab:"Proventos",col:"var(--gain)",pts:yrs.map(y=>[Date.UTC(y,6,1),anos[y]])}],{fmt:"brl",bars:true,zero:true,h:170,aria:"Proventos por ano"});
+  if(yrs.length>1)h+='<div class="label">Proventos por ano (R$ por '+(AT_FUNDO.has(A.tipo)?'cota':'ação')+', na base de '+(AT_FUNDO.has(A.tipo)?'cotas':'ações')+' de hoje)</div>'+fnChart([{lab:"Proventos",col:"var(--gain)",pts:yrs.map(y=>[Date.UTC(y,6,1),anos[y]])}],{fmt:"brl",bars:true,zero:true,h:170,aria:"Proventos por ano"});
   h+='<div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Ano</th>'+yrs.slice().reverse().map((y,j)=>'<th'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>'+y+'</th>').join("")+'</tr></thead><tbody><tr><td style="text-align:left">Total por ação</td>'+yrs.slice().reverse().map((y,j)=>'<td'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>R$ '+fx(anos[y],2)+'</td>').join("")+'</tr><tr><td style="text-align:left">Dividend yield <small>(sobre o preço de fim de ano)</small></td>'+yrs.slice().reverse().map((y,j)=>{const p=pxY(y);return '<td'+(j>=8?' class="c-md"':j>=5?' class="c-sm"':'')+'>'+(p?fx(anos[y]/p*100,2)+'%':'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
   if(AT_FUNDO.has(A.tipo)){const L=ev.filter(e=>e.tp!=="A").slice(-24);if(L.length>3)h+='<div class="label" style="margin-top:10px">Rendimento mensal por cota</div>'+fnChart([{lab:"Rendimento",col:"var(--gain)",pts:L.map(e=>[Date.parse(e.dc+"T00:00:00Z"),e.v*fac(e.ix)])}],{fmt:"brl",bars:true,zero:true,h:160,aria:"Rendimentos"})}
   h+='<div class="label" style="margin-top:10px">Últimos proventos</div><div class="tablewrap" style="max-height:340px"><table class="ctab"><thead><tr><th style="text-align:left">Data com</th><th style="text-align:left" class="c-ph">Pagamento</th><th style="text-align:left">Tipo</th><th>Valor</th><th>% do preço</th></tr></thead><tbody>';
   ev.slice().reverse().slice(0,40).forEach(e=>{const pg=PAG[e.dc+"|"+e.tp+"|"+(+e.v).toFixed(8)];h+='<tr><td style="text-align:left">'+fdate(Date.parse(e.dc+"T00:00:00Z"))+'</td><td style="text-align:left" class="c-ph">'+(pg&&pg<"9000"?fdate(Date.parse(pg+"T00:00:00Z")):pg?'a definir':'—')+'</td><td style="text-align:left">'+(NM[e.tp]||e.tp)+'</td><td>R$ '+fx(e.v,e.v<0.1?4:2)+'</td><td>'+fx((1-e.f)*100,2)+'%</td></tr>'});
-  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Valores por ação na data com, como divulgados pela B3. O JCP aparece pelo valor bruto. '+(ev.some(e=>e.tp==="E")?'Os rendimentos marcados como estimados (anteriores aos últimos 12 meses publicados pela B3) foram calculados pelo dividend yield mensal do informe da CVM sobre o valor patrimonial da cota. ':'')+'</p></section>';
+  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">'+(AT_FUNDO.has(A.tipo)?'Valores por cota na data com, como divulgados pela B3. ':'Valores por ação na data com, como divulgados pela B3. O JCP aparece pelo valor bruto. ')+(ev.some(e=>e.tp==="E")?'Os rendimentos marcados como estimados (anteriores aos últimos 12 meses publicados pela B3) foram calculados pelo dividend yield mensal do informe da CVM sobre o valor patrimonial da cota. ':'')+'</p></section>';
   return h;
 }
 function atFundHtml(A){
@@ -4565,14 +4570,17 @@ function atPeerHtml(A){
   const C=AT.C,R=AT.idx.rows,me=atRow(A.t);if(!me)return "";
   const grp=R.filter(r=>r[C.tipo]===me[C.tipo]&&(me[C.setor]==null||!AT.idx.setores[me[C.setor]]||r[C.setor]===me[C.setor])&&(r[C.liq]||0)>=1e5);
   if(grp.length<5)return "";
-  const cat=(AT.idx.setores[me[C.setor]]||me[C.tipo]);
+  const sn=AT.idx.setores[me[C.setor]],cat=!sn||sn===me[C.tipo]||/n[ãa]o classificad/i.test(sn)?"":sn;
   const pos=(col,hb)=>{const v=me[C[col]];if(v==null)return null;const vals=grp.map(r=>r[C[col]]).filter(x=>x!=null);const n=vals.length;if(n<4)return null;const better=vals.filter(x=>hb?x>v:x<v).length;return {rk:better+1,n,q:Math.min(4,Math.floor(better/n*4)+1),med:vals.slice().sort((a,b)=>a-b)[Math.floor(n/2)],v}};
   const rows=[["Retorno 12 meses","r12",true,"p"],["Retorno 36 meses","r36",true,"p"],["Dividend yield","dy",true,"p"],["P/L","pl",false,"n"],["P/VP","pvp",false,"n"],["ROE","roe",true,"p"],["Volatilidade 12m","v12",false,"p"]];
-  let h='<section class="panel"><h3>Comparação com os pares</h3><p class="sub">'+esc(me[C.tipo])+' · '+esc(cat)+' · '+grp.length+' ativos com liquidez acima de R$ 100 mil por dia. 1º quartil = entre os 25% melhores.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Indicador</th><th>'+esc(A.t)+'</th><th>Mediana</th><th>Posição</th><th>Quartil</th></tr></thead><tbody>';
+  let h='<section class="panel"><h3>Comparação com os pares</h3><p class="sub">'+esc(me[C.tipo])+(cat?' · '+esc(cat):'')+' · '+grp.length+' ativos com liquidez acima de R$ 100 mil por dia. 1º quartil = entre os 25% melhores.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Indicador</th><th>'+esc(A.t)+'</th><th>Mediana</th><th>Posição</th><th>Quartil</th></tr></thead><tbody>';
   rows.forEach(([lab,col,hb,k])=>{const p=pos(col,hb);if(!p)return;const f=v=>k==="p"?fnPctT(v):fx(v,2);h+='<tr><td style="text-align:left">'+lab+'</td><td><b>'+f(p.v)+'</b></td><td>'+f(p.med)+'</td><td>'+p.rk+'º de '+p.n+'</td><td><span class="fnq '+["","fnq1","fnq2","fnq3","fnq4"][p.q]+'">'+p.q+'º</span></td></tr>'});
   return h+'</tbody></table></div><button type="button" class="link" data-atrkcat="'+me[C.tipo]+'|'+(me[C.setor]!=null?me[C.setor]:"")+'">Ver o ranking ›</button></section>';
 }
-function atSrcHtml(){return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: B3 (cotações históricas, proventos, desdobramentos e cadastro), CVM (demonstrações financeiras, composição do capital e informe mensal dos FIIs), Banco Central (CDI, IPCA e dólar) e B3 (Ibovespa e IFIX). Rentabilidade passada não garante rentabilidade futura. Cotações até '+(AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
+function atSrcHtml(A){const tp=A&&A.tipo||"",td=tp==="Tesouro Direto",bdr=tp==="BDR";
+  const f=td?'Tesouro Nacional (preços e taxas do Tesouro Direto, pelo Tesouro Transparente), Banco Central (CDI, IPCA e dólar) e B3 (Ibovespa e IFIX)'
+    :'B3 (cotações históricas, proventos, desdobramentos, cadastro, Ibovespa e IFIX), '+(AT_FUNDO.has(tp)?'CVM (informe mensal dos fundos)':bdr?'SEC (balanços e documentos da empresa nos EUA), Nasdaq (cotação em Nova York), Cboe (S&P 500)':'CVM (demonstrações financeiras e composição do capital)')+' e Banco Central (CDI, IPCA e dólar)';
+  return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: '+f+'. Rentabilidade passada não garante rentabilidade futura. Cotações até '+(AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
 
 /* ---------- ranking */
 const AT_RKCOLS={
@@ -5636,12 +5644,12 @@ function docsFill(){
   if(!DOCS.m.has(c)){DOCS.m.set(c,null);atGet("d/"+c+".json").then(j=>{DOCS.m.set(c,j);docsFill()}).catch(()=>{DOCS.m.set(c,{docs:[]});docsFill()});return}
   const j=DOCS.m.get(c);if(!j)return;const L=j.docs||[];if(!L.length){el.hidden=true;return}
   const f=DOCS.f,V=L.filter(d=>f==="todos"||docGrupo(d)===f),hoje=Date.now();
-  let h='<h3>Documentos e fatos relevantes</h3><p class="sub">Publicados '+(j.fonte==="CVM"?'pela companhia na CVM':'pelo fundo no Fundos.NET da B3')+'. Clique para abrir o documento original.</p>'+fnSeg("docf",DOC_GR.filter(g=>g[0]==="todos"||L.some(d=>docGrupo(d)===g[0])),f);
+  let h='<h3>Documentos e fatos relevantes</h3><p class="sub">Os '+L.length+' documentos mais recentes publicados '+(j.fonte==="CVM"?'pela companhia na CVM (fatos relevantes, comunicados, avisos aos acionistas, resultados, assembleias e reuniões do conselho)':'pelo fundo no Fundos.NET da B3')+'. Clique para abrir o documento original.</p>'+fnSeg("docf",DOC_GR.filter(g=>g[0]==="todos"||L.some(d=>docGrupo(d)===g[0])),f);
   h+='<div class="tablewrap" style="max-height:420px;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Entrega</th><th style="text-align:left">Documento</th></tr></thead><tbody>';
   if(!V.length)h+='<tr><td colspan="2" class="sub" style="text-align:left">Nada neste grupo.</td></tr>';
   V.forEach(d=>{const t=Date.parse(d[0].slice(0,10)+"T00:00:00Z"),novo=hoje-t<4*864e5;const tit=[d[2],d[3]&&d[3]!==d[2]?d[3]:"",d[4]].filter(Boolean).join(" · ");
     h+='<tr><td style="text-align:left;white-space:nowrap">'+(isFinite(t)?fdate(t):esc(d[0]))+(novo?' <span class="fntag strong">novo</span>':'')+'</td><td style="text-align:left" class="tw"><a href="'+esc(/^https:\/\/(www\.rad\.cvm\.gov\.br|fnet\.bmfbovespa\.com\.br)\//.test(d[6])?d[6]:"#")+'" target="_blank" rel="noopener noreferrer">'+esc(tit||"Documento")+'</a>'+(d[5]?'<small style="display:block;color:var(--muted)">'+esc(d[5])+'</small>':'')+'</td></tr>'});
-  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Os '+L.length+' documentos mais recentes'+(j.fonte==="CVM"?' (fatos relevantes, comunicados, avisos aos acionistas, resultados, assembleias e reuniões do conselho)':'')+'. Fonte: '+esc(j.fonte||"")+'.</p>';
+  h+='</tbody></table></div>';
   el.innerHTML=h;el.hidden=false;
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-docf]");if(x){DOCS.f=x.dataset.docf;docsFill()}});
@@ -5897,7 +5905,7 @@ try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="o
 try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
 function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
 const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
-function euRefresh(){if(typeof activeMod==="undefined")return;if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
 function euBoot(){
   if(EU.S||EU.load)return EU.load;EU.err=null;
   const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);
@@ -5933,7 +5941,7 @@ function euSpark(P,k){const L=P.slice(-66);if(L.length<5)return "";let lo=Infini
 function euCard(k){const P=EU.S&&EU.S[k];if(!P||P.length<3)return "";const u=P[P.length-1],[nome]=EU_SER[k];
   if(k==="cdi"){const r12=euVar(P,k,euBase(P,"12")),ra=euVar(P,k,euBase(P,"ano"));return '<div class="pnlc"><span>CDI acumulado</span><b>'+(r12!=null?fx(r12,2)+'%':'—')+'</b><small>12 meses · no ano '+(ra!=null?fx(ra,2)+'%':'—')+'</small>'+euSpark(P,k)+'</div>'}
   const dd=euVar(P,k,euBase(P,"dia")),dm=euVar(P,k,euBase(P,"mes")),da=euVar(P,k,euBase(P,"ano")),d12=euVar(P,k,euBase(P,"12"));
-  return '<div class="pnlc"><span>'+esc(nome)+' <em>'+fdate(u[0]).slice(0,5)+'</em></span><b>'+euFmtV(k,u[1])+' <i>'+euFmtD(k,dd)+'</i></b><small>mês '+euFmtD(k,dm)+' · ano '+euFmtD(k,da)+' · 12m '+euFmtD(k,d12)+'</small>'+euSpark(P,k)+'</div>'}
+  return '<div class="pnlc"><span>'+esc(nome)+' <em>'+fdate(u[0]).slice(0,5)+(k==="usd"&&EU.usdHora?' · '+esc(EU.usdHora)+', parcial':'')+'</em></span><b>'+euFmtV(k,u[1])+' <i>'+euFmtD(k,dd)+'</i></b><small>mês '+euFmtD(k,dm)+' · ano '+euFmtD(k,da)+' · 12m '+euFmtD(k,d12)+'</small>'+euSpark(P,k)+'</div>'}
 const EU_PERS=[["1","1 mês"],["6","6 meses"],["ano","No ano"],["12","12 meses"],["36","3 anos"],["60","5 anos"]];
 function euPerfChart(keys,cols){
   const S=EU.S,out=[];let tA=0;keys.forEach(k=>{const P=S[k];if(P&&P.length)tA=Math.max(tA,P[P.length-1][0])});
@@ -5946,18 +5954,20 @@ function euTabela(keys){
   return h+'</tbody></table></div>'}
 /* painel resumo (Mercado › Resumo e Bolsa › EUA) */
 /* PTAX do dia (robô de mercado, Banco Central) entra antes de a base da Bolsa ter o pregão de hoje */
-function euUsdHoje(){try{const d=(typeof FX_TOP!=="undefined"&&FX_TOP)||null,U=EU.S&&EU.S.usd;if(!d||!d.data||!(+d.venda>0)||!U||!U.length)return;const t=Date.parse(d.data+"T00:00:00Z");if(t>U[U.length-1][0])U.push([t,+d.venda]);else if(t===U[U.length-1][0])U[U.length-1][1]=+d.venda}catch(e){}}
+function euUsdHoje(){try{const d=(typeof FX_TOP!=="undefined"&&FX_TOP)||null,U=EU.S&&EU.S.usd;if(!d||!d.data||!(+d.venda>0)||!U||!U.length)return;
+  const put=(dt,v)=>{const t=Date.parse(dt+"T00:00:00Z");if(t>U[U.length-1][0])U.push([t,v]);else if(t===U[U.length-1][0])U[U.length-1][1]=v};
+  put(d.data,+d.venda);const b=d.boletim;EU.usdHora=null;if(b&&b.data>d.data&&+b.venda>0){put(b.data,+b.venda);EU.usdHora=b.hora||"parcial"}}catch(e){}}
 function painelHtml(modo){
   if(!EU.S){euBoot();return EU.err&&!EU.load?'':'<p class="sub">Carregando o painel de índices…</p>'}
   euUsdHoje();
   const eua=modo==="eua";
-  const cards=eua?["spx","comp","djia","ndx","vix","t10","t2","usd"]:["ibov","ifix","spx","comp","djia","usd","spxbrl","vix","t10","cdi"];
+  const cards=eua?["spx","comp","djia","ndx","vix","t10","usd"]:["ibov","ifix","spx","comp","djia","usd","spxbrl","vix","t10","cdi"];
   let h='<span class="label">'+(eua?'Bolsa americana hoje':'Painel de índices')+'</span><p class="sub" style="margin-top:4px">'+(eua?'Fechamento mais recente de cada índice, com a variação no dia, no mês, no ano e em 12 meses. Juros e VIX mostram a variação em pontos.':'Bolsas do Brasil e dos EUA, dólar e juros: fechamento mais recente de cada um, com a variação no dia, no mês, no ano e em 12 meses (a data aparece ao lado do nome).')+'</p>';
   h+='<div class="pnlg">'+cards.map(euCard).join("")+'</div>';
   const keys=eua?["spx","comp","djia","ndx","ibov","spxbrl"]:["ibov","spx","comp","djia","spxbrl","usd","cdi"];
   h+='<div class="label" style="margin-top:14px">Desempenho comparado (%)</div>'+euPerfChart(keys,["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2","#64748b"]);
   h+=euTabela(eua?["spx","comp","djia","ndx","vix","t10","t2","t3m","usd","spxbrl","ibov"]:["ibov","ifix","spx","comp","djia","ndx","spxbrl","usd","vix","t10","cdi"]);
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Índices de preço (sem dividendos), cada um no último fechamento disponível (a data aparece ao lado). Ibovespa e IFIX entram com o fechamento oficial da B3, publicado na manhã do dia seguinte. S&P 500 em reais = S&P 500 × dólar PTAX do mesmo dia (o que um investidor brasileiro teria sem proteção cambial). Fontes: B3 (Ibovespa e IFIX), Banco Central (dólar PTAX e CDI), Cboe (S&P 500, VIX e Dow Jones, pelo índice DJX × 100), Nasdaq (Nasdaq Composite e Nasdaq-100) e Departamento do Tesouro dos EUA (juros dos Treasuries). bps = centésimos de ponto percentual.</p>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Índices de preço (sem dividendos), cada um no último fechamento disponível (a data aparece ao lado). Ibovespa e IFIX entram com o fechamento oficial da B3, publicado na manhã do dia seguinte. S&P 500 em reais = S&P 500 × dólar PTAX do mesmo dia (o que um investidor brasileiro teria sem proteção cambial). Fontes: B3 (Ibovespa e IFIX), Banco Central (dólar PTAX e CDI), Cboe (S&P 500, VIX e Dow Jones, pelo índice DJX × 100), Nasdaq (Nasdaq Composite e Nasdaq-100) e Departamento do Tesouro dos EUA (juros dos Treasuries).'+(EU.usdHora?' Dólar com o boletim parcial da PTAX de hoje.':'')+(eua?' bps = centésimos de ponto percentual.':'')+'</p>';
   return h;
 }
 
@@ -5970,14 +5980,17 @@ function euCalc(){
   if(!AT.idx){$("euRkT").innerHTML='<p class="sub">Carregando a lista de BDRs da B3…</p>';atBoot().then(()=>{if(activeMod==="au")euCalc()});return}
   euRk();
 }
+function euSer5(k){const S=EU.S,cut=Date.now()-5*365.25*DAY;return fnThin((S[k]||[]).filter(p=>p[0]>=cut).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v])}
 function euJurosHtml(){
-  const S=EU.S,cut=Date.now()-5*365.25*DAY,f=k=>(S[k]||[]).filter(p=>p[0]>=cut);if(!S.t10)return "";
-  const th=fnThin;const tt=k=>th(f(k).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
+  const S=EU.S;if(!S.vix)return "";
+  return '<h3>Volatilidade nos EUA (VIX)</h3><div class="label">VIX, 5 anos (volatilidade esperada do S&P 500 para os próximos 30 dias)</div>'+fnChart([{lab:"VIX",col:"#9333ea",w:1.8,pts:euSer5("vix")}],{fmt:"num",h:180,aria:"VIX"})+'<p class="sub" style="font-size:.8rem">VIX acima de 30 costuma indicar estresse no mercado; abaixo de 15, calmaria. Os juros dos EUA (Treasuries, Fed e SOFR), com o histórico de 5 anos, estão em Mercado › Juros.</p>';
+}
+/* Mercado › Juros: histórico dos Treasuries, abaixo dos cartões de juros dos EUA */
+function euTreasuryHtml(){
+  if(!EU.S){euBoot();return ""}const S=EU.S;if(!S.t10)return "";
   const u10=S.t10[S.t10.length-1],u2=S.t2&&S.t2[S.t2.length-1];
-  let h='<h3>Juros e volatilidade nos EUA</h3>';
-  if(u2)h+='<p class="sub">Inclinação da curva (10 anos − 2 anos): <b>'+(u10[1]-u2[1]>=0?'+':'−')+Math.abs(Math.round((u10[1]-u2[1])*100))+' bps</b>'+(u10[1]<u2[1]?' — curva invertida: o mercado espera juros menores à frente, sinal que costuma anteceder desaceleração.':'.')+'</p>';
-  h+='<div class="label" style="margin-top:8px">Juros dos títulos do Tesouro americano, 5 anos (% a.a.)</div>'+fnChart([{lab:"10 anos",col:"#2563eb",w:2,pts:tt("t10")},{lab:"2 anos",col:"#dc2626",w:2,pts:tt("t2")},{lab:"3 meses",col:"#16a34a",w:1.8,pts:tt("t3m")}],{fmt:"pct",h:220,aria:"Juros do Tesouro americano"});
-  if(S.vix)h+='<div class="label" style="margin-top:12px">VIX, 5 anos (volatilidade esperada do S&P 500 para 30 dias)</div>'+fnChart([{lab:"VIX",col:"#9333ea",w:1.8,pts:tt("vix")}],{fmt:"num",h:180,aria:"VIX"})+'<p class="sub" style="font-size:.8rem">VIX acima de 30 costuma indicar estresse no mercado; abaixo de 15, calmaria.</p>';
+  let h='<div class="label" style="margin-top:14px">Treasuries, 5 anos (% a.a.)</div>'+fnChart([{lab:"10 anos",col:"#2563eb",w:2,pts:euSer5("t10")},{lab:"2 anos",col:"#dc2626",w:2,pts:euSer5("t2")},{lab:"3 meses",col:"#16a34a",w:1.8,pts:euSer5("t3m")}],{fmt:"pct",h:220,aria:"Juros do Tesouro americano"});
+  if(u2)h+='<p class="sub" style="font-size:.8rem">Inclinação da curva (10 anos − 2 anos) em '+fdate(u10[0])+': <b>'+(u10[1]-u2[1]>=0?'+':'−')+Math.abs(Math.round((u10[1]-u2[1])*100))+' bps</b>'+(u10[1]<u2[1]?'. Curva invertida: o mercado espera juros menores à frente, sinal que costuma anteceder desaceleração.':'.')+'</p>';
   return h;
 }
 const EU_RKCOLS=[["t","BDR",""],["setor","Setor","c-ph c-md"],["px","Preço US$","c-ph"],["d1","Dia (EUA)","c-ph c-sm"],["mcap","Valor de mercado","c-ph"],["pl","P/L",""],["pvp","P/VP","c-ph"],["roe","ROE","c-ph"],["ml","Marg. líq.","c-ph c-sm"],["crec","Receita 12m","c-ph c-sm"],["dy","DY (EUA)","c-ph c-md"],["r12","BDR 12m (R$)",""],["liq","Liquidez BDR","c-ph c-md"]];
@@ -6210,7 +6223,6 @@ function rsHtml(){
     const C=diCurve(dk),P=ks.length>1?diCurve(ks[ks.length-2]):[],j=C.find(x=>x.c==="F"+String(new Date(Date.parse(dk)).getUTCFullYear()+2).slice(2));if(j){const p=P.find(y=>y.c===j.c);add("DI janeiro/"+(2000+(+j.c.slice(1))),fx(j.tx,2)+"%",p?bpsC(j.tx-p.tx)+" no dia":"")}}
   if(b0){[["Prefixado 5 anos",t=>nssY(b0.pre,t),t=>nssY(b1.pre,t),5],["Prefixado 10 anos",t=>nssY(b0.pre,t),t=>nssY(b1.pre,t),10],["Juro real 5 anos",t=>nssY(b0.ipca,t),t=>nssY(b1.ipca,t),5],["Juro real 10 anos",t=>nssY(b0.ipca,t),t=>nssY(b1.ipca,t),10]].forEach(([l,f,g,t])=>add(l,fx(f(t),2)+"%",b1?bpsC(f(t)-g(t))+" no dia":""));
     const im=b=>((1+nssY(b.pre,5)/100)/(1+nssY(b.ipca,5)/100)-1)*100;add("Inflação implícita 5 anos",fx(im(b0),2)+"%",b1?bpsC(im(b0)-im(b1))+" no dia":"")}
-  if(FX_TOP&&FX_TOP.venda){const d=FX_TOP,b=d.boletim&&d.boletim.data>d.data?d.boletim:null,v=b?b.venda:d.venda,ref=b?d.venda:d.anterior&&d.anterior.venda;add("Dólar PTAX"+(b?" · "+b.hora:""),"R$ "+fx(v,4),ref?fxSigned((v/ref-1)*100)+(b?" sobre o fechamento":" no dia"):"")}
   if(MK.ima){["IMA-B","IRF-M","IMA-S"].forEach(n=>{const x=MK.ima.indices.find(r=>String(r.nome).toUpperCase()===n);if(x&&isFinite(x.dia)&&x.dia!==null){const v=x.dia;add(n+" no dia",'<span class="'+(v>0?'pos':v<0?'neg':'')+'">'+(v>0?'+':v<0?'−':'')+fx(Math.abs(v),2)+'%</span>',isFinite(x.mes)?"no mês "+fx(x.mes,2)+"%":"")}})}
   if(MK.cred){const ks=Object.keys(MK.cred.dias).sort(),D=MK.cred.dias[ks[ks.length-1]],P=ks.length>1?MK.cred.dias[ks[ks.length-2]]:null;if(D.ipca)add("Spread IPCA+ das debêntures",fx(D.ipca.mediana,2)+" p.p.",P&&P.ipca?bpsC(D.ipca.mediana-P.ipca.mediana)+" no dia":"mediana sobre a NTN-B")}
   if(MK.inf&&MK.inf.sgs&&MK.inf.sgs.ipca){const L=MK.inf.sgs.ipca,j=L.length-1;add("IPCA 12 meses",fx(m12(L,j),2)+"%",mname((+L[j][0].slice(0,4))*12+(+L[j][0].slice(5,7))-1)+": "+fx(L[j][1],2)+"% no mês")}
@@ -6326,8 +6338,8 @@ function fxJustoHtml(spot){
     const U=B.U,val=[null,null,U.dolar_global].concat(B.coOk?[U.commodities]:[]).concat(B.embiOk?[U.embi]:[]);
     h+='<details style="margin-top:10px"><summary class="label" style="cursor:pointer">2. Modelo de fundamentos (regressão)</summary><p class="sub" style="margin-top:6px">Ideia: o real se valoriza quando o dólar perde força no mundo e quando as commodities sobem, e se desvaloriza quando o risco-país aumenta. O app estima, com dados mensais de '+mname(fxYm(B.from))+' a '+mname(fxYm(B.to))+' ('+B.n+' meses), quanto cada fator explica do dólar e aplica os valores mais recentes. O modelo explica '+fx(B.r2*100,0)+'% das variações do período; a faixa normal (±1 desvio dos erros) é de ±'+fx((Math.exp(B.sd)-1)*100,1)+'%.</p><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab fxstat"><thead><tr><th style="text-align:left">Fator</th><th>Coeficiente</th><th style="text-align:left">Último valor</th></tr></thead><tbody>'
      +B.beta.map((b,i)=>'<tr><td style="text-align:left">'+nm[i]+'</td><td>'+fx(b,3)+'</td><td style="text-align:left"><small>'+(val[i]?fx(val[i].valor,2)+' em '+fdate(Date.parse(val[i].data)):i===1?'IPCA e CPI até '+mname(fxYm(B.to)):'—')+'</small></td></tr>').join("")+'</tbody></table></div>'
-     +((!B.embiOk||!B.coOk)?'<p class="sub" style="font-size:.8rem">Ficou de fora: '+[!B.coOk?'commodities (fonte indisponível)':'',!B.embiOk?'risco-país (série do EMBI+ desatualizada)':''].filter(Boolean).join(' e ')+'.</p>':'')+'</details>'}
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Banco Central (PTAX e paridades para o índice do dólar), IBGE (IPCA), BLS (CPI dos EUA), Fed de Nova York (SOFR)'+(B&&B.coOk?', Banco Central (IC-Br em dólares, commodities)':'')+(B&&B.embiOk?', Ipeadata/J.P. Morgan (EMBI+ Brasil)':'')+'. O dólar de hoje usa '+(spot!==FX._v[FX._v.length-1]?'o último boletim da PTAX':'a PTAX de fechamento')+'.</p>';
+     +((!B.embiOk||!B.coOk)?'<p class="sub" style="font-size:.8rem">Ficou de fora: '+[!B.coOk?'commodities (fonte indisponível)':'',!B.embiOk?'risco-país (a série pública do EMBI+ Brasil foi encerrada em 2024)':''].filter(Boolean).join(' e ')+'.</p>':'')+'</details>'}
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Banco Central (PTAX, paridades para o índice do dólar'+(B&&B.coOk?' e IC-Br em dólares, para as commodities':'')+'), IBGE (IPCA), BLS (CPI dos EUA), Fed de Nova York (SOFR)'+(B&&B.embiOk?', Ipeadata/J.P. Morgan (EMBI+ Brasil)':'')+'. O dólar de hoje usa '+(spot!==FX._v[FX._v.length-1]?'o último boletim da PTAX':'a PTAX de fechamento')+'.</p>';
   return h;
 }
 
@@ -6370,7 +6382,7 @@ function fxCalc(){
    +'<tr><td style="text-align:left">Percentil de hoje</td><td>'+fx(pct,0)+'</td><td style="text-align:left"><small>o dólar esteve mais barato que hoje em '+fx(pct,0)+'% dos dias do período</small></td></tr>'
    +'<tr><td style="text-align:left">Volatilidade anualizada</td><td>'+fx(vol,1)+'%</td><td style="text-align:left"><small>desvio-padrão das variações diárias × √252</small></td></tr>'
    +'</tbody></table></div>';
-  h+=fxJustoHtml(live?+live.venda:vL)+fxFutHtml()+fxRiscoHtml();
+  h+=fxJustoHtml(live?+live.venda:vL)+fxFutHtml();
   // boletins do dia
   if(B)h+='<div class="label" style="margin-top:14px">Boletins de '+fdate(Date.parse(B.data+"T00:00:00Z"))+'</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab"><thead><tr><th style="text-align:left">Horário</th><th style="text-align:left">Boletim</th><th>Compra</th><th>Venda</th></tr></thead><tbody>'+B.lista.map(b=>'<tr><td style="text-align:left">'+esc(b.hora)+'</td><td style="text-align:left">'+esc(b.tipo)+'</td><td>'+fx(+b.compra,4)+'</td><td>'+fx(+b.venda,4)+'</td></tr>').join("")+'</tbody></table></div>';
   // fechamentos mensais
