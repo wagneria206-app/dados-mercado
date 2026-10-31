@@ -1,0 +1,109 @@
+/* Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação */
+/* As cores vêm das variáveis de 10-base-e-cores.css, então tudo vale para o tema claro e o escuro. */
+
+/* ---------- abas: sempre numa linha; se não couberem, rolam para o lado */
+.tabs{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 1px;gap:6px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;white-space:nowrap;padding:7px 15px;min-height:38px;font-size:.88rem}
+.tabs button[hidden]{display:none!important}
+
+/* ---------- títulos de seção: o mesmo estilo em todas as telas de Mercado, Fundos e Bolsa */
+:is(#mkOut,#fnOut) .panel>:is(h3,.label):first-child,:is(#mkOut,#fnOut) .panel>.fnacts:first-child+.label,.fvhd h3{display:block;font:700 1.06rem/1.3 var(--f-display);letter-spacing:-.01em;text-transform:none;color:var(--ink);margin:0 0 2px}
+:is(#mkOut,#fnOut) .panel>.label:first-child+p.sub,:is(#mkOut,#fnOut) .panel>h3:first-child+p.sub{margin-top:2px!important}
+
+/* ---------- cartões de indicador (Resumo do mercado, painel de índices): rótulo numa linha, valor, detalhe */
+.rsgrid,.pnlg{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:8px;margin-top:10px}
+.rsgrid>div,.pnlc{background:var(--sunk);border:0;border-radius:10px;padding:10px 12px 9px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rsgrid>div>span,.pnlc>span{display:block;font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rsgrid>div>b,.pnlc>b{display:block;font-size:1.12rem;font-weight:700;margin:0;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.rsgrid>div>small{font-size:.74rem;color:var(--muted);line-height:1.35}
+.pnlc b i span{font-size:inherit;color:inherit}
+.pnlc b i span.pos{color:var(--gain)}.pnlc b i span.neg{color:var(--loss)}
+.pnlm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 6px;margin:4px 0 0}
+.pnlm>div{min-width:0}
+.pnlm dt,.pnlm dd{padding:0;border:0;margin:0;text-align:left}
+.pnlm dt{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;line-height:1.3}
+.pnlm dd{font:600 .78rem/1.35 var(--f-body);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.pnlc .pnlm dd span{font-size:inherit;color:inherit}
+.pnlc .pnlm dd span.pos{color:var(--gain)}.pnlc .pnlm dd span.neg{color:var(--loss)}
+.pnlc svg{margin-top:auto;padding-top:4px;height:30px}
+
+/* ---------- cabeçalho: busca, botões de tema/ajustes/apresentação */
+.brandrow{gap:12px}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hstat{gap:8px}
+.hbtn{display:inline-grid;place-items:center;width:38px;height:38px;flex:none;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;padding:0}
+.hbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.hbtn:hover{background:rgba(255,255,255,.18)}
+#btTema.on svg{fill:currentColor}
+.busca{position:relative;flex:1 1 300px;max-width:460px;min-width:220px}
+.busca>svg{position:absolute;left:12px;top:50%;width:17px;height:17px;transform:translateY(-50%);stroke:var(--hdr-muted);fill:none;stroke-width:2;stroke-linecap:round;pointer-events:none}
+.busca input{width:100%;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;padding:0 34px 0 38px;font:500 .9rem var(--f-body);-webkit-appearance:none;appearance:none}
+.busca input::placeholder{color:var(--hdr-muted);opacity:1}
+.busca input:focus{outline:none;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45)}
+.busca input::-webkit-search-cancel-button{-webkit-appearance:none}
+.busca kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:600 .72rem var(--f-body);color:var(--hdr-muted);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:1px 6px;pointer-events:none}
+.busca input:focus~kbd,.busca input:not(:placeholder-shown)~kbd{display:none}
+.buscares{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:60;min-width:340px;max-height:min(70vh,520px);overflow:auto;padding:6px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 36px rgba(8,18,36,.24)}
+.bzh{font:700 .66rem var(--f-display);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:9px 10px 4px}
+.bzh.bzw{text-transform:none;letter-spacing:0;font:500 .84rem var(--f-body);padding:10px}
+.bzi{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:7px 10px;cursor:pointer;color:inherit;font:inherit;min-height:0}
+.bzi b{display:block;font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bzi small{display:block;font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bzi.on,.bzi:hover{background:var(--accent-soft)}
+@media (max-width:1100px){.busca{order:3;flex:1 1 100%;max-width:none}}
+@media (max-width:560px){.appbar .btn.ref{font-size:0;gap:0;width:38px;padding:0;justify-content:center}.appbar .btn.ref svg{width:17px;height:17px}.busca kbd{display:none}}
+
+/* ---------- janela de ajustes */
+.ajdlg{border:0;border-radius:16px;padding:0;width:min(560px,calc(100vw - 32px));max-height:min(88vh,780px);background:var(--surface);color:var(--ink);box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.ajdlg::backdrop{background:rgba(8,15,30,.5)}
+.ajdlg[open]{display:block;overflow:auto}
+.ajhd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 14px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:1}
+.ajhd h2{margin:0;font:700 1.15rem var(--f-display)}
+.ajdlg section{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.ajdlg section:last-child{border-bottom:0}
+.ajdlg h3{margin:0;font:700 .95rem var(--f-display)}
+.ajdlg .sub{font-size:.84rem}
+.ajdlg select{max-width:100%}
+.ajseg{display:inline-flex;align-self:flex-start;background:var(--sunk);border-radius:10px;padding:3px;gap:3px}
+.ajop{position:relative}
+.ajop input{position:absolute;opacity:0;pointer-events:none}
+.ajop span{display:block;padding:7px 16px;border-radius:8px;font:600 .88rem var(--f-body);color:var(--muted);cursor:pointer}
+.ajop input:checked+span{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.ajop input:focus-visible+span{outline:2px solid var(--accent);outline-offset:1px}
+.ajbl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ajbl li{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--sunk);border-radius:10px;padding:6px 8px 6px 12px}
+.ajbl label{display:flex;gap:10px;align-items:center;font-size:.9rem;cursor:pointer;min-width:0}
+.ajbl input{width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.ajmv{display:flex;gap:4px;flex:none}
+.ajdlg .hbtn{width:34px;height:34px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.ajdlg .hbtn:hover{background:var(--sunk)}
+.ajdlg .hbtn:disabled{opacity:.3;cursor:default}
+.ajdlg .fvsync{margin:0;border:0;padding:0}
+.ajdlg .btn{align-self:flex-start}
+.fvsyncnote{font-size:.82rem;margin-top:10px}
+
+/* ---------- tabelas: números alinhados; nomes à esquerda e com espaço para não virar uma coluna estreita */
+.ctab td:not(:first-child){font-variant-numeric:tabular-nums}
+.ctab td .link{text-align:inherit}
+@media (min-width:1000px){.ctab td.tw{min-width:240px}.fnrk .fnnm,.fnrk td.tw{min-width:280px}}
+
+/* ---------- modo apresentação (reuniões): sem cabeçalho, notas de rodapé e botões de edição; letras um pouco maiores */
+.apressai{display:none}
+html.apres,html.apres body{font-size:17.5px}
+html.apres .appbar,html.apres #healthBar,html.apres .fonteaviso a,html.apres .notes,html.apres details.method,html.apres #methodBox,
+html.apres p.sub[style*="font-size:.8"],html.apres p.sub[style*="font-size:.7"],html.apres .fvsyncnote,html.apres [data-rel],html.apres .fvx,html.apres .fvadd,
+html.apres .fvchip button,html.apres .fnacts,html.apres [data-fvperm]{display:none!important}
+html.apres .areas{top:0;margin-top:0}
+html.apres .wrap{padding-top:10px}
+html.apres .apressai{display:inline-flex;align-items:center;gap:8px;position:fixed;right:18px;bottom:18px;z-index:80;border:0;border-radius:999px;padding:10px 18px;background:var(--primary);color:var(--on-primary);font:600 .85rem var(--f-body);box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;opacity:.85}
+html.apres .apressai:hover{opacity:1}
+@media print{.apressai,.busca,.hbtn{display:none!important}}
+
+/* ---------- variações do dólar e quadros de totais: mesmo fundo dos cartões de indicador */
+.fxvar>div{border:0;background:var(--sunk);border-radius:10px}
+.tot>div{border-radius:10px}
+
+/* ---------- menu principal em telas estreitas: os botões encolhem em vez de alargar a página */
+.areas button{min-width:0}
+.areas button span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}

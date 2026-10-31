@@ -26,6 +26,12 @@ for(const s of cs){s.scrollIntoView({block:'center'});await new Promise(r=>setTi
  await new Promise(r=>setTimeout(r,50));const t=s.parentElement.querySelector(':scope > .cvtip'),q=t.getBoundingClientRect();
  if(t.hidden||q.height<10||q.bottom<r.top-5||q.top>r.bottom+5||q.left>r.right+5||q.right<r.left-5)out.push(s.parentElement.className)}
 return out}"""
+# gráficos desenhados na escala da tela: 1 unidade do desenho ≈ 1 pixel (senão o texto dos eixos fica gigante ou miúdo
+# e o desenho pode sair cortado). Minigráficos que esticam de propósito (preserveAspectRatio=none) ficam de fora.
+ESCALA = """()=>{const o=[];document.querySelectorAll('svg').forEach(s=>{const vb=s.viewBox&&s.viewBox.baseVal,r=s.getBoundingClientRect();
+ if(!vb||!vb.width||r.width<200||s.getAttribute('preserveAspectRatio')==='none'||!s.getClientRects().length)return;const k=r.width/vb.width;
+ if(k<0.72||k>1.4)o.push((s.id||s.getAttribute('aria-label')||s.parentElement.className||'svg')+' escala '+k.toFixed(2))});
+ if(document.documentElement.scrollWidth>window.innerWidth+1)o.push('página mais larga que a tela ('+document.documentElement.scrollWidth+'px)');return o}"""
 RUINS = ("NaN", "undefined", "Infinity", "[object Object]")
 problemas = []
 
@@ -67,6 +73,70 @@ async def esperar(pg, sel, segundos=25):
             break
         await pg.wait_for_timeout(250)
     return texto
+
+
+async def interface(pg):
+    """Busca única, ajustes (blocos do Resumo, tema) e modo apresentação."""
+    async def busca(txt):
+        await pg.fill("#busca", "")
+        await pg.type("#busca", txt, delay=30)
+        for _ in range(60):
+            await pg.wait_for_timeout(250)
+            t = await pg.evaluate("document.getElementById('buscaRes').innerText")
+            if "Carregando" not in t and t.strip():
+                return t
+        return t
+    t = await busca("petr4")
+    if "PETR4" not in t:
+        problemas.append(f"busca: 'petr4' não achou a ação ({t[:120]!r})")
+    else:
+        await pg.keyboard.press("Enter")
+        await pg.wait_for_timeout(1500)
+        if "ativo=PETR4" not in await pg.evaluate("location.hash"):
+            problemas.append("busca: Enter não abriu a página da PETR4")
+    t = await busca("ptax")
+    if "Dólar" not in t:
+        problemas.append(f"busca: 'ptax' não sugeriu a tela Dólar ({t[:120]!r})")
+    t = await busca("bb renda fixa")
+    if "FUNDOS" not in t.upper():
+        problemas.append(f"busca: 'bb renda fixa' não achou fundos ({t[:120]!r})")
+    await pg.keyboard.press("Escape")
+    # ajustes: esconder o Painel de índices do Resumo e voltar
+    await pg.evaluate("document.querySelector('.areas button[data-area=mkt]').click()")
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=rs]').click()")
+    await pg.wait_for_timeout(2500)
+    await pg.click("#btAjustes")
+    await pg.wait_for_timeout(300)
+    if not await pg.evaluate("document.getElementById('ajustes').open"):
+        problemas.append("ajustes: a janela não abriu")
+    await pg.click("[data-ajbl=painel]")
+    await pg.wait_for_timeout(500)
+    if "Painel de índices" in await pg.evaluate("document.getElementById('mkOut').innerText"):
+        problemas.append("ajustes: desmarcar o Painel de índices não o tirou do Resumo")
+    await pg.click("[data-ajbl=painel]")
+    await pg.click("[data-ajdn='0']")
+    await pg.wait_for_timeout(500)
+    ordem = await pg.evaluate("[...document.querySelectorAll('[data-ajbl]')].map(i=>i.dataset.ajbl).join(',')")
+    if not ordem.startswith("resumo,painel"):
+        problemas.append(f"ajustes: a seta não mudou a ordem dos blocos ({ordem})")
+    await pg.evaluate("localStorage.removeItem('rsBlocos')")
+    await pg.click("[data-ajfecha]")
+    # tema escuro e de volta ao automático
+    await pg.click("#btTema")
+    if await pg.evaluate("document.documentElement.dataset.theme") not in ("dark", "light"):
+        problemas.append("tema: o botão não trocou o tema")
+    await pg.evaluate("localStorage.removeItem('tema')")
+    # modo apresentação
+    await pg.click("#btApres")
+    await pg.wait_for_timeout(400)
+    vis = await pg.evaluate("[document.documentElement.classList.contains('apres'),getComputedStyle(document.querySelector('.appbar')).display,getComputedStyle(document.getElementById('apresSai')).display]")
+    if not (vis[0] and vis[1] == "none" and vis[2] != "none"):
+        problemas.append(f"apresentação: não entrou direito ({vis})")
+    await pg.keyboard.press("Escape")
+    await pg.wait_for_timeout(300)
+    if await pg.evaluate("document.documentElement.classList.contains('apres')"):
+        problemas.append("apresentação: Esc não saiu do modo")
+    print("busca, ajustes, tema e apresentação conferidos", flush=True)
 
 
 async def main():
@@ -113,6 +183,8 @@ async def main():
                         if "Carregando" not in texto and _ >= 6:
                             break
                     ruim(f"{tag} {area}/{mod}", texto)
+                    for g in await pg.evaluate(ESCALA):
+                        problemas.append(f"{tag} {area}/{mod}: {g}")
                     for g in await pg.evaluate(DICAS):
                         problemas.append(f"{tag} {area}/{mod}: gráfico ({g}) sem caixa de valores ao passar o mouse")
                     if len(texto) < 300:
@@ -120,6 +192,7 @@ async def main():
                     print(tag, area, mod, len(texto), "caracteres", flush=True)
 
             if largura == 1280:
+                await interface(pg)
                 # Tesouro: "Mostrar todos os títulos" precisa abrir a lista completa
                 await pg.evaluate("document.querySelector('.areas button[data-area=mkt]').click()")
                 await pg.evaluate("document.querySelector('.tabs button[data-mod=tx]').click()")
@@ -158,6 +231,8 @@ async def main():
         print("\nPROBLEMAS ENCONTRADOS:")
         for x in problemas:
             print(" -", x)
+            if os.environ.get("GITHUB_ACTIONS"):  # aparece como anotação na página da execução
+                print("::error::" + x.replace("\n", " ")[:900])
         sys.exit(1)
     print("\nTudo certo: nenhuma aba com erro.")
 

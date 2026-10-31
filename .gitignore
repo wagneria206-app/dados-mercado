@@ -7,3 +7,4 @@ data/*
 !data/fundos_hist/
 !data/curvas_hist.json
 __pycache__/
+telas/

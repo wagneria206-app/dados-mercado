@@ -1,0 +1,119 @@
+/* Ajustes por largura de tela, gráficos, notas e grade de indicadores */
+/* celular: tabelas de comparação viram cartões (sem rolagem lateral) */
+@media (max-width:760px){
+.cmpwrap{overflow-x:visible!important}
+.cmptab{min-width:0!important;width:100%}
+.cmptab thead{display:none}
+.cmptab,.cmptab tbody{display:block}
+.cmptab tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px 10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.cmptab td{display:block;border:0!important;padding:0!important;text-align:left!important;white-space:normal!important}
+.cmptab td.cmpn{grid-column:1/-1;position:static!important;max-width:none!important;white-space:normal!important}
+.cmptab .cmpn .link{max-width:none!important;white-space:normal!important}
+.cmptab td[data-l]::before{content:attr(data-l);display:block;font-size:.7rem;color:var(--muted);text-transform:none;letter-spacing:0}
+.cmpcor thead{display:none}
+.cmpcor,.cmpcor tbody{display:block;width:100%;min-width:0!important}
+.cmpcor tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:4px 6px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.cmpcor td{display:block;border:0!important;padding:0!important;text-align:left!important}
+.cmpcor td.cmpn{grid-column:1/-1;position:static!important;max-width:none!important;white-space:normal!important}
+.cmpcor td[data-l]::before{content:"com " attr(data-l);display:block;font-size:.68rem;color:var(--muted)}
+}
+
+/* "Como calculamos e fontes" é da calculadora de títulos: só aparece na área Calcular */
+.wrap:not([data-area="calc"]) #methodBox{display:none!important}
+
+/* sem rolagem lateral: tabelas do comparador se ajustam à largura (cabeçalhos quebram linha,células mais compactas) */
+.cmptab,.cmpcor{width:100%;font-size:.82rem}
+
+.cmptab th{white-space:normal!important;vertical-align:bottom;line-height:1.2}
+
+.cmptab th,.cmptab td{padding:6px 5px!important}
+
+.cmptab .cmpn,.cmpcor .cmpn{max-width:200px}
+
+.cmptab .cmpn .link{max-width:190px}
+
+.cmpcor td,.cmpcor th{padding:4px 2px!important;font-size:.72rem}
+
+.ctab{width:100%}
+
+.ctab th{white-space:normal}
+
+.ctab td.tw,.ctab td .tw,.fnrk .fnnm{white-space:normal!important}
+@media (max-width:1150px){.ctab{font-size:.76rem}.ctab th,.ctab td{padding:4px 4px!important}.ctab .c-md{display:none!important}}
+@media (max-width:900px){.ctab .c-sm{display:none!important}.ctab{font-size:.74rem}}
+@media (max-width:1100px){.cmptab .cmpn,.cmpcor .cmpn{max-width:150px}.cmptab .cmpn .link{max-width:140px}}
+
+/* gráficos: legenda em cima,linhas finas,caixa de valores com barras coloridas */
+.fnleg{margin:4px 0 6px;gap:6px 16px}
+
+.legend i{width:14px!important;height:3px!important;border-radius:2px}
+
+.cvtip{font-size:.78rem;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+
+.cvtip b{text-align:center;border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:5px;font-size:.8rem}
+
+.cvtip span{gap:6px;line-height:1.5}
+
+.cvtip i.cvbar{width:3px!important;height:13px!important;border-radius:1px}
+
+.cvtip strong{font-weight:700;min-width:62px;font-variant-numeric:tabular-nums}
+
+.cvtip em{font-style:normal;color:var(--muted);max-width:240px;overflow:hidden;text-overflow:ellipsis}
+
+.fnrk th:first-child,.fnrk td:first-child{width:1%;white-space:nowrap}
+
+.fnrk .fnnm,.fnrk td.tw{min-width:220px}
+
+/* comparador: colunas secundárias aparecem conforme a largura da tela (no celular,todas em cartões) */
+@media (min-width:761px) and (max-width:1400px){.cmptab .c-lg{display:none!important}}
+@media (min-width:761px) and (max-width:1150px){.cmptab .c-md{display:none!important}}
+@media (min-width:761px) and (max-width:900px){.cmptab .c-sm{display:none!important}}
+@media (max-width:760px){.cmptab .c-md,.cmptab .c-sm,.cmptab .c-lg{display:block!important}}
+
+.spmovb{display:block;margin-top:4px;font-size:.8rem}
+
+.spmovrow td{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+
+.spmov .ctab{margin:4px 0 6px;max-width:520px}
+
+.spmov .sprow{margin-top:4px}
+
+.pnlg{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:8px;margin-top:10px}
+
+.pnlc{background:var(--sunk);border-radius:10px;padding:10px 12px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+
+.pnlc span{font-size:.76rem;color:var(--muted)}
+
+.pnlc span em{font-style:normal;opacity:.75;margin-left:4px}
+
+.pnlc b{font-size:1.1rem;font-variant-numeric:tabular-nums}
+
+.pnlc b i{font-style:normal;font-size:.82rem;font-weight:600;margin-left:4px}
+
+.pnlc svg{display:block;width:100%;height:26px;margin-top:4px}
+@media (max-width:640px){.pnlg{grid-template-columns:1fr 1fr}.pnlc b{font-size:1rem}}
+
+/* notas e textos explicativos usam toda a largura do painel */
+.sub,header p,.notes li,details.method .intro{max-width:none}
+
+.extab{table-layout:fixed;width:100%}.extab td,.extab th{white-space:normal!important;overflow-wrap:break-word}.extab th:first-child,.extab td:first-child{width:19%}
+
+/* grade de indicadores: rótulo em cima,valor alinhado embaixo,sem as linhas e recuos do dl padrão */
+.fninfo>div{display:flex;flex-direction:column;border-bottom:0;border-top:1px solid var(--line);padding:8px 0 10px}
+
+.fninfo dt,.fninfo dd{border-top:0;padding:0;margin:0}
+
+.fninfo dt{font-size:.76rem;color:var(--muted);line-height:1.35}
+
+.fninfo dt small{font-size:.7rem;opacity:.85;margin-top:1px}
+
+.fninfo dd{margin-top:auto;padding-top:6px;font:600 1rem var(--f-body);font-variant-numeric:tabular-nums;text-align:left}
+
+.fninfo dd small{font-weight:400;font-size:.74rem;color:var(--muted)}
+
+.fnrisk{gap:4px 22px}
+
+/* cabeçalho enxuto: Selic,IPCA e dólar ficam no painel de índices e nas abas próprias */
+.appbar .mktbar{display:none}
+.sdfaixa{display:inline-flex;gap:2px;vertical-align:middle}.sdfaixa i{display:block;width:6px;height:14px;border-radius:2px;background:var(--line)}.sdfaixa i.ok{background:var(--gain)}.sdfaixa i.fa{background:var(--loss)}.sdfaixa i.pa{background:var(--gold)}
+.fonteaviso{margin:0 0 12px;padding:9px 14px;border-radius:10px;background:var(--warn-bg,#FFF4E5);color:var(--ink);border:1px solid var(--gold);font-size:.86rem;line-height:1.45}.fonteaviso small{color:var(--muted)}.fonteaviso .link{font-size:.86rem;margin-left:4px}

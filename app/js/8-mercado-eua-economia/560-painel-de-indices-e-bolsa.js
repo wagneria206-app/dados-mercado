@@ -34,15 +34,15 @@ function euBase(P,per){if(!P||P.length<2)return null;const u=P[P.length-1],d=new
   if(per==="ano")return euAt(P,Date.UTC(d.getUTCFullYear(),0,1)-1);
   const n=+per,t=Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-n,d.getUTCDate());if(P[0][0]>t+7*DAY)return null;return euAt(P,t)}
 function euFmtV(k,v){const f=EU_SER[k][2];return f==="tx"?fx(v,2)+"%":f==="brl"?"R$ "+fx(v,4):f==="vix"?fx(v,2):f==="idx"?fx(v,4):fx(v,v>=1000?0:2)}
-function euFmtD(k,v){if(v==null||!isFinite(v))return "—";const f=EU_SER[k][2];if(f==="tx"){const b=Math.round(v*100);return '<span class="'+(b>0?"neg":b<0?"pos":"")+'">'+(b>0?"+":b<0?"−":"")+Math.abs(b)+' bps</span>'}if(f==="vix")return '<span class="'+(v>0?"neg":v<0?"pos":"")+'">'+(v>0?"+":v<0?"−":"")+fx(Math.abs(v),2)+'</span>';return fnPct(v)}
+function euFmtD(k,v){if(v==null||!isFinite(v))return "—";const f=EU_SER[k][2];if(f==="tx"){const b=Math.round(v*100);return '<span class="'+(b>0?"neg":b<0?"pos":"")+'">'+(b>0?"+":b<0?"−":"")+Math.abs(b)+'\u00a0bps</span>'}if(f==="vix")return '<span class="'+(v>0?"neg":v<0?"pos":"")+'">'+(v>0?"+":v<0?"−":"")+fx(Math.abs(v),2)+'</span>';return fnPct(v)}
 function euSpark(P,k){const L=P.slice(-66);if(L.length<5)return "";let lo=Infinity,hi=-Infinity;L.forEach(p=>{lo=Math.min(lo,p[1]);hi=Math.max(hi,p[1])});const W=120,H=28,t0=L[0][0],t1=L[L.length-1][0];
   const up=L[L.length-1][1]>=L[0][1],bad=EU_SER[k][2]==="tx"||EU_SER[k][2]==="vix"?up:!up;
   const d=L.map((p,i)=>(i?"L":"M")+((p[0]-t0)/Math.max(1,t1-t0)*W).toFixed(1)+" "+(H-2-(p[1]-lo)/Math.max(1e-9,hi-lo)*(H-4)).toFixed(1)).join(" ");
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'" fill="none" stroke="'+(bad?"var(--loss)":"var(--gain)")+'" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>'}
 function euCard(k){const P=EU.S&&EU.S[k];if(!P||P.length<3)return "";const u=P[P.length-1],[nome]=EU_SER[k];
-  if(k==="cdi"){const r12=euVar(P,k,euBase(P,"12")),ra=euVar(P,k,euBase(P,"ano"));return '<div class="pnlc"><span>CDI acumulado</span><b>'+(r12!=null?fx(r12,2)+'%':'—')+'</b><small>12 meses · no ano '+(ra!=null?fx(ra,2)+'%':'—')+'</small>'+euSpark(P,k)+'</div>'}
+  if(k==="cdi"){const r12=euVar(P,k,euBase(P,"12")),ra=euVar(P,k,euBase(P,"ano")),rm=euVar(P,k,euBase(P,"mes")),pc=x=>x!=null?fx(x,2)+'%':'—';return '<div class="pnlc"><span>CDI acumulado em 12 meses</span><b>'+(r12!=null?fx(r12,2)+'%':'—')+'</b><dl class="pnlm"><div><dt>mês</dt><dd>'+pc(rm)+'</dd></div><div><dt>ano</dt><dd>'+pc(ra)+'</dd></div><div><dt>12m</dt><dd>'+pc(r12)+'</dd></div></dl>'+euSpark(P,k)+'</div>'}
   const dd=euVar(P,k,euBase(P,"dia")),dm=euVar(P,k,euBase(P,"mes")),da=euVar(P,k,euBase(P,"ano")),d12=euVar(P,k,euBase(P,"12"));
-  return '<div class="pnlc"><span>'+esc(nome)+' <em>'+fdate(u[0]).slice(0,5)+(k==="usd"&&EU.usdHora?' · '+esc(EU.usdHora)+', parcial':'')+'</em></span><b>'+euFmtV(k,u[1])+' <i>'+euFmtD(k,dd)+'</i></b><small>mês '+euFmtD(k,dm)+' · ano '+euFmtD(k,da)+' · 12m '+euFmtD(k,d12)+'</small>'+euSpark(P,k)+'</div>'}
+  return '<div class="pnlc"><span>'+esc(nome)+' <em>'+fdate(u[0]).slice(0,5)+(k==="usd"&&EU.usdHora?' · '+esc(EU.usdHora)+', parcial':'')+'</em></span><b>'+euFmtV(k,u[1])+' <i>'+euFmtD(k,dd)+'</i></b><dl class="pnlm"><div><dt>mês</dt><dd>'+euFmtD(k,dm)+'</dd></div><div><dt>ano</dt><dd>'+euFmtD(k,da)+'</dd></div><div><dt>12m</dt><dd>'+euFmtD(k,d12)+'</dd></div></dl>'+euSpark(P,k)+'</div>'}
 const EU_PERS=[["1","1 mês"],["6","6 meses"],["ano","No ano"],["12","12 meses"],["36","3 anos"],["60","5 anos"]];
 function euPerfChart(keys,cols){
   const S=EU.S,out=[];let tA=0;keys.forEach(k=>{const P=S[k];if(P&&P.length)tA=Math.max(tA,P[P.length-1][0])});
