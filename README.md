@@ -5,9 +5,18 @@ Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Merc
 
 ## Onde ficam os dados
 
-- **Ramo `site`** (reescrito a cada coleta, sem histórico): os arquivos que o app lê, em `data/`.
-- **Ramo `main`**: o código, o app (`index.html`) e o estado que o robô precisa guardar entre execuções
-  (índice dos termos de securitização, cronogramas de CRI/CRA lidos, histórico mensal de cotas de fundos).
+- **Ramo `main`**: o código dos robôs (`scripts/`), os módulos do app (`app/`, veja `app/LEIA-ME.md`),
+  o app montado (`index.html`) e os testes (`tests/`). É protegido: só recebe mudanças que passam na checagem.
+- **Ramos de dados** (reescritos a cada coleta, sem histórico): `site` (mercado, em `data/`), `ativos` (Bolsa),
+  `fundos` (CVM), `eua` (Bolsa americana), `macro` (economia), `saude` (saúde das fontes) e `estado` (o que o
+  robô de mercado guarda entre execuções: termos de securitização lidos, cronogramas de CRI/CRA, curvas e
+  cotas mensais de fundos). **Não apague esses ramos.**
+
+## Como o app é montado e testado
+
+O `index.html` é gerado a partir dos módulos em `app/` (`python app/build.py`). Nunca edite o `index.html`
+à mão. Os testes (`tests/robos.py`, `tests/numeros.py` e `tests/checagem.py`) rodam em cada pull request e
+todo dia; a explicação completa está em `app/LEIA-ME.md`.
 
 | Arquivo (ramo site) | Conteúdo | Fonte |
 |---|---|---|
@@ -20,7 +29,7 @@ Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Merc
 | `fundos/XX.json`, `fundos_hist/XX.json` | Cotas e cadastro de todos os fundos (por início do CNPJ) e cotas de fim de mês desde 2021 | CVM – informe diário |
 | `dolar.json` | Dólar PTAX: fechamento diário (compra e venda) desde 1995 e boletins do dia | Banco Central (PTAX) |
 | `dolar_futuro.json` | Dólar futuro: preço de ajuste de cada vencimento do contrato DOL, dia a dia | B3 |
-| `dolar_fundamentos.json` | Inflação dos EUA, dólar global, commodities, juros dos EUA e risco-país (para o dólar justo) | Federal Reserve (FRED), FMI, Ipeadata |
+| `dolar_fundamentos.json` | Inflação dos EUA, dólar global, commodities, juros dos EUA e risco-país (para o dólar justo) | Banco Central, BLS, Fed de Nova York |
 | `curvas_hist.json` | Curva de juros da ANBIMA dia a dia (parâmetros da ETTJ) | ANBIMA |
 | `status.json` | Resultado de cada fonte na última execução | — |
 

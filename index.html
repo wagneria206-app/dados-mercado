@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-U/AQ7T7HdGJC5/Tbso7EqMlrELgJwNstunFKCJzGFOg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-ZdNCul5hl6yZr5FLLFjXtLvz54dQFvmDkk6uNorVBu4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1127,6 +1127,7 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 
 /* cabeçalho enxuto: Selic,IPCA e dólar ficam no painel de índices e nas abas próprias */
 .appbar .mktbar{display:none}
+.sdfaixa{display:inline-flex;gap:2px;vertical-align:middle}.sdfaixa i{display:block;width:6px;height:14px;border-radius:2px;background:var(--line)}.sdfaixa i.ok{background:var(--gain)}.sdfaixa i.fa{background:var(--loss)}.sdfaixa i.pa{background:var(--gold)}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -5481,6 +5482,7 @@ function basesLoad(){
   BASES.load=Promise.all([g(fnUrl("estado.json")),g(atUrl("estado.json")),g(ROBO+"mercado.json")]).then(([f,a,m])=>{BASES.est={f,a,m};BASES.load=null;if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc()});
 }
 function basesHtml(){
+  sdLoad();if(SD.d)return saudeHtml();
   basesLoad();const E=BASES.est;if(!E)return "";
   const agora=Date.now(),idade=s=>s?(agora-Date.parse(s))/3600000:null;
   const linha=(nome,quando,fonte,limite)=>{const h=idade(quando),ok=h!=null&&h<=limite;return '<tr><td style="text-align:left">'+nome+'</td><td>'+(quando?new Date(quando).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):'—')+'</td><td><span class="fnq '+(ok?'fnq1':'fnq4')+'">'+(ok?'em dia':'atrasada')+'</span></td><td class="c-ph" style="text-align:left"><small>'+fonte+'</small></td></tr>'};
@@ -5550,6 +5552,24 @@ setInterval(()=>{if(FN.idx||AT.idx)updCheck()},30*60000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-UPD.t>30*60000&&(FN.idx||AT.idx))updCheck()});
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#refresh")&&(FN.idx||AT.idx))setTimeout(updCheck,0)});
 
+/* ---------- Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) ---------- */
+const SD={d:null,load:null,err:false};
+function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch("https://raw.githubusercontent.com/wagneria206-app/dados-mercado/saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;if(typeof activeMod!=="undefined"&&activeMod==="rs"&&typeof mkCalc==="function")mkCalc()}).catch(()=>{SD.err=true;SD.load=null})}
+function sdFaixa(dias,hoje){const out=[],t0=Date.parse((hoje||new Date().toISOString().slice(0,10))+"T00:00:00Z");
+  for(let k=29;k>=0;k--){const d=new Date(t0-k*DAY).toISOString().slice(0,10),v=dias&&dias[d];out.push('<i class="'+(v==="ok"?"ok":v==="falha"?"fa":v==="parcial"?"pa":"")+'" title="'+fdate(Date.parse(d+"T00:00:00Z"))+': '+(v==="ok"?"funcionou":v==="falha"?"falhou":v==="parcial"?"falhou e depois funcionou":"sem registro")+'"></i>')}
+  return '<span class="sdfaixa" aria-label="últimos 30 dias">'+out.join("")+'</span>'}
+const sdQuando=s=>{if(!s)return "—";const t=Date.parse(s);return isFinite(t)?new Date(t).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—"};
+function saudeHtml(){
+  const D=SD.d;const R=D.robos||[],F=D.fontes||[],ruins=F.filter(f=>!f.ok),rFal=R.filter(r=>r.ultimo&&!r.ultimo.ok);
+  let h='<h3>Saúde das fontes</h3><p class="sub">'+(ruins.length||rFal.length?'<b class="neg">Atenção:</b> '+[rFal.length?rFal.length+' robô'+(rFal.length>1?'s':'')+' com a última execução falhando':'',ruins.length?ruins.length+' fonte'+(ruins.length>1?'s':'')+' com problema':''].filter(Boolean).join(' e ')+'. O app continua mostrando os últimos dados válidos.':'<b class="pos">Tudo funcionando.</b> Todos os robôs rodaram e todas as fontes responderam na última leitura.')+' Cada quadradinho é um dia (verde: funcionou; vermelho: falhou; amarelo: falhou e depois funcionou).</p>';
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Robô</th><th>Última execução</th><th class="c-ph">Últimos 30 dias</th><th class="c-sm">Execuções sem falha</th></tr></thead><tbody>'
+    +R.map(r=>'<tr><td style="text-align:left">'+esc(r.nome)+'</td><td>'+(r.ultimo?'<span class="fnq '+(r.ultimo.ok?'fnq1':'fnq4')+'">'+(r.ultimo.ok?'ok':'falhou')+'</span> '+sdQuando(r.ultimo.em):'—')+'</td><td class="c-ph">'+sdFaixa(r.dias,D.hoje)+'</td><td class="c-sm">'+(r.n?fx(r.ok/r.n*100,0)+'% <small>('+r.ok+' de '+r.n+')</small>':'—')+'</td></tr>').join("")+'</tbody></table></div>';
+  const G={};F.forEach(f=>{(G[f.grupo]=G[f.grupo]||[]).push(f)});
+  h+='<details style="margin-top:10px"'+(ruins.length?' open':'')+'><summary>Fontes de dados ('+F.length+(ruins.length?', '+ruins.length+' com problema':', todas em dia')+')</summary><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Fonte</th><th>Situação</th><th class="c-sm">Última leitura</th><th class="c-ph">Últimos 30 dias</th></tr></thead><tbody>'
+    +Object.keys(G).map(g=>'<tr><td colspan="4" style="text-align:left"><b>'+esc(g)+'</b></td></tr>'+G[g].map(f=>'<tr><td style="text-align:left">'+esc(f.nome)+(f.erro?'<small style="display:block;color:var(--loss)">'+esc(f.erro)+'</small>':'')+'</td><td><span class="fnq '+(f.ok?'fnq1':'fnq4')+'">'+(f.ok?'em dia':/sem leitura/.test(f.erro||"")?'atrasada':'com problema')+'</span></td><td class="c-sm">'+sdQuando(f.em)+'</td><td class="c-ph">'+sdFaixa(f.dias,D.hoje)+'</td></tr>').join("")).join("")
+    +'</tbody></table></div></details><p class="sub" style="font-size:.8rem">Painel atualizado em '+sdQuando(D.ts)+', a cada 3 horas. Quando um robô falha, um aviso também é aberto no GitHub e fecha sozinho quando ele volta a funcionar. O histórico das fontes começou a ser registrado em 31/10/2026.</p>';
+  return h;
+}
 /* ===== Favoritos, alertas e documentos (fatos relevantes, comunicados, relatórios) =====
    Favoritos e alertas ficam só neste navegador (localStorage); nada vai para o repositório. */
 const FV={l:[],a:[],edit:null,boot:{}};
@@ -6768,6 +6788,9 @@ function pcRebase(P0){
   P.rebased=true;delete P.agendaParcial;return P;
 }
 
+/* ---------- ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço ---------- */
+if(/[?&]teste=1(&|$)/.test(location.search))window.APPT=()=>({du,isBiz,parseDate,price,flowsFrom,irRate,iofRate,IOF_TAB,nssY,spXirr,spAliq,bkFactor,bkTax,eqSolve,stSolve,stImp,exCalc,EX,fnRisk,fnUse,
+  get VAL(){return VAL},get CHK(){return CHK},get TD_N(){return Object.keys(TD_ALL||{}).length}});
 /* ---------- dados do robô (GitHub) lidos direto pela página ---------- */
 const PAGES=/github\.io$/.test(location.hostname)||!(window.claude&&typeof window.claude.use==="function");
 const ROBO="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/site/data/";

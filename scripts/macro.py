@@ -170,6 +170,21 @@ def num(s):
         return None
 
 
+def interp(L, T):
+    """Taxa no prazo T (anos) interpolada linearmente entre os vencimentos vizinhos [(prazo, taxa)]."""
+    L = sorted(L)
+    abaixo = [x for x in L if x[0] <= T]
+    acima = [x for x in L if x[0] >= T]
+    if not abaixo or not acima:
+        return None
+    a, b = abaixo[-1], acima[0]
+    if T - a[0] > 6 or b[0] - T > 12:
+        return None
+    if b[0] == a[0]:
+        return round(a[1], 3)
+    return round(a[1] + (b[1] - a[1]) * (T - a[0]) / (b[0] - a[0]), 3)
+
+
 def prazo_constante():
     txt = get(URL_TD, timeout=180).content.decode("latin1")
     rd = csv.reader(io.StringIO(txt), delimiter=";")
@@ -194,18 +209,6 @@ def prazo_constante():
         except Exception:  # noqa: BLE001
             continue
 
-    def interp(L, T):
-        L = sorted(L)
-        abaixo = [x for x in L if x[0] <= T]
-        acima = [x for x in L if x[0] >= T]
-        if not abaixo or not acima:
-            return None
-        a, b = abaixo[-1], acima[0]
-        if T - a[0] > 6 or b[0] - T > 12:
-            return None
-        if b[0] == a[0]:
-            return round(a[1], 3)
-        return round(a[1] + (b[1] - a[1]) * (T - a[0]) / (b[0] - a[0]), 3)
     datas = sorted(por)
     out = {"d": [d.isoformat() for d in datas]}
     for nome, g, T in (("real5", "real", 5), ("real10", "real", 10), ("pre3", "pre", 3), ("pre5", "pre", 5)):
