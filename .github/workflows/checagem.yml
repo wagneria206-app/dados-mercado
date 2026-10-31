@@ -6,7 +6,7 @@ on:
   pull_request:   # em todo pull request: a checagem é obrigatória para entrar no main
   push:
     branches: [main]
-    paths: ["index.html", "sw.js", "manifest.webmanifest", "tests/**"]
+    paths: ["index.html", "app/**", "sw.js", "manifest.webmanifest", "tests/**", "scripts/eua.py", "scripts/macro.py"]
   schedule:
     - cron: "23 13 * * 1-6"     # 10h23 de Brasília, depois das coletas da manhã
   workflow_dispatch:
@@ -28,10 +28,16 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
         with:
           python-version: "3.12"
+      - name: O index.html confere com os módulos em app/
+        run: python app/build.py --check
       - name: Instalar navegador
         run: |
-          pip install -q playwright==1.48.0
+          pip install -q playwright==1.48.0 requests==2.32.3
           python -m playwright install --with-deps chromium
+      - name: Cálculos dos robôs (casos conhecidos)
+        run: python -u tests/robos.py
+      - name: Números do app (casos conhecidos e preços publicados do Tesouro)
+        run: python -u tests/numeros.py index.html
       - name: Percorrer todas as abas
         run: python -u tests/checagem.py index.html
       - name: Avisar falha (issue no GitHub)

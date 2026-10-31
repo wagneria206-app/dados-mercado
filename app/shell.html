@@ -1,0 +1,403 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-@HASH'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
+<style>/*@CSS*/</style>
+<div class="wrap" data-area="calc">
+  <header class="appbar">
+    <div class="brandrow">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
+      <div class="brand"><h1>Mercado e Investimentos</h1><span>Mercado, economia, fundos, Bolsa e carteiras, com dados oficiais</span></div>
+      <div class="hstat"><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
+    </div>
+    <div class="mktbar"><div id="mkt"></div></div>
+    <div id="healthBar" hidden></div>
+    <span class="rstat" id="rstat">Dados embutidos de 15/10/2026.</span>
+  </header>
+  <nav class="areas" role="tablist" aria-label="Áreas do aplicativo">
+    
+    <button type="button" role="tab" data-area="calc" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/></svg><span class="lgL">Calcular título</span><span class="lgS">Calcular</span></button>
+    <button type="button" role="tab" data-area="mkt" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 15l4.5-5 3.5 3.5L20 6"/><path d="M15 6h5v5"/></svg><span>Mercado</span></button>
+    <button type="button" role="tab" data-area="fnd" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Fundos</span></button>
+    <button type="button" role="tab" data-area="bolsa" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M6 4v16M6 8h-2v8h2M12 6v14M12 9h-2v6h2M18 3v15M18 7h-2v7h2"/></svg><span>Bolsa</span></button>
+    <button type="button" role="tab" data-area="simu" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Carteiras e Simulações</span></button>
+  </nav>
+  <div class="areahead"><h2 id="areaTitle">Calcular título</h2></div>
+
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button></div>
+
+  <div class="grid" id="modPub">
+    <section class="panel" aria-label="Dados da compra">
+      <form id="f" novalidate>
+        <div class="field">
+          <label for="mat">Título e vencimento</label>
+          <select id="mat"></select>
+          <small id="matHint"></small>
+        </div>
+        <div class="field">
+          <label for="buy">Data da compra (liquidação)</label>
+          <input type="date" id="buy" value="2024-03-11" min="2005-02-15">
+          <small class="warn" id="buyWarn" hidden></small>
+        </div>
+        <div class="field">
+          <label for="rate" id="rateLabel">Taxa contratada</label>
+          <div class="affix p s"><span class="pre" id="ratePre">IPCA +</span><input id="rate" inputmode="decimal" autocomplete="off" value="5,85"><span class="suf">% a.a.</span></div>
+          <small id="rateHint"></small>
+        </div>
+        <div class="field">
+          <label for="qty">Quantidade de títulos</label>
+          <input id="qty" inputmode="decimal" autocomplete="off" value="10">
+          <small>Aceita frações, como 2,35.</small>
+        </div>
+        <div class="field">
+          <label for="paid">Preço pago por título <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <div class="affix s"><input id="paid" inputmode="decimal" autocomplete="off" placeholder="como na nota de compra"><span class="suf">R$</span></div>
+          <small>Se preencher, o resultado usa o valor exato da sua nota em vez do preço estimado na data da compra.</small>
+        </div>
+        <div class="field" id="mbaseField" hidden>
+          <label for="mbase">Taxa de mercado usada</label>
+          <select id="mbase"><option value="TD">Tesouro Direto (preço de resgate)</option><option value="ANBIMA">ANBIMA (referência de mercado)</option></select>
+          <small id="mbaseHint"></small>
+        </div>
+        
+        <details id="adj">
+          <summary>Ajustar taxa de mercado</summary>
+          <div class="field">
+            <label for="mrate">Taxa de mercado do vencimento</label>
+            <div class="affix p s"><span class="pre" id="mratePre">IPCA +</span><input id="mrate" inputmode="decimal" autocomplete="off"><span class="suf">% a.a.</span></div>
+            <small>Preenchida com a taxa da base escolhida acima (resgate do Tesouro Direto ou ANBIMA). Troque pela taxa que o seu banco ou corretora mostra hoje, se quiser. <button type="button" class="link" id="reset">Voltar à taxa de mercado</button></small>
+          </div>
+        </details>
+      </form>
+      <p class="sub" style="margin-top:16px;font-size:.85rem">Exemplo preenchido para mostrar o resultado. Troque pelos dados da sua compra.</p>
+    </section>
+
+    <section class="panel" aria-live="polite" id="out"></section>
+  </div>
+
+  <div class="grid" id="modPc" hidden>
+    <section class="panel" aria-label="Dados da compra de crédito privado">
+      <form id="pcForm" novalidate style="display:flex;flex-direction:column;gap:18px">
+        <div class="field">
+          <label for="pcCode">Código do papel</label>
+          <div class="coderow"><input id="pcCode" list="pcList" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex.: MOVI27, 22K0767293, CRA0210013B" value="MOVI27"><button type="button" class="btn sec" id="pcFetch">Buscar dados do papel</button></div>
+          <datalist id="pcList"></datalist>
+          <small>Debêntures pelo código (ex.: MOVI27); CRI e CRA pelo código CETIP (ex.: CRA02300795).</small>
+        </div>
+        <div class="pcinfo" id="pcInfo"></div>
+        <div class="field">
+          <label for="pcBuy">Data da compra (liquidação)</label>
+          <input type="date" id="pcBuy" value="2024-01-10">
+          <small class="warn" id="pcBuyWarn" hidden></small>
+        </div>
+        <div class="field">
+          <label for="pcRate">Taxa contratada</label>
+          <div class="affix p s"><span class="pre" id="pcRatePre">CDI +</span><input id="pcRate" inputmode="decimal" autocomplete="off" value="2,50"><span class="suf" id="pcRateSuf">% a.a.</span></div>
+          <small>A taxa da sua nota de compra, no mesmo formato da remuneração do papel.</small>
+        </div>
+        <div class="field">
+          <label for="pcQty">Quantidade</label>
+          <input id="pcQty" inputmode="decimal" autocomplete="off" value="10">
+        </div>
+        <div class="field">
+          <label for="pcPaid">Preço pago por título <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <div class="affix s"><input id="pcPaid" inputmode="decimal" autocomplete="off" placeholder="como na nota de compra"><span class="suf">R$</span></div>
+          <small>Se preencher, o resultado usa o valor exato da sua nota em vez do preço estimado na data da compra.</small>
+        </div>
+        <div class="field">
+          <label for="pcMrate">Taxa de mercado</label>
+          <div class="affix p s"><span class="pre" id="pcMratePre">CDI +</span><input id="pcMrate" inputmode="decimal" autocomplete="off"><span class="suf" id="pcMrateSuf">% a.a.</span></div>
+          <small id="pcMrateHint"></small>
+        </div>
+        
+        
+        <details id="pcEdit">
+          <summary>Corrigir características do papel</summary>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+            <div class="field"><label for="peIdx">Indexador</label><select id="peIdx"><option value="DI_SPREAD">CDI + spread</option><option value="DI_PCT">% do CDI</option><option value="IPCA">IPCA + taxa</option><option value="PRE">Prefixado</option></select></div>
+            <div class="field"><label for="peRate">Taxa da emissão</label><input id="peRate" inputmode="decimal"></div>
+            <div class="field"><label for="peVne">Valor nominal de emissão (R$)</label><input id="peVne" inputmode="decimal"></div>
+            <div class="field"><label for="peStart">Início da remuneração</label><input type="date" id="peStart"></div>
+            <div class="field"><label for="peBasis">Amortização sobre</label><select id="peBasis"><option value="SALDO">% do saldo atual</option><option value="VNE">% do valor de emissão</option></select></div>
+            <div class="field"><label for="peLag">Defasagem do IPCA (meses)</label><select id="peLag"><option value="1">1</option><option value="2">2</option><option value="0">0</option></select></div>
+          </div>
+          <div class="field" style="margin-top:12px"><label for="peSched">Cronograma (data;paga juros S/N;% amortização)</label><textarea id="peSched" spellcheck="false"></textarea></div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap"><button type="button" class="btn" id="peSave">Salvar características</button><span class="sub" id="peMsg"></span></div>
+        </details>
+      </form>
+      <p class="sub" style="margin-top:16px;font-size:.85rem">Exemplo preenchido para mostrar o resultado. Troque pelos dados da sua compra; a calculadora lembra o que você digitou para cada papel.</p>
+    </section>
+    <section class="panel" aria-live="polite" id="pcOut"></section>
+  </div>
+
+  <div class="grid" id="modFund" hidden>
+    <section class="panel" aria-label="Fundo de investimento ou previdência">
+      <form id="fdForm" novalidate style="display:flex;flex-direction:column;gap:16px">
+        <div class="field"><label for="fdCnpj">CNPJ do fundo</label><div class="coderow"><input id="fdCnpj" autocomplete="off" inputmode="text" placeholder="00.000.000/0000-00" maxlength="18" style="text-transform:uppercase"><button type="button" class="btn sec" id="fdFetch">Buscar dados do fundo</button></div><small>O CNPJ identifica o fundo sem ambiguidade: está na lâmina, no extrato e no informe de rendimentos. Os dígitos verificadores são conferidos (inclusive no CNPJ alfanumérico).</small></div>
+        <div id="fdInfo"></div>
+        <div class="field"><label for="fdName">Nome <span style="color:var(--muted);font-weight:400">(se o cadastro ainda não chegou)</span></label><input id="fdName" maxlength="90" autocomplete="off"></div>
+        <div class="field"><label for="fdType">Tributação</label><select id="fdType"><option value="RF_LP">Renda fixa ou multimercado · longo prazo (come-cotas 15%)</option><option value="RF_CP">Renda fixa · curto prazo (come-cotas 20%)</option><option value="ACOES">Ações (15% no resgate, sem come-cotas)</option><option value="ISENTO">Isento para pessoa física</option><option value="PREV">Previdência (PGBL ou VGBL)</option></select></div>
+        <div id="fdPrevBox" class="scctl" hidden><div class="field"><label for="fdPlan">Plano</label><select id="fdPlan"><option value="VGBL">VGBL</option><option value="PGBL">PGBL</option></select></div><div class="field"><label for="fdReg">Regime de IR</label><select id="fdReg"><option value="REG">Regressivo (35% a 10%)</option><option value="PROG">Progressivo (15% na fonte + ajuste)</option></select></div></div>
+        <div class="field"><label for="fdCls">Classe para a alocação</label><select id="fdCls"><option value="POS">Pós-fixado (CDI)</option><option value="IPCA">IPCA+</option><option value="PRE">Prefixado</option><option value="OUT">Outros (multimercado, ações)</option></select></div>
+        <div class="field"><label for="fdBuy">Data da aplicação</label><input type="date" id="fdBuy"></div>
+        <div class="field"><label for="fdAmt">Valor aplicado</label><div class="affix s"><input id="fdAmt" inputmode="decimal" autocomplete="off" placeholder="ex.: 50.000,00"><span class="suf">R$</span></div></div>
+        <div class="scctl"><div class="field"><label for="fdCotas">Cotas compradas</label><input id="fdCotas" inputmode="decimal" placeholder="do extrato"></div><div class="field"><label for="fdCota0">ou cota na aplicação</label><input id="fdCota0" inputmode="decimal" placeholder="ex.: 1,23456789"></div></div>
+        <div class="field"><label for="fdCotasNow">Cotas hoje <span style="color:var(--muted);font-weight:400">(opcional, do extrato, já sem o come-cotas)</span></label><input id="fdCotasNow" inputmode="decimal"></div><div class="field"><label for="fdSaldo">Saldo bruto hoje <span style="color:var(--muted);font-weight:400">(do extrato; basta isto se não tiver as cotas)</span></label><input id="fdSaldo" inputmode="decimal" placeholder="ex.: 43.098,49"></div>
+        <div class="field"><label for="fdExp">Rendimento esperado entre cotas</label><div class="affix s"><input id="fdExp" inputmode="decimal" placeholder="100"><span class="suf">% do CDI</span></div><small>Usado só para estimar o valor entre a última cota registrada e hoje.</small></div>
+        <details class="nota"><summary>Registrar a cota de hoje</summary><div class="scctl" style="margin-top:10px"><div class="field"><label for="fdQDate">Data</label><input type="date" id="fdQDate"></div><div class="field"><label for="fdQVal">Valor da cota</label><input id="fdQVal" inputmode="decimal" placeholder="ex.: 1,98765432"></div></div><div class="saverow" style="margin-top:8px"><button type="button" class="btn" id="fdQSave">Salvar cota</button><span class="sub" id="fdQMsg"></span></div><p class="sub" style="font-size:.82rem;margin-top:6px">A cota informada vale para este cálculo. O robô também traz, todo dia, a cota oficial da CVM de todos os fundos.</p></details>
+        
+      </form>
+    </section>
+    <section class="panel" aria-live="polite" id="fdOut"></section>
+  </div>
+
+  <div class="grid" id="modBank" hidden>
+    <section class="panel" aria-label="Dados da aplicação bancária">
+      <form id="bkForm" novalidate style="display:flex;flex-direction:column;gap:18px">
+        <div class="field"><label for="bkType">Tipo</label><select id="bkType"><option value="CDB">CDB</option><option value="RDB">RDB</option><option value="LCI">LCI</option><option value="LCA">LCA</option><option value="LC">LC (Letra de Câmbio)</option><option value="LCD">LCD</option><option value="LIG">LIG</option><option value="LF">LF (Letra Financeira)</option></select><small id="bkTypeHint"></small></div>
+        <div class="field"><label for="bkIssuer">Emissor</label><input id="bkIssuer" list="bkIssuers" autocomplete="off" value="Banco Exemplo"><datalist id="bkIssuers"></datalist></div>
+        <div class="field"><label for="bkConglom">Conglomerado <span style="color:var(--muted);font-weight:400">(opcional, para o FGC)</span></label><input id="bkConglom" autocomplete="off" placeholder="mesmo nome do emissor"><small>Bancos do mesmo grupo somam no limite do FGC. Ex.: se o emissor é uma marca de um grupo maior, escreva aqui o nome do grupo.</small></div>
+        <div class="field"><label for="bkBuy">Data da aplicação</label><input type="date" id="bkBuy" value="2025-03-10"></div>
+        <div class="field"><label for="bkMat">Vencimento</label><input type="date" id="bkMat" value="2028-03-10"></div>
+        <div class="field"><label for="bkAmt">Valor aplicado</label><div class="affix s"><input id="bkAmt" inputmode="decimal" autocomplete="off" value="10.000,00"><span class="suf">R$</span></div></div>
+        <div class="field"><label for="bkIdx">Remuneração</label><select id="bkIdx"><option value="DI_PCT">% do CDI</option><option value="DI_SPREAD">CDI + taxa</option><option value="IPCA">IPCA + taxa</option><option value="PRE">Prefixado</option></select></div>
+        <div class="field"><label for="bkRate">Taxa contratada</label><div class="affix p s"><span class="pre" id="bkRatePre"></span><input id="bkRate" inputmode="decimal" autocomplete="off" value="110,00"><span class="suf" id="bkRateSuf">% do CDI</span></div></div>
+        <label class="mvlab" style="color:var(--ink)"><input type="checkbox" id="bkLiq" style="width:auto"> Liquidez diária</label>
+        
+      </form>
+      <p class="sub" style="margin-top:16px;font-size:.85rem">Exemplo preenchido para mostrar o resultado. Troque pelos dados da sua aplicação.</p>
+    </section>
+    <section class="panel" aria-live="polite" id="bkOut"></section>
+  </div>
+
+  
+
+  <section id="modSim" hidden style="display:flex;flex-direction:column;gap:24px">
+    <div class="grid">
+      <section class="panel" aria-label="Equivalência LCI/LCA e CDB">
+        <span class="label">LCI/LCA × CDB</span>
+        <p class="sub" style="margin:4px 0 14px">Qual taxa um título tributado precisa pagar para empatar com um isento, e o contrário.</p>
+        <form id="eqForm" novalidate>
+          <div class="field"><label for="eqDir">Comparação</label><select id="eqDir"><option value="ex2tx">Tenho uma LCI/LCA e quero o CDB equivalente</option><option value="tx2ex">Tenho um CDB e quero a LCI/LCA equivalente</option></select></div>
+          <div class="field"><label for="eqIdx">Remuneração</label><select id="eqIdx"><option value="DI_PCT">% do CDI</option><option value="PRE">Prefixado</option><option value="IPCA">IPCA + taxa</option></select></div>
+          <div class="field"><label for="eqRate">Taxa</label><div class="affix s"><span class="pre" id="eqRatePre"></span><input id="eqRate" inputmode="decimal" value="95,00"><span class="suf" id="eqRateSuf">% do CDI</span></div></div>
+          <div class="field"><label for="eqMat">Vencimento</label><input type="date" id="eqMat"></div>
+        </form>
+      </section>
+      <section class="panel" aria-live="polite"><span class="label">Equivalente</span><div id="eqOut" style="margin-top:6px"></div></section>
+    </div>
+    <section class="panel" aria-label="Escada de vencimentos">
+      <span class="label">Escada de vencimentos</span>
+      <p class="sub" style="margin:4px 0 14px">Divide o valor entre títulos do Tesouro com vencimentos escalonados, para ter dinheiro disponível em datas regulares (por exemplo, uma renda anual na aposentadoria).</p>
+      <div class="scctl">
+        <div class="field"><label for="ldAmt">Valor a investir</label><div class="affix s"><input id="ldAmt" inputmode="decimal" value="100.000,00"><span class="suf">R$</span></div></div>
+        <div class="field"><label for="ldType">Títulos</label><select id="ldType"><option value="ALL">Todos os títulos à venda</option><optgroup label="IPCA+"><option value="IPCA_ALL">Todos os IPCA+</option><option value="IPCA">Tesouro IPCA+ (sem juros semestrais)</option><option value="IPCAJ">Tesouro IPCA+ com Juros Semestrais</option></optgroup><optgroup label="Prefixados"><option value="PRE_ALL">Todos os prefixados</option><option value="PRE">Tesouro Prefixado</option><option value="PREJ">Tesouro Prefixado com Juros Semestrais</option></optgroup><optgroup label="Selic"><option value="SELIC">Tesouro Selic</option></optgroup><optgroup label="Combinações"><option value="BOTH">IPCA+ e Prefixado (sem juros semestrais)</option></optgroup></select></div>
+        <div class="field"><label for="ldY0">Receber a partir de</label><select id="ldY0"></select></div>
+        <div class="field"><label for="ldY1">Receber até</label><select id="ldY1"></select></div>
+        <div class="field"><label for="ldMode">Distribuição</label><select id="ldMode"><option value="real">Mesmo valor líquido por ano (em valores de hoje)</option><option value="equal">Mesmo valor aplicado em cada título</option></select></div>
+      </div>
+      <div id="ldOut" style="margin-top:14px"></div>
+    </section>
+  </section>
+
+  <section id="modFn" hidden aria-label="Fundos"><div id="fnOut"></div></section>
+  <section id="modMk" hidden aria-label="Mercado"><div id="mkOut" style="display:flex;flex-direction:column;gap:18px"></div></section>
+  <section class="panel" id="modTx" hidden aria-label="Tesouro Direto"><div class="tdlink"><div><b>Taxas do Tesouro Direto agora</b><span>Preços e taxas de compra e resgate atualizados durante o dia, no site oficial.</span></div><a href="https://www.tesourodireto.com.br/titulos/precos-e-taxas.htm" target="_blank" rel="noopener noreferrer">Consultar no Tesouro Direto <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div><div id="txOpp" style="margin:14px 0 18px"></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div id="txHistTop"><button type="button" class="link" id="txBack" hidden style="margin-bottom:6px">‹ Voltar à lista de oportunidades</button><span class="label" style="display:block">Histórico de taxas</span><p class="sub" style="margin-top:4px">A taxa de cada título do Tesouro Direto, dia a dia, desde o primeiro dia em que foi oferecido até hoje, com a menor e a maior taxa e as datas em que aconteceram.</p></div>
+      <div class="scctl">
+        <div class="field"><label for="txType">Tipo de título</label><select id="txType"></select></div>
+        <div class="field"><label for="txMat">Título</label><select id="txMat"></select></div>
+        <div class="field"><label for="txSide">Taxa</label><select id="txSide"><option value="c">De compra (para investir)</option><option value="v">De venda (resgate antecipado)</option></select></div>
+        <div class="field"><label for="txPer">Período</label><select id="txPer"><option value="all">Desde o lançamento</option><option value="10y">10 anos</option><option value="5y">5 anos</option><option value="1y">1 ano</option><option value="6m">6 meses</option><option value="1m">1 mês</option></select></div>
+      </div>
+      <div class="tot" id="txTot"></div>
+      <div>
+        <div class="charthead"><span class="label" id="txTitle"></span><span class="readout" id="txRead"></span></div>
+        <div class="chartbox"><svg class="chart" id="txChart" viewBox="0 0 760 340" role="img" aria-label="Taxa do título dia a dia"></svg></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Taxa do dia</span><span><i style="background:var(--gain)"></i>Menor taxa</span><span><i style="background:var(--loss)"></i>Maior taxa</span></div>
+      </div>
+      
+      <div><span class="label" id="txTabTtl"></span><p class="sub" style="font-size:.85rem;margin-top:4px">Menor e maior taxa de cada vencimento desde o lançamento. Toque numa linha para ver o gráfico.</p><div class="tablewrap" style="max-height:none"><table id="txTab" class="sctab txtab"></table></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="modFx" hidden aria-label="Dólar"><div id="fxOut"><p class="sub">Carregando o dólar…</p></div></section>
+  <section class="panel" id="modSc" hidden aria-label="Cenários de juros">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <span class="label">Cenários de juros</span>
+        <p class="sub" style="margin-top:4px">Quanto a sua posição rende se os juros subirem ou caírem em passos de 0,5 ponto percentual. Por padrão, considera a venda no vencimento; troque a data para simular uma venda antecipada. Usa a compra que você preencheu na aba escolhida.</p>
+      </div>
+      <div class="scctl">
+        <div class="field"><label for="scSrc">Investimento</label><select id="scSrc"><option value="pub">Título público</option><option value="pc">Crédito privado</option></select></div>
+        <div class="field" id="scMatField"><label for="scMat">Título e vencimento</label><select id="scMat"></select><small>Compra, taxa e quantidade vêm da aba Calcular título.</small></div>
+        <div class="field"><label for="scDate">Data da venda</label><input type="date" id="scDate"><small id="scDateHint">Vencimento do título (padrão).</small></div>
+        <div class="field"><label for="scStep">Passo</label><select id="scStep"><option value="0.25">0,25 p.p.</option><option value="0.5" selected>0,50 p.p.</option><option value="1">1,00 p.p.</option></select></div>
+        <div class="field"><label for="scVal">Valores</label><select id="scVal"><option value="net" selected>Líquidos de IR e custos</option><option value="gross">Brutos</option></select></div>
+        <div class="field"><label for="scSpan">Faixa</label><select id="scSpan"><option value="2">± 2 p.p.</option><option value="3" selected>± 3 p.p.</option><option value="5">± 5 p.p.</option></select></div>
+        <div class="field" id="scPiField" hidden><label for="scPi">IPCA projetado</label><div class="affix s"><input id="scPi" inputmode="decimal" autocomplete="off"><span class="suf">% a.a.</span></div><small id="scPiHint"></small></div>
+      </div>
+      <p class="sub" id="scWhat" style="font-size:.92rem"></p>
+      <div id="scOut"></div>
+      <div id="scCrossBox" style="display:flex;flex-direction:column;gap:12px;border-top:1px dashed var(--line);padding-top:16px">
+        <div><span class="label" id="scCrossTitle">Juros e inflação combinados</span>
+        <p class="sub" id="scCrossIntro" style="margin-top:4px;font-size:.92rem"></p></div>
+        <div class="scctl"><div class="field"><label for="scXDate">Data da venda desta tabela</label><input type="date" id="scXDate"><small id="scXHint"></small></div></div>
+        <div id="scCross"></div>
+      </div>
+      <div class="chartbox"><svg class="chart" id="scChart" viewBox="0 0 760 300" role="img" aria-label="Resultado total por cenário de taxa"></svg></div>
+      <div class="legend"><span><i style="background:var(--gain)"></i>Ganho</span><span><i style="background:var(--loss)"></i>Perda</span><span><i style="background:transparent;border:2px solid var(--accent)"></i>Taxa de mercado atual</span></div>
+    </div>
+  </section>
+
+  <details class="panel fold" id="secChart"><summary>Gráfico: ágio ou deságio conforme a taxa de mercado</summary><div class="fbody">
+    <div class="charthead">
+      <span class="label">Ágio ou deságio conforme a taxa de mercado</span>
+      <span class="readout" id="readout"></span>
+    </div>
+    <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 760 330" role="img" aria-label="Curva de ágio e deságio em função da taxa de mercado"></svg></div>
+    <div class="legend">
+      <span><i style="background:var(--gain)"></i>Ágio: taxa de mercado abaixo da contratada</span>
+      <span><i style="background:var(--loss)"></i>Deságio: taxa de mercado acima da contratada</span>
+      <span><i style="background:var(--accent)"></i>Taxa de mercado atual</span>
+    </div>
+  </div></details>
+
+  <details class="panel fold" id="secFlow"><summary>Fluxo de pagamentos descontado</summary><div class="fbody">
+    <div class="flowhead">
+      <span class="label">Fluxo de pagamentos descontado</span>
+      <span class="sub" id="flowSub" style="font-size:.88rem"></span>
+    </div>
+    <div class="tablewrap"><table id="flow"></table></div>
+  </div></details>
+
+  <details class="method" id="methodBox"><summary>Como calculamos e fontes</summary><div class="mbody"><p class="intro">Informe a compra. A calculadora usa as características do título, a taxa de mercado e os pagamentos já feitos, compara com a taxa que você contratou e mostra quanto o título vale a mais ou a menos se for vendido hoje.</p>
+  <section class="notes" id="notesPub">
+    <div>
+      <h3>Como ler</h3>
+      <ul>
+        <li><b>Ágio</b>: a taxa de mercado está abaixo da que você contratou. Vendendo hoje, você recebe mais do que o título vale na sua curva (taxa contratada).</li>
+        <li><b>Deságio</b>: a taxa de mercado está acima da contratada. A venda antecipada sai abaixo da curva. Levando até o vencimento, você recebe exatamente a taxa contratada.</li>
+        <li>No Tesouro Selic a taxa é o ágio ou deságio sobre a Selic, por isso as diferenças são pequenas. Nos prefixados e no IPCA+, cada ponto percentual de taxa move bastante o preço.</li>
+        <li>O resultado da venda hoje soma o valor a mercado e os cupons já recebidos, e subtrai o valor investido. O resultado líquido desconta IR, IOF e custódia da B3; não considera taxa da corretora.</li>
+        <li>Taxa de mercado: por padrão, a taxa de resgate oficial do Tesouro Direto (o preço que o Tesouro paga se você vender hoje). A taxa ANBIMA é a referência de mercado (preço justo) e costuma ficar um pouco abaixo. Escolha a base em "Taxa de mercado usada".</li>
+        <li>O valor investido é calculado com o índice efetivo da data da compra; o preço da sua nota usou uma projeção e pode diferir alguns centavos ou reais. Para o valor exato, preencha o preço pago.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>De onde vêm os dados</h3>
+      <ul>
+        <li>Toda taxa baixada é conferida: com ela, a calculadora recalcula o preço e compara com o preço publicado. O resultado aparece ao lado do botão e em cada título.</li>
+        <li>Taxas de mercado: indicativas da ANBIMA para todos os vencimentos de LTN, NTN-F, NTN-B e LFT, na data mostrada no topo.</li>
+        <li>VNA da NTN-B: implícito nos preços ANBIMA na data de referência; nas datas passadas, números-índice do IPCA do IBGE (R$ 1.000 em 15/07/2000), pro rata por dias corridos entre os dias 15.</li>
+        <li>VNA da LFT: implícito nos preços ANBIMA da data de referência, recuado até a data da compra com a Selic mensal do Banco Central. Na compra, o valor é aproximado.</li>
+        <li>Tesouro IPCA+ sem cupom usa a taxa da NTN-B de mesmo vencimento, o que é uma aproximação.</li>
+        <li>Tesouro Direto: taxas e preços de compra e de resgate do arquivo oficial do Tesouro Nacional (Tesouro Transparente). Cada taxa só é usada depois de conferida: ela precisa reproduzir o preço publicado pela metodologia oficial. RendA+ e Educa+ (NTN-B1) usam o VNA da NTN-B e pagam 240 (RendA+) ou 60 (Educa+) parcelas mensais a partir de janeiro do ano do título, cada uma de 1/240 ou 1/60 do VNA.</li>
+        <li>O botão Atualizar dados recarrega o que os robôs do app publicaram (ANBIMA, IBGE, Banco Central, Tesouro Direto, B3, CVM e fontes dos EUA). Os robôs rodam sozinhos no GitHub várias vezes por dia; o quadro Situação das bases de dados, em Mercado › Resumo, mostra quando cada um rodou.</li>
+        <li>Preços pela metodologia ANBIMA: fator (1 + taxa)^(du/252), dias úteis pelo calendário nacional, cotação truncada em 4 casas e PU em 6.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="notes" id="notesFund" hidden>
+    <div><h3>Fundos e previdência</h3><ul>
+      <li>O fundo é identificado pelo CNPJ. Buscar dados do fundo pede à atualização automática o cadastro (nome, administrador, classe e tributação), aceito só se a página mostrar o mesmo CNPJ.</li>
+      <li>Valor = cotas × cota. A cota vem da última registrada para o CNPJ (informada por você ou lida na web) e, entre uma cota e outra, é estimada pelo rendimento esperado em % do CDI. Sem cota nenhuma, o valor inteiro é estimado.</li>
+      <li>Come-cotas no último dia útil de maio e de novembro: 15% (longo prazo) ou 20% (curto prazo) do rendimento do semestre, cobrado em cotas. No resgate, o IR completa a tabela regressiva (22,5% a 15%, ou 22,5% e 20% no curto prazo). Ações: 15% no resgate. Informe as cotas de hoje do extrato para eliminar a estimativa do come-cotas.</li>
+      <li>Previdência: sem come-cotas. Regressivo: 35% até 2 anos, caindo 5 pontos a cada 2 anos até 10% após 10 anos, por contribuição (cadastre cada aporte como uma posição). PGBL: IR sobre o valor total; VGBL: só sobre o rendimento. Progressivo: 15% retidos na fonte e ajuste na declaração.</li>
+      <li>IR: fundos no grupo 07 de Bens e Direitos (01 com come-cotas, 04 ações, 11 sem tributação periódica); VGBL no grupo 99, código 06; PGBL não entra em Bens e Direitos.</li>
+    </ul></div>
+  </section>
+  <section class="notes" id="notesBank" hidden>
+    <div>
+      <h3>Como calcula</h3>
+      <ul>
+        <li>Títulos bancários são marcados na curva: o valor cresce pela taxa contratada e não oscila com o mercado.</li>
+        <li>% do CDI e CDI + taxa: CDI diário oficial do Banco Central até a data dos dados e, depois, a curva de juros da ANBIMA. IPCA + taxa: IPCA do IBGE e, no futuro, a projeção usada nas outras abas. Prefixado: (1 + taxa) elevado a dias úteis/252.</li>
+        <li>IR pela tabela regressiva sobre o rendimento (22,5% até 180 dias, 20% até 360, 17,5% até 720, 15% acima), IOF nos primeiros 30 dias. LCI, LCA, LCD e LIG são isentas de IR para pessoa física.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>FGC</h3>
+      <ul>
+        <li>CDB, RDB, LCI, LCA e LC têm garantia do FGC de até R$ 250 mil por CPF por conglomerado, e até R$ 1 milhão a cada 4 anos. LCD, LIG e LF não têm.</li>
+        <li>O limite soma tudo o que você tem no mesmo grupo, inclusive em corretoras diferentes.</li>
+      </ul>
+    </div>
+  </section>
+  
+  <section class="notes" id="notesSim" hidden>
+    <div><h3>Equivalência</h3><ul>
+      <li>Compara o rendimento total no prazo: o IR incide só sobre o ganho, pela alíquota do prazo inteiro. Em % do CDI usa o CDI projetado pela curva da ANBIMA; em IPCA +, a projeção de IPCA das outras abas.</li>
+      <li>Empatar na taxa não quer dizer empatar no risco: veja o emissor e a cobertura do FGC.</li></ul></div>
+    <div><h3>Escada</h3><ul>
+      <li>Usa as taxas de compra oficiais do Tesouro Direto e calcula o preço pela metodologia do Tesouro. </li>
+      <li>Levando cada título até o vencimento, o valor recebido não depende das oscilações de mercado; nos títulos IPCA+ depende do IPCA realizado.</li></ul></div>
+  </section>
+  <section class="notes" id="notesTx" hidden>
+    <div>
+      <h3>De onde vêm as taxas</h3>
+      <ul>
+        <li>Arquivo oficial "Taxas dos Títulos Ofertados pelo Tesouro Direto", do Tesouro Nacional (Tesouro Transparente): taxas de compra e de venda de cada título em cada dia útil, na abertura do mercado.</li>
+        <li>A série oficial começa em 31/12/2004. Títulos lançados antes disso aparecem a partir dessa data.</li>
+        <li>Os dias novos entram pela atualização diária, que lê o mesmo arquivo oficial.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Como ler</h3>
+      <ul>
+        <li>Taxa de compra: a que o Tesouro oferece a quem investe naquele dia. Taxa de venda: a usada no resgate antecipado, um pouco maior.</li>
+        <li>Quando um título sai da oferta para compra, a taxa de compra deixa de existir; a de venda continua até o vencimento. Trechos sem dados ficam em branco no gráfico.</li>
+        <li>Taxa mais alta significa título mais barato naquele dia: quem comprou nesse dia travou um retorno maior até o vencimento.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="notes" id="notesSc" hidden>
+    <div>
+      <h3>Como ler os cenários</h3>
+      <ul>
+        <li>Padrão: venda no vencimento. Nesse caso você recebe a taxa contratada, e a variação é aplicada ao CDI/Selic (pós-fixados) ou ao IPCA (títulos IPCA+), que é o que muda o resultado. Nos prefixados, o resultado no vencimento é fixo.</li>
+        <li>Venda antes do vencimento: a variação é aplicada à taxa de mercado do título naquela data, e o preço é recalculado pela mesma metodologia das outras abas.</li>
+        <li>Taxa subindo derruba o preço (deságio); taxa caindo valoriza o título (ágio). Quanto mais longo o título, maior o efeito de cada 0,5 ponto.</li>
+        <li>Levando o título até o vencimento, você recebe a taxa contratada em qualquer cenário. A variação importa só se vender antes.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Premissas</h3>
+      <ul>
+        <li>Venda em data futura: o IPCA até lá segue a projeção escolhida em Mercado (padrão: inflação implícita do mercado para cada prazo, calculada pela ANBIMA), e a Selic e o CDI seguem a curva de juros da ANBIMA. Os pagamentos recebidos até a venda não são reinvestidos.</li>
+        <li>Nos papéis pós-fixados (Tesouro Selic, CDI + spread, % do CDI), a variação é aplicada ao spread ou ao percentual negociado, que é o que move o preço. A alta ou queda da própria Selic quase não altera o preço desses títulos.</li>
+        <li>Rentabilidade ao ano = taxa interna de retorno (TIR) do seu investimento, considerando a data de cada pagamento, em dias corridos. Pode diferir um pouco da taxa contratada, que usa dias úteis.</li>
+        <li>Valores líquidos (padrão) descontam IR, IOF e custódia; a opção Brutos mostra antes desses descontos. Taxas de corretora não são consideradas.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="notes" id="notesPc" hidden>
+    <div>
+      <h3>Como funciona</h3>
+      <ul>
+        <li>Debêntures: características e agenda de pagamentos do SND (debentures.com.br) e taxa indicativa da ANBIMA, ambos oficiais. A taxa ANBIMA é conferida: com ela, o preço calculado precisa bater com o PU publicado.</li>
+        <li>CRI e CRA: não existe base oficial pública e legível com as características e as taxas. O Claude busca em documentos públicos (relatórios da securitizadora, Fundos.NET, termos e páginas de corretoras). Por isso aparecem como fonte não oficial: confira com o termo de securitização e corrija, se preciso.</li>
+        <li>Papéis atrelados ao CDI: os juros futuros são projetados pela curva de juros da ANBIMA. Na data da compra, o preço é estimado com o CDI da época; para o valor exato, preencha o preço pago.</li>
+        <li>A taxa ANBIMA automática pode faltar para algumas debêntures (as atreladas ao IPCA e parte das que a ANBIMA publica em listas longas). Nesse caso a calculadora pede a taxa, e nunca usa uma taxa que não reproduza o PU publicado.</li>
+        <li>O resultado da venda hoje soma o valor a mercado e os pagamentos recebidos, e subtrai o valor investido. O resultado líquido desconta IR e IOF (CRI, CRA e debêntures incentivadas são isentos para pessoa física); não considera taxa da corretora.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Como ler</h3>
+      <ul>
+        <li><b>Ágio</b>: a taxa de mercado está abaixo da que você contratou. Vendendo hoje, você recebe mais do que o papel vale na sua curva.</li>
+        <li><b>Deságio</b>: a taxa de mercado está acima da contratada. Levando até o vencimento, você recebe a taxa contratada, se o emissor pagar.</li>
+        <li>Crédito privado tem pouca liquidez: o preço de venda real depende de haver comprador e costuma ficar abaixo da taxa indicativa.</li>
+      </ul>
+    </div>
+  </section>
+  </div></details>
+  
+</div>
+
+<script>/*@JS*/</script>
+</body></html>
