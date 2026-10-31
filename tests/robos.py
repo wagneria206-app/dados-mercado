@@ -12,6 +12,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
+import atualizar  # noqa: E402
 import eua  # noqa: E402
 import macro  # noqa: E402
 
@@ -123,6 +124,30 @@ mil = "".join(f"<tr><td>&nbsp;&nbsp;{2006 + i // 52} Jan- 2 to Jan- 6</td><td>1<
 macro.get = lambda u, **k: R(mil + linhas)
 b = macro.brent()["s"]
 confere("Brent: semana que vira o ano", b[-4:], [["2025-12-29", 70.1], ["2025-12-30", 70.2], ["2025-12-31", 70.3], ["2026-01-02", 70.5]])
+
+# ---------------- Fundos.NET: termos de CRI/CRA escaneados não fazem o robô falhar
+def termos(docs, ja=None):
+    arqs = {"termos/indice.json": {"CRI1": {"idFnet": 1, "aditamentos": [{"id": 2}, {"id": 3}]}}, "termos/textos.json": ja or {},
+            "cri_cra_anbima.json": {"papers": {}}, "cri_cra_cronogramas.json": {}, "cri_cra_cvm.json": {"certificados": {}}}
+    gravado = {}
+    atualizar.ler_json = lambda n, d: arqs.get(n, d)
+    atualizar.gravar_json = lambda n, o: gravado.__setitem__(n, o)
+    atualizar.fnet_pdf = lambda i: docs[i]
+    atualizar.pdf_para_texto = lambda c: (_ for _ in ()).throw(RuntimeError("fora do ar")) if c == "erro" else c
+    atualizar.STATUS.clear()
+    atualizar.fundosnet_textos()
+    return atualizar.STATUS["fundosnet_textos"], gravado.get("termos/textos.json", {})
+
+
+st, t = termos({1: "texto " * 200, 2: "", 3: "erro"})
+confere("Fundos.NET: lê o termo com texto", st.get("novos_agora"), 1)
+confere("Fundos.NET: escaneado marcado e fora da fila", t.get("2", {}).get("escaneado"), True)
+st, t = termos({2: "", 3: ""}, {"1": {"ok": True}})
+confere("Fundos.NET: só escaneados na fila não é falha", st.get("ok"), True)
+st, t = termos({2: "erro", 3: "erro"}, {"1": {"ok": True}})
+confere("Fundos.NET: fonte fora do ar continua sendo falha", st.get("ok"), False)
+st, t = termos({}, {"1": {"ok": True}, "2": {"ok": False, "erro": "PDF sem texto (provavelmente escaneado)", "tentativas": 1}, "3": {"ok": True}})
+confere("Fundos.NET: registro antigo de PDF sem texto sai da fila", st.get("ok"), True)
 
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
