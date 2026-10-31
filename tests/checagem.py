@@ -163,6 +163,20 @@ async def interface(pg):
     ops = await pg.evaluate("[...document.querySelectorAll('#fvMa option')].map(o=>o.textContent)")
     if len(ops) < 10 or not any("hoje" in o for o in ops):
         problemas.append(f"favoritos: lista de indicadores de economia incompleta ({ops[:3]})")
+    # telas longas: índice e blocos recolhíveis em Juros
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=ju]').click()")
+    await pg.wait_for_timeout(3000)
+    n = await pg.evaluate("document.querySelectorAll('#mkOut .tlidx [data-rclir]').length")
+    if n < 3:
+        problemas.append(f"Juros: índice no topo com {n} blocos")
+    else:
+        await pg.evaluate("document.querySelector('[data-rcltodos=\"0\"]').click()")
+        await pg.wait_for_timeout(300)
+        fech = await pg.evaluate("document.querySelectorAll('#mkOut section.rcl.fechado').length")
+        await pg.evaluate("document.querySelector('[data-rcltodos=\"1\"]').click()")
+        if fech < n:
+            problemas.append("Juros: 'Recolher tudo' não recolheu os blocos")
+        await pg.evaluate("localStorage.removeItem('rcl_ju')")
     print("busca, ajustes, tema e apresentação conferidos", flush=True)
 
 

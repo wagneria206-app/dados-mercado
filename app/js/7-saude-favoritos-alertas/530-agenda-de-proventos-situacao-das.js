@@ -22,12 +22,19 @@ function agTable(){
   else if(f.modo==="pag")L=L.filter(r=>r[4]&&r[4]>=hoje&&r[4]<"9000").sort((a,b)=>a[4].localeCompare(b[4])||(b[6]||0)-(a[6]||0));
   else L=L.filter(r=>r[3]<hoje).sort((a,b)=>b[3].localeCompare(a[3]));
   const nome=tk=>{const r=AT.idx?atRow(tk):null;return r?r[1]:""};
-  let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' proventos.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ativo</th><th style="text-align:left">Provento</th><th>Data com</th><th>Pagamento</th><th>Valor</th><th>% da cotação</th></tr></thead><tbody>';
-  if(!L.length)h+='<tr><td colspan="6" class="sub" style="text-align:left">'+(f.modo==="com"?'Nenhuma data com futura anunciada entre os ativos acompanhados. Veja os próximos pagamentos.':'Nada encontrado.')+'</td></tr>';L.slice(0,400).forEach(r=>{h+='<tr><td style="text-align:left" class="tw"><button type="button" class="link" data-atopen="'+r[0]+'">'+r[0]+'</button><small style="display:block;color:var(--muted)">'+esc(nome(r[0]).slice(0,40))+' · '+esc(r[1]||"")+'</small></td><td style="text-align:left">'+(NM[r[2]]||r[2])+'</td><td>'+fdate(Date.parse(r[3]+"T00:00:00Z"))+'</td><td>'+(r[4]&&r[4]<"9000"?fdate(Date.parse(r[4]+"T00:00:00Z")):'a definir')+'</td><td>R$ '+fx(r[5],r[5]<0.1?4:2)+'</td><td>'+(r[6]!=null?fx(r[6],2)+'%':'—')+'</td></tr>'});
-  h+='</tbody></table></div><p class="sub" style="font-size:.8rem">Fonte: B3 (proventos anunciados pelas companhias e fundos). JCP pelo valor bruto. A cotação de referência é a do último pregão.</p>';
+  const linha=r=>'<tr><td style="text-align:left" class="tw"><button type="button" class="link" data-atopen="'+r[0]+'">'+r[0]+'</button><small style="display:block;color:var(--muted)">'+esc(nome(r[0]).slice(0,40))+' · '+esc(r[1]||"")+'</small></td><td style="text-align:left">'+(NM[r[2]]||r[2])+'</td><td>'+fdate(Date.parse(r[3]+"T00:00:00Z"))+'</td><td>'+(r[4]&&r[4]<"9000"?fdate(Date.parse(r[4]+"T00:00:00Z")):'a definir')+'</td><td>R$ '+fx(r[5],r[5]<0.1?4:2)+'</td><td>'+(r[6]!=null?fx(r[6],2)+'%':'—')+'</td></tr>';
+  const cab='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ativo</th><th style="text-align:left">Provento</th><th>Data com</th><th>Pagamento</th><th>Valor</th><th>% da cotação</th></tr></thead><tbody>';
+  let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' proventos'+(L.length>400?' (os 400 primeiros abaixo)':'')+'.</p>';
+  if(!L.length)h+=cab+'<tr><td colspan="6" class="sub" style="text-align:left">'+(f.modo==="com"?'Nenhuma data com futura anunciada entre os ativos acompanhados. Veja os próximos pagamentos.':'Nada encontrado.')+'</td></tr></tbody></table></div>';
+  else{ // grupos por período (esta semana, próxima, meses), com índice no topo
+    const G=[];L.slice(0,400).forEach(r=>{const d=f.modo==="pag"?(r[4]&&r[4]<"9000"?r[4]:r[3]):r[3],[id,nm]=agGrupo(d,hoje,f.modo==="rec");let g=G[G.length-1];if(!g||g.id!==id){g={id,nm,R:[]};G.push(g)}g.R.push(r)});
+    if(G.length>1)h+='<nav class="tlidx" aria-label="Períodos"><span class="tlidxl">Ir para</span>'+G.map(g=>'<button type="button" data-agir="'+g.id+'">'+g.nm+' <small>'+g.R.length+'</small></button>').join("")+'</nav>';
+    G.forEach((g,n)=>{h+='<details class="aggr" id="ag-'+g.id+'"'+(n<2||G.length<3?' open':'')+'><summary><b>'+g.nm+'</b> <span class="sub">'+g.R.length+(g.R.length===1?' provento':' proventos')+'</span></summary>'+cab+g.R.map(linha).join("")+'</tbody></table></div></details>'})}
+  h+='<p class="sub" style="font-size:.8rem">Fonte: B3 (proventos anunciados pelas companhias e fundos). JCP pelo valor bruto. A cotação de referência é a do último pregão.</p>';
   t.innerHTML=h;
 }
-document.addEventListener("click",e=>{if(!(e.target.closest&&e.target.closest("#modFn"))||activeMod!=="ag")return;const x=e.target.closest("[data-agmodo]");if(x){AG.f.modo=x.dataset.agmodo;agCalc()}});
+document.addEventListener("click",e=>{if(!(e.target.closest&&e.target.closest("#modFn"))||activeMod!=="ag")return;const x=e.target.closest("[data-agmodo]");if(x){AG.f.modo=x.dataset.agmodo;agCalc();return}
+  const y=e.target.closest("[data-agir]");if(y){const d=$("ag-"+y.dataset.agir);if(d){d.open=true;window.scrollTo({top:d.getBoundingClientRect().top+window.scrollY-(document.querySelector(".areas")||{offsetHeight:0}).offsetHeight-8,behavior:"smooth"})}}});
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.agf==="tipo"){AG.f.tipo=t.value;agTable()}});
 document.addEventListener("input",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.agf==="txt"){AG.f.txt=t.value;clearTimeout(AG.qt);AG.qt=setTimeout(agTable,150)}});
 
