@@ -1,6 +1,8 @@
 /* ---------- números ---------- */
 /* largura dos gráficos = largura real do painel, para o texto dos eixos sair no tamanho certo (sem ampliar com a tela) */
-function chartW(){const w=window.innerWidth||1024;if(w<640)return 420;const box=document.querySelector(".wrap");return Math.max(560,Math.min(1500,Math.round(((box&&box.clientWidth)||w)-72)))}
+function chartW(el){const w=window.innerWidth||1024;if(w<640)return 420;if(el&&el.clientWidth>200)return Math.min(1500,Math.round(el.clientWidth));const box=document.querySelector(".wrap");return Math.max(560,Math.min(1500,Math.round(((box&&box.clientWidth)||w)-72)))}
+/* põe o viewBox do svg no tamanho em que ele é desenhado (1 unidade = 1 pixel na tela) */
+function svgFit(svg,h){const W=chartW(svg),H=window.innerWidth<640?h:chartH(h,W);svg.setAttribute("viewBox","0 0 "+W+" "+H);return [W,H]}
 function chartH(h,W){return Math.round(h*Math.min(1.3,Math.max(1,W/760)))}
 function num(s){s=String(s||"").trim().replace(/\s/g,"");if(!s)return NaN;if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");return Number(s)}
 const trunc=(x,n)=>{const p=Math.pow(10,n);return Math.trunc(x*p+(x>=0?1e-7:-1e-7))/p};

@@ -40,6 +40,18 @@ jobs:
         run: python -u tests/numeros.py index.html
       - name: Percorrer todas as abas
         run: python -u tests/checagem.py index.html
+      - name: Fotografar as telas (tablet, temas claro e escuro)
+        if: always()
+        continue-on-error: true
+        run: python -u tests/telas.py index.html telas
+      - name: Guardar as fotos das telas
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: telas
+          path: telas/
+          retention-days: 14
       - name: Avisar falha (issue no GitHub)
         if: failure() && github.event_name != 'pull_request'
         env:

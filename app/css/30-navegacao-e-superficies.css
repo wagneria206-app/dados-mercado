@@ -1,0 +1,128 @@
+/* Menu principal, abas, painéis, tabelas e dobras */
+/* navegação principal */
+.areas{position:sticky;top:0;z-index:20;display:flex;gap:4px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:8px 0;margin-top:-6px;border-bottom:1px solid var(--line)}
+
+.areas button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:8px;font:600 .95rem var(--f-body);color:var(--muted);background:transparent;border:0;border-radius:10px;padding:10px 8px;min-height:46px;cursor:pointer;white-space:nowrap}
+
+.areas button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.areas button:hover{color:var(--ink);background:var(--sunk)}
+
+.areas button[aria-selected="true"]{color:var(--on-primary);background:var(--primary);box-shadow:var(--shadow)}
+@media (max-width:560px){.areas button{flex-direction:column;gap:3px;font-size:.74rem;padding:7px 2px;min-height:54px}.areas .lgL{display:none}}
+@media (min-width:561px){.areas .lgS{display:none}}
+
+.areahead{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+.areahead h2{font:600 clamp(1.35rem,3vw,1.75rem)/1.15 var(--f-serif);margin:0;letter-spacing:-.01em}
+
+.wrap[data-area="cart"] .areahead{display:none}
+
+/* sub-navegação em pílulas */
+.tabs{background:transparent;padding:0;gap:8px;border-radius:0}
+
+.tabs button{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:8px 16px;min-height:40px;font:600 .9rem var(--f-body)}
+
+.tabs button:hover{color:var(--ink);border-color:var(--muted)}
+
+.tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface);box-shadow:none}
+
+
+.wrap[data-area="cart"] .tabs{display:none}
+
+
+/* superfícies */
+.panel{border-radius:16px;border-color:var(--line);box-shadow:var(--shadow);padding:22px}
+
+.label{font:600 .72rem var(--f-body);letter-spacing:.08em;color:var(--muted)}
+
+.grid{grid-template-columns:minmax(290px,.82fr) minmax(0,1.18fr);gap:18px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+@media (max-width:840px) and (min-width:701px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}.grid .panel{padding:18px}}
+
+form{gap:14px}
+
+.field label{font-size:.85rem;font-weight:600;color:var(--ink)}
+
+.field small{font-size:.78rem;color:var(--muted)}
+
+input,select,textarea{font:500 .98rem var(--f-body);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;transition:border-color .15s,box-shadow .15s}
+
+input:hover,select:hover{border-color:color-mix(in srgb,var(--muted) 45%,var(--line))}
+
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+.affix .pre,.affix .suf{font:500 .82rem var(--f-body)}
+
+.btn{background:var(--primary);color:var(--on-primary);border-radius:10px;font-weight:600;letter-spacing:.005em;box-shadow:0 1px 2px rgba(16,30,54,.12)}
+
+.btn:hover{filter:brightness(1.08)}
+
+.btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+
+.btn.sec:hover{border-color:var(--muted);filter:none}
+
+button.link{text-decoration:none;font-weight:600}button.link:hover{text-decoration:underline}
+
+details{border-top-color:var(--line);border-top-style:solid}
+
+summary{font-size:.9rem;list-style:none;display:flex;align-items:center;gap:8px}
+
+summary::-webkit-details-marker{display:none}
+
+summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex:none;margin-right:2px}
+
+details[open]>summary::before{transform:rotate(45deg)}
+
+.tag{font:600 .66rem var(--f-body);letter-spacing:.06em;border-radius:6px;padding:2px 7px}
+
+/* resultado */
+.big{font:650 clamp(2.1rem,4.6vw,2.9rem)/1.05 var(--f-body);letter-spacing:-.03em}
+
+.chip{font:700 .7rem var(--f-body);letter-spacing:.08em;border-radius:6px;padding:4px 9px}
+
+.cmp div{border-radius:12px;background:var(--sunk)}
+
+.cmp .v{font:650 1.2rem var(--f-body);letter-spacing:-.01em}
+
+.cmp .n{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+dl dt{font-size:.92rem}dl dd{font:600 .95rem var(--f-body)}
+
+.row.head dt{font:600 .7rem var(--f-body);letter-spacing:.08em;color:var(--muted)}
+
+/* tabelas */
+th{font:600 .66rem var(--f-body);letter-spacing:.07em;color:var(--muted)}
+
+td{font-family:var(--f-body)}
+
+tr.sep td{font:600 .66rem var(--f-body)}
+
+thead th{background:var(--surface)}
+
+.ctab td{padding:11px 7px}.ctab th{padding:9px 7px}
+
+.ctab tfoot td{border-top:1px solid var(--line);background:var(--sunk)}
+
+.ttag{display:inline-block;font:700 .6rem/1.4 var(--f-body);letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}.ttag.k-bank{background:#E2F2EA;color:#14674A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ttag.k-bank{background:#14342A;color:#7FDDB3}}:root[data-theme="dark"] .ttag.k-bank{background:#14342A;color:#7FDDB3}
+
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+@media (max-width:640px){.dash{grid-template-columns:1fr}}
+
+.dash>div{border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+
+.dash .ev{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:8px;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem;align-items:baseline}
+
+.dash .ev:first-of-type{border-top:0}.dash .ev .d{color:var(--muted)}.dash .ev .w{overflow-wrap:anywhere}.dash .ev b{font-weight:600;white-space:nowrap}
+
+/* dobras de detalhes */
+details.fold{padding:0;border-top:0}
+
+details.fold>summary{padding:16px 20px;font:600 .95rem var(--f-body);color:var(--ink)}
+
+details.fold>summary::before{color:var(--muted)}
+
+details.fold>.fbody{padding:0 22px 22px}
+
+details.fold .charthead .label,details.fold .flowhead .label{display:none}

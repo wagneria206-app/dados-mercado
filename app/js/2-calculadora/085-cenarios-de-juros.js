@@ -106,7 +106,7 @@ function scCalc(){
 }
 let scXUser={pub:null,pc:null};
 function FAMDEC(L){return L.fmt(1.23456).includes("1,2346")?4:2}
-function compactBRL(v){const a=Math.abs(v);return a>=1e6?fx(v/1e6,2)+" mi":a>=1e4?fx(v/1e3,1)+" mil":fx(v,0)}
+function compactBRL(v){const a=Math.abs(v);return a>=1e6?fx(v/1e6,2)+" mi":a>=1e3?fx(v/1e3,1)+" mil":fx(v,0)} // mesmo formato em toda a tabela (9,3 mil e 10,2 mil, não 9.293 e 10,2 mil)
 function scCross(L,src){
   const box=$("scCrossBox"),out=$("scCross"),drv=L.sc.driver,iso=t=>new Date(t).toISOString().slice(0,10);
   if(drv==="PRE"){box.hidden=false;$("scCrossTitle").textContent="Juros e inflação combinados";$("scCrossIntro").textContent="Prefixados não têm indexador: o resultado depende só da taxa de juros, que já aparece na tabela acima (escolha uma data de venda antes do vencimento).";out.innerHTML="";$("scXDate").parentElement.hidden=true;return}
@@ -140,7 +140,7 @@ function scCross(L,src){
   out.innerHTML=h;box.hidden=false;
 }
 function drawScChart(rows,L,xlabel){
-  const W=chartW(),H=chartH(300,W),PL=78,PR=16,PT=16,PB=46,svg=$("scChart");
+  const svg=$("scChart"),[W,H]=svgFit(svg,300),PL=78,PR=16,PT=16,PB=46;
   let mn=Math.min(0,...rows.map(r=>r.res)),mx=Math.max(0,...rows.map(r=>r.res));
   const st=niceStep((mx-mn)/5||1);mn=Math.floor(mn/st)*st;mx=Math.ceil(mx/st)*st;if(mx===mn)mx=mn+st;
   const n=rows.length,bw=(W-PL-PR)/n,Y=v=>PT+(mx-v)/(mx-mn)*(H-PT-PB);

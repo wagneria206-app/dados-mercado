@@ -1,8 +1,8 @@
 /* ---------- gráfico ---------- */
-const W=chartW(),H=chartH(330,W),PL=78,PR=20,PT=18,PB=44;
+let W=760,H=330;const PL=78,PR=20,PT=18,PB=44;
 let geo=null;
 function drawChart(){
-  const s=state,svg=$("chart");if(!s)return;
+  const s=state,svg=$("chart");if(!s)return;[W,H]=svgFit(svg,330);
   const F=s.F;
   let lo=Math.min(s.rc,s.rm)-F.span,hi=Math.max(s.rc,s.rm)+F.span;
   const xs=niceStep((hi-lo)/6);lo=Math.floor(lo/xs)*xs;hi=Math.ceil(hi/xs)*xs;

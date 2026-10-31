@@ -82,7 +82,7 @@ function txCalc(){
 }
 let TXPTS=[];
 function txDraw(s,side,from,st,n){
-  const svg=$("txChart"),cw=svg.clientWidth||(svg.parentNode&&svg.parentNode.clientWidth)||760,W=Math.round(Math.max(340,Math.min(760,cw))),H=W<560?Math.round(W*0.78):340,PL=W<560?44:58,PR=W<560?10:18,PT=18,PB=40,a=s[side];
+  const svg=$("txChart"),cw=svg.clientWidth||(svg.parentNode&&svg.parentNode.clientWidth)||760,W=Math.round(Math.max(340,Math.min(1500,cw))),H=W<560?Math.round(W*0.78):chartH(340,W),PL=W<560?44:58,PR=W<560?10:18,PT=18,PB=40,a=s[side];
   svg.setAttribute("viewBox","0 0 "+W+" "+H);
   const pts=[];for(let i=0;i<s.t.length;i++){if(s.t[i]<from)continue;pts.push({t:s.t[i],r:a[i],brk:i>0&&s.t[i]-s.t[i-1]>12*DAY})}
   TXPTS=pts;

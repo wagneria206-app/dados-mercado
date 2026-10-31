@@ -10,7 +10,7 @@ function posEvents(id,p,r){
   return fut.map((f,i)=>({t:f.t,id,name:r.name,kind:f.t>=r.end-DAY?"Vencimento":b1?"Parcela mensal":f.f>0?"Amortização e juros":"Juros (cupom)",gross:f.amt*r.q,net:flows&&flows[past.length+i]?flows[past.length+i].amt*r.q:NaN}));
 }
 function allEvents(ids){let ev=[];okRes(ids).forEach(({id,p,r})=>{ev=ev.concat(posEvents(id,p,r))});return ev.sort((a,b)=>a.t-b.t)}
-function agendaHtml(ids){
+function agendaPagHtml(ids){ // agenda de pagamentos de uma carteira (o nome agendaHtml é da agenda do Mercado › Resumo)
   const ev=allEvents(ids),lim=AG_PER==="all"?Infinity:addMonths(VAL,+AG_PER),E=ev.filter(e=>e.t<=lim);
   const sum=(a,f)=>a.reduce((s,e)=>s+(isFinite(e[f])?e[f]:0),0);
   const in30=ev.filter(e=>e.t<=VAL+30*DAY),in12=ev.filter(e=>e.t<=addMonths(VAL,12));

@@ -16,7 +16,7 @@ function fdCalc(){
   const out=$("fdOut");if(!out)return;const c=cnpjNorm($("fdCnpj").value);$("fdInfo").innerHTML=fdInfoHtml(c);
   const F=FUNDS[c];if(F&&F.type&&FD_TYPES[F.type]&&!$("fdType").dataset.touched){$("fdType").value=F.type;fdApply()}
   const p=fdFields(),r=fundEval(p);LAST.fund=r.err?null:r;
-  if(r.err){out.innerHTML='<span class="label">Resultado</span><p class="err" style="margin-top:8px">'+r.err+'</p>';return}
+  if(r.err){out.innerHTML='<span class="label">Resultado</span><p class="'+(/^Digite/.test(r.err)?'sub':'err')+'" style="margin-top:8px">'+r.err+'</p>';return}
   const d=r.fd,cl=r.res>=0?"gain":"loss";
   let h='<div class="verdict"><span class="label">Valor hoje'+(d.virtual||r.estDays>=1?' (estimado)':'')+'</span><span class="chip flat">'+(d.prev?(p.fdPlan||"Previdência"):"Fundo")+'</span></div><div class="big '+cl+'">'+brl(r.valM)+'</div>';
   h+='<p class="sub">'+r.name+' · aplicado em '+fdate(r.buy)+'. '+(d.virtual?'Sem cota informada: valor estimado a '+fx(d.pct,0)+'% do CDI desde a aplicação. Informe a cota de hoje (extrato) para o valor exato.':d.lastQ?(r.estDays<1?'Pela cota de '+fdate(d.lastQ[0])+'.':'Pela cota de '+fdate(d.lastQ[0])+', corrigida até hoje a '+fx(d.pct,0)+'% do CDI.'):'Pela cota da aplicação, corrigida a '+fx(d.pct,0)+'% do CDI. Informe uma cota recente para o valor exato.')+'</p>';

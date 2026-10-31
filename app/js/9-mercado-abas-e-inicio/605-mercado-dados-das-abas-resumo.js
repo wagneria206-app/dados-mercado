@@ -6,7 +6,7 @@ async function mkLoad(force){if(MK.loading||(!force&&MK.loaded&&Date.now()-MK.lo
     MK.di=di&&di.dias&&Object.keys(di.dias).length?di:null;MK.inf=inf;MK.ima=ima&&ima.indices?ima:null;MK.cred=cred&&cred.dias?cred:null;MK.tit=tit&&tit.dias?tit:null;MK.taxas=taxas;if(di||inf||ima||cred||tit)MK.loaded=Date.now();
     if(!FX)fxLoad()}finally{MK.loading=false}
   if(MKM.has(activeMod))mkCalc()}
-const bps=x=>isFinite(x)?(x>0?'+':x<0?'−':'')+fx(Math.abs(x)*100,0)+' bps':'—';
+const bps=x=>isFinite(x)?(x>0?'+':x<0?'−':'')+fx(Math.abs(x)*100,0)+'\u00a0bps':'—';
 const bpsC=(x,inv)=>isFinite(x)?'<span class="'+((inv?-x:x)>0.004?'neg':(inv?-x:x)<-0.004?'pos':'')+'">'+bps(x)+'</span>':'—';
 // DI futuro: taxa de cada vencimento e Copom
 function diCurve(dk){if(!MK.di)return [];const t=Date.parse(dk+"T00:00:00Z");return (MK.di.dias[dk]||[]).map(r=>{const e=fxExp(r[0]),n=du(t,e);return {c:r[0],e,n,pu:+r[1],tx:r[3]!=null&&isFinite(r[3])?+r[3]:n>0?(Math.pow(1e5/+r[1],252/n)-1)*100:NaN}}).filter(x=>x.n>0&&isFinite(x.tx)).sort((a,b)=>a.e-b.e)}
@@ -119,7 +119,7 @@ function imaHtml(){
   const DESC={"IRF-M 1":"prefixados até 1 ano","IRF-M 1+":"prefixados acima de 1 ano","IRF-M":"todos os prefixados","IMA-B 5":"IPCA+ até 5 anos","IMA-B 5+":"IPCA+ acima de 5 anos","IMA-B":"todos os IPCA+","IMA-S":"Tesouro Selic","IMA-GERAL":"todos os títulos públicos","IMA-GERAL EX-C":"todos, sem os IGP-M","IMA-GERAL-EX-C":"todos, sem os IGP-M"};
   let h='<span class="label">Índices de renda fixa da ANBIMA · '+(M.data?fdate(Date.parse(M.data+"T00:00:00Z")):'')+'</span><p class="sub" style="margin-top:4px">Carteiras teóricas de títulos públicos que servem de referência para fundos e carteiras de renda fixa.</p>'
    +'<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab fxstat"><thead><tr><th style="text-align:left">Índice</th><th>Dia</th><th>Mês</th><th>Ano</th><th>12 meses</th><th class="c-ph">24 meses</th><th class="c-ph">Duration</th><th class="c-ph">Taxa média</th></tr></thead><tbody>'
-   +rows.map(x=>{const nm=String(x.nome);return '<tr><td style="text-align:left"><b>'+esc(nm)+'</b>'+(DESC[nm.toUpperCase()]?' <small>'+DESC[nm.toUpperCase()]+'</small>':'')+'</td><td>'+pc(x.dia)+'</td><td>'+pc(x.mes)+'</td><td>'+pc(x.ano)+'</td><td>'+pc(x.m12)+'</td><td class="c-ph">'+pc(x.m24)+'</td><td class="c-ph">'+(isFinite(x.duration)&&x.duration!==null?fx(x.duration/252,1)+' anos':'—')+'</td><td class="c-ph">'+(isFinite(x.taxa)&&x.taxa!==null?(/^IMA-B/i.test(nm)?'IPCA + ':'')+fx(x.taxa,2)+'%':'—')+'</td></tr>'}).join("")+'</tbody></table></div>';
+   +rows.map(x=>{const nm=String(x.nome);return '<tr><td style="text-align:left"><b>'+esc(nm)+'</b>'+(DESC[nm.toUpperCase()]?' <small>'+DESC[nm.toUpperCase()]+'</small>':'')+'</td><td>'+pc(x.dia)+'</td><td>'+pc(x.mes)+'</td><td>'+pc(x.ano)+'</td><td>'+pc(x.m12)+'</td><td class="c-ph">'+pc(x.m24)+'</td><td class="c-ph">'+(isFinite(x.duration)&&x.duration!==null?fx(x.duration/252,1)+' anos':'—')+'</td><td class="c-ph" style="white-space:nowrap">'+(isFinite(x.taxa)&&x.taxa!==null?(/^IMA-B/i.test(nm)?'IPCA + ':'')+fx(x.taxa,2)+'%':'—')+'</td></tr>'}).join("")+'</tbody></table></div>';
   const H=M.historico||{},hk=Object.keys(H).sort();if(hk.length>2){const nm=["IMA-B","IRF-M","IMA-S","IMA-B 5"],cols=["var(--accent)","var(--s2)","var(--muted)","var(--s3)"];
     const ser=nm.map((n,i)=>{const b=hk.find(k=>H[k][n]);if(!b)return null;return {lab:n+" (base 100)",col:cols[i],pts:hk.filter(k=>H[k][n]).map(k=>[Date.parse(k+"T00:00:00Z"),H[k][n]/H[b][n]*100])}}).filter(Boolean);h+=fxMulti(ser,{months:false,unit:""}).replace(/R\$ /g,"")}
   else h+='<p class="sub" style="font-size:.82rem;margin-top:8px">O gráfico de desempenho aparece com alguns dias de histórico guardado (começou em '+fdate(Date.parse((hk[0]||M.data)+"T00:00:00Z"))+').</p>';
@@ -128,17 +128,17 @@ function imaHtml(){
 // Resumo do dia
 function rsHtml(){
   const W=curvWins(),cv=w=>w&&w.b&&!w.approx?w.b:null,b0=W?cv(W[0]):null,b1=W?cv(W[1]):null,card=[];
-  const add=(l,v,sub)=>card.push('<div><span>'+l+'</span><b>'+v+'</b><small>'+(sub||'')+'</small></div>');
+  const add=(l,v,sub)=>card.push('<div><span title="'+l.replace(/<[^>]+>/g,'')+'">'+l+'</span><b>'+v+'</b><small>'+(sub||'')+'</small></div>');
   const sel=MK.inf&&MK.inf.selic_meta;if(sel)add("Selic meta",fx(sel.valor,2)+"%","CDI "+fx(cdiNow(),2)+"% a.a.");
-  if(MK.di){const ks=Object.keys(MK.di.dias).sort(),dk=ks[ks.length-1],cp=copomImpl(dk);if(cp&&cp[0]){const o=cp[0],ch=o.ch;add("Próximo Copom · "+txD2(o.d),(Math.abs(ch)<0.125?"manutenção":(ch>0?"+":"−")+fx(Math.abs(ch),2)+" p.p."),"precificado no DI futuro")}
+  if(MK.di){const ks=Object.keys(MK.di.dias).sort(),dk=ks[ks.length-1],cp=copomImpl(dk);if(cp&&cp[0]){const o=cp[0],ch=o.ch;add("Próximo Copom",(Math.abs(ch)<0.125?"manutenção":(ch>0?"+":"−")+fx(Math.abs(ch),2)+" p.p."),txD2(o.d)+" · precificado no DI")}
     const C=diCurve(dk),P=ks.length>1?diCurve(ks[ks.length-2]):[],j=C.find(x=>x.c==="F"+String(new Date(Date.parse(dk)).getUTCFullYear()+2).slice(2));if(j){const p=P.find(y=>y.c===j.c);add("DI janeiro/"+(2000+(+j.c.slice(1))),fx(j.tx,2)+"%",p?bpsC(j.tx-p.tx)+" no dia":"")}}
   if(b0){[["Prefixado 5 anos",t=>nssY(b0.pre,t),t=>nssY(b1.pre,t),5],["Prefixado 10 anos",t=>nssY(b0.pre,t),t=>nssY(b1.pre,t),10],["Juro real 5 anos",t=>nssY(b0.ipca,t),t=>nssY(b1.ipca,t),5],["Juro real 10 anos",t=>nssY(b0.ipca,t),t=>nssY(b1.ipca,t),10]].forEach(([l,f,g,t])=>add(l,fx(f(t),2)+"%",b1?bpsC(f(t)-g(t))+" no dia":""));
     const im=b=>((1+nssY(b.pre,5)/100)/(1+nssY(b.ipca,5)/100)-1)*100;add("Inflação implícita 5 anos",fx(im(b0),2)+"%",b1?bpsC(im(b0)-im(b1))+" no dia":"")}
   if(MK.ima){["IMA-B","IRF-M","IMA-S"].forEach(n=>{const x=MK.ima.indices.find(r=>String(r.nome).toUpperCase()===n);if(x&&isFinite(x.dia)&&x.dia!==null){const v=x.dia;add(n+" no dia",'<span class="'+(v>0?'pos':v<0?'neg':'')+'">'+(v>0?'+':v<0?'−':'')+fx(Math.abs(v),2)+'%</span>',isFinite(x.mes)?"no mês "+fx(x.mes,2)+"%":"")}})}
-  if(MK.cred){const ks=Object.keys(MK.cred.dias).sort(),D=MK.cred.dias[ks[ks.length-1]],P=ks.length>1?MK.cred.dias[ks[ks.length-2]]:null;if(D.ipca)add("Spread IPCA+ das debêntures",fx(D.ipca.mediana,2)+" p.p.",P&&P.ipca?bpsC(D.ipca.mediana-P.ipca.mediana)+" no dia":"mediana sobre a NTN-B")}
+  if(MK.cred){const ks=Object.keys(MK.cred.dias).sort(),D=MK.cred.dias[ks[ks.length-1]],P=ks.length>1?MK.cred.dias[ks[ks.length-2]]:null;if(D.ipca)add("Spread de debêntures",fx(D.ipca.mediana,2)+" p.p.","IPCA+ · "+(P&&P.ipca?bpsC(D.ipca.mediana-P.ipca.mediana)+" no dia":"mediana sobre a NTN-B"))}
   if(MK.inf&&MK.inf.sgs&&MK.inf.sgs.ipca){const L=MK.inf.sgs.ipca,j=L.length-1;add("IPCA 12 meses",fx(m12(L,j),2)+"%",mname((+L[j][0].slice(0,4))*12+(+L[j][0].slice(5,7))-1)+": "+fx(L[j][1],2)+"% no mês")}
   // Tesouro Direto: título com maior percentil de taxa
-  try{const O=oppData().filter(o=>isFinite(o.pctl)).sort((a,b)=>b.pctl-a.pctl)[0];if(O)add("Tesouro Direto: taxa mais alta na história",esc(O.name.replace(/^Tesouro /,"")),fr(O,O.buy)+" · percentil "+fx(O.pctl,0))}catch(e){}
+  try{const O=oppData().filter(o=>isFinite(o.pctl)).sort((a,b)=>b.pctl-a.pctl)[0];if(O)add("Tesouro: taxa alta na história",esc(O.name.replace(/^Tesouro /,"")),fr(O,O.buy)+" · percentil "+fx(O.pctl,0))}catch(e){}
   return '<span class="label">Resumo do mercado</span><p class="sub" style="margin-top:4px">O que mais importa hoje, com a variação sobre o dia anterior. Toque nas abas para ver cada assunto em detalhe.</p><div class="rsgrid">'+card.join("")+'</div><p class="sub" style="font-size:.8rem;margin-top:8px">bps = centésimos de ponto percentual (+25 bps = taxa 0,25 ponto mais alta). Taxas subindo = preços dos títulos prefixados e IPCA+ caindo.</p>';
 }
 function agendaHtml(){

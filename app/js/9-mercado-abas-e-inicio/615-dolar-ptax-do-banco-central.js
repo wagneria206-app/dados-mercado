@@ -87,7 +87,7 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 applyData(DATA0);
 buildOptions();applyFam();renderMkt();
 pcBind();pcList();
-let m0="rs";try{m0=localStorage.getItem("mod2")||"rs"}catch(e){}
+let m0="rs";try{m0=inicioMod()||localStorage.getItem("mod2")||"rs"}catch(e){}
 scBind();
 extBind();
 txBind();
