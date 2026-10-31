@@ -193,3 +193,11 @@ html.apres .topo{bottom:72px}
 .tourbt>span{display:flex;gap:8px}
 .tourbt .btn{min-height:36px;padding:6px 14px}
 @media print{.tourhl,.tourbx{display:none!important}}
+
+/* ---------- saúde das fontes no cabeçalho: bolinha vermelha quando algum robô ou fonte falhou */
+#btSaude{position:relative}
+.sdponto{display:none;position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#FF5A47;box-shadow:0 0 0 2px var(--navy)}
+#btSaude:is([data-st="aviso"],[data-st="ruim"]) .sdponto{display:block;animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{50%{box-shadow:0 0 0 2px var(--navy),0 0 0 5px rgba(255,90,71,.35)}}
+@media (prefers-reduced-motion:reduce){#btSaude .sdponto{animation:none!important}}
+.sdcorpo .tablewrap{margin-top:6px}

@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-ZbCid+218nUIxOTpX5nIYgeQOKyiBL08F9KKWBEHLXU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-w6TEDNhXZ9fW3Y2INCQg3dOl5XUZrk5cXKJOZCHRpBg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1304,6 +1304,14 @@ html.apres .topo{bottom:72px}
 .tourbt>span{display:flex;gap:8px}
 .tourbt .btn{min-height:36px;padding:6px 14px}
 @media print{.tourhl,.tourbx{display:none!important}}
+
+/* ---------- saúde das fontes no cabeçalho: bolinha vermelha quando algum robô ou fonte falhou */
+#btSaude{position:relative}
+.sdponto{display:none;position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#FF5A47;box-shadow:0 0 0 2px var(--navy)}
+#btSaude:is([data-st="aviso"],[data-st="ruim"]) .sdponto{display:block;animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{50%{box-shadow:0 0 0 2px var(--navy),0 0 0 5px rgba(255,90,71,.35)}}
+@media (prefers-reduced-motion:reduce){#btSaude .sdponto{animation:none!important}}
+.sdcorpo .tablewrap{margin-top:6px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -1311,7 +1319,7 @@ html.apres .topo{bottom:72px}
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
       <div class="brand"><h1>Mercado e Investimentos</h1><span>Mercado, economia, fundos, Bolsa e carteiras, com dados oficiais</span></div>
       <div class="busca" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="busca" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" placeholder="Buscar fundo, ação, FII, título ou tela" aria-label="Buscar fundo, ação, FII, título do Tesouro ou tela do app" aria-controls="buscaRes"><kbd aria-hidden="true">/</kbd><div id="buscaRes" class="buscares" role="listbox" hidden></div></div>
-      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btMetodo" aria-label="Metodologia e fontes" title="Metodologia e fontes"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M8 7h8M8 11h6"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
+      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btSaude" aria-label="Saúde das fontes" title="Saúde das fontes"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg><i class="sdponto"></i></button><button type="button" class="hbtn" id="btMetodo" aria-label="Metodologia e fontes" title="Metodologia e fontes"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M8 7h8M8 11h6"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
     </div>
     <div class="mktbar"><div id="mkt"></div></div>
     <div id="healthBar" hidden></div>
@@ -5112,7 +5120,7 @@ document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#re
 
 /* ---------- Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) ---------- */
 const SD={d:null,load:null,err:false};
-function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch("https://raw.githubusercontent.com/wagneria206-app/dados-mercado/saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}if(typeof activeMod!=="undefined"&&activeMod==="rs"&&typeof mkCalc==="function")mkCalc()}).catch(()=>{SD.err=true;SD.load=null})}
+function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch("https://raw.githubusercontent.com/wagneria206-app/dados-mercado/saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}try{sdIcone()}catch(e){}}).catch(()=>{SD.err=true;SD.load=null})}
 function sdFaixa(dias,hoje){const out=[],t0=Date.parse((hoje||new Date().toISOString().slice(0,10))+"T00:00:00Z");
   for(let k=29;k>=0;k--){const d=new Date(t0-k*DAY).toISOString().slice(0,10),v=dias&&dias[d];out.push('<i class="'+(v==="ok"?"ok":v==="falha"?"fa":v==="parcial"?"pa":"")+'" title="'+fdate(Date.parse(d+"T00:00:00Z"))+': '+(v==="ok"?"funcionou":v==="falha"?"falhou":v==="parcial"?"falhou e depois funcionou":"sem registro")+'"></i>')}
   return '<span class="sdfaixa" aria-label="últimos 30 dias">'+out.join("")+'</span>'}
@@ -5137,7 +5145,24 @@ const SD_TELA={rs:["bcb_cdi_selic","bcb_dolar_ptax","anbima_curva_juros","b3_fut
 function fonteAviso(m){const el=$("fonteAviso");if(!el)return;sdLoad();const D=SD.d;if(!D||!SD_TELA[m]){el.hidden=true;return}
   const L=(D.fontes||[]).filter(f=>SD_TELA[m].includes(f.id)&&!f.ok);if(!L.length){el.hidden=true;return}
   el.innerHTML='<b>Atenção:</b> '+L.map(f=>esc(f.nome)+' <small>('+esc(String(f.erro||"com problema").slice(0,90))+')</small>').join("; ")+'. A tela mostra os últimos dados válidos. <button type="button" class="link" data-saude="1">Ver a saúde das fontes ›</button>';el.hidden=false}
-document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-saude]");if(!x)return;setMod("rs");setTimeout(()=>{const h=[...document.querySelectorAll("#mkOut h3")].find(n=>/Saúde das fontes/.test(n.textContent));if(h)h.scrollIntoView({behavior:"smooth",block:"start"})},1500)});
+// o atalho [data-saude] abre a janela de saúde: 534-saude-no-cabecalho.js
+/* ---------- saúde das fontes no cabeçalho: um ícone com a cor da situação (verde, amarelo, vermelho) que abre o painel completo */
+function sdStatus(){const D=SD.d;if(!D)return SD.err?{c:"ruim",t:"Não deu para ler a saúde das fontes"}:{c:"",t:"Saúde das fontes: carregando…"};
+  const rFal=(D.robos||[]).filter(r=>r.ultimo&&!r.ultimo.ok),ruins=(D.fontes||[]).filter(f=>!f.ok);
+  if(rFal.length)return {c:"ruim",t:"Saúde das fontes: "+rFal.length+(rFal.length>1?" robôs":" robô")+" com falha na última execução"+(ruins.length?" e "+ruins.length+(ruins.length>1?" fontes":" fonte")+" com problema":"")};
+  if(ruins.length)return {c:"aviso",t:"Saúde das fontes: "+ruins.length+(ruins.length>1?" fontes":" fonte")+" com problema"};
+  return {c:"ok",t:"Saúde das fontes: tudo funcionando"}}
+function sdIcone(){const b=$("btSaude");if(!b)return;const s=sdStatus();b.dataset.st=s.c;b.title=s.t;b.setAttribute("aria-label",s.t)}
+function sdAbre(){let d=$("saudeDlg");if(!d){d=document.createElement("dialog");d.id="saudeDlg";d.className="ajdlg metdlg";d.setAttribute("aria-label","Saúde das fontes");document.body.appendChild(d)}
+  const corpo=SD.d?saudeHtml().replace(/^<h3>Saúde das fontes<\/h3>/,""):(basesHtml()||'<p class="sub carregando">Carregando a saúde das fontes…</p>');
+  d.innerHTML='<div class="ajhd"><h2>Saúde das fontes</h2><button type="button" class="hbtn" data-sdfecha="1" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><section class="sdcorpo">'+corpo+'</section>';
+  if(!d.open){try{d.showModal()}catch(e){d.setAttribute("open","")}}}
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);const d=$("saudeDlg");
+  if(g("#btSaude")||g("[data-saude]")){e.stopImmediatePropagation();sdLoad();sdAbre();if(!SD.d&&SD.load)SD.load.then(()=>{const x=$("saudeDlg");if(x&&x.open)sdAbre()});return}
+  if(d&&(g("[data-sdfecha]")||e.target===d)){try{d.close()}catch(x){d.removeAttribute("open")}}},true);
+/* lê ao abrir o app e de novo a cada 30 minutos */
+setTimeout(()=>{sdLoad();const p=SD.load;if(p&&p.then)p.then(sdIcone,sdIcone);else sdIcone()},1500);
+setInterval(()=>{SD.d=null;SD.err=false;sdLoad();if(SD.load)SD.load.then(sdIcone,sdIcone)},30*60000);
 /* ===== Favoritos, alertas e documentos (fatos relevantes, comunicados, relatórios) =====
    Favoritos e alertas ficam só neste navegador (localStorage); nada vai para o repositório. */
 const FV={l:[],a:[],edit:null,boot:{}};
@@ -6532,7 +6557,7 @@ const TOUR=[
   [".busca","Busca","Ache qualquer fundo, ação, FII, ETF, BDR, título do Tesouro ou tela do app. No computador, a tecla / leva direto para cá."],
   ["#mkOut .rsgrid>div,#mkOut .pnlc","De onde vem cada número","Toque no pequeno i de um cartão para ver a fonte oficial. Se uma fonte atrasar, um aviso amarelo aparece no topo da tela."],
   [".tabs button[data-mod=fv]","Favoritos e alertas","Acompanhe fundos, ativos, títulos e indicadores de economia (Focus, IPCA, dólar…) e crie alertas. Com a sincronização, os avisos chegam até com o app fechado."],
-  ["#btAjustes","Ajustes e apresentação","Tema claro ou escuro, tela inicial, blocos do Resumo, sincronização e segurança (proteja o token com senha). Ao lado: Metodologia e fontes e o modo apresentação para reuniões."]];
+  ["#btAjustes","Ajustes e apresentação","Tema claro ou escuro, tela inicial, blocos do Resumo, sincronização e segurança (proteja o token com senha). Ao lado: a saúde das fontes (uma bolinha vermelha aparece quando algo falha), Metodologia e fontes e o modo apresentação para reuniões."]];
 const TR={i:0,on:false};
 function tourAbre(){if(TR.on)return;TR.on=true;TR.i=0;if(activeMod!=="rs"){try{setMod("rs")}catch(e){}}setTimeout(tourPasso,350)}
 function tourFecha(){TR.on=false;document.querySelectorAll(".tourhl,.tourbx").forEach(e=>e.remove());lsSet("tourVisto","1")}
@@ -6624,7 +6649,7 @@ temaAplica();
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",temaAplica)}catch(e){}
 
 /* blocos da tela Mercado › Resumo: o usuário escolhe quais aparecem e em que ordem */
-function rsBlocosDef(){return {painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda das próximas semanas",agendaHtml],bases:["Situação das fontes de dados",basesHtml]}}
+function rsBlocosDef(){return {painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda das próximas semanas",agendaHtml]}}
 function rsBlocos(){const D=rsBlocosDef(),ids=Object.keys(D);let L=[];try{L=JSON.parse(lsGet("rsBlocos","[]"))}catch(e){}
   L=L.filter(x=>Array.isArray(x)&&D[x[0]]);ids.forEach(id=>{if(!L.some(x=>x[0]===id))L.push([id,true])});return L}
 function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);

@@ -150,6 +150,19 @@ async def interface(pg):
             problemas.append("fontes: o balão com a fonte não abriu")
     if "EUA:" not in await pg.evaluate("document.getElementById('mkOut').innerText"):
         problemas.append("agenda: sem as divulgações dos EUA no Resumo")
+    # saúde das fontes: ícone no cabeçalho com a situação e a janela com o painel
+    await pg.wait_for_timeout(1500)
+    st = await pg.evaluate("(document.getElementById('btSaude')||{dataset:{}}).dataset.st||''")
+    if st not in ("ok", "aviso", "ruim"):
+        problemas.append(f"saúde: o ícone do cabeçalho não leu a situação das fontes ({st!r})")
+    await pg.click("#btSaude")
+    await pg.wait_for_timeout(800)
+    if "Robô".upper() not in (await pg.evaluate("(document.getElementById('saudeDlg')||{}).innerText||''")).upper():
+        problemas.append("saúde: a janela com o painel não abriu")
+    else:
+        await pg.click("[data-sdfecha]")
+    if "Saúde das fontes" in await pg.evaluate("document.getElementById('mkOut').innerText"):
+        problemas.append("saúde: o painel ainda aparece no Resumo")
     # metodologia
     await pg.click("#btMetodo")
     await pg.wait_for_timeout(400)
