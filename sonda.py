@@ -1,22 +1,9 @@
-import urllib.request,urllib.parse,json,time,re
-MZ={"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) Chrome/124 Safari/537.36","Accept":"*/*"}
+import urllib.request,re
+MZ={"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) Chrome/124 Safari/537.36"}
 out=[]
-def g(u,n=300):
+for c in [24363,24364,24369,21859,21862,28503,1455,1473,1499,13762,4513,5793,5727,5364,20631,20633,21082,21084,21083,22099,22109,4380,4382,1207,189,28763,23987,24082,24086]:
     try:
-        r=urllib.request.urlopen(urllib.request.Request(u,headers=MZ),timeout=40);b=r.read();out.append(f"OK {u[:160]} {len(b)}B :: {b[:n]!r}");return b
-    except Exception as e: out.append(f"ERRO {u[:160]} {e!r} {getattr(e,'read',lambda:b'')()[:300]!r}")
-O="https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/"
-def q(ent,f,top=3):return O+ent+"?$top="+str(top)+"&$filter="+urllib.parse.quote(f)+"&$orderby="+urllib.parse.quote("Data desc")+"&$format=json"
-g(q("ExpectativasMercadoAnuais","Indicador eq 'IPCA'"),600)
-g(q("ExpectativasMercadoSelic","baseCalculo eq 0"),600)
-g(q("ExpectativasMercadoInflacao12Meses","Indicador eq 'IPCA' and Suavizada eq 'S'"),600)
-g(q("ExpectativasMercadoAnuais","Indicador eq 'Câmbio'"),300)
-g(q("ExpectativasMercadoAnuais","Indicador eq 'PIB Total'"),300)
-g(q("ExpectativasMercadoAnuais","Indicador eq 'Resultado primário'"),300)
-g(O+"$metadata",200)
-g("https://www.federalreserve.gov/releases/h10/summary/jrxwtfb_nb.htm",300)
-b=g("https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",10) or b""
-L=sorted(set(re.findall(rb'fomcprojtabl\d{8}\.htm',b)));out.append(repr(L[-4:]))
-if L: g("https://www.federalreserve.gov/monetarypolicy/"+L[-1].decode(),300)
-g("https://api.bls.gov/publicAPI/v1/timeseries/data/LNS14000000",200)
+        b=urllib.request.urlopen(urllib.request.Request(f"https://dadosabertos.bcb.gov.br/dataset/{c}",headers=MZ),timeout=30).read().decode("utf8","ignore")
+        t=re.search(r"<title>(.*?)</title>",b,re.S);out.append(f"{c}: {t.group(1).strip() if t else '?'}")
+    except Exception as e: out.append(f"{c}: ERRO {e}")
 open("sonda.txt","w").write("\n".join(out))
