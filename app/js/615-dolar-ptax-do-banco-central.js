@@ -51,7 +51,7 @@ function fxCalc(){
   o.innerHTML=h;fxConv();
 }
 function fxChart(i0,i1){
-  const T=FX._t,V=FX._v,NW=window.innerWidth<640,W=NW?420:760,H=NW?330:250,PL=NW?44:52,PR=10,PT=14,PB=28,cnt=i1-i0+1,step=Math.max(1,Math.ceil(cnt/(NW?500:900)));
+  const T=FX._t,V=FX._v,NW=window.innerWidth<640,W=NW?420:chartW(),H=NW?330:chartH(250,W),PL=NW?44:52,PR=10,PT=14,PB=28,cnt=i1-i0+1,step=Math.max(1,Math.ceil(cnt/(NW?500:900)));
   const idx=[];for(let i=i0;i<=i1;i+=step)idx.push(i);if(idx[idx.length-1]!==i1)idx.push(i1);
   const series=[["v",V,"var(--accent)",2.2]];if(FX_MA){series.push(["m50",FX._ma50,"var(--s2)",1.4],["m200",FX._ma200,"var(--s3)",1.4])}if(FX_F1&&FX._f1)series.push(["f1",FX._f1,"var(--s4)",1.6]);
   let lo=Infinity,hi=-Infinity,mn=i0,mx=i0;for(let i=i0;i<=i1;i++){if(V[i]<V[mn])mn=i;if(V[i]>V[mx])mx=i;series.forEach(([,A])=>{const v=A[i];if(isFinite(v)){lo=Math.min(lo,v);hi=Math.max(hi,v)}})}

@@ -1,4 +1,7 @@
 /* ---------- números ---------- */
+/* largura dos gráficos = largura real do painel, para o texto dos eixos sair no tamanho certo (sem ampliar com a tela) */
+function chartW(){const w=window.innerWidth||1024;if(w<640)return 420;const box=document.querySelector(".wrap");return Math.max(560,Math.min(1500,Math.round(((box&&box.clientWidth)||w)-72)))}
+function chartH(h,W){return Math.round(h*Math.min(1.3,Math.max(1,W/760)))}
 function num(s){s=String(s||"").trim().replace(/\s/g,"");if(!s)return NaN;if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");return Number(s)}
 const trunc=(x,n)=>{const p=Math.pow(10,n);return Math.trunc(x*p+(x>=0?1e-7:-1e-7))/p};
 const brl=x=>x.toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:2,maximumFractionDigits:2});

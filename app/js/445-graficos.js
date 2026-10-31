@@ -1,6 +1,6 @@
 /* ---------- gráficos */
 function fnChart(S,opt){
-  opt=opt||{};const NW=window.innerWidth<640,W=NW?420:760,H=opt.h||(NW?260:230),PL=NW?50:58,PR=10,PT=12,PB=26;
+  opt=opt||{};const NW=window.innerWidth<640,W=NW?420:chartW(),H=NW?(opt.h||260):chartH(opt.h||230,W),PL=NW?50:58,PR=10,PT=12,PB=26;
   S=S.filter(s=>s.pts&&s.pts.length);const BML=FN_BML();let lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;
   S.forEach(s=>s.pts.forEach(([t,v])=>{if(v==null||!isFinite(v))return;lo=Math.min(lo,v);hi=Math.max(hi,v);t0=Math.min(t0,t);t1=Math.max(t1,t)}));
   if(!isFinite(lo))return '<p class="sub">Sem dados para o período.</p>';

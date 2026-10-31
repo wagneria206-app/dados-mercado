@@ -1,5 +1,5 @@
 /* ---------- gráfico ---------- */
-const W=760,H=330,PL=78,PR=20,PT=18,PB=44;
+const W=chartW(),H=chartH(330,W),PL=78,PR=20,PT=18,PB=44;
 let geo=null;
 function drawChart(){
   const s=state,svg=$("chart");if(!s)return;

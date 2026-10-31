@@ -37,7 +37,7 @@ function fxBEER(spot){
   return {beta,r2,sd,fair,dev:(spot/fair-1)*100,n:use.length,from:use[0],to:use[use.length-1],embiOk,fitted:use.map((m,i)=>[fxYmT(m),Math.exp(fit[i])]),U,coOk};
 }
 function fxMulti(S,opt){
-  opt=opt||{};const NW=window.innerWidth<640,W=NW?420:760,H=NW?300:240,PL=NW?44:52,PR=10,PT=14,PB=28;
+  opt=opt||{};const NW=window.innerWidth<640,W=NW?420:chartW(),H=NW?300:chartH(240,W),PL=NW?44:52,PR=10,PT=14,PB=28;
   let lo=Infinity,hi=-Infinity,t0=Infinity,t1=-Infinity;S.forEach(s=>s.pts.forEach(([t,v])=>{if(!isFinite(v))return;lo=Math.min(lo,v);hi=Math.max(hi,v);t0=Math.min(t0,t);t1=Math.max(t1,t)}));if(!isFinite(lo))return "";
   const pad=(hi-lo)*0.06||0.05;lo-=pad;hi+=pad;const st=niceStep((hi-lo)/5);lo=Math.floor(lo/st)*st;hi=Math.ceil(hi/st)*st;
   const X=t=>PL+(t-t0)/Math.max(1,t1-t0)*(W-PL-PR),Y=v=>PT+(hi-v)/(hi-lo)*(H-PT-PB);

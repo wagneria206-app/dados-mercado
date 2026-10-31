@@ -32,7 +32,7 @@ function agendaHtml(ids){
 }
 function shortName(n){return String(n).replace(/^Tesouro /,"").replace(" com Juros Semestrais"," Juros Sem.").replace("Aposentadoria Extra","")}
 function agendaChart(months,k0,n){
-  const W=760,H=200,PL=58,PR=10,PT=12,PB=30,vals=[];for(let i=0;i<n;i++)vals.push(months.get(k0+i)||0);
+  const W=chartW(),H=chartH(200,W),PL=58,PR=10,PT=12,PB=30,vals=[];for(let i=0;i<n;i++)vals.push(months.get(k0+i)||0);
   const mx=Math.max(...vals)||1,st=niceStep(mx/4),top=Math.ceil(mx/st)*st,bw=(W-PL-PR)/n,Y=v=>PT+(top-v)/top*(H-PT-PB);
   const MS=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];let g='';
   for(let v=0;v<=top+st/2;v+=st){const y=Y(v);g+='<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="var(--line)" stroke-dasharray="2 4"/><text x="'+(PL-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+compact(v)+'</text>'}
