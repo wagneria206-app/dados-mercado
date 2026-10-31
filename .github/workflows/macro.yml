@@ -5,6 +5,8 @@ on:
     - cron: "50 21 * * 1-5"    # 18h50 de Brasília
     - cron: "20 12 * * 1-6"    # 9h20 de Brasília (Focus sai às 8h25 de segunda)
   workflow_dispatch:
+  push:
+    branches: ["macro-teste"]
 
 permissions:
   contents: write
