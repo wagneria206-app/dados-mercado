@@ -1,6 +1,6 @@
 # dados-mercado
 
-Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Mercado e Títulos**
+Robô que busca, todo dia útil, dados públicos oficiais e publica o app **Mercado e Investimentos**
 (GitHub Pages: https://wagneria206-app.github.io/dados-mercado/).
 
 ## Onde ficam os dados

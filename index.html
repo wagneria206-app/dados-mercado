@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-XyHFAuabg/KpZyzC9elmjSB3pcIOQqfJnlcE7d/aYyg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-C4YbOljxpg246l4Y2CEztjn5X1lB/LnL8DZ7YOeuBBs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
-<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
@@ -1109,12 +1109,27 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 .sub,header p,.notes li,details.method .intro{max-width:none}
 
 .extab{table-layout:fixed;width:100%}.extab td,.extab th{white-space:normal!important;overflow-wrap:break-word}.extab th:first-child,.extab td:first-child{width:19%}
+
+/* grade de indicadores: rótulo em cima,valor alinhado embaixo,sem as linhas e recuos do dl padrão */
+.fninfo>div{display:flex;flex-direction:column;border-bottom:0;border-top:1px solid var(--line);padding:8px 0 10px}
+
+.fninfo dt,.fninfo dd{border-top:0;padding:0;margin:0}
+
+.fninfo dt{font-size:.76rem;color:var(--muted);line-height:1.35}
+
+.fninfo dt small{font-size:.7rem;opacity:.85;margin-top:1px}
+
+.fninfo dd{margin-top:auto;padding-top:6px;font:600 1rem var(--f-body);font-variant-numeric:tabular-nums;text-align:left}
+
+.fninfo dd small{font-weight:400;font-size:.74rem;color:var(--muted)}
+
+.fnrisk{gap:4px 22px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
     <div class="brandrow">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
-      <div class="brand"><h1>Mercado e Títulos</h1><span>Taxas oficiais, cálculo e simulação de títulos de renda fixa</span></div>
+      <div class="brand"><h1>Mercado e Investimentos</h1><span>Mercado, economia, fundos, Bolsa e carteiras, com dados oficiais</span></div>
       <div class="hstat"><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
     </div>
     <div class="mktbar"><div id="mkt"></div></div>
@@ -1722,7 +1737,8 @@ function buildOptions(){
 }
 function renderMkt(){
   const lastIpca=Math.max(...Object.keys(IPCA).map(Number));
-  $("mkt").innerHTML='<span>Posição<b>'+fdate(VAL)+'</b></span><span>Selic<b>'+fx(SELIC_OVER,2)+'%</b></span><span>VNA NTN-B<b>'+fx(VNA_B,2)+'</b></span><span>VNA LFT<b>'+fx(VNA_LFT,2)+'</b></span><span>IPCA até<b>'+mname(lastIpca)+'</b></span>'+(TD_DATE?'<span>Tesouro Direto<b>'+fdate(TD_DATE)+'</b></span>':'')+fxTopHtml();
+  const i12=IPCA[lastIpca]&&IPCA[lastIpca-12]?(IPCA[lastIpca]/IPCA[lastIpca-12]-1)*100:null;
+  $("mkt").innerHTML='<span>Selic<b>'+fx(SELIC_OVER,2)+'%</b></span>'+(i12!=null?'<span>IPCA 12 meses<b>'+fx(i12,2)+'%</b> <small style="opacity:.7">até '+mname(lastIpca)+'</small></span>':'')+fxTopHtml();
 }
 
 let manual=false,curFam=null;
@@ -5311,10 +5327,10 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
 try{const c=JSON.parse(localStorage.getItem("relCfg")||"null");if(c&&typeof c==="object")Object.assign(REL.cfg,c)}catch(e){}
 function relSave(){try{localStorage.setItem("relCfg",JSON.stringify(REL.cfg))}catch(e){alertLite("Não deu para guardar o logo neste navegador (espaço insuficiente). Use uma imagem menor.")}}
-const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira"};
+const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado"};
 function relOpen(kind){
   REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();
-  REL.box=relConteudo(kind);if(!REL.box){alertLite("Abra a análise antes de gerar o relatório.");return}
+  REL.box=relConteudo(kind);if(!REL.box){alertLite(kind==="mk"?"Carregando os dados de mercado. Tente de novo em alguns segundos.":"Abra a análise antes de gerar o relatório.");return}
   d=document.createElement("div");d.className="reldlg";
   const c=REL.cfg,secs=relSecoes(REL.box),fora=relFora(kind);
   d.innerHTML='<div class="relbox" role="dialog" aria-modal="true" aria-labelledby="relT"><h3 id="relT">Relatório em PDF · '+REL_T[kind]+'</h3><p class="sub">Os dados do escritório ficam guardados só neste navegador. O relatório abre pronto para imprimir: escolha “Salvar como PDF”.</p>'
@@ -5333,7 +5349,7 @@ function relOpen(kind){
 function relTit(el){return (el.dataset&&el.dataset.reltit)||((el.querySelector("h3")||el.querySelector(".label")||{}).textContent||"").trim().replace(/\s+/g," ").slice(0,70)||"Seção"}
 function relSecoes(box){return [...box.children].filter(e=>/^(SECTION|DIV)$/.test(e.tagName)&&(e.classList.contains("panel")||e.classList.contains("relsec"))).map(relTit)}
 function relFora(kind){try{const a=JSON.parse(localStorage.getItem("relFora_"+kind)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
-const REL_RESUMO=/^(Resumo|Composição|Rentabilidade e risco de cada item|Desde a efetivação|Rentabilidade$|Rentabilidade acumulada|Risco$)/;
+const REL_RESUMO=/^(Painel de índices|Resumo do mercado|Expectativas do mercado|Como o exterior|Resumo|Composição|Rentabilidade e risco de cada item|Desde a efetivação|Rentabilidade$|Rentabilidade acumulada|Risco$)/;
 function relClean(root){
   root.querySelectorAll(".fnseg,.fnacts,.cvsel,.fnqbox,.fnsrch,select,input,textarea,.btn,.fnx,.cmphead,.fnrow,[data-cmpaddmany],[data-fnrkcat],[data-atrkcat],.cmpleg .link,.cvtip,.sprf,.spbtns,.spparams,#spCmpBox button").forEach(e=>e.remove());
   root.querySelectorAll("button").forEach(b=>{const s=document.createElement("span");s.innerHTML=b.innerHTML;s.className=b.className.replace(/\b(link|off)\b/g,"").trim();if(b.classList.contains("off"))s.style.opacity=".4";b.replaceWith(s)});
@@ -5343,6 +5359,8 @@ function relClean(root){
 }
 function relConteudo(kind){
   const box=document.createElement("div");
+  if(kind==="mk"){if(!EU.S||!MC.d){euBoot();mcBoot();return null}const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
+    try{h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+economiaHtml().map(P).join("")+mundoHtml().map(P).join("")}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
   else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML;const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
   else{const k=kind==="fc"?"f":"a",X=CMP_CTX[k];if(!X)return null;const b=$(kind==="fc"?"fnCbody":"atCbody");if(!b)return null;
@@ -5356,6 +5374,7 @@ function relTitulo(kind){
   if(kind==="fa"&&FN.cur&&FN.files.get(FN.cur)){const F=FN.files.get(FN.cur);return [F.fan||F.n||"",fnCnpjF(F.c)]}
   if(kind==="aa"&&AT.cur&&AT.files.get(AT.cur)){const A=AT.files.get(AT.cur);return [A.t+" · "+(A.nome||""),A.tipo+(A.setor?" · "+A.setor:"")]}
   if(kind==="sp"){const c=spC();return [c.nome,c.itens.length+" itens"]}
+  if(kind==="mk")return ["Panorama do mercado","Brasil, EUA e mundo · "+new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})];
   const L=kind==="fc"?FN.cmp:AT.cmp;return [REL_T[kind],L.length+(kind==="fc"?" fundos":" ativos")];
 }
 function relGerar(){
@@ -5389,7 +5408,7 @@ svg.chart{max-height:250px}
 </style></head><body>`
     +'<div class="relhead"><div>'+(c.logo?'<img src="'+c.logo+'" alt="">':'')+(c.nome?'<div class="of">'+esc(c.nome)+'</div>':'')+'</div><div class="ct" style="text-align:right">'+(c.resp?esc(c.resp)+'<br>':'')+(c.contato?esc(c.contato)+'<br>':'')+hoje+'</div></div>'
     +'<div class="reltit"><h1>'+esc(tit)+'</h1><p>'+esc(REL_T[kind])+(sub?' · '+esc(sub):'')+'</p></div>'
-    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
+    +'<div class="relmeta">'+(REL.para?'<span>Preparado para: <b>'+esc(REL.para)+'</b></span>':'')+'<span>Dados até '+esc(kind==="mk"?fdate(Date.now()):kind==="aa"||kind==="ac"?(AT.idx&&AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):""):(FN.idx&&FN.idx.dt?fdate(Date.parse(FN.idx.dt+"T00:00:00Z")):""))+'</span></div>'
     +(REL.obs?'<div class="relobs">'+esc(REL.obs)+'</div>':'')
     +cont.innerHTML
     +'<div class="relfoot">'+(c.rodape?esc(c.rodape)+'<br>':'')+'Fontes: CVM (informe diário, cadastro, lâmina, carteira, demonstrações financeiras e informe dos FIIs), B3 (cotações, proventos e índices) e Banco Central (CDI, IPCA e dólar). Rentabilidade passada não é garantia de rentabilidade futura. Os valores são brutos de impostos, salvo indicação. Este material tem caráter informativo e não constitui recomendação de investimento.</div>'
@@ -5949,7 +5968,7 @@ function euCard(k){const P=EU.S&&EU.S[k];if(!P||P.length<3)return "";const u=P[P
 const EU_PERS=[["1","1 mês"],["6","6 meses"],["ano","No ano"],["12","12 meses"],["36","3 anos"],["60","5 anos"]];
 function euPerfChart(keys,cols){
   const S=EU.S,out=[];let tA=0;keys.forEach(k=>{const P=S[k];if(P&&P.length)tA=Math.max(tA,P[P.length-1][0])});
-  keys.forEach((k,j)=>{const P=S[k];if(!P||P.length<3)return;const b=euBase(P,EU.per);if(!b)return;const pts=P.filter(p=>p[0]>b[0]).map(p=>[p[0],(p[1]/b[1]-1)*100]);pts.unshift([b[0],0]);out.push({lab:EU_SER[k][0],col:cols[j],w:k==="cdi"?1.6:2,dash:k==="cdi"?"4 3":null,pts:fnThin(pts.map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v])})});
+  keys.forEach((k,j)=>{const P=S[k];if(!P||P.length<3)return;const b=euBase(P,EU.per);if(!b)return;const pts=P.filter(p=>p[0]>b[0]).map(p=>[p[0],(p[1]/b[1]-1)*100]);pts.unshift([b[0],0]);out.push({lab:EU_SER[k][0],col:cols[j],w:k==="cdi"?1.6:2,dash:k==="cdi"?"4 3":"none",pts:fnThin(pts.map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v])})});
   return fnSeg("euper",EU_PERS,EU.per)+fnChart(out,{fmt:"pct",zero:true,h:240,legend:true,aria:"Desempenho comparado"})}
 function euTabela(keys){
   const cols=[["dia","Dia",""],["mes","Mês",""],["ano","Ano",""],["12","12m",""],["36","36m","c-ph"],["60","60m","c-ph"]];
@@ -5966,7 +5985,7 @@ function painelHtml(modo){
   euUsdHoje();
   const eua=modo==="eua";
   const cards=eua?["spx","comp","djia","ndx","vix","t10","usd"]:["ibov","ifix","spx","comp","djia","usd","spxbrl","vix","t10","cdi"];
-  let h='<span class="label">'+(eua?'Bolsa americana hoje':'Painel de índices')+'</span><p class="sub" style="margin-top:4px">'+(eua?'Fechamento mais recente de cada índice, com a variação no dia, no mês, no ano e em 12 meses. Juros e VIX mostram a variação em pontos.':'Bolsas do Brasil e dos EUA, dólar e juros: fechamento mais recente de cada um, com a variação no dia, no mês, no ano e em 12 meses (a data aparece ao lado do nome).')+'</p>';
+  let h=(eua?'':'<div class="fnacts" style="float:right;margin-left:10px"><button type="button" class="btn sec" data-rel="mk">Relatório de mercado (PDF)</button></div>')+'<span class="label">'+(eua?'Bolsa americana hoje':'Painel de índices')+'</span><p class="sub" style="margin-top:4px">'+(eua?'Fechamento mais recente de cada índice, com a variação no dia, no mês, no ano e em 12 meses. Juros e VIX mostram a variação em pontos.':'Bolsas do Brasil e dos EUA, dólar e juros: fechamento mais recente de cada um, com a variação no dia, no mês, no ano e em 12 meses (a data aparece ao lado do nome).')+'</p>';
   h+='<div class="pnlg">'+cards.map(euCard).join("")+'</div>';
   const keys=eua?["spx","comp","djia","ndx","ibov","spxbrl"]:["ibov","spx","comp","djia","spxbrl","usd","cdi"];
   h+='<div class="label" style="margin-top:14px">Desempenho comparado (%)</div>'+euPerfChart(keys,["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2","#64748b"]);
