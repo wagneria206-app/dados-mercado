@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-L+D8W1H1BorTHBckh6B+gvp5+DtQ1xdsJ8a3+cPavIU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-XyHFAuabg/KpZyzC9elmjSB3pcIOQqfJnlcE7d/aYyg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Títulos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Títulos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1107,6 +1107,8 @@ label.link:focus-within,label.link:hover{text-decoration:underline}
 
 /* notas e textos explicativos usam toda a largura do painel */
 .sub,header p,.notes li,details.method .intro{max-width:none}
+
+.extab{table-layout:fixed;width:100%}.extab td,.extab th{white-space:normal!important;overflow-wrap:break-word}.extab th:first-child,.extab td:first-child{width:19%}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -5976,9 +5978,9 @@ function painelHtml(modo){
 /* ---------- Bolsa › EUA */
 function euCalc(){
   const o=$("fnOut");if(!o)return;
-  if(FN.view!=="au"){FN.view="au";o.innerHTML='<section class="panel" id="euPainel"></section><section class="panel" id="euJuros"></section><section class="panel"><h3>Empresas americanas com BDR na B3</h3><p class="sub">Indicadores calculados com os balanços entregues à SEC (órgão regulador dos EUA) e a cotação em Nova York. Clique no BDR para abrir a análise completa, com retorno em dólar e documentos.</p><div id="euRkF"></div><div id="euRkT"></div></section>'}
+  if(FN.view!=="au"){FN.view="au";o.innerHTML='<section class="panel" id="euPainel"></section><section class="panel" id="euJuros"></section><section class="panel" id="euEx"></section><section class="panel"><h3>Empresas americanas com BDR na B3</h3><p class="sub">Indicadores calculados com os balanços entregues à SEC (órgão regulador dos EUA) e a cotação em Nova York. Clique no BDR para abrir a análise completa, com retorno em dólar e documentos.</p><div id="euRkF"></div><div id="euRkT"></div></section>'}
   if(!EU.S){$("euPainel").innerHTML=EU.err&&!EU.load?'<p class="warn">A base da Bolsa americana ainda não está disponível ('+esc(EU.err.message||EU.err)+'). Tente de novo mais tarde.</p>':'<p class="sub">Carregando os dados da Bolsa americana…</p>';euBoot();return}
-  $("euPainel").innerHTML=painelHtml("eua");$("euJuros").innerHTML=euJurosHtml();
+  $("euPainel").innerHTML=painelHtml("eua");$("euJuros").innerHTML=euJurosHtml();if(!document.activeElement||!document.activeElement.dataset||!document.activeElement.dataset.ex)$("euEx").innerHTML=exHtml();
   if(!AT.idx){$("euRkT").innerHTML='<p class="sub">Carregando a lista de BDRs da B3…</p>';atBoot().then(()=>{if(activeMod==="au")euCalc()});return}
   euRk();
 }
@@ -6332,6 +6334,43 @@ function spStressHtml(c,it,R){
   h+='<p class="sub" style="font-size:.8rem">Choques instantâneos, sem contar o rendimento do período. Juros: IMA-B (duração '+fx(dB,1)+' anos) e IRF-M (duração '+fx(dP,1)+' anos) reagem pela duração; o efeito em cada item vem da sensibilidade medida a esses índices. Nos cenários históricos usamos o retorno que a carteira de hoje teria tido; itens sem histórico na época são estimados pelo modelo. CDB, LCI, LCA, debêntures, CRI e CRA simulados com taxa fixa não oscilam no modelo (o valor na curva não muda com o mercado), mas na venda antecipada sofrem o efeito dos juros. "Explicado pelo modelo" = quanto da variação mensal do item os fatores explicam; abaixo de 30%, a estimativa é pouco confiável. É uma medida de risco, não uma previsão.</p></section>';
   return h;
 }
+
+/* ===== Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil ===== */
+const EX={v:100000,anos:10,ret:9,dy:1.3,cam:0,spread:0.5,iof:1.1,iofv:0.38,terL:0.23,terD:0.03,ir:15,ret_us:30};
+try{const s=JSON.parse(localStorage.getItem("exPar")||"null");if(s&&typeof s==="object")Object.assign(EX,s)}catch(e){}
+function exCalc(){
+  const N=+EX.anos||1,V=+EX.v||0,p=(+EX.ret-+EX.dy)/100,dy=+EX.dy/100,c=+EX.cam/100,ir=+EX.ir/100,wh=+EX.ret_us/100;
+  const fx_=Math.pow(1+c,N);
+  const op=[];
+  // ETF local (ex.: IVVB11): fundo brasileiro que compra o ETF americano; dividendos reinvestidos dentro do fundo, com retenção nos EUA
+  {const g=Math.pow(1+p+dy*(1-wh)-EX.terL/100,N),bruto=V*g*fx_,imp=Math.max(0,bruto-V)*ir;op.push({n:"ETF na B3",ex:"IVVB11",bruto,imp,liq:bruto-imp,custo:fx(EX.terL,2)+'% ao ano de taxa',div:'reinvestidos no fundo, já com '+fx(wh*100,0)+'% retidos nos EUA',ir:'15% sobre o ganho em reais, na venda (DARF no mês seguinte); sem isenção',iof:'não há',her:'não há',decl:'mensal, só nos meses com venda com lucro'})}
+  // BDR do ETF americano (ex.: BIVB39): dividendos pagos em reais, já com a retenção americana
+  {const g=Math.pow(1+p+dy*(1-wh)-EX.terD/100,N),bruto=V*g*fx_,imp=Math.max(0,bruto-V)*ir;op.push({n:"BDR do ETF americano",ex:"BIVB39",bruto,imp,liq:bruto-imp,custo:fx(EX.terD,2)+'% ao ano (taxa do ETF americano)',div:'pagos em reais, com '+fx(wh*100,0)+'% retidos nos EUA; o imposto brasileiro (carnê-leão, tabela progressiva) é compensado pelo retido lá fora, sem custo extra na prática',ir:'15% sobre o ganho em reais, na venda (DARF no mês seguinte); sem isenção',iof:'não há',her:'não há',decl:'mensal: DARF nas vendas com lucro e carnê-leão nos dividendos'})}
+  // Conta em corretora nos EUA (ex.: IVV): IOF e spread na ida e na volta
+  {const ida=V*(1-EX.iof/100-EX.spread/100),g=Math.pow(1+p+dy*(1-wh)-EX.terD/100,N),bruto=ida*g*fx_,imp=Math.max(0,bruto-ida)*ir,volta=(bruto-imp)*(1-EX.iofv/100-EX.spread/100);
+    op.push({n:"Conta em corretora nos EUA",ex:"IVV",bruto,imp,liq:volta,custo:fx(EX.terD,2)+'% ao ano + IOF de '+fx(EX.iof,2)+'% e spread de câmbio na remessa',div:'em dólar, com '+fx(wh*100,0)+'% retidos nos EUA; no Brasil, 15% na declaração anual, compensado pelo retido lá fora',ir:'15% sobre o ganho em reais (inclui o câmbio), apurado na declaração anual; prejuízo compensa ganho',iof:fx(EX.iof,2)+'% na ida e '+fx(EX.iofv,2)+'% na volta, mais o spread',her:'sim: imposto sobre herança nos EUA de até 40% sobre o que passar de US$ 60 mil, para não residentes',decl:'anual (declaração de ajuste); só paga quando vende'})}
+  op.forEach(o=>{o.aa=(Math.pow(o.liq/V,1/N)-1)*100});
+  return op;
+}
+function exHtml(){
+  const op=exCalc(),best=Math.max(...op.map(o=>o.liq));
+  const inp=(id,lab,v,st,suf)=>'<div class="field"><label for="ex_'+id+'">'+lab+'</label><input id="ex_'+id+'" data-ex="'+id+'" type="number" step="'+st+'" value="'+v+'" inputmode="decimal">'+(suf?'<small class="sub">'+suf+'</small>':'')+'</div>';
+  let h='<h3>Como investir no S&P 500 a partir do Brasil</h3><p class="sub">Compara as três formas mais comuns de ter o S&P 500 na carteira, com os mesmos números de retorno e câmbio, descontando taxas, IOF, câmbio e imposto. Ajuste as premissas: o resultado muda na hora.</p>';
+  h+='<div class="fnfilt">'+inp("v","Valor aplicado (R$)",EX.v,1000)+inp("anos","Prazo (anos)",EX.anos,1)+inp("ret","Retorno total do S&P 500 em dólar (% ao ano)",EX.ret,0.1,"com dividendos; média histórica ≈ 10%")+inp("dy","Dividendos (% ao ano)",EX.dy,0.1)+inp("cam","Variação do dólar/real (% ao ano)",EX.cam,0.1,"positivo = real perdendo valor")+inp("spread","Spread de câmbio da corretora (%)",EX.spread,0.1)+'</div>';
+  h+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab extab"><thead><tr><th style="text-align:left">'+fx(EX.anos,0)+' anos</th>'+op.map(o=>'<th>'+esc(o.n)+'<small style="display:block;font-weight:400">ex.: '+esc(o.ex)+'</small></th>').join("")+'</tr></thead><tbody>'
+    +'<tr><td style="text-align:left">Valor bruto no fim</td>'+op.map(o=>'<td>R$ '+fx(o.bruto,0)+'</td>').join("")+'</tr>'
+    +'<tr><td style="text-align:left">Imposto de renda na venda</td>'+op.map(o=>'<td>−R$ '+fx(o.imp,0)+'</td>').join("")+'</tr>'
+    +'<tr><td style="text-align:left"><b>Valor líquido em reais</b></td>'+op.map(o=>'<td><b'+(o.liq===best?' class="pos"':'')+'>R$ '+fx(o.liq,0)+'</b></td>').join("")+'</tr>'
+    +'<tr><td style="text-align:left">Retorno líquido ao ano</td>'+op.map(o=>'<td>'+fx(o.aa,2)+'%</td>').join("")+'</tr>'
+    +[["Custos","custo"],["Dividendos","div"],["Imposto sobre o ganho","ir"],["IOF","iof"],["Imposto sobre herança nos EUA","her"],["Obrigações","decl"]].map(([l,k])=>'<tr><td style="text-align:left;vertical-align:top">'+l+'</td>'+op.map(o=>'<td style="text-align:left;vertical-align:top;font-size:.82rem">'+esc(o[k])+'</td>').join("")+'</tr>').join("")
+    +'</tbody></table></div>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px"><b>Como ler:</b> com prazos longos as diferenças vêm sobretudo da taxa do ETF local e do IOF e câmbio da conta no exterior. A conta nos EUA dá acesso a milhares de ativos e mantém o dinheiro em dólar (sem precisar trazê-lo de volta), mas exige declarar tudo e expõe a herança ao imposto americano; o ETF e o BDR na B3 são mais simples, sem risco de herança nos EUA. Nenhuma das três protege do câmbio: para isso existem ETFs com proteção cambial (hedge), cujo retorno em reais fica perto do retorno em dólar mais a diferença entre o CDI e o juro americano.</p>'
+    +'<p class="sub" style="font-size:.78rem">Premissas e regras usadas (pessoa física residente, regras de 2026): IR de 15% sobre o ganho em BDR e ETF na B3, sem a isenção de R$ 20 mil das ações; aplicações em conta no exterior pela Lei 14.754/2023 (15% na declaração anual, câmbio incluído no ganho, prejuízo compensável); retenção de 30% nos EUA sobre dividendos de não residentes, compensada no Brasil até o limite do imposto brasileiro; IOF de 1,10% na remessa para investimento e 0,38% no ingresso; taxa de administração de 0,23% ao ano no IVVB11 e 0,03% no IVV. Taxas de corretagem e custódia não entram. Regras tributárias mudam: confirme com um contador antes de recomendar. Não é recomendação de investimento.</p>';
+  return h;
+}
+let EX_T=null;
+document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.ex)return;const v=parseFloat(String(t.value).replace(",","."));if(!isFinite(v))return;EX[t.dataset.ex]=v;try{localStorage.setItem("exPar",JSON.stringify(EX))}catch(x){}
+  clearTimeout(EX_T);EX_T=setTimeout(()=>{const el=$("euEx");if(!el)return;const f=document.activeElement&&document.activeElement.id;el.innerHTML=exHtml();if(f){const n=$(f);if(n){n.focus();try{const l=n.value.length;n.setSelectionRange&&n.type!=="number"&&n.setSelectionRange(l,l)}catch(x){}}}},400)});
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
