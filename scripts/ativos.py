@@ -112,6 +112,12 @@ def ler_cotahist(ano, filtro=None):
         for raw in f:
             if raw[:2] != b"01":
                 continue
+            if raw[39:41] == b"CI" or raw[12:16] in (b"IMAB", b"FIXA", b"B5P2", b"LFTS", b"IRFM"):   # diagnóstico dos ETFs
+                d = DIAG.setdefault("etf_cotahist", {})
+                ch = raw[10:12].decode() + "/" + raw[24:27].decode() + "/" + raw[39:49].decode().strip()
+                d[ch] = d.get(ch, 0) + 1
+                if raw[12:16] in (b"IMAB", b"FIXA", b"B5P2", b"LFTS", b"IRFM"):
+                    DIAG.setdefault("etf_rf_amostra", {})[raw[12:24].decode().strip()] = ch
             if raw[12:18] in ETF_RF_TICK:   # diagnóstico: como os ETFs de renda fixa aparecem no arquivo da B3
                 DIAG.setdefault("etf_rf_cotahist", {})[raw[12:24].decode().strip()] = [raw[10:12].decode(), raw[24:27].decode(), raw[39:49].decode().strip()]
             if raw[24:27] != b"010":
@@ -1302,6 +1308,8 @@ def principal():
                diag={k: (v[:20] if isinstance(v, list) else v) for k, v in DIAG.items()}, minutos=round((time.time() - INICIO) / 60, 1))
     FU.gravar(os.path.join(sai, "estado.json"), est)
     log("gravado:", len(rows), "ativos; cotações até", est["ano_ate"], "+ ano corrente")
+    if os.environ.get("GITHUB_ACTIONS"):
+        print("::notice title=ETFs no COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("etf_cotahist", "etf_rf_amostra", "etf_rf_cotahist")}, ensure_ascii=False)[:3000])
 
 
 if __name__ == "__main__":
