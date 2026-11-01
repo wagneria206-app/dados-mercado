@@ -29,6 +29,7 @@ ANO0 = 2005
 INICIO = time.time()
 LIMITE = INICIO + float(os.environ.get("MINUTOS", "48")) * 60
 HOJE = dt.date.today()
+RAW_FUNDOS = "https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/"
 UA = FU.UA
 URL_COTAHIST = "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A{}.ZIP"
 B3 = "https://sistemaswebb3-listados.b3.com.br/"
@@ -36,6 +37,7 @@ URL_FII = "https://dados.cvm.gov.br/dados/FII/DOC/INF_MENSAL/DADOS/inf_mensal_fi
 URL_DFP = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/dfp_cia_aberta_{}.zip"
 URL_ITR = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/itr_cia_aberta_{}.zip"
 URL_FCA = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/FCA/DADOS/fca_cia_aberta_{}.zip"
+ETF_RF_TICK = {b"IMAB11", b"FIXA11", b"B5P211", b"LFTS11", b"IRFM11", b"IB5M11", b"DEBB11", b"5PRE11", b"NTNS11"}
 BDI_OK = {"02", "05", "06", "07", "08", "12", "13", "14", "34", "35", "36"}
 DIAG = {}
 
@@ -108,7 +110,11 @@ def ler_cotahist(ano, filtro=None):
     out = []
     with z.open(z.namelist()[0]) as f:
         for raw in f:
-            if raw[:2] != b"01" or raw[24:27] != b"010":
+            if raw[:2] != b"01":
+                continue
+            if raw[12:18] in ETF_RF_TICK:   # diagnóstico: como os ETFs de renda fixa aparecem no arquivo da B3
+                DIAG.setdefault("etf_rf_cotahist", {})[raw[12:24].decode().strip()] = [raw[10:12].decode(), raw[24:27].decode(), raw[39:49].decode().strip()]
+            if raw[24:27] != b"010":
                 continue
             bdi = raw[10:12].decode()
             if bdi not in BDI_OK:
@@ -444,12 +450,72 @@ def atualizar_fundo_listado(cod, info, por_isin):
     s = b3get("fundsProxy/fundsCall/GetListedSupplementFunds", {"cnpj": "0", "identifierFund": cod, "typeFund": 7})
     if not isinstance(s, dict):
         return False
+    DIAG.setdefault("b3_fundo_campos", sorted(s.keys()))
+    cn = next((re.sub(r"\D", "", str(s.get(c) or "")) for c in ("cnpj", "CNPJ", "cnpjFund", "fundCnpj") if s.get(c)), "")
+    if len(cn) == 14:
+        info["cnpj"] = cn
     info["nome"] = (s.get("fund") or "").strip()
     info["cotas"] = num(s.get("quantity"))
     info["adm"] = (s.get("ifd") or "").strip()
     eventos_supl(s.get("cashDividends"), s.get("stockDividends"), por_isin)
     info["t"] = HOJE.isoformat()
     return True
+
+
+# ---------------------------------------------------------------- categoria dos ETFs
+ETF_CRIPTO = re.compile(r"bitcoin|\bbtc|ether|\beth\b|cripto|crypto|hash|\bdefi|solana|\bxrp|blockchain|web ?3|\bnft", re.I)
+ETF_OURO = re.compile(r"\bouro\b|\bgold\b|commodit|\bprata\b|silver|\bmilho\b|\bboi g|petr[oó]leo|\boleo\b|\bd[oó]lar\b|\busd\b", re.I)
+ETF_NAO = re.compile(r"^(fip|fic fi|fi |firf|fundes|finam|finor|fiset|fi infr|fic ie|capinfr|suno fic)|\bfip\b", re.I)
+ETF_RF = re.compile(r"renda fixa|\bima[ -]?b|\bimab|\bima[ -]?s|\birf[ -]?m|\birfm|\bidka|tesouro|selic|prefixad|deb[eê]nture|\bdebb|cr[eé]dito privado|\bcdi\b|\blft|\bntn|infla[cç][aã]o|\bfixa\b", re.I)
+ETF_INT = re.compile(r"s&p|\bsp ?500|nasdaq|\bndx|\beua\b|\busa?\b|\bus |global|world|mundo|msci|acwi|europ|\beuro|china|chin[eê]s|jap[aã]o|\bjapan|[ií]ndia|emergente|internacional|exterior|\bftse|stoxx|\bdow\b|russell|hong kong|alemanha|\bgerman|reino unido|\bukx?\b|treasur|tecnologia americana|semicondut|\breits?\b", re.I)
+
+
+def fundos_cvm():
+    """Classe e categoria ANBIMA dos fundos na CVM (base do robô de fundos), por CNPJ e por nome."""
+    try:
+        r = requests.get(RAW_FUNDOS + "idx.json", timeout=120)
+        j = r.json()
+        C = {c: i for i, c in enumerate(j["cols"])}
+        cl, an = j.get("classes") or [], j.get("anbima") or []
+        por_cnpj, por_nome = {}, {}
+        for x in j["rows"]:
+            v = (cl[x[C["classe"]]] if isinstance(x[C["classe"]], int) and x[C["classe"]] < len(cl) else "",
+                 an[x[C["anbima"]]] if isinstance(x[C["anbima"]], int) and x[C["anbima"]] < len(an) else "", x[C["nome"]])
+            por_cnpj[x[0]] = v
+            por_nome.setdefault(norm(x[C["nome"]])[:60], v)
+        return por_cnpj, por_nome
+    except Exception as e:  # noqa: BLE001
+        DIAG["fundos_cvm"] = str(e)[:150]
+        return {}, {}
+
+
+_CVM = []
+
+
+def cvm_cache():
+    if not _CVM:
+        _CVM.append(fundos_cvm())
+    return _CVM[0]
+
+
+def etf_categoria(cod, nome, cnpj, cvm):
+    """Renda fixa, Ações Brasil, Internacional, Criptoativos, Ouro, dólar e commodities ou Outros fundos listados (FIP, infraestrutura…).
+    A classe registrada na CVM decide renda fixa; o nome do fundo (e o código) identifica cripto, ouro e exterior."""
+    por_cnpj, por_nome = cvm
+    v = por_cnpj.get(cnpj or "") or por_nome.get(norm(nome or "")[:60]) or ("", "", "")
+    cls, anb, nm = v
+    txt = " ".join([cod, nome or "", nm or "", anb or ""])
+    if ETF_NAO.search(nome or "") and "indice" not in norm(nm or ""):
+        return "Outros fundos listados"
+    if ETF_CRIPTO.search(txt):
+        return "Criptoativos"
+    if "renda fixa" in norm(cls) or "renda fixa" in norm(anb) or ETF_RF.search(txt):
+        return "Renda fixa"
+    if "exterior" in norm(anb) or ETF_INT.search(txt):
+        return "Internacional"
+    if ETF_OURO.search(txt):
+        return "Ouro, dólar e commodities"
+    return "Ações Brasil"
 
 
 def bdrs():
@@ -1187,7 +1253,7 @@ def principal():
                     extra = {"vpc": u[0] if pvp else None, "pvp": pvp, "plf": u[1], "cot": u[2] if (u[2] or 0) > 1 else None,
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
-                setor = "ETF" if tp == "ETF" else ""
+                setor = etf_categoria(t, nome, info.get("cnpj"), cvm_cache()) if tp == "ETF" else ""
         elif tp == "Tesouro Direto":
             setor = {"SELIC": "Tesouro Selic", "PRE": "Tesouro Prefixado", "PREJ": "Tesouro Prefixado com Juros",
                      "IPCA": "Tesouro IPCA+", "IPCAJ": "Tesouro IPCA+ com Juros", "RENDA": "Tesouro RendA+", "EDUCA": "Tesouro Educa+"}.get(a.meta.get("esp"), "")
