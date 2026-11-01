@@ -46,6 +46,11 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 - [x] **Ideias automáticas** semanais (Tesouro em taxa historicamente alta, debêntures com spread acima do normal,
       fundos de 1º quartil que caíram mais que os pares).
 
+## Fase 4 — crédito
+
+- [x] **Ratings e nota de crédito do app**: rating informado pelos fundos à CVM (CDA) por emissor, rating implícito pelo
+      spread entre pares, alavancagem do emissor listado e atrasos de CRI/CRA; nota de 1 a 5 no buscador, no FGC e no raio-X.
+
 ## Pendências técnicas
 
 - [ ] **ETFs**: incluir os ETFs de renda fixa (IMAB11, FIXA11, B5P211, LFTS11…), que hoje não entram na base da

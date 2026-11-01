@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HABZnIXQEHp6NyNisuzYNjh8K6ZdO/gx9ZLicUjrp3c='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-6fcnla9ToP4YjPuzkAGMU2VU8IE5acSj9lhN28/cvTg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1334,6 +1334,8 @@ section.rcl.rclsemt.fechado::before{content:attr(data-rcl);display:block;font:70
 .spajl input[inputmode=numeric]{width:56px}
 html.apres .spaj{display:none}
 .rxmat td,.rxmat th{text-align:center;min-width:34px;font-variant-numeric:tabular-nums}
+.rtselo{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.rtmot{display:block;color:var(--muted);font-size:.72rem;max-width:220px;white-space:normal;line-height:1.25;margin-top:2px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -6070,7 +6072,7 @@ function spFluxo(c,it,R){
   return E.sort((a,b)=>a.t-b.t)}
 
 function spCreditoHtml(c,it,R){
-  if(!it.length)return "";if(!SP_CRED.L&&it.some(x=>/^cr:/.test(x.k||"")))spCredLoad();
+  if(!it.length)return "";if(!SP_CRED.L&&it.some(x=>/^cr:/.test(x.k||"")))spCredLoad();rtLoad();
   const C=spCredito(c,it),F=spFluxo(c,it,R),pc=v=>fx(v,1)+'%',kp=(a,b,cc,cls)=>'<div class="fnkp'+(cls?' '+cls:'')+'"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
   const h30=Date.parse(spHoje()+"T00:00:00Z")+30*DAY,s=a=>a.reduce((t,e)=>t+(e.v||0),0),prox=F[0];
   let h='<section class="panel" data-reltit="Crédito, FGC e fluxo de caixa"><h3>Crédito, FGC e fluxo de caixa</h3><p class="sub">Exposição por instituição e por emissor de crédito, cobertura do FGC e o que deve cair na conta nos próximos 12 meses.'+(C.real?'':' Valores pela proposta (valor inicial × pesos).')+'</p>';
@@ -6080,14 +6082,14 @@ function spCreditoHtml(c,it,R){
     +kp("Caixa nos próximos 30 dias",brl(s(F.filter(e=>e.t<=h30))),F.filter(e=>e.t<=h30).length+' evento(s)')
     +kp("Caixa em 12 meses",brl(s(F)),F.length+' evento(s) previstos')
     +kp("Próximo evento",prox?fdate(prox.t):'—',prox?esc(prox.ev).slice(0,40):'nenhum evento previsto')+'</div>';
-  if(C.L.length)h+='<div class="label" style="margin-top:10px">Por instituição ou emissor</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab"><thead><tr><th style="text-align:left">Instituição / emissor</th><th>Coberto pelo FGC</th><th>Sem FGC (crédito)</th><th>% da carteira</th><th style="text-align:left">Situação</th></tr></thead><tbody>'
-    +C.L.map(g=>'<tr><td style="text-align:left" class="tw">'+esc(g.em)+'<small style="display:block;color:var(--muted)">'+g.itens.map(o=>o.p).filter((v,i,a)=>a.indexOf(v)===i).join(", ")+' · '+g.itens.length+(g.itens.length>1?' itens':' item')+'</small></td><td>'+(g.fgc?brl(g.fgc):'—')+'</td><td>'+(g.cred?brl(g.cred):'—')+'</td><td>'+pc(g.pc)+'</td><td style="text-align:left">'
+  if(C.L.length)h+='<div class="label" style="margin-top:10px">Por instituição ou emissor</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab"><thead><tr><th style="text-align:left">Instituição / emissor</th><th>Coberto pelo FGC</th><th>Sem FGC (crédito)</th><th>% da carteira</th><th style="text-align:left">Rating (CDA)</th><th style="text-align:left">Situação</th></tr></thead><tbody>'
+    +C.L.map(g=>'<tr><td style="text-align:left" class="tw">'+esc(g.em)+'<small style="display:block;color:var(--muted)">'+g.itens.map(o=>o.p).filter((v,i,a)=>a.indexOf(v)===i).join(", ")+' · '+g.itens.length+(g.itens.length>1?' itens':' item')+'</small></td><td>'+(g.fgc?brl(g.fgc):'—')+'</td><td>'+(g.cred?brl(g.cred):'—')+'</td><td>'+pc(g.pc)+'</td><td style="text-align:left">'+(()=>{const a=rtAg(null,g.em);return a?'<span class="rtselo" style="--c:'+RT_COR[a.fx]+'">'+esc(rtTxt(a))+'</span>':'<small style="color:var(--muted)">'+(RT.r?'sem rating informado':'carregando…')+'</small>'})()+'</td><td style="text-align:left">'
       +(g.acima>0?'<span class="neg">'+brl(g.acima)+' sem garantia do FGC</span>':g.fgc?'<span class="pos">dentro do limite do FGC</span>':'')+(g.cred>0&&g.pc>SP_EMIS_LIM?(g.acima>0||g.fgc?'<br>':'')+'<span class="neg">concentração acima de '+SP_EMIS_LIM+'% em um só emissor</span>':'')+(/não informado/.test(g.em)?'<span class="warn">informe o emissor no item</span>':'')+'</td></tr>').join("")+'</tbody></table></div>';
   if(C.sem.length)h+='<p class="warn" style="font-size:.84rem;margin-top:6px">'+C.sem.length+(C.sem.length>1?' itens de renda fixa sem o tipo de produto':' item de renda fixa sem o tipo de produto')+' ('+C.sem.slice(0,3).map(x=>esc(spItemNome(x)).slice(0,30)).join("; ")+'): escolha na composição se é CDB, LCI, LCA, debênture… e o emissor, para calcular o FGC.</p>';
   if(F.length)h+='<div class="label" style="margin-top:12px">Fluxo de caixa previsto (12 meses)</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Item</th><th style="text-align:left">Evento</th><th>Valor estimado</th></tr></thead><tbody>'
     +F.map(e=>'<tr><td style="text-align:left">'+fdate(e.t)+'</td><td style="text-align:left" class="tw">'+(e.x?esc(spItemNome(e.x)).slice(0,48):'—')+'</td><td style="text-align:left">'+esc(e.ev)+(e.obs?'<small style="display:block;color:var(--muted)">'+esc(e.obs)+'</small>':'')+'</td><td>'+(e.v!=null?brl(e.v):'—')+'</td></tr>').join("")+'</tbody></table></div>';
   else h+='<p class="sub" style="margin-top:8px">Nenhum vencimento, cupom ou provento anunciado nos próximos 12 meses para os itens desta carteira'+(AG.load?' (carregando a agenda de proventos…)':'')+'. Informe o vencimento dos itens de renda fixa na composição.</p>';
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">FGC: garante até R$ 250 mil por CPF por instituição ou conglomerado financeiro (somando principal e juros) e até R$ 1 milhão no total a cada 4 anos; cobre CDB, RDB, LC, LCI, LCA, LIG e poupança, não cobre debêntures, CRI, CRA, fundos nem Tesouro (que tem garantia do Tesouro Nacional). Escreva o emissor pelo nome do conglomerado para somar corretamente bancos do mesmo grupo. Concentração: alerta quando um só emissor de crédito passa de '+SP_EMIS_LIM+'% da carteira. Fluxo: cupons e vencimentos do Tesouro pelo calendário oficial dos títulos (valores estimados pela posição de hoje); renda fixa pelo vencimento informado ou da ANBIMA; proventos anunciados na B3 (estimados pelo % da cotação); come-cotas no último dia útil de maio e de novembro.</p></section>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">FGC: garante até R$ 250 mil por CPF por instituição ou conglomerado financeiro (somando principal e juros) e até R$ 1 milhão no total a cada 4 anos; cobre CDB, RDB, LC, LCI, LCA, LIG e poupança, não cobre debêntures, CRI, CRA, fundos nem Tesouro (que tem garantia do Tesouro Nacional). Rating (CDA): agência e nota que os fundos informam à CVM para os títulos dessa instituição (a pior entre as agências define a cor). Escreva o emissor pelo nome do conglomerado para somar corretamente bancos do mesmo grupo. Concentração: alerta quando um só emissor de crédito passa de '+SP_EMIS_LIM+'% da carteira. Fluxo: cupons e vencimentos do Tesouro pelo calendário oficial dos títulos (valores estimados pela posição de hoje); renda fixa pelo vencimento informado ou da ANBIMA; proventos anunciados na B3 (estimados pelo % da cotação); come-cotas no último dia útil de maio e de novembro.</p></section>';
   return h}
 
 /* campos de renda fixa de cada item na composição: produto, emissor e vencimento */
@@ -6187,7 +6189,7 @@ async function rxCalc(c,it){
   const cob=Math.max(0,100-(G.conf||0)-(G.sem||0)),dts=[...new Set(I.map(o=>o.C.dt).filter(Boolean))].sort();
   return {I,G,L,soma,nEf,rep,P,Fs,cob,dts,velho:I.some(o=>o.x.t==="f"&&o.C.ok===0),aberto:I.reduce((a,o)=>a+(o.C.aberto||0),0)}}
 
-function rxHtml(c,it){if(!it.some(x=>x.t==="f"))return "";
+function rxHtml(c,it){if(!it.some(x=>x.t==="f"))return "";rtLoad();
   const key=JSON.stringify([SP.cur,it.map(x=>[x.k,x.w,x.cl,x.em,x.prod])]);
   if(RX.res&&RX.key===key)return '<section class="panel" data-reltit="Raio-X e sobreposição"><div id="rxBox">'+rxRender(RX.res)+'</div></section>';
   RX.key=key;RX.res=null;
@@ -6214,6 +6216,9 @@ function rxRender(R){
     if(R.Fs.length<=8&&R.P.length){const Fs=R.Fs,M=(a,b)=>{const p=R.P.find(q=>(q.a===a&&q.b===b)||(q.a===b&&q.b===a));return p?p.s:0};
       h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab rxmat"><thead><tr><th></th>'+Fs.map((f,i)=>'<th title="'+esc(spItemNome(f.x))+'">'+(i+1)+'</th>').join("")+'</tr></thead><tbody>'
         +Fs.map((a,i)=>'<tr><td style="text-align:left" class="tw"><small>'+(i+1)+'. '+esc(spItemNome(a.x)).slice(0,34)+'</small></td>'+Fs.map((b,j)=>{if(i===j)return '<td style="background:var(--line)"></td>';const v=M(a,b);return '<td style="background:rgba(219,39,119,'+Math.min(0.75,v/60).toFixed(2)+')">'+(v>=0.5?fx(v,0):'')+'</td>'}).join("")+'</tr>').join("")+'</tbody></table></div>'}}
+  // crédito por faixa de rating informado pelos fundos (posições com emissor identificado pela raiz do CNPJ)
+  if(RT.r){const F=[0,0,0,0,0,0];let tot=0;R.L.forEach(e=>{if(!/^e:/.test(e.k)||!(e.gr==="banc"||e.gr==="cred"))return;tot+=e.v;const a=rtAg(e.k.slice(2));F[a?a.fx:0]+=e.v});
+    if(tot>0.05){const lab=["Sem rating informado","AAA a AA-","A","BBB","BB e B","CCC ou pior"];h+='<div class="label" style="margin-top:12px">Crédito por rating informado à CVM ('+pc(tot)+' da carteira com emissor identificado)</div><div class="spbar" role="img" aria-label="Crédito por rating">'+[1,2,3,4,5,0].filter(i=>F[i]>0).map(i=>'<i style="width:'+(F[i]/tot*100).toFixed(2)+'%;background:'+(i?RT_COR[i]:'var(--line)')+'" title="'+lab[i]+'"></i>').join("")+'</div><div class="legend">'+[1,2,3,4,5,0].filter(i=>F[i]>0).map(i=>'<span><i style="background:'+(i?RT_COR[i]:'var(--line)')+'"></i>'+lab[i]+' · '+pc(F[i])+' da carteira</span>').join("")+'</div>'}}
   const sem=R.I.filter(o=>o.C.sem);
   if(sem.length)h+='<p class="warn" style="font-size:.84rem;margin-top:6px">Sem carteira divulgada na CVM: '+sem.map(o=>esc(spItemNome(o.x)).slice(0,34)).join("; ")+'. Esses itens ficam como "Fundo sem carteira divulgada".</p>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fonte: Composição e Diversificação das Aplicações (CDA) da CVM, a carteira mais recente de cada fundo; a CVM divulga com defasagem e o fundo pode manter posições em sigilo por até 90 dias (aparecem como "não divulgado"). '+(R.velho?'Alguns fundos ainda estão só com as maiores posições (a abertura completa chega na próxima coleta semanal da CVM). ':'')+'Em comum entre dois fundos = soma, posição a posição, do menor peso entre os dois (0% = nada em comum; 100% = carteiras iguais), sem contar Tesouro Selic e compromissadas, que funcionam como caixa dos fundos. Posições efetivas = 1 ÷ soma dos pesos ao quadrado das posições somadas. Ações pela empresa (ON e PN juntas); títulos públicos pelo tipo e vencimento; crédito pelo emissor (raiz do CNPJ); cotas de outros fundos abertas até 2 níveis. Pulverizada: dois ou mais pares de fundos com 30% ou mais em comum, ou seja, pagando duas taxas pela mesma carteira; um par só, sobreposição pontual.</p>';
@@ -6350,6 +6355,46 @@ function spSubsHtml(c,it){const F=it.map((x,j)=>[x,c.itens.indexOf(x)]).filter((
   return h}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-spsub]");if(!b||activeMod!=="sp")return;const [j,k]=b.dataset.spsub.split("|"),c=spC(),it=c.itens[+j],r=fnRow(k);if(!it||!r)return;
   if(c.itens.some(x=>x.k===k)){alertLite("Esse fundo já está na carteira.");return}it.k=k;it.n=r[1];delete it.cl;delete it.liq;delete it.car;SP_CMP=null;SP_ASS=null;spSave();spCalc()});
+/* ---------- ratings e nota de crédito do app
+   1) Rating informado pelos fundos na CDA da CVM (agência, nota e data), por emissor: títulos de bancos e do exterior.
+   2) Rating implícito pelo spread: percentil do spread do papel entre pares de mesmo indexador e prazo parecido (ANBIMA).
+   3) Alavancagem do emissor com ações na bolsa (dívida líquida/EBIT, balanços na CVM).
+   4) Sinal de problema: CRI/CRA em atraso no informe mensal da CVM.
+   A nota do app (1 = risco baixo … 5 = muito elevado) resume esses sinais; não substitui a nota de uma agência. */
+const RT={r:null,emp:null,cvm:null,load:null,nm:null};
+const RT_FX=["","Baixo","Moderado baixo","Moderado","Elevado","Muito elevado"],RT_COR=["","#16a34a","#65a30d","#ca8a04","#ea580c","#dc2626"];
+const RT_SP={AAA:1,"AA+":2,AA:3,"AA-":4,"A+":5,A:6,"A-":7,"BBB+":8,BBB:9,"BBB-":10,"BB+":11,BB:12,"BB-":13,"B+":14,B:15,"B-":16,"CCC+":17,CCC:18,"CCC-":19,CC:20,C:21,D:22,RD:22,SD:22};
+const RT_MO={AAA:1,AA1:2,AA2:3,AA3:4,A1:5,A2:6,A3:7,BAA1:8,BAA2:9,BAA3:10,BA1:11,BA2:12,BA3:13,B1:14,B2:15,B3:16,CAA1:17,CAA2:18,CAA3:19,CA:20,C:21};
+/* nota da agência em número (1 = AAA … 22 = default); notas de curto prazo (F1, A-1, P-1) ficam de fora */
+function rtNum(nota){let n=String(nota||"").toUpperCase().replace(/\s/g,"").replace(/\((BRA?|BR)\)|\.BR$|^BR|\(EXP\)|\(SF\)|SF$|\(P\)/g,"");if(/^(F\d|A-\d|P-\d|BR-\d)/.test(n))return null;return RT_SP[n]||RT_MO[n]||null}
+const rtFaixaAg=v=>v==null?null:v<=4?1:v<=7?2:v<=10?3:v<=16?4:5;
+const rtNome=s=>fnNorm(s||"").replace(/[.,/()\-–]/g," ").replace(/\b(s ?a|ltda|cia|companhia|de|do|da|dos|das|e|em recuperacao judicial)\b/g," ").replace(/\s+/g," ").trim();
+function rtLoad(){if(RT.load||RT.r)return RT.load;
+  RT.load=Promise.all([fnGet("ratings.json").catch(()=>null),atGet("emp.json").catch(()=>null),AT.idx?null:atBoot().catch(()=>null)]).then(([r,emp])=>{RT.r=r&&r.e?r:{e:{}};RT.emp=emp||{};
+    RT.nm=new Map();Object.entries(RT.r.e).forEach(([raiz,v])=>RT.nm.set(rtNome(v[0]),raiz));RT.en=new Map();Object.entries(RT.emp).forEach(([cod,v])=>{if(v&&v.nome)RT.en.set(rtNome(v.nome),cod)});RT.load=null;rtRefaz()}).catch(()=>{RT.r={e:{}};RT.emp={};RT.load=null});
+  return RT.load}
+function rtCvm(){if(RT.cvm||RT.cvmLoad)return;RT.cvmLoad=roboGet("cri_cra_cvm.json").then(j=>{RT.cvm=(j&&j.certificados)||{};rtRefaz()}).catch(()=>{RT.cvm={}})}
+function rtRefaz(){try{if(activeMod==="cr"&&$("crBusca"))crbTabela();else if(activeMod==="sp")spCalc()}catch(e){}}
+/* rating da CDA por raiz de CNPJ ou por nome do emissor */
+function rtAg(raiz,nome){if(!RT.r)return null;let e=raiz&&RT.r.e[raiz];if(!e&&nome&&RT.nm){let k=RT.nm.get(rtNome(nome));
+    if(!k){const tk=rtNome(nome).split(" ").filter(w=>w.length>=4&&w!=="banco");if(tk.length){let best=null,bn=0;RT.nm.forEach((rz,nm)=>{if(tk.every(w=>nm.split(" ").includes(w))){const n=RT.r.e[rz][2].reduce((a,x)=>a+x[2],0);if(n>bn){bn=n;best=rz}}});k=best}}
+    e=k&&RT.r.e[k];if(e)raiz=k}if(!e)return null;
+  const L=e[2].map(([ag,nota,n])=>({ag,nota,n,v:rtNum(nota)})).filter(o=>o.v!=null);if(!L.length)return null;const pior=Math.max(...L.map(o=>o.v));return {raiz,nome:e[0],dt:e[1],L,pior,fx:rtFaixaAg(pior)}}
+const rtTxt=a=>a?a.L.slice(0,2).map(o=>o.ag.replace(/^./,c=>c.toUpperCase())+" "+o.nota).join(" · "):"";
+/* empresa listada pelo nome: código, CNPJ e dívida líquida/EBIT */
+function rtEmp(nome){if(!RT.en)return null;const cod=RT.en.get(rtNome(nome));if(!cod)return null;const e=RT.emp[cod];let r=null;if(AT.idx)for(const s of ["3","4","11","5","6"]){r=atRow(cod+s);if(r)break}
+  return {cod,cnpj:e.cnpj,raiz:(e.cnpj||"").slice(0,8),dl:r&&AT.C.dlebit!=null?r[AT.C.dlebit]:null,t:r?r[0]:null}}
+/* nota do app para um papel do buscador (debênture, CRI, CRA) */
+function rtNota(x){if(!CRB.L)return null;const pares=CRB.L.filter(y=>y.rf===x.rf&&y.sp!=null&&y.dur!=null&&x.dur!=null&&Math.abs(y.dur-x.dur)<=1.5);
+  const S=[];let base=null,pct=null;
+  if(x.sp!=null&&pares.length>=10){pct=pares.filter(y=>y.sp<x.sp).length/pares.length*100;base=pct<25?1:pct<50?2:pct<75?3:pct<90?4:5;S.push("spread no "+fx(pct,0)+"º percentil de "+pares.length+" pares")}
+  else if(x.rf==="cdi"){base=null}
+  const devedor=x.tipo==="Debênture"?x.nome:(x.risco||x.nome),emp=rtEmp(devedor),ag=rtAg(emp&&emp.raiz,devedor);
+  let n=base;if(ag){n=n==null?ag.fx:Math.round((n+ag.fx)/2);S.push("rating "+rtTxt(ag)+" (CDA)")}
+  if(emp&&emp.dl!=null){if(emp.dl>4){n=n==null?4:Math.min(5,n+1);S.push("dívida líquida/EBIT de "+fx(emp.dl,1)+"×")}else S.push("dívida líquida/EBIT de "+fx(emp.dl,1)+"× ("+emp.t+")")}
+  let atraso=false;if(x.tipo==="CRI/CRA"&&RT.cvm){const c=RT.cvm[x.cod];if(c&&/atraso|inadimpl/i.test(c.situacao||"")){atraso=true;n=5;S.push("em atraso no informe da CVM")}}
+  if(n==null)return null;return {n:Math.max(1,Math.min(5,n)),S,pct,ag,emp,atraso}}
+const rtSelo=o=>o?'<span class="rtselo" style="--c:'+RT_COR[o.n]+'" title="'+esc(o.S.join("; "))+'">'+o.n+' · '+RT_FX[o.n]+'</span><small class="rtmot">'+esc(o.S.join("; ")).slice(0,90)+'</small>':'—';
 /* ---------- página do BDR: dados da empresa nos EUA */
 function euEmpHtml(A){
   if(A.tipo!=="BDR")return "";
@@ -6859,7 +6904,7 @@ function agendaHtml(){
 /* ---------- buscador de crédito privado: debêntures, CRI e CRA com taxa indicativa da ANBIMA
    Filtra por indexador, isenção de IR, duration, spread e emissor; o spread do IPCA+ é sobre a NTN-B de mesmo vencimento
    (interpolada) e o do prefixado sobre a LTN; nos papéis DI+ a taxa já é o spread sobre o CDI. */
-const CRB={L:null,load:null,err:null,f:{tipo:"",ind:"",isento:"",dmin:"",dmax:"",smin:"",txt:"",ext:"1"}};
+const CRB={L:null,load:null,err:null,f:{tipo:"",ind:"",isento:"",dmin:"",dmax:"",smin:"",txt:"",ext:"1",rmax:""}};
 try{const f=JSON.parse(localStorage.getItem("crbF")||"null");if(f&&typeof f==="object")Object.assign(CRB.f,f)}catch(e){}
 function crbCurva(kind,venc){const L=(MKT[kind]||[]).filter(r=>isFinite(r[1])).map(r=>[parseDate(r[0]),r[1]]).sort((a,b)=>a[0]-b[0]);if(L.length<2)return null;const t=parseDate(venc);if(!isFinite(t))return null;
   if(t<=L[0][0])return L[0][1];if(t>=L[L.length-1][0])return L[L.length-1][1];for(let i=1;i<L.length;i++)if(t<=L[i][0]){const [a,ra]=L[i-1],[b,rb]=L[i];return ra+(rb-ra)*(t-a)/(b-a)}return null}
@@ -6869,9 +6914,9 @@ function crbCarrega(){if(CRB.L||CRB.load)return;
       const rf=/^DI\s*\+/i.test(ind)?"cdimais":/%\s*do\s*DI/i.test(ind)?"cdi":/^IPCA/i.test(ind)?"ipca":/PREFIXADO/i.test(ind)?"pre":null;if(!rf)return;
       const inc=/\(\*\)/.test(String(p.nome||"")),nome=nomeCx(String(p.nome||p.risco||p.emissor||"").replace(/\s*\(\*+\)\s*/g," ").trim());
       const ref=rf==="ipca"?crbCurva("NTNB",p.venc):rf==="pre"?crbCurva("LTN",p.venc):null,sp=rf==="cdimais"?+tx:rf==="cdi"?null:ref!=null?+tx-ref:null;
-      L.push({cod,tipo,rf,tx:+tx,ind,venc:p.venc,dur:p.duration!=null?p.duration/252:null,isento:tipo==="CRI/CRA"||inc,nome,emissor:nomeCx(String(p.emissor||"")),ref,sp,data:p.data||j.refDate,sk:fnNorm(cod+" "+nome+" "+(p.emissor||"")+" "+(p.risco||""))})})});
+      L.push({cod,tipo,rf,tx:+tx,ind,venc:p.venc,risco:nomeCx(String(p.risco||"")),dur:p.duration!=null?p.duration/252:null,isento:tipo==="CRI/CRA"||inc,nome,emissor:nomeCx(String(p.emissor||"")),ref,sp,data:p.data||j.refDate,sk:fnNorm(cod+" "+nome+" "+(p.emissor||"")+" "+(p.risco||""))})})});
     CRB.L=L;CRB.ref=(d&&d.refDate)||(c&&c.refDate);CRB.load=null;if(activeMod==="cr"&&$("crBusca"))crbTabela();else if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc()}).catch(e=>{CRB.err=e;CRB.load=null})}
-function crBuscaHtml(){crbCarrega();if(CRB.L)setTimeout(crbTabela,0);const f=CRB.f,sel=(id,lab,k,opts)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-crbf="'+k+'">'+opts.map(([a,b])=>'<option value="'+a+'"'+(String(f[k])===String(a)?' selected':'')+'>'+b+'</option>').join("")+'</select></div>';
+function crBuscaHtml(){crbCarrega();rtLoad();rtCvm();if(CRB.L)setTimeout(crbTabela,0);const f=CRB.f,sel=(id,lab,k,opts)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-crbf="'+k+'">'+opts.map(([a,b])=>'<option value="'+a+'"'+(String(f[k])===String(a)?' selected':'')+'>'+b+'</option>').join("")+'</select></div>';
   return '<span class="label">Buscador de crédito privado</span><p class="sub" style="margin-top:4px">Debêntures, CRI e CRA com taxa indicativa da ANBIMA: filtre pelo indexador, isenção, prazo médio (duration) e spread.</p><div class="fnfilt" style="margin-top:6px">'
     +sel("crbTipo","Tipo","tipo",[["","Todos"],["Debênture","Debêntures"],["CRI/CRA","CRI e CRA"]])
     +sel("crbInd","Indexador","ind",[["","Todos"],["cdimais","CDI + spread"],["cdi","% do CDI"],["ipca","IPCA +"],["pre","Prefixado"]])
@@ -6879,18 +6924,20 @@ function crBuscaHtml(){crbCarrega();if(CRB.L)setTimeout(crbTabela,0);const f=CRB
     +sel("crbDmin","Duration mínima","dmin",[["","Qualquer"],[1,"1 ano"],[2,"2 anos"],[3,"3 anos"],[5,"5 anos"]])
     +sel("crbDmax","Duration máxima","dmax",[["","Qualquer"],[1,"1 ano"],[2,"2 anos"],[3,"3 anos"],[5,"5 anos"],[8,"8 anos"]])
     +sel("crbSmin","Spread mínimo","smin",[["","Qualquer"],[0.5,"0,5 p.p."],[1,"1 p.p."],[1.5,"1,5 p.p."],[2,"2 p.p."],[3,"3 p.p."]])
+    +sel("crbRmax","Risco (nota do app) até","rmax",[["","Qualquer"],[1,"1 · Baixo"],[2,"2 · Moderado baixo"],[3,"3 · Moderado"],[4,"4 · Elevado"]])
     +sel("crbExt","Spreads extremos","ext",[["1","Ocultar os 5% mais altos"],["0","Mostrar todos"]])
     +'<div class="field"><label for="crbTxt">Código, emissor ou devedor</label><input id="crbTxt" data-crbtxt="1" value="'+esc(f.txt)+'" autocomplete="off" placeholder="ex.: Petrobras, Eletrobras"></div></div><div id="crBusca"><p class="sub">Carregando as taxas da ANBIMA…</p></div>'}
 function crbTabela(){const box=$("crBusca");if(!box)return;if(!CRB.L){box.innerHTML=CRB.err?'<p class="warn">Não deu para carregar as taxas agora.</p>':'<p class="sub">Carregando as taxas da ANBIMA…</p>';return}
+  CRB.L.forEach(x=>{delete x.nt});
   const f=CRB.f,t=fnNorm(f.txt).split(/\s+/).filter(Boolean),p95={};
   if(f.ext==="1")["cdimais","cdi","ipca","pre"].forEach(k=>{const s=CRB.L.filter(x=>x.rf===k&&x.sp!=null).map(x=>x.sp).sort((a,b)=>a-b);if(s.length>=20)p95[k]=s[Math.floor(s.length*0.95)]});
-  const L=CRB.L.filter(x=>(!f.tipo||x.tipo===f.tipo)&&(!f.ind||x.rf===f.ind)&&(f.isento===""||(f.isento==="1")===!!x.isento)&&(f.dmin===""||(x.dur!=null&&x.dur>=+f.dmin))&&(f.dmax===""||(x.dur!=null&&x.dur<=+f.dmax))&&(f.smin===""||(x.sp!=null&&x.sp>=+f.smin))&&(p95[x.rf]==null||x.sp==null||x.sp<=p95[x.rf])&&t.every(w=>x.sk.includes(w)))
+  const L=CRB.L.filter(x=>(!f.tipo||x.tipo===f.tipo)&&(!f.ind||x.rf===f.ind)&&(f.isento===""||(f.isento==="1")===!!x.isento)&&(f.dmin===""||(x.dur!=null&&x.dur>=+f.dmin))&&(f.dmax===""||(x.dur!=null&&x.dur<=+f.dmax))&&(f.smin===""||(x.sp!=null&&x.sp>=+f.smin))&&(p95[x.rf]==null||x.sp==null||x.sp<=p95[x.rf])&&t.every(w=>x.sk.includes(w))&&(f.rmax===""||((x.nt=rtNota(x))&&x.nt.n<=+f.rmax)))
     .sort((a,b)=>(b.sp==null?-99:b.sp)-(a.sp==null?-99:a.sp));
   const spT=x=>x.sp==null?'—':x.rf==="cdimais"?'CDI + '+fx(x.sp,2)+'%':(x.sp>=0?'+':'−')+fx(Math.abs(x.sp),2)+' p.p.',txT=x=>x.rf==="cdi"?fx(x.tx,2)+'% do CDI':x.rf==="cdimais"?'CDI + '+fx(x.tx,2)+'%':x.rf==="ipca"?'IPCA + '+fx(x.tx,2)+'%':fx(x.tx,2)+'% a.a.';
   let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' papéis'+(L.length>300?' (os 300 de maior spread abaixo)':'')+(CRB.ref?' · taxas ANBIMA de '+fdate(Date.parse(CRB.ref+"T00:00:00Z")):'')+'.</p>';
-  h+='<div class="tablewrap" style="max-height:none"><table class="ctab ordenavel"><thead><tr><th style="text-align:left">Papel</th><th style="text-align:left">Tipo</th><th>Taxa ANBIMA</th><th>Spread</th><th>Duration</th><th>Vencimento</th><th>IR</th><th></th></tr></thead><tbody>'
-    +L.slice(0,300).map(x=>'<tr><td style="text-align:left" class="tw"><button type="button" class="link" data-deb="'+esc(x.cod)+'"><b>'+esc(x.cod)+'</b></button><small style="display:block;color:var(--muted)">'+esc(x.nome).slice(0,46)+(x.emissor&&x.tipo!=="Debênture"?' · '+esc(x.emissor).slice(0,30):'')+'</small></td><td style="text-align:left"><small>'+x.tipo+'</small></td><td data-ordem="'+x.tx+'">'+txT(x)+'</td><td data-ordem="'+(x.sp==null?-99:x.sp)+'"><b>'+spT(x)+'</b></td><td data-ordem="'+(x.dur==null?-1:x.dur)+'">'+(x.dur!=null?fx(x.dur,1)+' anos':'—')+'</td><td data-ordem="'+(parseDate(x.venc)||0)+'">'+(x.venc?fdate(parseDate(x.venc)):'—')+'</td><td>'+(x.isento?'<span class="pos">isento PF</span>':'tributado')+'</td><td><button type="button" class="link" data-crbadd="'+esc(x.cod)+'" title="Incluir na carteira aberta">+ carteira</button></td></tr>').join("")+'</tbody></table></div>';
-  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fonte: taxas indicativas da ANBIMA (debêntures e CRI/CRA do dia). Spread: IPCA+ menos a taxa da NTN-B de mesmo vencimento (interpolada, ANBIMA); prefixado menos a LTN de mesmo vencimento; DI+ é o próprio spread sobre o CDI. Duration em anos (dias úteis ÷ 252). Isenção para pessoa física: debêntures incentivadas (Lei 12.431, marcadas com * pela ANBIMA), CRI e CRA. Taxa alta costuma refletir risco de crédito maior: veja o emissor, as garantias e a liquidez antes de investir.</p>';
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab ordenavel"><thead><tr><th style="text-align:left">Papel</th><th style="text-align:left">Tipo</th><th>Taxa ANBIMA</th><th>Spread</th><th>Duration</th><th>Vencimento</th><th>IR</th><th>Risco (app)</th><th></th></tr></thead><tbody>'
+    +L.slice(0,300).map(x=>'<tr><td style="text-align:left" class="tw"><button type="button" class="link" data-deb="'+esc(x.cod)+'"><b>'+esc(x.cod)+'</b></button><small style="display:block;color:var(--muted)">'+esc(x.nome).slice(0,46)+(x.emissor&&x.tipo!=="Debênture"?' · '+esc(x.emissor).slice(0,30):'')+'</small></td><td style="text-align:left"><small>'+x.tipo+'</small></td><td data-ordem="'+x.tx+'">'+txT(x)+'</td><td data-ordem="'+(x.sp==null?-99:x.sp)+'"><b>'+spT(x)+'</b></td><td data-ordem="'+(x.dur==null?-1:x.dur)+'">'+(x.dur!=null?fx(x.dur,1)+' anos':'—')+'</td><td data-ordem="'+(parseDate(x.venc)||0)+'">'+(x.venc?fdate(parseDate(x.venc)):'—')+'</td><td>'+(x.isento?'<span class="pos">isento PF</span>':'tributado')+'</td><td data-ordem="'+((x.nt=x.nt||rtNota(x))?x.nt.n:9)+'">'+rtSelo(x.nt)+'</td><td><button type="button" class="link" data-crbadd="'+esc(x.cod)+'" title="Incluir na carteira aberta">+ carteira</button></td></tr>').join("")+'</tbody></table></div>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fonte: taxas indicativas da ANBIMA (debêntures e CRI/CRA do dia). Spread: IPCA+ menos a taxa da NTN-B de mesmo vencimento (interpolada, ANBIMA); prefixado menos a LTN de mesmo vencimento; DI+ é o próprio spread sobre o CDI. Duration em anos (dias úteis ÷ 252). Isenção para pessoa física: debêntures incentivadas (Lei 12.431, marcadas com * pela ANBIMA), CRI e CRA. Risco (app): nota de 1 (baixo) a 5 (muito elevado) feita pelo app com o percentil do spread entre papéis de mesmo indexador e prazo parecido (ANBIMA), o rating informado pelos fundos à CVM quando existe, a dívida líquida/EBIT do emissor listado na bolsa e atrasos de CRI/CRA no informe da CVM; toque na nota para ver os motivos. Não é rating de agência. Taxa alta costuma refletir risco de crédito maior: veja o emissor, as garantias e a liquidez antes de investir.</p>';
   box.innerHTML=h}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.crbf)return;CRB.f[t.dataset.crbf]=t.value;try{localStorage.setItem("crbF",JSON.stringify(CRB.f))}catch(x){}crbTabela()});
 let CRB_T=0;document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.crbtxt)return;CRB.f.txt=t.value;clearTimeout(CRB_T);CRB_T=setTimeout(()=>{try{localStorage.setItem("crbF",JSON.stringify(CRB.f))}catch(x){}crbTabela()},200)});
@@ -7247,7 +7294,7 @@ function agGrupo(d,hoje,rec){
   else{if(dif>=0)return ["s0","Esta semana"];if(dif===-1)return ["s1","Semana passada"]}
   const x=new Date(t);return ["m"+x.getUTCFullYear()+String(x.getUTCMonth()).padStart(2,"0"),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}
 /* ---------- ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço ---------- */
-if(/[?&]teste=1(&|$)/.test(location.search))window.APPT=()=>({spVar,spAtrib,spDur,rxFundo,rxGrTp,spProd,spTd,spRebal,spCredito,du,isBiz,parseDate,price,flowsFrom,irRate,iofRate,IOF_TAB,nssY,spXirr,spAliq,bkFactor,bkTax,eqSolve,stSolve,stImp,exCalc,EX,fnRisk,fnUse,spPosCalc,euaHoraBr,EUA_CAL,COPOM,FOMC,agGrupo,segCifra,segDecifra,rmMeses,
+if(/[?&]teste=1(&|$)/.test(location.search))window.APPT=()=>({rtNum,rtFaixaAg,spVar,spAtrib,spDur,rxFundo,rxGrTp,spProd,spTd,spRebal,spCredito,du,isBiz,parseDate,price,flowsFrom,irRate,iofRate,IOF_TAB,nssY,spXirr,spAliq,bkFactor,bkTax,eqSolve,stSolve,stImp,exCalc,EX,fnRisk,fnUse,spPosCalc,euaHoraBr,EUA_CAL,COPOM,FOMC,agGrupo,segCifra,segDecifra,rmMeses,
   get VAL(){return VAL},get CHK(){return CHK},get TD_N(){return Object.keys(TD_ALL||{}).length}});
 /* ---------- busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação */
 /* Tudo o que se escolhe aqui fica só neste aparelho (localStorage) e não tem nenhum dado pessoal. */

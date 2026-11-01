@@ -566,6 +566,38 @@ def posicao(blc, L, tp):
     return (f"e:{c[:8]}" if len(c) == 14 else None), "outros"
 
 
+RATINGS = {}   # raiz do CNPJ do emissor -> {"n": nome, "r": {(agência, nota): nº de posições}, "dt": data mais recente}
+
+
+def anota_rating(blc, L):
+    """Rating informado pelos fundos na CDA (títulos de bancos e do exterior): agência, nota e data, por emissor."""
+    if blc not in ("BLC_5", "BLC_7"):
+        return
+    ag, nota = (L.get("AG_RISCO") or "").strip(), (L.get("GRAU_RISCO") or "").strip().upper().replace(" ", "")
+    raiz = re.sub(r"\D", "", L.get("CNPJ_EMISSOR") or "")[:8]
+    if not ag or not nota or len(raiz) != 8 or len(nota) > 14 or not re.search(r"[ABCD]", nota):
+        return
+    e = RATINGS.setdefault(raiz, {"n": (L.get("EMISSOR") or "").strip()[:60], "r": {}, "dt": ""})
+    k = (norm(ag)[:20], nota[:12])
+    e["r"][k] = e["r"].get(k, 0) + 1
+    d = (L.get("DT_RISCO") or "")[:10]
+    if d > e["dt"]:
+        e["dt"] = d
+
+
+def ratings_json():
+    out = {}
+    for raiz, e in RATINGS.items():
+        ags = {}
+        for (ag, nota), n in e["r"].items():
+            ags.setdefault(ag, []).append((n, nota))
+        lst = [[ag, max(v)[1], sum(x[0] for x in v)] for ag, v in ags.items()]
+        lst.sort(key=lambda x: -x[2])
+        out[raiz] = [e["n"], e["dt"], lst[:4]]
+    DIAG["ratings_emissores"] = len(out)
+    return {"dt": HOJE.isoformat(), "fonte": "CVM – CDA (classificação de risco informada pelos fundos)", "e": out}
+
+
 def carteiras(ativos, estado):
     """Composição e maiores posições na carteira mais recente de cada fundo; composição de cada mês lido (histórico)."""
     out, assin, hist = {}, [], {}
@@ -612,6 +644,7 @@ def carteiras(ativos, estado):
                     nm, cn = nome_ativo(blc, L)
                 c = comp.setdefault(k, {})
                 c[tp] = c.get(tp, 0) + v
+                anota_rating(blc, L)
                 if k not in bom:
                     if blc not in DIAG.setdefault("cda_colunas", {}):
                         DIAG["cda_colunas"][blc] = sorted(L.keys())[:60]
@@ -1056,6 +1089,8 @@ def principal():
     hist = {}
     if estado.get("cda") != HOJE.strftime("%Y-%W") or os.environ.get("CDA") == "1":
         cart, assin, hist = carteiras(ativos, estado)
+        if RATINGS:
+            gravar(os.path.join(sai, "ratings.json"), ratings_json())
         estado["cda"] = HOJE.strftime("%Y-%W")
         estado["cda_meses"] = assin
         for k, (c0, _) in OLD.items():          # fundo sem carteira nova: mantém a anterior
@@ -1063,6 +1098,8 @@ def principal():
                 cart[k] = c0
     else:
         cart = {k: c0 for k, (c0, _) in OLD.items() if c0}
+    if not os.path.exists(os.path.join(sai, "ratings.json")) and os.path.exists(os.path.join(ent, "ratings.json")):
+        gravar(os.path.join(sai, "ratings.json"), ler_json(os.path.join(ent, "ratings.json"), {}))
     carth = {}
     for k in ativos:
         h = dict((OLD.get(k) or (None, {}))[1])
