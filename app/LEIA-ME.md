@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (17 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (18 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -159,6 +159,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `550-mercado-resumo-capital-estrangeiro-banco.js` — Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito (3 KB)
 - `555-sptemmov.js` (14 KB)
 - `557-relatorio-mensal-do-cliente.js` (7 KB)
+- `558-painel-da-carteira.js` (11 KB)
 - `560-painel-de-indices-e-bolsa.js` — Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) (10 KB)
 - `565-bolsa-eua.js` — Bolsa › EUA (7 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)

@@ -212,3 +212,13 @@ table.ordenavel thead th[data-ordem="asc"]::after{content:" ▲";font-size:.75em
 section.rcl.rclsemt.fechado::before{content:attr(data-rcl);display:block;font:700 1.06rem/1.3 var(--f-display);color:var(--ink);padding-right:44px}
 #fnOut section.rcl>.rcltg{top:14px;right:14px}
 #spRes section.rcl>.fnh1,#spRes section.rcl>div:first-of-type .fnacts{margin-right:40px}
+
+/* ---------- painel da carteira e ajustes de cada item (classe, resgate, carência) */
+.sppainel .fnkpis{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.fnkp.kpalerta{box-shadow:inset 3px 0 0 var(--warn)}
+.spaj{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:6px;font-size:.8rem}
+.spaj select{width:auto;min-height:30px;padding:2px 8px;font-size:.8rem}
+.spajl{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.78rem;font-weight:500}
+.spajl input{width:auto;min-height:30px;padding:2px 8px;font-size:.8rem}
+.spajl input[inputmode=numeric]{width:56px}
+html.apres .spaj{display:none}
