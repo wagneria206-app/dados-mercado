@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (18 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (19 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -138,7 +138,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `495-fundos-similares-e-gross-up.js` — fundos similares e gross-up (página do fundo) (5 KB)
 - `500-gestoras-e-administradoras.js` — gestoras e administradoras (3 KB)
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
-- `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (30 KB)
+- `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (31 KB)
 - `515-spcorhtml.js` (26 KB)
 - `520-spclasse.js` (7 KB)
 - `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (15 KB)
@@ -173,6 +173,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `568-adequacao-e-execucao.js` (12 KB)
 - `569-antes-e-depois.js` (6 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)
+- `571-subabas-da-carteira.js` (4 KB)
 - `575-eventos.js` — eventos (1 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
 - `585-economia-brasil.js` — Economia (Brasil) (12 KB)

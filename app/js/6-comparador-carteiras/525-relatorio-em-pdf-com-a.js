@@ -38,7 +38,7 @@ function relConteudo(kind){
     try{h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+economiaHtml().map(P).join("")+mundoHtml().map(P).join("")}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="mes"){const s=$("rmMes");if(!SP_POS||!SP_POS.X||SP_POS.X.erro||!s)return null;REL.mes=s.value;let h;try{h=rmHtml(SP_POS.c,SP_POS.X,REL.mes)}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
-  else if(kind==="sp"){const b=$("spRes");if(!b)return null;box.innerHTML=b.innerHTML;const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
+  else if(kind==="sp"){const b=$("spRes");if(!b)return null;const tudo=typeof spResTudo==="function"?spResTudo():null;box.innerHTML=tudo||b.innerHTML;box.querySelectorAll("section[hidden],.spvazio").forEach(e=>e.remove());const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
   else{const k=kind==="fc"?"f":"a",X=CMP_CTX[k];if(!X)return null;const b=$(kind==="fc"?"fnCbody":"atCbody");if(!b)return null;
     const tmp=document.createElement("div");tmp.innerHTML=b.innerHTML;tmp.querySelectorAll(".tablewrap,.cmpwrap").forEach(e=>e.remove());tmp.querySelectorAll("p.sub").forEach(e=>{if(/Correlação dos retornos|Cada janela|No período escolhido|Para comparar com LCI/.test(e.textContent))e.remove()});
     let h=tmp.innerHTML;const nomes={ret:"Rentabilidade",risk:"Risco",jan:"Janelas móveis",info:"Características",cor:"Correlação"};

@@ -10,7 +10,7 @@ const spC=()=>SP.carts[SP.cur];
 function spBoot(){return Promise.all([FN.idx?null:fnBoot(),AT.idx?null:atBoot()])}
 function spCalc(){
   const o=$("fnOut");if(!o)return;
-  if(FN.view!=="sp"){FN.view="sp";o.innerHTML='<div id="spTop"></div><div id="spRes"></div>'}
+  if(FN.view!=="sp"){FN.view="sp";o.innerHTML='<div id="spTop"></div><div id="spAbas"></div><div id="spRes"></div>'}
   if(!FN.idx||!AT.idx){$("spTop").innerHTML='<section class="panel"><p class="sub">Carregando as bases de fundos (CVM) e de ativos (B3)…</p></section>';$("spRes").innerHTML="";if(!FN.load&&!AT.load&&(FN.err||AT.err)){$("spTop").innerHTML='<section class="panel"><p class="warn">Não deu para carregar as bases agora. Tente de novo em alguns minutos.</p><button type="button" class="btn sec" data-spretry="1">Tentar de novo</button></section>';return}
     spBoot().then(()=>{if(activeMod==="sp"&&FN.idx&&AT.idx)spCalc()});return}
   spTopHtml();spRun();
@@ -41,6 +41,8 @@ function spTopHtml(){
     +(c.sit==="efetivada"?'<button type="button" class="btn sec" data-spdesef="1">Voltar para proposta</button>':'<button type="button" class="btn sec" data-spefform="1">Efetivar carteira</button>')
     +'<button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div>';
   if(SP.efForm&&c.sit!=="efetivada")h+='<div class="spef"><p class="sub" style="margin:0 0 6px">A partir da data de efetivação o app acompanha o desempenho real desta carteira e compara com o que foi proposto.</p><div class="sprow"><div class="field"><label for="spEfD">Data da aplicação</label><input id="spEfD" type="date" value="'+new Date().toISOString().slice(0,10)+'" max="'+new Date().toISOString().slice(0,10)+'"></div><div class="field"><label for="spEfV">Valor aplicado</label><div class="affix s"><input id="spEfV" inputmode="decimal" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div><div class="field" style="align-self:end"><div class="spbtns" style="margin:0"><button type="button" class="btn" data-spefok="1">Confirmar</button><button type="button" class="btn sec" data-spefno="1">Cancelar</button></div></div></div></div>';
+  let compAb=SP.compAb!=null?SP.compAb:!c.itens.length||Math.abs(tot-100)>0.05||SP.efForm;try{if(SP.compAb==null&&localStorage.getItem("spCompo")==="1")compAb=true}catch(e){}
+  h+='<details class="spcompo"'+(compAb?' open':'')+' data-spcompo="1"><summary>Composição, aplicações e parâmetros <small>'+c.itens.length+(c.itens.length===1?' item':' itens')+' · total '+fx(tot,1)+'%</small></summary>';
   h+='<details class="nota" style="margin-top:10px"'+(c.obs?' open':'')+'><summary>Observações internas</summary><textarea id="spObs" data-spobs="1" rows="3" maxlength="2000" placeholder="Anotações suas sobre esta carteira (não vão para o relatório)">'+esc(c.obs||"")+'</textarea></details>';
   if(SP.carts.length>1)h+=spListaHtml();
   h+='<div class="spimp"><label class="btn sec" for="spImp">Importar posição da B3 (Excel)</label><input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span class="sub" style="font-size:.8rem">Arquivo de posição da Área do Investidor da B3. Fica só neste navegador.</span><span id="spImpMsg"></span></div>';
@@ -60,7 +62,7 @@ function spTopHtml(){
     +'<div class="field"><label for="spB">Base de cálculo</label><select id="spB" data-spv="base"><option value="m"'+(c.base!=="d"?' selected':'')+'>Mensal (desde 2005)</option><option value="d"'+(c.base==="d"?' selected':'')+'>Diária (desde 2019)</option></select></div>'
     +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Mostrar o resultado líquido de IR</label></div></div>';
   h+='<div class="cvsel fnbm" style="margin-top:6px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div>';
-  h+='</section>';
+  h+='</details></section>';
   $("spTop").innerHTML=h;
 }
 /* ----- dados de cada item: níveis mensais e diários, e regime de IR */
@@ -102,14 +104,14 @@ let SP_TOKEN=0;
 async function spRunCore(){
   const c=spC(),box=$("spRes"),tok=++SP_TOKEN;if(!box)return;
   const it=c.itens.filter(x=>(+x.w||0)>0);
-  if(!it.length){box.innerHTML='<section class="panel"><p class="sub">Adicione fundos, ativos ou renda fixa e defina os pesos.</p></section>'+spAssHtml()+spCmpCartsHtml();if(SP_ASS)spAssRender();return}
+  if(!it.length){SP_LAST={c,it,R:null};box.innerHTML='<section class="panel"><p class="sub">Adicione fundos, ativos ou renda fixa e defina os pesos.</p></section>'+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box);return}
   box.innerHTML='<section class="panel"><p class="sub">Calculando…</p></section>';
   const itM=c.itens.filter(x=>!((+x.w||0)>0)&&Array.isArray(x.mov)&&x.mov.length);
   let D,DM;try{[D,DM]=await Promise.all([Promise.all(it.map(spItemData)),Promise.all(itM.map(spItemData))])}catch(e){box.innerHTML='<section class="panel"><p class="err">Não deu para carregar um dos itens: '+esc(e.message)+'</p></section>';return}
   if(tok!==SP_TOKEN)return;
   try{const R=spSim(c,it,D);R.D=D;if(spTemMov(c))R.pos={its:it.concat(itM),Ds:D.concat(DM)};
     if(c.sit==="efetivada"&&c.ef&&c.ef.data){const d=c.ef.data,dia=FN.cal&&d>=FN.cal[0];R.ef=spSim(Object.assign({},c,{base:dia?"d":"m",ini:dia?"":d.slice(0,7),iniD:dia?d:"",fim:"",aporte:0,valor:+c.ef.valor||0}),it,D)}
-    box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spAssHtml()+spCmpCartsHtml();if(SP_ASS)spAssRender()}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
+    SP_LAST={c,it,R};box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box)}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
 }
 /* ----- grade de datas e simulação */
 function spGrid(c,D){
@@ -181,7 +183,7 @@ function spResHtml(c,it,R){
   const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
   if(!R.pos)SP_POS=null;
   const pos=R.pos?spPosHtml(c,R.pos.its,R.pos.Ds):R.ef?spEfHtml(c,it,R.ef,st):'';   // a posição real vem antes: o painel usa os valores dela
-  let h=spPainelHtml(c,it,R)+spSuitHtml(c,it,R)+spPolHtml(c,it)+spBoletaHtml(c,it)+spCreditoHtml(c,it,R)+spMtmHtml(c,it)+rxHtml(c,it)+spRiscoHtml(c,it,R)+spBmAtribHtml(c,it,R)+spSubsHtml(c,it)+spAntHtml(c,it)+pos+'<section class="panel" id="spPanel" data-reltit="Resumo da carteira (histórico)"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
+  let h=spT("geral",()=>spPainelHtml(c,it,R)+spSuitHtml(c,it,R))+spT("rebal",()=>spPolHtml(c,it)+spBoletaHtml(c,it)+spAntHtml(c,it))+spT("credito",()=>spCreditoHtml(c,it,R)+spMtmHtml(c,it))+spT("risco",()=>rxHtml(c,it)+spRiscoHtml(c,it,R))+spT("desemp",()=>spBmAtribHtml(c,it,R))+spT("oport",()=>spSubsHtml(c,it))+pos+'<section class="panel" id="spPanel" data-reltit="Resumo da carteira (histórico)"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
   const nst=R.ir?{tot:(last.nidx-1)*100}:null;
   h+='<div class="fnkpis">'+kp("Patrimônio final",brl(last.v),(R.ir?"líquido de IR "+brl(last.liq):"investido "+brl(last.inv)))+kp("Retorno no período",fnPct(st.tot),(st.pcdi!=null?fx(st.pcdi,0)+"% do CDI":"")+(R.ir?" · líquido de IR "+fnPctT(nst.tot):""))+kp("Retorno ao ano",fnPctT(st.ann),"volatilidade "+fx(st.vol,2)+"%")+kp("Sharpe",st.sharpe!=null?fx(st.sharpe,2):"—","meses acima do CDI "+(st.acima!=null?fx(st.acima,0)+"%":"—"))+kp("Perda máxima",fnPct(st.dd),"pior mês "+fnPctT(st.worst))+'</div>';
   const S=[{lab:c.nome,col:FN_COLS[0],w:2.4,pts:fnThin(R.pts,800).map(p=>[p.t,(p.idx-1)*100])}],bms=[];
