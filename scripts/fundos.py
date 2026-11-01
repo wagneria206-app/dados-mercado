@@ -322,6 +322,12 @@ def ler_csv(fobj):
 def cadastro(ativos):
     info = {}
     ativos = set(ativos) | {v for v in SUBPAI.values() if v}      # classes das subclasses também
+    cob = {}
+
+    def cobertura(etapa):
+        """Quantos fundos ativos já têm taxa de administração e prazo de resgate depois de cada etapa."""
+        cob[etapa] = {"taxa": sum(1 for k in ativos if info.get(k, {}).get("tadm") is not None),
+                      "resgate": sum(1 for k in ativos if info.get(k, {}).get("dcot") is not None or info.get(k, {}).get("dpag") is not None)}
 
     def pega(k, **kv):
         d = info.setdefault(k, {})
@@ -346,6 +352,11 @@ def cadastro(ativos):
         nome_classe = next(n for n in z.namelist() if "registro_classe" in n)
         for L in ler_csv(z.open(nome_classe)):
             L = {norm(a): b for a, b in L.items()}
+            if "cad175_colunas" not in DIAG:
+                DIAG["cad175_colunas"] = list(L.keys())
+            tx = next((L[c] for c in L if "taxa" in c and "adm" in c), None)
+            if tx and chave(L.get("cnpj_classe")) in ativos:
+                pega(chave(L.get("cnpj_classe")), tadm=num(tx))
             k = chave(L.get("cnpj_classe"))
             if not k or k not in ativos:
                 continue
@@ -358,12 +369,18 @@ def cadastro(ativos):
                  nf=fu.get("denominacao_social"), tpf=fu.get("tipo_fundo"))
     except Exception as e:  # noqa: BLE001
         DIAG["cad175"] = str(e)[:300]
+    cobertura("cadastro_novo")
+    anterior = {}   # taxas do cadastro antigo de fundos já migrados para a nova regra (último recurso)
     try:
         r = baixar(URL_CAD_FI)
         for L in ler_csv(io.BytesIO(r.content)):
             L = {norm(a): b for a, b in L.items()}
             k = chave(L.get("cnpj_fundo"))
-            if not k or k not in ativos or "cancel" in norm(L.get("sit")):
+            if not k or k not in ativos:
+                continue
+            if "cancel" in norm(L.get("sit")):
+                if num(L.get("taxa_adm")) is not None and k not in anterior:
+                    anterior[k] = {"tadm": num(L.get("taxa_adm")), "tperf": num(L.get("taxa_perfm"))}
                 continue
             pega(k, n=L.get("denom_social"), cls=L.get("classe"), anb=L.get("classe_anbima"), bm=L.get("rentab_fundo"),
                  pub=L.get("publico_alvo"), exc=L.get("fundo_exclusivo"), lp=L.get("trib_lprazo"), cond=L.get("condom"),
@@ -372,9 +389,10 @@ def cadastro(ativos):
                  tadm=num(L.get("taxa_adm")), tperf=num(L.get("taxa_perfm")), itperf=L.get("inf_taxa_perfm"))
     except Exception as e:  # noqa: BLE001
         DIAG["cad_fi"] = str(e)[:300]
-    # extrato (informações de prazos, taxas e aplicação mínima)
+    cobertura("cadastro_antigo")
+    # extrato (informações de prazos, taxas e aplicação mínima): últimos 3 anos, vale o mais recente de cada fundo
     ext = {}
-    for ano in (HOJE.year, HOJE.year - 1):
+    for ano in (HOJE.year, HOJE.year - 1, HOJE.year - 2):
         try:
             r = baixar(URL_EXTRATO.format(ano), aceita_404=True)
             if r is None:
@@ -393,9 +411,10 @@ def cadastro(ativos):
              tadm=num(L.get("TAXA_ADM")), tperf=num(L.get("TAXA_PERFM")) if (L.get("EXISTE_TAXA_PERFM") or "").upper().startswith("S") else None,
              itperf=L.get("PARAM_TAXA_PERFM"), amin=num(L.get("APLIC_MIN")),
              dcot=num(L.get("QT_DIA_CONVERSAO_COTA")), dpag=num(L.get("QT_DIA_PAGTO_RESGATE")))
-    # lâmina mais recente (prevalece para taxas e prazos de quem oferece ao varejo)
+    cobertura("extrato")
+    # lâmina (prevalece para taxas e prazos de quem oferece ao varejo): a mais recente de cada fundo nos últimos 12 meses
     lam = {}
-    for k_mes in range(0, 4):
+    for k_mes in range(0, 12):
         ym = ym_add(HOJE.strftime("%Y%m"), -k_mes)
         try:
             r = baixar(URL_LAMINA.format(ym), aceita_404=True)
@@ -412,7 +431,6 @@ def cadastro(ativos):
                 k = sub or chave(L.get("CNPJ_FUNDO_CLASSE") or L.get("CNPJ_FUNDO"))
                 if k and k in ativos and k not in lam:
                     lam[k] = L
-            break
         except Exception as e:  # noqa: BLE001
             DIAG[f"lamina_{ym}"] = str(e)[:300]
     for k, L in lam.items():
@@ -433,6 +451,16 @@ def cadastro(ativos):
                 v = num(L.get(col))
                 if v:
                     d["risco"] = v
+    cobertura("lamina")
+    # último recurso: taxa do cadastro antigo (fundos que migraram para a nova regra da CVM e ainda não têm extrato nem lâmina)
+    for k, v in anterior.items():
+        d = info.setdefault(k, {})
+        if d.get("tadm") is None and v.get("tadm") is not None:
+            d["tadm"], d["tadm_fte"] = v["tadm"], "cadastro anterior à Resolução CVM 175"
+            if d.get("tperf") is None and v.get("tperf") is not None:
+                d["tperf"] = v["tperf"]
+    cobertura("cadastro_anterior")
+    DIAG["cobertura_taxa_resgate"] = dict(cob, fundos=len(ativos))
     subs = [k for k in ativos if len(k) != 14 or not k.isdigit()]
     if subs:
         try:
@@ -988,7 +1016,7 @@ def principal():
         if inf.get("anb"):
             inf["anb"] = anbima_nome(inf["anb"])
         for a in ("fan", "cls", "anb", "bm", "pub", "exc", "lp", "cond", "ini", "fic", "aud", "cus", "ges", "adm", "cnf", "nf", "pai", "prev",
-                  "tadm", "tperf", "itperf", "amin", "dcot", "dpag", "tsai", "car", "obj", "pol", "risco", "rsk"):
+                  "tadm", "tadm_fte", "tperf", "itperf", "amin", "dcot", "dpag", "tsai", "car", "obj", "pol", "risco", "rsk"):
             if inf.get(a) not in (None, ""):
                 reg[a] = inf[a]
         escrever_mensal(f, reg)

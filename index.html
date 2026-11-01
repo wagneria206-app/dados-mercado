@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-XfwKiJ5/FkLvTo9UgxRY2kfUIrNyBPf2yxr4yDlD/JM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-tcjyoY5hkKXTnH5flat+f4dBJu8FW4Z78Y6oivT3AaE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1312,6 +1312,13 @@ html.apres .topo{bottom:72px}
 @keyframes pulsa{50%{box-shadow:0 0 0 2px var(--navy),0 0 0 5px rgba(255,90,71,.35)}}
 @media (prefers-reduced-motion:reduce){#btSaude .sdponto{animation:none!important}}
 .sdcorpo .tablewrap{margin-top:6px}
+
+/* ---------- tabelas ordenáveis pelo título da coluna */
+table.ordenavel thead th{cursor:pointer;user-select:none;-webkit-user-select:none}
+table.ordenavel thead th:hover{color:var(--ink)}
+table.ordenavel thead th[data-ordem]{color:var(--accent)}
+table.ordenavel thead th[data-ordem="desc"]::after{content:" ▼";font-size:.75em}
+table.ordenavel thead th[data-ordem="asc"]::after{content:" ▲";font-size:.75em}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -3566,7 +3573,7 @@ function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada dep
 function fnMoreAdd(rows){
   const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
   if(!FNM.has(activeMod))return;
-  if(activeMod==="fr"||activeMod==="fg"||(activeMod==="fa"&&miss))fnCalc();
+  if(activeMod==="fr"||activeMod==="fg"||activeMod==="fc"||activeMod==="sp"||(activeMod==="fa"&&miss))fnCalc(); // a 2ª parte da lista (previdência, exclusivos…) completa as tabelas já abertas
   const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
 }
 function lvBuild(cal,B){ // níveis acumulados dos índices: diários (alinhados ao calendário) e de fim de mês
@@ -3790,7 +3797,7 @@ function fnHead(F){
   const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
   add("Gestora",esc(F.ges||""));add("Administradora",esc(F.adm||""));add("Custodiante",esc(F.cus||""));add("Auditoria",esc(F.aud||""));
   {const k0=F.MK&&F.MK[0],ti=F.ini?Date.parse(F.ini.slice(0,10)+"T00:00:00Z"):null,tc=k0!=null?Date.UTC(Math.floor(k0/12),k0%12,1):null;add("Início das atividades",ti?fdate(ti)+(tc&&tc<ti-31*DAY?' <small>(cotas na CVM desde '+mname(k0)+(k0===2005*12?' ou antes':'')+')</small>':''):tc?'cotas na CVM desde '+mname(k0):"")}add("Índice de referência",esc(F.bm||""));
-  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a.":"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
+  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a."+(F.tadm_fte?" <small>(do "+esc(F.tadm_fte)+"; pode ter mudado)</small>":""):"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
   add("Aplicação mínima",F.amin!=null?(F.amin?brl(F.amin):"Sem mínimo"):"");
   add("Resgate",F.dcot!=null||F.dpag!=null?(F.dcot!=null?"cotização D+"+fx(F.dcot,0):"")+(F.dpag!=null?" · pagamento D+"+fx(F.dpag,0):""):"");
   add("Taxa de saída",F.tsai?fx(F.tsai,2)+"%":"");add("Carência",F.car?fx(F.car,0)+" dias":"");
@@ -6579,6 +6586,38 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
 document.addEventListener("keydown",e=>{if(!TR.on)return;if(e.key==="Escape")tourFecha();else if(e.key==="ArrowRight"){const b=document.querySelector('[data-tour="segue"]');if(b)b.click()}else if(e.key==="ArrowLeft"&&TR.i){TR.i--;tourPasso()}});
 window.addEventListener("resize",()=>{if(TR.on)tourPasso()});
 if(!navigator.webdriver&&lsGet("tourVisto","")!=="1"&&!/#(fundo|ativo)=/.test(location.hash))setTimeout(tourAbre,2500);
+/* ---------- ordenar qualquer tabela clicando no título da coluna
+   1º clique: números do maior para o menor (textos de A a Z); 2º clique inverte. Linhas de total ficam no fim.
+   Tabelas que já têm ordenação própria (rankings, comparador) continuam com a delas. */
+function ordValor(td){
+  const t=(td.textContent||"").replace(/\s+/g," ").trim();
+  if(!t||/^[—–-]$/.test(t))return null;
+  const d=/^(\d{2})\/(\d{2})\/(\d{2,4})/.exec(t);if(d)return Date.UTC(+(d[3].length===2?"20"+d[3]:d[3]),+d[2]-1,+d[1]);
+  const s=t.replace(/^(R\$|US\$|adm\.|DY|IPCA \+|CDI \+|Selic \+|D\+)\s*/i,"");
+  if(!/^[+\-−]?\d/.test(s))return t.toLocaleLowerCase("pt-BR");
+  const m=/^[+\-−]?[\d.]*\d(,\d+)?/.exec(s);let v=num(m[0].replace("−","-"));if(!isFinite(v))return t.toLocaleLowerCase("pt-BR");
+  const resto=s.slice(m[0].length);if(/^\s*tri\b/.test(resto))v*=1e12;else if(/^\s*bi\b/.test(resto))v*=1e9;else if(/^\s*mi\b/.test(resto))v*=1e6;else if(/^\s*mil\b/.test(resto))v*=1e3;
+  return v}
+function ordPode(tb){
+  if(!tb||!tb.tHead||tb.tHead.rows.length!==1||!tb.tBodies[0])return false;
+  const ths=[...tb.tHead.rows[0].cells];
+  if(ths.some(th=>th.colSpan>1||th.querySelector("button,a,input,select")||[...th.attributes].some(a=>a.name!=="data-ordem"&&/^data-.*(sort|ord)/.test(a.name))))return false;
+  return ![...tb.tBodies[0].rows].some(r=>[...r.cells].some(c=>c.colSpan>1))}
+document.addEventListener("click",e=>{
+  const th=e.target.closest&&e.target.closest("table.ctab thead th");if(!th)return;const tb=th.closest("table");if(!ordPode(tb))return;
+  const col=th.cellIndex,desc=th.dataset.ordem!=="desc"&&th.dataset.ordem!=="asc"?null:th.dataset.ordem;
+  const linhas=[...tb.tBodies[0].rows],fixas=linhas.filter(r=>r.classList.contains("cmpbm")),mov=linhas.filter(r=>!r.classList.contains("cmpbm"));
+  const vals=mov.map(r=>({r,v:r.cells[col]?ordValor(r.cells[col]):null})),numerico=vals.some(x=>typeof x.v==="number");
+  // 1º clique: números do maior para o menor, textos de A a Z
+  const ordem=desc?(desc==="desc"?"asc":"desc"):(numerico?"desc":"asc"),f=ordem==="asc"?1:-1;
+  vals.sort((a,b)=>{if(a.v==null&&b.v==null)return 0;if(a.v==null)return 1;if(b.v==null)return -1;
+    if(typeof a.v===typeof b.v)return (typeof a.v==="number"?a.v-b.v:a.v.localeCompare(b.v,"pt-BR"))*f;return typeof a.v==="number"?-1:1});
+  const cor=tb.tBodies[0];vals.forEach(x=>cor.appendChild(x.r));fixas.forEach(r=>cor.appendChild(r));
+  [...tb.tHead.rows[0].cells].forEach(c=>{delete c.dataset.ordem;c.removeAttribute("aria-sort")});th.dataset.ordem=ordem;th.setAttribute("aria-sort",ordem==="asc"?"ascending":"descending");
+  if(tb.dataset.rclT){[...cor.rows].forEach((r,i)=>r.classList.toggle("rclx",i>=RCL_LINHAS&&!r.classList.contains("cmpbm")))}
+});
+/* marca as colunas que podem ser ordenadas (cursor de mão e seta) */
+{let rq=0;new MutationObserver(()=>{if(rq)return;rq=requestAnimationFrame(()=>{rq=0;document.querySelectorAll("table.ctab:not([data-ordok])").forEach(tb=>{tb.dataset.ordok="1";if(ordPode(tb))tb.classList.add("ordenavel")})})}).observe(document.querySelector(".wrap")||document.body,{childList:true,subtree:true})}
 /* ---------- debêntures do catálogo do SND: o SND só publica a agenda futura ----------
    Reconstrói as datas de juros já pagas pela periodicidade e acerta o saldo pelo valor nominal
    atualizado que o SND publica (vnaAtual). O preço de hoje fica exato; o caminho do saldo antes da

@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (16 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (17 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -175,6 +175,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
+- `619-ordenar-tabelas.js` (3 KB)
 - `620-pcrebase.js` (2 KB)
 - `621-indice-e-blocos-recolhiveis.js` (5 KB)
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
