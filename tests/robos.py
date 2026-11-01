@@ -165,6 +165,16 @@ confere("CPI EUA: os dois fora, usa a última coleta recente", atualizar.cpi_eua
 atualizar.HOJE = dt.date(2027, 1, 31)
 confere("CPI EUA: última coleta velha demais não vale", atualizar.cpi_eua_com_reserva([])[0], None)
 
+# fundos: identidade e grupo de risco das posições da carteira (CDA da CVM), para o raio-X e a sobreposição
+import fundos  # noqa: E402
+confere("CDA: ação pela raiz do código", fundos.posicao("BLC_4", {"CD_ATIVO": "PETR4"}, "Ações"), ("a:PETR", "acoes"))
+confere("CDA: NTN-B pelo vencimento", fundos.posicao("BLC_1", {"TP_TITPUB": "NOTAS DO TESOURO NACIONAL - SERIE B", "DT_VENC": "2035-05-15"}, "Títulos Públicos"), ("tp:NTN-B:2035-05", "tipca"))
+confere("CDA: compromissada é caixa", fundos.posicao("BLC_1", {"TP_TITPUB": "LETRAS FINANCEIRAS DO TESOURO", "DT_VENC": "2027-03-01"}, "Operações Compromissadas")[1], "compr")
+confere("CDA: CDB pela raiz do CNPJ do banco", fundos.posicao("BLC_5", {"CNPJ_EMISSOR": "30.306.294/0001-45"}, "Depósitos a prazo e outros títulos de IF"), ("e:30306294", "banc"))
+confere("CDA: debênture pelo emissor", fundos.posicao("BLC_6", {"CPF_CNPJ_EMISSOR": "33000167000101"}, "Debêntures"), ("e:33000167", "cred"))
+confere("CDA: cota de outro fundo", fundos.posicao("BLC_2", {"CNPJ_FUNDO_CLASSE_COTA": "12.345.678/0001-90"}, "Cotas de Fundos"), ("f:" + fundos.chave("12.345.678/0001-90"), "cotas"))
+confere("CDA: futuro é derivativo", fundos.posicao("BLC_4", {"CD_ATIVO": "DOLF27"}, "Mercado Futuro - Posições vendidas"), (None, "deriv"))
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")
