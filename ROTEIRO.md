@@ -53,8 +53,8 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 
 ## Pendências técnicas
 
-- [ ] **ETFs**: incluir os ETFs de renda fixa (IMAB11, FIXA11, B5P211, LFTS11…), que hoje não entram na base da
+- [x] **ETFs**: incluir os ETFs de renda fixa (IMAB11, FIXA11, B5P211, LFTS11…), que hoje não entram na base da
       Bolsa, e melhorar a categoria (a B3 não informa o CNPJ; usar a lista oficial de ETFs da B3 com o nome completo
-      e o índice de referência).
+      e o índice de referência). Feito: estão no mercado de renda fixa da B3, fora do COTAHIST; entram pelos arquivos diários consolidados.
 - Limite conhecido: taxas de CDB, LCI e LCA de bancos e corretoras não têm fonte pública oficial; esses produtos
   entram pela taxa contratada informada.
