@@ -188,6 +188,9 @@ confere("B3: número com vírgula", ativos.num_b3("1.234,56"), 1234.56)
 confere("B3: número com ponto", ativos.num_b3("98.71"), 98.71)
 confere("B3: vazio", ativos.num_b3(""), None)
 
+confere("ofertas CVM: coluna pelo nome", atualizar._coluna(["Numero_Requerimento", "Data_Registro", "Nome_Emissor", "Valor_Mobiliario"], ["nome_emissor", "emissor"]), "Nome_Emissor")
+confere("ofertas CVM: coluna ausente", atualizar._coluna(["A", "B"], ["publico_alvo"]), None)
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")

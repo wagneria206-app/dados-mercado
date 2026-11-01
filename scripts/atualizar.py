@@ -1752,6 +1752,60 @@ def cvm_cri_cra():
     return {"series": resumo}
 
 
+# ---------------------------------------------------------------- CVM: ofertas públicas de distribuição (Resolução 160)
+
+URL_CVM_OFERTAS = "https://dados.cvm.gov.br/dados/OFERTA/DISTRIB/DADOS/oferta_distribuicao.zip"
+OFERTA_CAMPOS = {   # nome no app: pedaços do nome da coluna no arquivo da CVM (o primeiro que aparecer)
+    "nr": ["numero_requerimento", "numero_processo", "numero_registro"],
+    "dreq": ["data_requerimento", "data_protocolo"], "dreg": ["data_registro", "data_deferimento", "data_concessao"],
+    "denc": ["data_encerramento"], "status": ["status_requerimento", "status", "situacao"], "rito": ["rito"],
+    "tipo": ["valor_mobiliario", "tipo_ativo", "tipo_valor_mobiliario"], "emissor": ["nome_emissor", "emissor"],
+    "cnpj": ["cnpj_emissor"], "publico": ["publico_alvo"], "valor": ["valor_total", "montante", "volume"],
+    "lider": ["lider", "coordenador_lider", "nome_lider"], "venc": ["data_vencimento", "vencimento"],
+    "remun": ["remuneracao", "taxa", "juros"], "serie": ["serie"], "oferta": ["tipo_oferta"]}
+
+
+def _coluna(cab, pedacos):
+    cn = {c: norm(c).replace(" ", "_") for c in cab}
+    for p in pedacos:
+        for c, n in cn.items():
+            if p in n:
+                return c
+    return None
+
+
+@fonte("cvm_ofertas")
+def cvm_ofertas(dias=180):
+    """Ofertas públicas da Resolução CVM 160 (rito automático e ordinário) requeridas ou registradas nos últimos meses."""
+    r = baixar(URL_CVM_OFERTAS, timeout=300)
+    out, cols = [], {}
+    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+        nome = next((n for n in z.namelist() if "160" in n and n.lower().endswith(".csv")), None)
+        if not nome:
+            raise RuntimeError("arquivo da Resolução 160 não encontrado: " + ", ".join(z.namelist())[:200])
+        with z.open(nome) as f:
+            rd = csv.DictReader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
+            cab = rd.fieldnames or []
+            cols = {k: _coluna(cab, v) for k, v in OFERTA_CAMPOS.items()}
+            corte = (HOJE - dt.timedelta(days=dias)).isoformat()
+            for L in rd:
+                o = {k: (L.get(c) or "").strip() for k, c in cols.items() if c}
+                for k in ("dreq", "dreg", "denc", "venc"):
+                    if o.get(k):
+                        d = data_ymd(o[k][:10])
+                        o[k] = d or o[k][:10]
+                if max(o.get("dreq", ""), o.get("dreg", "")) < corte:
+                    continue
+                if o.get("valor"):
+                    o["valor"] = num(o["valor"])
+                o["cnpj"] = re.sub(r"\D", "", o.get("cnpj", ""))
+                out.append({k: v for k, v in o.items() if v not in ("", None)})
+    out.sort(key=lambda o: max(o.get("dreq", ""), o.get("dreg", "")), reverse=True)
+    gravar_json("ofertas_cvm.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "fonte": "CVM – ofertas públicas de distribuição (Resolução 160)",
+                                     "colunas": {k: v for k, v in cols.items() if v}, "cabecalho": cab[:80], "ofertas": out[:3000]})
+    return {"ofertas": len(out), "colunas_achadas": sum(1 for v in cols.values() if v)}
+
+
 # ---------------------------------------------------------------- Fundos.NET: termos de securitização
 
 URL_FNET_BUSCA = "https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosDados"
@@ -2424,7 +2478,7 @@ def rapido():
 FONTES_AVULSAS = {"b3_futuros": lambda m: b3_futuros(), "dolar_fundamentos": lambda m: dolar_fundamentos(),
                   "bcb_dolar": lambda m: bcb_dolar(m), "inflacao": lambda m: inflacao_detalhe(), "ima": lambda m: anbima_ima(),
                   "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist(),
-                  "fluxo": lambda m: fluxo_estrangeiro()}
+                  "fluxo": lambda m: fluxo_estrangeiro(), "ofertas": lambda m: cvm_ofertas()}
 
 
 def avulsas(nomes):
@@ -2469,6 +2523,7 @@ def main():
     snd_catalogo()
     anbima_cri_cra()
     cvm_cri_cra()
+    cvm_ofertas()
     fundosnet_termos()
     cvm_catalogo_fundos()
     fundosnet_textos()             # por último: usa o tempo que sobrar

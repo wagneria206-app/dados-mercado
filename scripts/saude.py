@@ -31,7 +31,7 @@ ROBOS = [("atualizar.yml", "Mercado (taxas, curvas, dólar, inflação, crédito
          ("macro.yml", "Economia (Focus, IBGE, BLS, Fed)"),
          ("checagem.yml", "Checagem automática do app")]
 
-NOMES = {"anbima_cri_cra": "ANBIMA · CRI e CRA", "anbima_curva_hist": "ANBIMA · histórico das curvas", "anbima_curva_juros": "ANBIMA · curva de juros",
+NOMES = {"cvm_ofertas": "CVM · ofertas públicas (Resolução 160)", "anbima_cri_cra": "ANBIMA · CRI e CRA", "anbima_curva_hist": "ANBIMA · histórico das curvas", "anbima_curva_juros": "ANBIMA · curva de juros",
          "anbima_debentures": "ANBIMA · debêntures", "anbima_ima": "ANBIMA · índices IMA", "anbima_titulos_publicos": "ANBIMA · títulos públicos",
          "b3_futuros": "B3 · DI e dólar futuros", "bcb_cdi_selic": "Banco Central · CDI e Selic", "bcb_dolar_ptax": "Banco Central · dólar PTAX",
          "bcb_fluxo_estrangeiro": "Banco Central · capital estrangeiro", "bcb_ibge_inflacao": "Banco Central e IBGE · inflação detalhada",
