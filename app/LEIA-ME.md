@@ -185,6 +185,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (27 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
+- `608-ofertas-publicas.js` (4 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)

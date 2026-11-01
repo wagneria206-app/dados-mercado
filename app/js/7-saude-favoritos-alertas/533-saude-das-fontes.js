@@ -18,7 +18,7 @@ function saudeHtml(){
 }
 /* aviso na própria tela quando uma fonte que ela usa está com problema ou atrasada */
 const SD_TELA={rs:["bcb_cdi_selic","bcb_dolar_ptax","anbima_curva_juros","b3_futuros","indices","x_ibov","x_dolar","x_cdi"],ec:["focus","br","x_focus"],mu:["us","fed","dxy","brent","indices","cm"],
-  ju:["anbima_curva_juros","anbima_curva_hist","b3_futuros","anbima_titulos_publicos","bcb_cdi_selic"],tx:["tesouro_direto","tesouro_direto_site","anbima_titulos_publicos"],cr:["anbima_debentures","anbima_cri_cra","credito_spreads"],
+  ju:["anbima_curva_juros","anbima_curva_hist","b3_futuros","anbima_titulos_publicos","bcb_cdi_selic"],tx:["tesouro_direto","tesouro_direto_site","anbima_titulos_publicos"],cr:["anbima_debentures","anbima_cri_cra","credito_spreads","cvm_ofertas"],
   in:["ibge_ipca","bcb_ibge_inflacao","anbima_curva_juros"],ix:["anbima_ima"],fx:["bcb_dolar_ptax","b3_futuros","dolar_fundamentos","x_dolar"],
   fa:["fundos"],fr:["fundos"],fc:["fundos"],fg:["fundos"],aa:["ativos","x_ibov"],ar:["ativos"],ac:["ativos"],ag:["ativos"],au:["indices","screener","empresas","x_spx"],
   sp:["fundos","ativos","bcb_cdi_selic"],pub:["anbima_titulos_publicos","tesouro_direto_site","bcb_cdi_selic","ibge_ipca"],pc:["anbima_debentures","anbima_cri_cra","snd_catalogo_debentures"],bank:["bcb_cdi_selic","anbima_curva_juros"],fund:["fundos","bcb_cdi_selic"],sc:["anbima_titulos_publicos","anbima_curva_juros"],sim:["tesouro_direto_site","anbima_curva_juros"]};

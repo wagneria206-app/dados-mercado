@@ -55,9 +55,9 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 
 - [x] **Adequação ao perfil (suitability)**: público-alvo dos fundos, volatilidade, perda máxima, renda variável, cripto,
       liquidez e nota de crédito contra o perfil; aparece nas pendências do painel do assessor.
-- [ ] **Ofertas públicas novas** (CVM, Resolução 160): debêntures, CRI, CRA e cotas em oferta.
+- [x] **Ofertas públicas novas** (CVM, Resolução 160): debêntures, CRI, CRA e cotas em oferta.
 - [x] **Crédito privado marcado a mercado**: variação da taxa ANBIMA e efeito no preço de cada papel da carteira.
-- [ ] **Alertas por carteira com o app fechado** (robô de alertas): vencimentos, carência, fundos com resgates fortes.
+- [x] **Alertas por carteira com o app fechado** (robô de alertas): vencimentos, carência, fundos com resgates fortes.
 - [x] **Boleta do rebalanceamento**: ordem de execução, prazos, aplicação mínima, resgates com menos IR primeiro, CSV.
 - [x] **Raio-X**: duration dos títulos públicos por dentro dos fundos e concentração por gestora e administradora.
 - [x] **Evolução do patrimônio acompanhado** mês a mês no painel do assessor.
