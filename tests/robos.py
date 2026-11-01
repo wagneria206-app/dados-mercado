@@ -183,6 +183,11 @@ r = fundos.ratings_json()["e"]["60746948"]
 confere("rating da CDA: nota por agência e nº de posições", r[2], [["fitch", "AAA(BRA)", 2]])
 confere("rating da CDA: data mais recente", r[1], "2026-08-01")
 
+import ativos  # noqa: E402
+confere("B3: número com vírgula", ativos.num_b3("1.234,56"), 1234.56)
+confere("B3: número com ponto", ativos.num_b3("98.71"), 98.71)
+confere("B3: vazio", ativos.num_b3(""), None)
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")
