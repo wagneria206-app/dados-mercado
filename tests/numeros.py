@@ -223,6 +223,15 @@ async def main():
         confere("agenda: semana passada", g[3], "Semana passada")
         # relatório mensal: meses da carteira, do mais recente ao primeiro
         confere("relatório mensal: meses", await J("return A.rmMeses({d0:'2026-02-10',dv:'2026-05-03'})"), ["2026-05", "2026-04", "2026-03", "2026-02"])
+        # renda fixa: tipo de produto pelo nome, vencimento do Tesouro pelo código
+        confere("produto: LCI pelo nome", await J("return A.spProd({t:'s',k:'cdi:95',n:'LCI Banco X 95% do CDI'})"), "LCI")
+        confere("produto: debênture pelo código", await J("return A.spProd({t:'s',k:'cr:ABCD11',tipo:'Debênture',n:'ABCD11 · Empresa'})"), "Debênture")
+        confere("Tesouro: NTN-B 2035 vence em 15/05", await J("const t=A.spTd({k:'TD-IPCAJ-2035'});return [t.kind,new Date(t.mat).toISOString().slice(0,10)]"), ["NTNB", "2035-05-15"])
+        confere("Tesouro: Selic 2031 vence em 01/03", await J("return new Date(A.spTd({k:'TD-SELIC-2031'}).mat).toISOString().slice(0,10)"), "2031-03-01")
+        # FGC: R$ 300 mil em CDB e R$ 100 mil em LCI do mesmo banco = R$ 150 mil acima do limite
+        confere("FGC: excedente por instituição", await J("const c={valor:400000,itens:[{t:'s',k:'a',n:'CDB',prod:'CDB',em:'Banco A',w:75},{t:'s',k:'b',n:'LCI',prod:'LCI',em:'banco a',w:25}]};return A.spCredito(c,c.itens).acima"), 150000)
+        # rebalanceamento só com aporte: R$ 10 mil vão para a classe abaixo do alvo
+        confere("rebalanceamento: aporte na classe que falta", await J("const c={valor:90000,pol:{perfil:'pers',alvo:{pos:50,acoes:50},tol:5,aporte:10000,vender:0},itens:[{t:'s',k:'cdi:100',rf:'cdi',x:100,n:'CDI',w:50},{t:'s',k:'pre:12',rf:'pre',x:12,n:'Pré',cl:'acoes',w:50}]};const r=A.spRebal(c,c.itens);return r.L.map(o=>[o.k,Math.round(r.mov[r.L.indexOf(o)])])"), [["pos", 5000], ["acoes", 5000]])
         # criptografia do token e da cópia em arquivo: volta igual com a senha certa e recusa a errada
         c = await J("return (async()=>{const o=await A.segCifra('github_pat_teste','senha-certa');let errada='aceitou';try{await A.segDecifra(o,'senha-errada')}catch(e){errada='recusou'}return [await A.segDecifra(o,'senha-certa'),errada,o.c.includes('github')]})()")
         confere("cripto: senha certa recupera o texto", c[0], "github_pat_teste")

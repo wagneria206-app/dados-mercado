@@ -9,21 +9,21 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 
 ## Fase 1 — base do assessor (acompanhar → avaliar → agir)
 
-- [ ] **Painel de indicadores da carteira (dashboard)**: patrimônio, rentabilidade no mês, no ano, em 12 meses e
+- [x] **Painel de indicadores da carteira (dashboard)**: patrimônio, rentabilidade no mês, no ano, em 12 meses e
       desde o início (e % do CDI), ganho, TIR, volatilidade, perda máxima, Sharpe, liquidez, concentração,
       alocação por classe contra a política, exposição ao FGC, próximos eventos.
-- [ ] **Classe de cada item** (pós-fixado, prefixado, inflação, crédito privado, multimercado, ações Brasil,
+- [x] **Classe de cada item** (pós-fixado, prefixado, inflação, crédito privado, multimercado, ações Brasil,
       internacional, imobiliário, cripto, ouro/commodities, outros), com ajuste manual.
-- [ ] **Política de investimento por carteira**: perfil (conservador, moderado, arrojado ou personalizado),
+- [x] **Política de investimento por carteira**: perfil (conservador, moderado, arrojado ou personalizado),
       alocação-alvo e limites por classe; enquadramento com alerta.
-- [ ] **Rebalanceamento sugerido**: desvio em relação ao alvo; quanto aplicar em cada item só com o aporte e,
+- [x] **Rebalanceamento sugerido**: desvio em relação ao alvo; quanto aplicar em cada item só com o aporte e,
       se preciso, as vendas mínimas, levando em conta IR, IOF, come-cotas, prazo de resgate e carência.
-- [ ] **Liquidez da carteira**: quanto dá para resgatar em D+0, D+1, até D+5, até D+30 e acima, pelo prazo de
+- [x] **Liquidez da carteira**: quanto dá para resgatar em D+0, D+1, até D+5, até D+30 e acima, pelo prazo de
       resgate da CVM; **quando faltar o dado, o usuário informa à mão** (prazo de resgate e carência por item).
-- [ ] **Crédito e FGC**: concentração por emissor/conglomerado e limite de R$ 250 mil por instituição;
+- [x] **Crédito e FGC**: concentração por emissor/conglomerado e limite de R$ 250 mil por instituição;
       emissor informado nos itens de renda fixa bancária.
-- [ ] **Fluxo de caixa da carteira**: calendário de cupons, amortizações, vencimentos e proventos previstos.
-- [ ] **Painel do assessor**: todas as carteiras numa tela, com patrimônio, mês e ano contra o CDI e pendências
+- [x] **Fluxo de caixa da carteira**: calendário de cupons, amortizações, vencimentos e proventos previstos.
+- [x] **Painel do assessor**: todas as carteiras numa tela, com patrimônio, mês e ano contra o CDI e pendências
       (fora da política, vencimento próximo, fundo com problema).
 
 ## Fase 2 — risco profundo
