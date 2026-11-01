@@ -9,7 +9,8 @@ const RT_FX=["","Baixo","Moderado baixo","Moderado","Elevado","Muito elevado"],R
 const RT_SP={AAA:1,"AA+":2,AA:3,"AA-":4,"A+":5,A:6,"A-":7,"BBB+":8,BBB:9,"BBB-":10,"BB+":11,BB:12,"BB-":13,"B+":14,B:15,"B-":16,"CCC+":17,CCC:18,"CCC-":19,CC:20,C:21,D:22,RD:22,SD:22};
 const RT_MO={AAA:1,AA1:2,AA2:3,AA3:4,A1:5,A2:6,A3:7,BAA1:8,BAA2:9,BAA3:10,BA1:11,BA2:12,BA3:13,B1:14,B2:15,B3:16,CAA1:17,CAA2:18,CAA3:19,CA:20,C:21};
 /* nota da agência em número (1 = AAA … 22 = default); notas de curto prazo (F1, A-1, P-1) ficam de fora */
-function rtNum(nota){let n=String(nota||"").toUpperCase().replace(/\s/g,"").replace(/\((BRA?|BR)\)|\.BR$|^BR|\(EXP\)|\(SF\)|SF$|\(P\)/g,"");if(/^(F\d|A-\d|P-\d|BR-\d)/.test(n))return null;return RT_SP[n]||RT_MO[n]||null}
+function rtNum(nota){let n=String(nota||"").toUpperCase().replace(/\s/g,"").replace(/\(.*$/,"").replace(/\.BR$|^BR|SF$/g,"");if(/^(F\d|A-\d|P-\d|BR-\d)/.test(n))return null;return RT_SP[n]||RT_MO[n]||null}
+const rtNac=(ag,nota)=>/BR/i.test(nota)||!/\bg\b|global/i.test(ag||"");   // escala nacional (Fitch "(bra)", S&P "br", Moody's ".br")
 const rtFaixaAg=v=>v==null?null:v<=4?1:v<=7?2:v<=10?3:v<=16?4:5;
 const rtNome=s=>fnNorm(s||"").replace(/[.,/()\-–]/g," ").replace(/\b(s ?a|ltda|cia|companhia|de|do|da|dos|das|e|em recuperacao judicial)\b/g," ").replace(/\s+/g," ").trim();
 function rtLoad(){if(RT.load||RT.r)return RT.load;
@@ -22,8 +23,8 @@ function rtRefaz(){try{if(activeMod==="cr"&&$("crBusca"))crbTabela();else if(act
 function rtAg(raiz,nome){if(!RT.r)return null;let e=raiz&&RT.r.e[raiz];if(!e&&nome&&RT.nm){let k=RT.nm.get(rtNome(nome));
     if(!k){const tk=rtNome(nome).split(" ").filter(w=>w.length>=4&&w!=="banco");if(tk.length){let best=null,bn=0;RT.nm.forEach((rz,nm)=>{if(tk.every(w=>nm.split(" ").includes(w))){const n=RT.r.e[rz][2].reduce((a,x)=>a+x[2],0);if(n>bn){bn=n;best=rz}}});k=best}}
     e=k&&RT.r.e[k];if(e)raiz=k}if(!e)return null;
-  const L=e[2].map(([ag,nota,n])=>({ag,nota,n,v:rtNum(nota)})).filter(o=>o.v!=null);if(!L.length)return null;const pior=Math.max(...L.map(o=>o.v));return {raiz,nome:e[0],dt:e[1],L,pior,fx:rtFaixaAg(pior)}}
-const rtTxt=a=>a?a.L.slice(0,2).map(o=>o.ag.replace(/^./,c=>c.toUpperCase())+" "+o.nota).join(" · "):"";
+  let L=e[2].map(([ag,nota,n])=>({ag,nota,n,v:rtNum(nota),nac:rtNac(ag,nota)})).filter(o=>o.v!=null);if(!L.length)return null;if(L.some(o=>o.nac))L=L.filter(o=>o.nac);L.sort((a,b)=>b.n-a.n);const pior=Math.max(...L.map(o=>o.v));return {raiz,nome:e[0],dt:e[1],L,pior,fx:rtFaixaAg(pior)}}
+const rtTxt=a=>a?a.L.slice(0,2).map(o=>o.ag.replace(/ g$/,"").replace(/^./,c=>c.toUpperCase())+" "+o.nota.replace(/\(B[RA]*$/,"(bra)")+(o.nac?"":" (escala global)")).join(" · "):"";
 /* empresa listada pelo nome: código, CNPJ e dívida líquida/EBIT */
 function rtEmp(nome){if(!RT.en)return null;const cod=RT.en.get(rtNome(nome));if(!cod)return null;const e=RT.emp[cod];let r=null;if(AT.idx)for(const s of ["3","4","11","5","6"]){r=atRow(cod+s);if(r)break}
   return {cod,cnpj:e.cnpj,raiz:(e.cnpj||"").slice(0,8),dl:r&&AT.C.dlebit!=null?r[AT.C.dlebit]:null,t:r?r[0]:null}}

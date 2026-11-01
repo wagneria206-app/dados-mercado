@@ -240,6 +240,7 @@ async def main():
         confere("duration de prefixado sem cupom = prazo", await J("const x={t:'s',rf:'pre',x:12,venc:new Date(Date.now()+730.5*86400000).toISOString().slice(0,10)};return Math.round(A.spDur(x).d*10)/10"), 2.0)
         # escala de rating: Fitch nacional, S&P e Moody's na mesma régua; curto prazo fica de fora
         confere("rating: AAA(bra) = 1", await J("return A.rtNum('AAA(bra)')"), 1)
+        confere("rating: nota cortada AAA(BR = 1", await J("return A.rtNum('AAA(BR')"), 1)
         confere("rating: brA- = 7", await J("return A.rtNum('brA-')"), 7)
         confere("rating: Moody's Baa3 = 10", await J("return A.rtNum('Baa3')"), 10)
         confere("rating: curto prazo F1+ não entra", await J("return A.rtNum('F1+')"), None)
