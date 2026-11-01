@@ -112,6 +112,8 @@ def ler_cotahist(ano, filtro=None):
         for raw in f:
             if raw[:2] != b"01":
                 continue
+            if (b"IT NOW" in raw[27:39] or b"IMA" in raw[27:39]) and len(DIAG.setdefault("cotahist_itnow", [])) < 40:
+                DIAG["cotahist_itnow"].append(raw[10:60].decode("latin-1"))
             if raw[39:41] == b"CI" or raw[12:16] in (b"IMAB", b"FIXA", b"B5P2", b"LFTS", b"IRFM"):   # diagnóstico dos ETFs
                 d = DIAG.setdefault("etf_cotahist", {})
                 ch = raw[10:12].decode() + "/" + raw[24:27].decode() + "/" + raw[39:49].decode().strip()
@@ -1030,7 +1032,7 @@ def b3_arquivo(nome, dia, timeout=(10, 120)):
     except StopIteration:
         raise RuntimeError(f"{nome} sem cabeçalho ({len(c)} bytes)")
     cab = [x.strip() for x in linhas[i].split(";")]
-    return [dict(zip(cab, (x.strip() for x in L.split(";")))) for L in linhas[i + 1:] if L.count(";") >= len(cab) - 2]
+    return [dict(zip(cab, (x.strip() for x in L.split(";")))) for L in linhas[i + 1:] if ";" in L]
 
 
 def num_b3(v):
@@ -1065,6 +1067,9 @@ def etfs_fora(ent, sai, ativos, max_dias=60):
                 t, cat, esp = L.get("TckrSymb", ""), L.get("SctyCtgyNm", ""), L.get("SpcfctnCd", "")
                 if "ETF" in cat.upper():
                     cats[cat] = cats.get(cat, 0) + 1
+                tx = (L.get("Asst", "") + " " + L.get("AsstDesc", "") + " " + L.get("CrpnNm", "")).upper()
+                if (L.get("Asst", "") in ("IMAB", "FIXA", "B5P2", "LFTS", "IRFM") or "IT NOW" in tx) and len(DIAG.setdefault("b3_rf_cad", [])) < 30:
+                    DIAG["b3_rf_cad"].append({k: L.get(k) for k in ("TckrSymb", "Asst", "AsstDesc", "SctyCtgyNm", "SgmtNm", "MktNm", "SpcfctnCd", "CrpnNm")})
                 if re.fullmatch(r"[A-Z0-9]{4}11", t) and t not in ativos and ("ETF" in cat.upper() or esp.startswith("CI")):
                     H["nomes"][t] = [(L.get("CrpnNm") or L.get("AsstDesc") or L.get("Asst") or t)[:80], L.get("ISIN", ""), cat]
             DIAG["b3_categorias_etf"] = cats
@@ -1087,6 +1092,8 @@ def etfs_fora(ent, sai, ativos, max_dias=60):
                 continue
             for x in L:
                 t = x.get("TckrSymb", "")
+                if t[:4] in ("IMAB", "FIXA", "B5P2", "LFTS") and len(DIAG.setdefault("b3_rf_neg", [])) < 10:
+                    DIAG["b3_rf_neg"].append({k: x.get(k) for k in ("RptDt", "TckrSymb", "SgmtNm", "LastPric", "NtlFinVol")})
                 if t not in alvo:
                     continue
                 c = num_b3(x.get("LastPric")) or num_b3(x.get("TradAvrgPric"))
@@ -1423,7 +1430,7 @@ def principal():
     FU.gravar(os.path.join(sai, "estado.json"), est)
     log("gravado:", len(rows), "ativos; cotações até", est["ano_ate"], "+ ano corrente")
     if os.environ.get("GITHUB_ACTIONS"):
-        print("::notice title=ETFs fora do COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("b3_instrumentos_campos", "b3_categorias_etf", "etfs_fora_do_cotahist", "etfs_fora_dias", "b3_instrumentos", "b3_negocios", "etfs_fora")}, ensure_ascii=False)[:3000])
+        print("::notice title=ETFs fora do COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("cotahist_itnow", "b3_rf_cad", "b3_rf_neg", "b3_categorias_etf", "etfs_fora_do_cotahist", "etfs_fora_dias", "b3_instrumentos", "b3_negocios", "etfs_fora")}, ensure_ascii=False)[:3000])
 
 
 if __name__ == "__main__":
