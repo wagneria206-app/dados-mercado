@@ -11,7 +11,7 @@ temaAplica();
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",temaAplica)}catch(e){}
 
 /* blocos da tela Mercado › Resumo: o usuário escolhe quais aparecem e em que ordem */
-function rsBlocosDef(){return {painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda das próximas semanas",agendaHtml]}}
+function rsBlocosDef(){return {painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda das próximas semanas",agendaHtml],ideias:["Ideias da semana (Tesouro, crédito e fundos)",ideiasHtml]}}
 function rsBlocos(){const D=rsBlocosDef(),ids=Object.keys(D);let L=[];try{L=JSON.parse(lsGet("rsBlocos","[]"))}catch(e){}
   L=L.filter(x=>Array.isArray(x)&&D[x[0]]);ids.forEach(id=>{if(!L.some(x=>x[0]===id))L.push([id,true])});return L}
 function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);

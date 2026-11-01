@@ -147,9 +147,9 @@ function fnPeerHtml(F){
   if(grp.length<5)return "";
   const cat=useA?FN.idx.anbima[anb]:FN.idx.classes[me[C.classe]];
   const pos=(col,hiBetter)=>{const v=me[C[col]];if(v==null)return null;const vals=grp.map(r=>r[C[col]]).filter(x=>x!=null);const n=vals.length,better=vals.filter(x=>hiBetter?x>v:x<v).length;const q=Math.min(4,Math.floor(better/n*4)+1);const med=vals.slice().sort((a,b)=>a-b)[Math.floor(n/2)];return {rk:better+1,n,q,med,v}};
-  const rows=[["Rentabilidade 12 meses","r12",true,1],["Rentabilidade 36 meses","r36",true,1],["Volatilidade 12 meses","v12",false,0],["Sharpe 12 meses","sharpe",true,2],["Perda máxima 36 meses","dd36",true,1]];
+  const rows=[["Rentabilidade 12 meses","r12",true,1],["Rentabilidade 24 meses","r24",true,1],["Rentabilidade 36 meses","r36",true,1],["Consistência (janelas de 12 meses acima do CDI)","cons",true,3],["Volatilidade 12 meses","v12",false,0],["Sharpe 12 meses","sharpe",true,2],["Perda máxima 36 meses","dd36",true,1]];
   let h='<section class="panel"><h3>Comparação com a categoria</h3><p class="sub">'+esc(cat)+' · '+grp.length+' fundos (sem exclusivos). 1º quartil = entre os 25% melhores.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Indicador</th><th>Fundo</th><th>Mediana da categoria</th><th>Posição</th><th>Quartil</th></tr></thead><tbody>';
-  rows.forEach(([lab,col,hb,kind])=>{const p=pos(col,hb);if(!p)return;const f=v=>kind===2?fx(v,2):kind===0?fx(v,2)+"%":fnPctT(v);
+  rows.forEach(([lab,col,hb,kind])=>{const p=pos(col,hb);if(!p)return;const f=v=>kind===2?fx(v,2):kind===0?fx(v,2)+"%":kind===3?fx(v,0)+"%":fnPctT(v);
     h+='<tr><td style="text-align:left">'+lab+'</td><td><b>'+f(p.v)+'</b></td><td>'+f(p.med)+'</td><td>'+p.rk+'º de '+p.n+'</td><td><span class="fnq '+["","fnq1","fnq2","fnq3","fnq4"][p.q]+'">'+p.q+'º</span></td></tr>'});
   h+='</tbody></table></div><button type="button" class="link" data-fnrkcat="'+(useA?'a'+anb:'c'+me[C.classe])+'|'+me[C.tipo]+'">Ver o ranking da categoria ›</button></section>';
   return h;
@@ -187,7 +187,7 @@ function fnRk(){
   const anbs=new Map();I.rows.forEach(r=>{if((rk.tipo===""||r[C.tipo]===+rk.tipo)&&(rk.cls===""||r[C.classe]===+rk.cls)&&I.anbima[r[C.anbima]])anbs.set(r[C.anbima],(anbs.get(r[C.anbima])||0)+1)});
   const sel=(id,lab,opts,v)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-fnrk="'+id+'">'+opts.map(([a,b])=>'<option value="'+a+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>';
   if(!f.dataset.on){f.dataset.on=1}
-  f.innerHTML='<div class="fnfilt">'+sel("rkTipo","Tipo",[["","Todos"]].concat(tipos),rk.tipo)+sel("rkCls","Classe CVM",[["","Todas"]].concat(cls),rk.cls)
+  f.innerHTML=fnFiltrosHtml()+'<div class="fnfilt">'+sel("rkTipo","Tipo",[["","Todos"]].concat(tipos),rk.tipo)+sel("rkCls","Classe CVM",[["","Todas"]].concat(cls),rk.cls)
     +sel("rkAnb","Categoria ANBIMA",[["","Todas"]].concat([...anbs.entries()].sort((a,b)=>I.anbima[a[0]].localeCompare(I.anbima[b[0]])).map(([j,n])=>[j,I.anbima[j]+" ("+n+")"])),rk.anb)
     +sel("rkPl","Patrimônio mínimo",[[0,"Qualquer"],[1e6,"R$ 1 mi"],[10e6,"R$ 10 mi"],[50e6,"R$ 50 mi"],[100e6,"R$ 100 mi"],[500e6,"R$ 500 mi"],[1e9,"R$ 1 bi"]],rk.pl)
     +sel("rkCot","Cotistas mínimos",[[0,"Qualquer"],[10,"10"],[100,"100"],[1000,"1.000"],[10000,"10.000"]],rk.cot)
@@ -195,6 +195,7 @@ function fnRk(){
     +sel("rkAmax","Aplicação mínima até",[["","Qualquer"],[100,"R$ 100"],[1000,"R$ 1 mil"],[10000,"R$ 10 mil"],[100000,"R$ 100 mil"],[1000000,"R$ 1 milhão"]],rk.amax)
     +sel("rkRmax","Resgate em até",[["","Qualquer"],[0,"D+0"],[1,"D+1"],[5,"D+5"],[30,"D+30"],[90,"D+90"]],rk.rmax)
     +sel("rkIdade","Histórico mínimo",[["","Qualquer"],[1,"1 ano"],[3,"3 anos"],[5,"5 anos"],[10,"10 anos"]],rk.idade)
+    +fnRkExtraSel(sel)
     +'<div class="field"><label for="rkTxt">Nome, CNPJ ou gestora</label><input id="rkTxt" data-fnrk="rkTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>'
     +((rk.ges!==""&&I.gestores[rk.ges])||(rk.adm!==""&&I.adms&&I.adms[rk.adm])?'<div class="fnchips">'+(rk.ges!==""&&I.gestores[rk.ges]?'<span class="fnchip">Gestora: '+esc(I.gestores[rk.ges])+' <button type="button" class="fnx" data-fnrkx="ges" aria-label="Remover">×</button></span>':'')+(rk.adm!==""&&I.adms&&I.adms[rk.adm]?'<span class="fnchip">Administradora: '+esc(I.adms[rk.adm])+' <button type="button" class="fnx" data-fnrkx="adm" aria-label="Remover">×</button></span>':'')+'</div>':'')
     +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>';
