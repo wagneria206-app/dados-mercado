@@ -1000,6 +1000,110 @@ def documentos(ent, sai, emp, fca):
     return ativos_cod
 
 
+# ------------------------------------------------------------------ ETFs fora do COTAHIST (renda fixa): arquivos consolidados da B3
+
+URL_B3_ARQ = "https://arquivos.b3.com.br/api/download"
+_B3S = None
+
+
+def b3_arquivo(nome, dia, timeout=(10, 120)):
+    """Arquivo diário oficial da B3 (InstrumentsConsolidatedFile, TradeInformationConsolidatedFile): linhas como dicionários."""
+    global _B3S
+    if _B3S is None:
+        _B3S = requests.Session()
+        _B3S.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Accept": "application/json, text/plain, */*",
+                             "Referer": "https://arquivos.b3.com.br/"})
+        try:
+            _B3S.get("https://arquivos.b3.com.br/", timeout=(10, 30))
+        except Exception:  # noqa: BLE001
+            pass
+    r = _B3S.get(URL_B3_ARQ + "/requestname", params={"fileName": nome, "date": dia}, timeout=timeout)
+    if "json" not in r.headers.get("Content-Type", "").lower():
+        raise RuntimeError(f"resposta não JSON ({r.status_code})")
+    url = (r.json() or {}).get("redirectUrl") or ""
+    if "token=" not in url:
+        return None
+    c = _B3S.get(URL_B3_ARQ, params={"token": url.split("token=")[-1]}, timeout=timeout).content or b""
+    linhas = c.decode("latin-1").splitlines()
+    try:
+        i = next(k for k, L in enumerate(linhas[:5]) if "TckrSymb" in L)
+    except StopIteration:
+        raise RuntimeError(f"{nome} sem cabeçalho ({len(c)} bytes)")
+    cab = [x.strip() for x in linhas[i].split(";")]
+    return [dict(zip(cab, (x.strip() for x in L.split(";")))) for L in linhas[i + 1:] if L.count(";") >= len(cab) - 2]
+
+
+def num_b3(v):
+    v = (v or "").strip()
+    if not v:
+        return None
+    if "," in v:
+        v = v.replace(".", "").replace(",", ".")
+    try:
+        return float(v)
+    except ValueError:
+        return None
+
+
+def etfs_fora(ent, sai, ativos, max_dias=60):
+    """ETFs listados que não aparecem no COTAHIST (os de renda fixa): descobre pelo cadastro diário de instrumentos da B3 e
+    guarda o fechamento de cada pregão pelo arquivo consolidado de negócios, completando o histórico aos poucos (desde 2019).
+    Devolve linhas no formato do COTAHIST para entrar na base como os demais ativos."""
+    H = FU.ler_json(os.path.join(ent, "etf_b3.json"), {"t": {}, "nomes": {}, "feitos": [], "vazios": []})
+    feitos, vazios = set(H.get("feitos", [])), set(H.get("vazios", []))
+    dias = [d for d in CAL if d >= "2019-01-02"]
+    try:
+        cad = None
+        for d in reversed(dias[-5:]):
+            cad = b3_arquivo("InstrumentsConsolidatedFile", d)
+            if cad:
+                break
+        if cad:
+            DIAG["b3_instrumentos_campos"] = sorted(cad[0].keys())[:40]
+            cats = {}
+            for L in cad:
+                t, cat, esp = L.get("TckrSymb", ""), L.get("SctyCtgyNm", ""), L.get("SpcfctnCd", "")
+                if "ETF" in cat.upper():
+                    cats[cat] = cats.get(cat, 0) + 1
+                if re.fullmatch(r"[A-Z0-9]{4}11", t) and t not in ativos and ("ETF" in cat.upper() or esp.startswith("CI")):
+                    H["nomes"][t] = [(L.get("CrpnNm") or L.get("AsstDesc") or L.get("Asst") or t)[:80], L.get("ISIN", ""), cat]
+            DIAG["b3_categorias_etf"] = cats
+    except Exception as e:  # noqa: BLE001
+        DIAG["b3_instrumentos"] = str(e)[:200]
+    alvo = set(H["nomes"])
+    DIAG["etfs_fora_do_cotahist"] = sorted(alvo)[:60]
+    if alvo:
+        pend = [d for d in reversed(dias) if d not in feitos and d not in vazios][:max_dias]
+        for d in pend:
+            if time.time() > LIMITE - 1200:
+                break
+            try:
+                L = b3_arquivo("TradeInformationConsolidatedFile", d)
+            except Exception as e:  # noqa: BLE001
+                DIAG["b3_negocios"] = f"{d}: {str(e)[:150]}"
+                break
+            if not L:
+                vazios.add(d)
+                continue
+            for x in L:
+                t = x.get("TckrSymb", "")
+                if t not in alvo:
+                    continue
+                c = num_b3(x.get("LastPric")) or num_b3(x.get("TradAvrgPric"))
+                if c:
+                    H["t"].setdefault(t, {})[d] = [c, num_b3(x.get("NtlFinVol")) or 0.0, int(num_b3(x.get("TradQty")) or 0)]
+            feitos.add(d)
+        DIAG["etfs_fora_dias"] = [len(feitos), len(pend)]
+    H["feitos"], H["vazios"] = sorted(feitos), sorted(vazios)
+    FU.gravar(os.path.join(sai, "etf_b3.json"), H)
+    out = []
+    for t, serie in H["t"].items():
+        nome, isin, _ = (H["nomes"].get(t) or [t, "", ""])
+        for d, (c, vol, neg) in sorted(serie.items()):
+            out.append((d, t, "14", nome, "CI", c, vol, neg, isin))
+    return out
+
+
 def principal():
     ent, sai = sys.argv[1], sys.argv[2]
     est, emp = carregar(ent)
@@ -1031,6 +1135,16 @@ def principal():
         cortar(bisect.bisect_left(CAL, f"{ano}-01-01"))
         aplicar_ano(atual, ativos)
         log("cotações", ano, "ok")
+        # ETFs que não estão no COTAHIST (renda fixa): série inteira refeita a cada execução pelos arquivos diários da B3
+        try:
+            extra = etfs_fora(ent, sai, ativos)
+            for t in {x[1] for x in extra}:
+                A.pop(t, None)
+            ativos |= {x[1] for x in extra}
+            aplicar_ano(extra, ativos)
+            log("ETFs fora do COTAHIST:", len({x[1] for x in extra}), "com", len(extra), "pregões")
+        except Exception as e:  # noqa: BLE001
+            DIAG["etfs_fora"] = str(e)[:200]
     del atual
     try:
         tesouro_direto()
@@ -1309,7 +1423,7 @@ def principal():
     FU.gravar(os.path.join(sai, "estado.json"), est)
     log("gravado:", len(rows), "ativos; cotações até", est["ano_ate"], "+ ano corrente")
     if os.environ.get("GITHUB_ACTIONS"):
-        print("::notice title=ETFs no COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("etf_cotahist", "etf_rf_amostra", "etf_rf_cotahist")}, ensure_ascii=False)[:3000])
+        print("::notice title=ETFs fora do COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("b3_instrumentos_campos", "b3_categorias_etf", "etfs_fora_do_cotahist", "etfs_fora_dias", "b3_instrumentos", "b3_negocios", "etfs_fora")}, ensure_ascii=False)[:3000])
 
 
 if __name__ == "__main__":
