@@ -20,7 +20,7 @@ function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada dep
 function fnMoreAdd(rows){
   const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
   if(!FNM.has(activeMod))return;
-  if(activeMod==="fr"||activeMod==="fg"||(activeMod==="fa"&&miss))fnCalc();
+  if(activeMod==="fr"||activeMod==="fg"||activeMod==="fc"||activeMod==="sp"||(activeMod==="fa"&&miss))fnCalc(); // a 2ª parte da lista (previdência, exclusivos…) completa as tabelas já abertas
   const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
 }
 function lvBuild(cal,B){ // níveis acumulados dos índices: diários (alinhados ao calendário) e de fim de mês

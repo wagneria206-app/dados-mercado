@@ -73,7 +73,7 @@ function fnHead(F){
   const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
   add("Gestora",esc(F.ges||""));add("Administradora",esc(F.adm||""));add("Custodiante",esc(F.cus||""));add("Auditoria",esc(F.aud||""));
   {const k0=F.MK&&F.MK[0],ti=F.ini?Date.parse(F.ini.slice(0,10)+"T00:00:00Z"):null,tc=k0!=null?Date.UTC(Math.floor(k0/12),k0%12,1):null;add("Início das atividades",ti?fdate(ti)+(tc&&tc<ti-31*DAY?' <small>(cotas na CVM desde '+mname(k0)+(k0===2005*12?' ou antes':'')+')</small>':''):tc?'cotas na CVM desde '+mname(k0):"")}add("Índice de referência",esc(F.bm||""));
-  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a.":"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
+  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a."+(F.tadm_fte?" <small>(do "+esc(F.tadm_fte)+"; pode ter mudado)</small>":""):"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
   add("Aplicação mínima",F.amin!=null?(F.amin?brl(F.amin):"Sem mínimo"):"");
   add("Resgate",F.dcot!=null||F.dpag!=null?(F.dcot!=null?"cotização D+"+fx(F.dcot,0):"")+(F.dpag!=null?" · pagamento D+"+fx(F.dpag,0):""):"");
   add("Taxa de saída",F.tsai?fx(F.tsai,2)+"%":"");add("Carência",F.car?fx(F.car,0)+" dias":"");

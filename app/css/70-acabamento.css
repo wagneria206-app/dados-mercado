@@ -201,3 +201,10 @@ html.apres .topo{bottom:72px}
 @keyframes pulsa{50%{box-shadow:0 0 0 2px var(--navy),0 0 0 5px rgba(255,90,71,.35)}}
 @media (prefers-reduced-motion:reduce){#btSaude .sdponto{animation:none!important}}
 .sdcorpo .tablewrap{margin-top:6px}
+
+/* ---------- tabelas ordenáveis pelo título da coluna */
+table.ordenavel thead th{cursor:pointer;user-select:none;-webkit-user-select:none}
+table.ordenavel thead th:hover{color:var(--ink)}
+table.ordenavel thead th[data-ordem]{color:var(--accent)}
+table.ordenavel thead th[data-ordem="desc"]::after{content:" ▼";font-size:.75em}
+table.ordenavel thead th[data-ordem="asc"]::after{content:" ▲";font-size:.75em}
