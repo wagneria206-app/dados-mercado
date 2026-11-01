@@ -37,7 +37,6 @@ URL_FII = "https://dados.cvm.gov.br/dados/FII/DOC/INF_MENSAL/DADOS/inf_mensal_fi
 URL_DFP = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/dfp_cia_aberta_{}.zip"
 URL_ITR = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/itr_cia_aberta_{}.zip"
 URL_FCA = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/FCA/DADOS/fca_cia_aberta_{}.zip"
-ETF_RF_TICK = {b"IMAB11", b"FIXA11", b"B5P211", b"LFTS11", b"IRFM11", b"IB5M11", b"DEBB11", b"5PRE11", b"NTNS11"}
 BDI_OK = {"02", "05", "06", "07", "08", "12", "13", "14", "34", "35", "36"}
 DIAG = {}
 
@@ -112,16 +111,6 @@ def ler_cotahist(ano, filtro=None):
         for raw in f:
             if raw[:2] != b"01":
                 continue
-            if (b"IT NOW" in raw[27:39] or b"IMA" in raw[27:39]) and len(DIAG.setdefault("cotahist_itnow", [])) < 40:
-                DIAG["cotahist_itnow"].append(raw[10:60].decode("latin-1"))
-            if raw[39:41] == b"CI" or raw[12:16] in (b"IMAB", b"FIXA", b"B5P2", b"LFTS", b"IRFM"):   # diagnóstico dos ETFs
-                d = DIAG.setdefault("etf_cotahist", {})
-                ch = raw[10:12].decode() + "/" + raw[24:27].decode() + "/" + raw[39:49].decode().strip()
-                d[ch] = d.get(ch, 0) + 1
-                if raw[12:16] in (b"IMAB", b"FIXA", b"B5P2", b"LFTS", b"IRFM"):
-                    DIAG.setdefault("etf_rf_amostra", {})[raw[12:24].decode().strip()] = ch
-            if raw[12:18] in ETF_RF_TICK:   # diagnóstico: como os ETFs de renda fixa aparecem no arquivo da B3
-                DIAG.setdefault("etf_rf_cotahist", {})[raw[12:24].decode().strip()] = [raw[10:12].decode(), raw[24:27].decode(), raw[39:49].decode().strip()]
             if raw[24:27] != b"010":
                 continue
             bdi = raw[10:12].decode()
@@ -1047,7 +1036,7 @@ def num_b3(v):
         return None
 
 
-def etfs_fora(ent, sai, ativos, max_dias=60):
+def etfs_fora(ent, sai, ativos, max_dias=120):
     """ETFs listados que não aparecem no COTAHIST (os de renda fixa): descobre pelo cadastro diário de instrumentos da B3 e
     guarda o fechamento de cada pregão pelo arquivo consolidado de negócios, completando o histórico aos poucos (desde 2019).
     Devolve linhas no formato do COTAHIST para entrar na base como os demais ativos."""
@@ -1062,17 +1051,21 @@ def etfs_fora(ent, sai, ativos, max_dias=60):
                 break
         if cad:
             DIAG["b3_instrumentos_campos"] = sorted(cad[0].keys())[:40]
-            cats = {}
+            cats, novos = {}, {}
             for L in cad:
                 t, cat, esp = L.get("TckrSymb", ""), L.get("SctyCtgyNm", ""), L.get("SpcfctnCd", "")
                 if "ETF" in cat.upper():
                     cats[cat] = cats.get(cat, 0) + 1
-                tx = (L.get("Asst", "") + " " + L.get("AsstDesc", "") + " " + L.get("CrpnNm", "")).upper()
-                if (L.get("Asst", "") in ("IMAB", "FIXA", "B5P2", "LFTS", "IRFM") or "IT NOW" in tx) and len(DIAG.setdefault("b3_rf_cad", [])) < 30:
-                    DIAG["b3_rf_cad"].append({k: L.get(k) for k in ("TckrSymb", "Asst", "AsstDesc", "SctyCtgyNm", "SgmtNm", "MktNm", "SpcfctnCd", "CrpnNm")})
-                if re.fullmatch(r"[A-Z0-9]{4}11", t) and t not in ativos and ("ETF" in cat.upper() or esp.startswith("CI")):
-                    H["nomes"][t] = [(L.get("CrpnNm") or L.get("AsstDesc") or L.get("Asst") or t)[:80], L.get("ISIN", ""), cat]
+                # os ETFs de renda fixa estão no mercado de renda fixa da B3 ("FIXED INCOME"), fora do COTAHIST de ações
+                rf = L.get("MktNm", "").upper() == "FIXED INCOME" and "TRADABLE" in cat.upper()
+                if re.fullmatch(r"[A-Z0-9]{4}11", t) and t not in ativos and (rf or ("ETF" in cat.upper() and "PRIMARY" not in cat.upper())):
+                    novos[t] = [(L.get("CrpnNm") or ("ETF RENDA FIXA " + t if rf else t))[:80], L.get("ISIN", ""), "RF" if rf else cat]
             DIAG["b3_categorias_etf"] = cats
+            if novos:
+                if set(novos) - set(H["nomes"]):
+                    feitos = set()          # ETF novo na lista: refaz o histórico de todos
+                H["nomes"] = novos
+                H["t"] = {t: v for t, v in H["t"].items() if t in novos}
     except Exception as e:  # noqa: BLE001
         DIAG["b3_instrumentos"] = str(e)[:200]
     alvo = set(H["nomes"])
@@ -1092,8 +1085,6 @@ def etfs_fora(ent, sai, ativos, max_dias=60):
                 continue
             for x in L:
                 t = x.get("TckrSymb", "")
-                if t[:4] in ("IMAB", "FIXA", "B5P2", "LFTS") and len(DIAG.setdefault("b3_rf_neg", [])) < 10:
-                    DIAG["b3_rf_neg"].append({k: x.get(k) for k in ("RptDt", "TckrSymb", "SgmtNm", "LastPric", "NtlFinVol")})
                 if t not in alvo:
                     continue
                 c = num_b3(x.get("LastPric")) or num_b3(x.get("TradAvrgPric"))
@@ -1107,7 +1098,7 @@ def etfs_fora(ent, sai, ativos, max_dias=60):
     for t, serie in H["t"].items():
         nome, isin, _ = (H["nomes"].get(t) or [t, "", ""])
         for d, (c, vol, neg) in sorted(serie.items()):
-            out.append((d, t, "14", nome, "CI", c, vol, neg, isin))
+            out.append((d, t, "14", nome, "CI RF" if _ == "RF" else "CI", c, vol, neg, isin))
     return out
 
 
@@ -1380,7 +1371,7 @@ def principal():
                     extra = {"vpc": u[0] if pvp else None, "pvp": pvp, "plf": u[1], "cot": u[2] if (u[2] or 0) > 1 else None,
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
-                setor = etf_categoria(t, nome, info.get("cnpj"), cvm_cache()) if tp == "ETF" else ""
+                setor = ("Renda fixa" if "RF" in a.meta.get("esp", "") else etf_categoria(t, nome, info.get("cnpj"), cvm_cache())) if tp == "ETF" else ""
         elif tp == "Tesouro Direto":
             setor = {"SELIC": "Tesouro Selic", "PRE": "Tesouro Prefixado", "PREJ": "Tesouro Prefixado com Juros",
                      "IPCA": "Tesouro IPCA+", "IPCAJ": "Tesouro IPCA+ com Juros", "RENDA": "Tesouro RendA+", "EDUCA": "Tesouro Educa+"}.get(a.meta.get("esp"), "")
@@ -1430,7 +1421,7 @@ def principal():
     FU.gravar(os.path.join(sai, "estado.json"), est)
     log("gravado:", len(rows), "ativos; cotações até", est["ano_ate"], "+ ano corrente")
     if os.environ.get("GITHUB_ACTIONS"):
-        print("::notice title=ETFs fora do COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("cotahist_itnow", "b3_rf_cad", "b3_rf_neg", "b3_categorias_etf", "etfs_fora_do_cotahist", "etfs_fora_dias", "b3_instrumentos", "b3_negocios", "etfs_fora")}, ensure_ascii=False)[:3000])
+        print("::notice title=ETFs fora do COTAHIST::" + json.dumps({k: DIAG.get(k) for k in ("b3_categorias_etf", "etfs_fora_do_cotahist", "etfs_fora_dias", "b3_instrumentos", "b3_negocios", "etfs_fora")}, ensure_ascii=False)[:3000])
 
 
 if __name__ == "__main__":
