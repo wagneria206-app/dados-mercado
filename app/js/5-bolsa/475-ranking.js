@@ -7,7 +7,7 @@ function atRk(){
   const f=$("atRkF");if(!f)return;const I=AT.idx,C=AT.C,rk=AT.rk;
   const tipos=[...new Set(I.rows.map(r=>r[C.tipo]))].sort();const set=new Map();I.rows.forEach(r=>{if((rk.tipo===""||r[C.tipo]===rk.tipo)&&I.setores[r[C.setor]])set.set(r[C.setor],(set.get(r[C.setor])||0)+1)});
   const sel=(id,lab,opts,v)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-atrk="'+id+'">'+opts.map(([a,b])=>'<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>';
-  f.innerHTML='<div class="fnfilt">'+sel("arTipo","Tipo",[["","Todos"]].concat(tipos.map(x=>[x,x])),rk.tipo)+sel("arSet","Setor ou segmento",[["","Todos"]].concat([...set.entries()].sort((a,b)=>I.setores[a[0]].localeCompare(I.setores[b[0]])).map(([j,n])=>[j,I.setores[j]+" ("+n+")"])),rk.setor)
+  f.innerHTML='<div class="fnfilt">'+sel("arTipo","Tipo",[["","Todos"]].concat(tipos.map(x=>[x,x])),rk.tipo)+sel("arSet",rk.tipo==="ETF"?"Categoria do ETF":"Setor ou segmento",[["","Todos"]].concat([...set.entries()].sort((a,b)=>I.setores[a[0]].localeCompare(I.setores[b[0]])).map(([j,n])=>[j,I.setores[j]+" ("+n+")"])),rk.setor)
     +sel("arLiq","Liquidez mínima por dia",[[0,"Qualquer"],[1e5,"R$ 100 mil"],[1e6,"R$ 1 milhão"],[1e7,"R$ 10 milhões"],[5e7,"R$ 50 milhões"]],rk.liq)
     +'<div class="field"><label for="arTxt">Código ou nome</label><input id="arTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>';
   atRkTable();
