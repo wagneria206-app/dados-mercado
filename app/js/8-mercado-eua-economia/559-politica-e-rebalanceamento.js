@@ -23,7 +23,10 @@ function spRebal(c,it){
   // dentro da classe: proporcional ao valor de cada item (vendas não mexem em itens em carência)
   const porItem=[];L.forEach((o,i)=>{const m=mov[i];if(Math.abs(m)<0.5)return;let lst=(itens[o.k]||[]).filter(y=>m>0||!spLiq(y.x).car);
     if(!lst.length){porItem.push({cl:o.k,x:null,v:m});return}
-    const s=lst.reduce((a,y)=>a+y.v,0);lst.forEach(y=>{const v=m*(s>0?y.v/s:1/lst.length);const p=X?X.P.find(q=>q.x===y.x):null;
+    const s=lst.reduce((a,y)=>a+y.v,0),pos=y=>X?X.P.find(q=>q.x===y.x):null;
+    if(m<0&&X&&lst.every(y=>pos(y))){   // venda com posição real: começa pelos itens com menos IR proporcional
+      let falta=-m;lst.map(y=>({y,p:pos(y)})).sort((a,b)=>(a.p.v>0?a.p.ir/a.p.v:1)-(b.p.v>0?b.p.ir/b.p.v:1)).forEach(({y,p})=>{if(falta<0.5)return;const v=Math.min(falta,y.v);falta-=v;porItem.push({cl:o.k,x:y.x,v:-v,ir:p.v>0?p.ir*Math.min(1,v/p.v):null,liq:spLiq(y.x)})});return}
+    lst.forEach(y=>{const v=m*(s>0?y.v/s:1/lst.length);const p=pos(y);
       porItem.push({cl:o.k,x:y.x,v,ir:v<0&&p&&p.v>0?p.ir*Math.min(1,-v/p.v):null,liq:spLiq(y.x)})})});
   return {P,L,fora,mov,porItem,tot,T,ap,real}}
 
