@@ -13,7 +13,7 @@ function ordValor(td){
 function ordPode(tb){
   if(!tb||!tb.tHead||tb.tHead.rows.length!==1||!tb.tBodies[0])return false;
   const ths=[...tb.tHead.rows[0].cells];
-  if(ths.some(th=>th.colSpan>1||th.querySelector("button,a,input,select")||[...th.attributes].some(a=>/^data-.*(sort|ord)/.test(a.name))))return false;
+  if(ths.some(th=>th.colSpan>1||th.querySelector("button,a,input,select")||[...th.attributes].some(a=>a.name!=="data-ordem"&&/^data-.*(sort|ord)/.test(a.name))))return false;
   return ![...tb.tBodies[0].rows].some(r=>[...r.cells].some(c=>c.colSpan>1))}
 document.addEventListener("click",e=>{
   const th=e.target.closest&&e.target.closest("table.ctab thead th");if(!th)return;const tb=th.closest("table");if(!ordPode(tb))return;

@@ -163,6 +163,14 @@ async def interface(pg):
         await pg.click("[data-sdfecha]")
     if "Saúde das fontes" in await pg.evaluate("document.getElementById('mkOut').innerText"):
         problemas.append("saúde: o painel ainda aparece no Resumo")
+    # ordenar tabela pelo título da coluna (dois cliques em colunas diferentes)
+    r = await pg.evaluate("""(()=>{const tb=[...document.querySelectorAll('#mkOut table.ordenavel')].find(t=>t.tBodies[0].rows.length>=4&&t.offsetParent);if(!tb)return 'sem tabela';
+      const C=tb.tHead.rows[0].cells,v=i=>[...tb.tBodies[0].rows].filter(r=>!r.classList.contains('cmpbm')).map(r=>(r.cells[i]||{}).textContent||''),n=s=>parseFloat(s.replace(/[^\d,\-−]/g,'').replace('−','-').replace(',','.'));
+      const ok=i=>{const x=v(i).map(n).filter(isFinite);return x.every((a,k)=>!k||x[k-1]>=a)};
+      const col=[...C].findIndex((c,i)=>i>0&&v(i).map(n).filter(isFinite).length>=3);if(col<0)return 'sem coluna numérica';
+      C[col].click();const a=ok(col);const c2=[...C].findIndex((c,i)=>i>col&&v(i).map(n).filter(isFinite).length>=3);if(c2<0)return a?'ok':'falhou';C[c2].click();return a&&ok(c2)?'ok':'falhou'})()""")
+    if r != "ok":
+        problemas.append(f"ordenação: clicar no título da coluna não ordenou a tabela ({r})")
     # metodologia
     await pg.click("#btMetodo")
     await pg.wait_for_timeout(400)
