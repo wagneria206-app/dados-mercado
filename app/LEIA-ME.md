@@ -164,6 +164,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `560-painel-de-indices-e-bolsa.js` — Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) (10 KB)
 - `561-credito-fgc-e-fluxo-de-caixa.js` (12 KB)
 - `562-painel-do-assessor.js` (6 KB)
+- `563-raio-x-e-sobreposicao.js` (12 KB)
+- `564-risco-benchmark-e-atribuicao.js` (11 KB)
 - `565-bolsa-eua.js` — Bolsa › EUA (7 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)
 - `575-eventos.js` — eventos (1 KB)

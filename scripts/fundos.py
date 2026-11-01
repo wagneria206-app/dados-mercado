@@ -522,10 +522,55 @@ def nome_ativo(blc, L):
     return g("DS_ATIVO") or g("EMISSOR") or g("TP_APLIC"), None
 
 
+def posicao(blc, L, tp):
+    """Identidade (para somar a mesma exposição em fundos diferentes) e grupo de risco de cada posição da CDA."""
+    g = lambda c: (L.get(c) or "").strip()  # noqa: E731
+    tpn = norm(tp)
+    so = lambda s: re.sub(r"\D", "", s or "")  # noqa: E731
+    if blc == "CONFID":
+        return None, "conf"
+    if blc == "BLC_1":
+        t = TITPUB.get(norm(g("TP_TITPUB")).replace("–", "-"), "TP")
+        grp = "compr" if "compromissad" in tpn else {"LFT": "tpos", "LTN": "tpre", "NTN-F": "tpre"}.get(t, "tipca")
+        return f"tp:{t}:{g('DT_VENC')[:7]}", grp
+    if blc == "BLC_2":
+        c = chave(g("CNPJ_FUNDO_CLASSE_COTA") or g("CNPJ_FUNDO_COTA"))
+        return (f"f:{c}" if c else None), "cotas"
+    if blc == "BLC_3":
+        return None, "deriv"
+    if "futuro" in tpn or "opc" in tpn or "termo" in tpn or "swap" in tpn:
+        return None, "deriv"
+    if blc == "BLC_4":
+        cd = g("CD_ATIVO").upper()
+        if "debenture" in tpn:
+            return f"d:{cd}", "cred"
+        if "bdr" in tpn or "brazilian depositary" in tpn or re.match(r"^[A-Z0-9]{4}3[2-5]$", cd):
+            return f"a:{cd[:4]}", "ext"
+        if "acoes" in tpn or "acao" in tpn or "recibo" in tpn or "bonus" in tpn:
+            return f"a:{cd[:4]}", "acoes"
+        if "cotas de fundos" in tpn or re.match(r"^[A-Z]{4}11$", cd):
+            return f"a:{cd}", "cotas"
+        return (f"a:{cd}" if cd else None), "outros"
+    if blc == "BLC_5":
+        c = so(g("CNPJ_EMISSOR"))
+        return (f"e:{c[:8]}" if c else None), "banc"
+    if blc == "BLC_6":
+        c = so(g("CPF_CNPJ_EMISSOR") or g("CNPJ_EMISSOR"))
+        return (f"e:{c[:8]}" if len(c) == 14 else None), "cred"
+    if blc == "BLC_7":
+        cd = g("CD_ATIVO_BV_MERC") or g("DS_ATIVO_EXTERIOR")
+        return (f"x:{norm(cd)[:40]}" if cd else None), "ext"
+    if "disponib" in tpn or "valores a" in tpn:
+        return None, "caixa"
+    c = so(g("CPF_CNPJ_EMISSOR") or g("CNPJ_EMISSOR"))
+    return (f"e:{c[:8]}" if len(c) == 14 else None), "outros"
+
+
 def carteiras(ativos, estado):
     """Composição e maiores posições na carteira mais recente de cada fundo; composição de cada mês lido (histórico)."""
     out, assin, hist = {}, [], {}
-    n_meses = 3 if estado.get("cda_hist") else 13
+    bom = set()   # fundos com uma carteira de pouco sigilo já escolhida (as mais recentes podem estar quase toda confidencial)
+    n_meses = 4 if estado.get("cda_hist") else 13   # 4: a CVM libera as posições em sigilo depois de até 90 dias
     meses = []
     for k in range(1, n_meses + 5):
         ym = ym_add(HOJE.strftime("%Y%m"), -k)
@@ -544,7 +589,7 @@ def carteiras(ativos, estado):
         lidos += 1
         assin.append(f"{ym}:{len(r.content)}")
         z = zipfile.ZipFile(io.BytesIO(r.content))
-        pl, pos, comp = {}, {}, {}
+        pl, pos, comp, grupos, expo = {}, {}, {}, {}, {}
         for nome in z.namelist():
             blc = (re.search(r"(BLC_\d|CONFID|PL|fie)", nome) or [None])[0]
             if not blc:
@@ -567,10 +612,19 @@ def carteiras(ativos, estado):
                     nm, cn = nome_ativo(blc, L)
                 c = comp.setdefault(k, {})
                 c[tp] = c.get(tp, 0) + v
-                if v > 0 and k not in out:
-                    p = pos.setdefault(k, {})
-                    a = p.setdefault(nm, [0.0, cn, tp])
-                    a[0] += v
+                if k not in bom:
+                    if blc not in DIAG.setdefault("cda_colunas", {}):
+                        DIAG["cda_colunas"][blc] = sorted(L.keys())[:60]
+                    ch, grp = posicao(blc, L, tp)
+                    gg = grupos.setdefault(k, {})
+                    gg[grp] = gg.get(grp, 0) + v
+                    if v > 0:
+                        p = pos.setdefault(k, {})
+                        a = p.setdefault(nm, [0.0, cn, tp])
+                        a[0] += v
+                        if ch:
+                            x = expo.setdefault(k, {}).setdefault(ch, [0.0, nm, grp])
+                            x[0] += v
                 if blc == "fie" and k not in pl:
                     pl[k] = num(L.get("VL_PATRIM_LIQ"))
         for k, c in comp.items():
@@ -578,12 +632,21 @@ def carteiras(ativos, estado):
             if not base:
                 continue
             hist.setdefault(k, {})[ym] = [[t, round(v / base * 100, 1)] for t, v in sorted(c.items(), key=lambda x: -abs(x[1]))[:10]]
-            if k in out:
+            if k in bom:
+                continue
+            conf = sum(v for t, v in c.items() if t.startswith("Não divulgado")) / base
+            if conf <= 0.3:
+                bom.add(k)
+            elif k in out:
                 continue
             top = sorted(pos.get(k, {}).items(), key=lambda x: -x[1][0])[:12]
-            out[k] = {"dt": f"{ym[:4]}-{ym[4:]}",
+            out[k] = {"dt": f"{ym[:4]}-{ym[4:]}", "sig": round(conf * 100, 1),
                       "comp": [[t, round(v / base * 100, 2)] for t, v in sorted(c.items(), key=lambda x: -abs(x[1]))],
-                      "top": [[n, round(a[0] / base * 100, 2), a[1], a[2]] for n, a in top]}
+                      "top": [[n, round(a[0] / base * 100, 2), a[1], a[2]] for n, a in top],
+                      # raio-X: exposição por grupo de risco e as maiores posições com identidade comum entre fundos
+                      "g": {gr: round(v / base * 100, 2) for gr, v in grupos.get(k, {}).items() if abs(v / base) >= 0.0001},
+                      "x": [[ch, a[1][:60], round(a[0] / base * 100, 3), a[2]] for ch, a in sorted(expo.get(k, {}).items(), key=lambda y: -y[1][0])[:80]
+                            if a[0] / base >= 0.0005]}
         log("CDA", ym, "carteiras:", len(comp))
     if lidos >= n_meses:
         estado["cda_hist"] = 1

@@ -28,12 +28,12 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 
 ## Fase 2 — risco profundo
 
-- [ ] **Raio-X e sobreposição**: abrir a carteira de cada fundo (CDA da CVM) e somar a exposição real
+- [x] **Raio-X e sobreposição**: abrir a carteira de cada fundo (CDA da CVM) e somar a exposição real
       (ações, títulos públicos, crédito por emissor, exterior, caixa); mostrar **sobreposição entre os fundos**
       ("diversificado ou só pulverizado?") e o número efetivo de posições.
-- [ ] **Risco de mercado da carteira**: VaR e CVaR históricos, duration da renda fixa, divisão pós/pré/IPCA/dólar.
-- [ ] **Benchmark personalizado e meta** (ex.: 70% CDI + 30% Ibovespa; IPCA + 5%).
-- [ ] **Atribuição de resultado**: quanto cada classe e cada item contribuiu no mês e no ano.
+- [x] **Risco de mercado da carteira**: VaR e CVaR históricos, duration da renda fixa, divisão pós/pré/IPCA/dólar.
+- [x] **Benchmark personalizado e meta** (ex.: 70% CDI + 30% Ibovespa; IPCA + 5%).
+- [x] **Atribuição de resultado**: quanto cada classe e cada item contribuiu no mês e no ano.
 
 ## Fase 3 — descoberta de oportunidades
 

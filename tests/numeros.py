@@ -232,6 +232,12 @@ async def main():
         confere("FGC: excedente por instituição", await J("const c={valor:400000,itens:[{t:'s',k:'a',n:'CDB',prod:'CDB',em:'Banco A',w:75},{t:'s',k:'b',n:'LCI',prod:'LCI',em:'banco a',w:25}]};return A.spCredito(c,c.itens).acima"), 150000)
         # rebalanceamento só com aporte: R$ 10 mil vão para a classe abaixo do alvo
         confere("rebalanceamento: aporte na classe que falta", await J("const c={valor:90000,pol:{perfil:'pers',alvo:{pos:50,acoes:50},tol:5,aporte:10000,vender:0},itens:[{t:'s',k:'cdi:100',rf:'cdi',x:100,n:'CDI',w:50},{t:'s',k:'pre:12',rf:'pre',x:12,n:'Pré',cl:'acoes',w:50}]};const r=A.spRebal(c,c.itens);return r.L.map(o=>[o.k,Math.round(r.mov[r.L.indexOf(o)])])"), [["pos", 5000], ["acoes", 5000]])
+        # VaR histórico 95%: 20 meses, o pior (−8%) é o 5% pior; CVaR = média dos piores
+        confere("VaR 95%", await J("const r=[-0.08].concat(Array(19).fill(0.01));return A.spVar(r,0.95).var"), 8.0, 1e-9)
+        # atribuição: soma das contribuições = retorno da janela (pesos andando com os preços)
+        confere("atribuição soma o retorno", await J("const R={w:[0.5,0.5],irets:[[0.1,0],[0,0.1]],rets:[{},{}]};const C=A.spAtrib(R,0);return Math.round((C[0]+C[1])*1e6)/1e6"), 10)
+        # duration: LTN que vence em ~2 anos tem duration igual ao prazo
+        confere("duration de prefixado sem cupom = prazo", await J("const x={t:'s',rf:'pre',x:12,venc:new Date(Date.now()+730.5*86400000).toISOString().slice(0,10)};return Math.round(A.spDur(x).d*10)/10"), 2.0)
         # criptografia do token e da cópia em arquivo: volta igual com a senha certa e recusa a errada
         c = await J("return (async()=>{const o=await A.segCifra('github_pat_teste','senha-certa');let errada='aceitou';try{await A.segDecifra(o,'senha-errada')}catch(e){errada='recusou'}return [await A.segDecifra(o,'senha-certa'),errada,o.c.includes('github')]})()")
         confere("cripto: senha certa recupera o texto", c[0], "github_pat_teste")

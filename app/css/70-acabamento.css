@@ -222,3 +222,4 @@ section.rcl.rclsemt.fechado::before{content:attr(data-rcl);display:block;font:70
 .spajl input{width:auto;min-height:30px;padding:2px 8px;font-size:.8rem}
 .spajl input[inputmode=numeric]{width:56px}
 html.apres .spaj{display:none}
+.rxmat td,.rxmat th{text-align:center;min-width:34px;font-variant-numeric:tabular-nums}
