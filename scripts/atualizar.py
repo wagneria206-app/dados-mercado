@@ -1761,8 +1761,9 @@ OFERTA_CAMPOS = {   # nome no app: pedaços do nome da coluna no arquivo da CVM 
     "denc": ["data_encerramento"], "status": ["status_requerimento", "status", "situacao"], "rito": ["rito"],
     "tipo": ["valor_mobiliario", "tipo_ativo", "tipo_valor_mobiliario"], "emissor": ["nome_emissor", "emissor"],
     "cnpj": ["cnpj_emissor"], "publico": ["publico_alvo"], "valor": ["valor_total", "montante", "volume"],
-    "lider": ["lider", "coordenador_lider", "nome_lider"], "venc": ["data_vencimento", "vencimento"],
-    "remun": ["remuneracao", "taxa", "juros"], "serie": ["serie"], "oferta": ["tipo_oferta"]}
+    "lider": ["nome_lider", "coordenador_lider"], "incent": ["titulo_incentivado"], "agencia": ["avaliador_risco"],
+    "garantia": ["descricao_garantias"], "lastro": ["tipo_lastro"], "venc": ["data_vencimento", "vencimento"],
+    "oferta": ["tipo_oferta"]}
 
 
 def _coluna(cab, pedacos):
@@ -1799,6 +1800,8 @@ def cvm_ofertas(dias=180):
                 if o.get("valor"):
                     o["valor"] = num(o["valor"])
                 o["cnpj"] = re.sub(r"\D", "", o.get("cnpj", ""))
+                if o.get("garantia"):
+                    o["garantia"] = o["garantia"][:140]
                 out.append({k: v for k, v in o.items() if v not in ("", None)})
     out.sort(key=lambda o: max(o.get("dreq", ""), o.get("dreg", "")), reverse=True)
     gravar_json("ofertas_cvm.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "fonte": "CVM – ofertas públicas de distribuição (Resolução 160)",
