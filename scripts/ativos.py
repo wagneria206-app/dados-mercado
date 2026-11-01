@@ -1371,7 +1371,10 @@ def principal():
                     extra = {"vpc": u[0] if pvp else None, "pvp": pvp, "plf": u[1], "cot": u[2] if (u[2] or 0) > 1 else None,
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
-                setor = ("Renda fixa" if "RF" in a.meta.get("esp", "") else etf_categoria(t, nome, info.get("cnpj"), cvm_cache())) if tp == "ETF" else ""
+                setor = etf_categoria(t, nome, info.get("cnpj"), cvm_cache()) if tp == "ETF" else ""
+                # no mercado de renda fixa da B3: renda fixa, salvo quando o nome oficial do fundo mostra outra coisa
+                if tp == "ETF" and "RF" in a.meta.get("esp", "") and (nome.startswith("ETF RENDA FIXA") or ETF_RF.search(nome) or setor == "Outros fundos listados"):
+                    setor = "Renda fixa"
         elif tp == "Tesouro Direto":
             setor = {"SELIC": "Tesouro Selic", "PRE": "Tesouro Prefixado", "PREJ": "Tesouro Prefixado com Juros",
                      "IPCA": "Tesouro IPCA+", "IPCAJ": "Tesouro IPCA+ com Juros", "RENDA": "Tesouro RendA+", "EDUCA": "Tesouro Educa+"}.get(a.meta.get("esp"), "")
