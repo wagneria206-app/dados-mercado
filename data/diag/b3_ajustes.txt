@@ -1,0 +1,62 @@
+url: https://www2.bmf.com.br/pages/portal/bmfbovespa/lumis/lum-ajustes-do-pregao-ptBR.asp (POST 2026-09-23)
+em: 2026-10-27T10:52:52-03:00
+status: 200
+tipo: text/html; charset=UTF-8
+bytes: 50464
+
+<!DOCTYPE html><html class="no-js" lang="pt-BR"><head><meta charset="utf-8"><script>
+(function (m, a, z, e) {
+  var s, t, u, v;
+  try {
+    t = m.sessionStorage.getItem('maze-us');
+  } catch (err) {}
+ 
+  if (!t) {
+    t = new Date().getTime();
+    try {
+      m.sessionStorage.setItem('maze-us', t);
+    } catch (err) {}
+  }
+ 
+  u = document.currentScript || (function () {
+    var w = document.getElementsByTagName('script');
+    return w[w.length - 1];
+  })();
+  v = u && u.nonce;
+ 
+  s = a.createElement('script');
+  s.src = z + '?apiKey=' + e;
+  s.async = true;
+  if (v) s.setAttribute('nonce', v);
+  a.getElementsByTagName('head')[0].appendChild(s);
+  m.mazeUniversalSnippetApiKey = e;
+})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'ff43e11f-848f-497e-8ac2-d053c9d8a907');
+</script><meta http-equiv="origin-trial" content="Anap2pKvJxw2GS+KliDdBtds+jRx9btCjtrJOxiH1OPP+lVDplNXLWgNziZ/9COp0HVfEDxHspTeUOl+hfaPdwIAAACEeyJvcmlnaW4iOiJodHRwOi8vd3d3LmIzLmNvbS5icjo4MCIsImZlYXR1cmUiOiJQcml2YXRlTmV0d29ya0FjY2Vzc05vblNlY3VyZUNvbnRleHRzQWxsb3dlZCIsImV4cGlyeSI6MTY1Mjc3NDQwMCwiaXNTdWJkb21haW4iOnRydWV9">
+<meta name="google-site-verification" content="EJeTCTWcXu0E0EGEEH6imxk3DrjBsskMaAiShcf_Wr0"><script>
+document.addEventListener('DOMContentLoaded', function(){
+  const desabilitationDiv = document.querySelector('.desabilitation-b3-page');
+  if (desabilitationDiv) {
+    window.location.href = "https://www.b3.com.br/pt_br/redirecionamento/erro/"
+  }
+});
+</script><meta name="facebook-domain-verification" content="ppr3y2nbzrvretxjxfayghtakuh7nd"><link type="text/css" rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/search.css"><!--[if lt IE 9]><script type="text/javascript" src="lumis/tool/html5shiv/html5shiv.js"></script><![endif]--><script type="text/javascript">//<![CDATA[
+ var g_LumisLocale = "pt_BR"; var g_LumisChannelId = "8A6882184DFE365C014E0178292D3FAD"; var g_LumisRoot_href = "../../../../../../../"; var g_LumisRootChannelId = "00000000F00000000000000000000001"; var g_LumisPageId = "8A6882184DFE365C014E0178292D3FAE"; var g_LumisPageConfig = new Object();g_LumisPageConfig.name = "Boletim diário do mercado"; g_LumisPageConfig.type = 0; g_LumisPageConfig.isTemplate = false; g_LumisPageConfig.hasParentTemplate = true; var g_LumisLayoutFile = true; var g_LumisDisplayMode = 0; var g_LumisViewMode = 0; var g_LumisAdminMode = 2; var g_LumisPersonalizationMode = 5; var g_LumisInContextEditMode = 3; var g_LumisAutoAdminMode = 4;var g_LumisChannelConfig = new Object(); g_LumisChannelConfig.name = "Boletim diário do mercado";var g_LumisIsHtmlCache=true;var g_LumisRootPath='/';var g_LumisLoadingHtmlMessage="<img style=\"vertical-align: middle;\" alt=\"Carregando\" src=\"../../../../../../../lumis/portal/client/images/Loading.gif\">";
+//]]>
+</script><script type="text/javascript" charset="UTF-8" src="../../../../../../../lumis/portal/client/script/LumisPortal.js"></script>
+     
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim diário do mercado | B3</title>
+    <script type="text/javascript" data-dtconfig="app=fd69ce40c52bd20e|cuc=kju5m9kg|mel=100000|featureHash=ICANVfgqru|dpvc=1|lastModification=1722692529095|tp=500,50,0|rdnt=1|uxrgce=1|agentUri=/ruxitagentjs_ICANVfgqru_10295240705110949.js|reportUrl=/rb_ea8d7b8f-040c-423b-b726-54310cab2c40|rid=RID_-2115501449|rpid=378276453|domain=intraservice.corp" src="/ruxitagentjs_ICANVfgqru_10295240705110949.js"></script><script type="text/javascript" data-dtconfig="app=fd69ce40c52bd20e|cuc=kju5m9kg|mel=100000|featureHash=ICANVfgqru|dpvc=1|lastModification=1722692529095|tp=500,50,0|rdnt=1|uxrgce=1|agentUri=/ruxitagentjs_ICANVfgqru_10295240705110949.js|reportUrl=/rb_ea8d7b8f-040c-423b-b726-54310cab2c40|rid=RID_-2115501449|rpid=-113487679|domain=intraservice.corp" src="/ruxitagentjs_ICANVfgqru_10295240705110949.js"></script><script type="text/javascript" data-dtconfig="app=fd69ce40c52bd20e|rcdec=1209600000|featureHash=ICA2Vfgjqru|vcv=2|rdnt=1|uxrgce=1|bp=3|srmcrv=10|cuc=kju5m9kg|mel=100000|dpvc=1|ssv=4|lastModification=1648302095229|dtVersion=10235220309135426|srmcrl=1|tp=500,50,0,1|uxdcw=1500|agentUri=/ruxitagentjs_ICA2Vfgjqru_10235220309135426.js|reportUrl=/rb_ea8d7b8f-040c-423b-b726-54310cab2c40|rid=RID_-2115501449|rpid=180725094|domain=intraservice.corp" src="/ruxitagentjs_ICA2Vfgjqru_10235220309135426.js"></script><link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/foundation.css">
+    <link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/expanding.search.bar.css">
+    <link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/jquery-ui.css">
+    <link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/jquery.bxslider.css">
+	<link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/swiper.css">
+    <link rel="shortcut icon" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/img/favicon.ico">
+    <link rel="stylesheet" href="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/css/montserrat.css">
+
+    <script src="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/js/vendor/modernizr.js"></script>
+    <script src="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/js/vendor/jquery.js"></script>
+    <script src="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/js/jquery.ui.datepicker.js"></script>
+    <script src="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/js/jquery.ui.datepicker-pt-BR.js"></script>
+    <script src="../../../../../../../lumis-theme/br/com/bvmf/internet/theme/bvmf-internet/js/bvmf.js
