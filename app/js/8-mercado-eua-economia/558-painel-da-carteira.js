@@ -37,6 +37,16 @@ function spLiq(x){
   return {d:null,fonte:"sem dado",car}}
 const SP_LQ=[["d1","Até D+1",d=>d<=1],["d5","Até D+5",d=>d<=5],["d30","Até D+30",d=>d<=30],["dmais","Acima de D+30",d=>d>30]];
 
+/* rentabilidade no mês, no ano, em 12 meses e desde o início (e o CDI de cada janela): posição real (cotas) ou simulação */
+function spJanelas(X,R){
+  let rM=null,rA=null,r12=null,rT=null,cM=null,cA=null,c12=null,cT=null;
+  if(X&&X.pts.length>1){const pts=X.pts,u=pts[pts.length-1],at=d=>{let r=null;for(const p of pts){if(p.d<=d)r=p;else break}return r};
+    const dv=u.d,m0=dv.slice(0,8)+"01",a0=dv.slice(0,4)+"-01-01",d12=new Date(Date.parse(dv)-365*DAY).toISOString().slice(0,10),ant=d=>new Date(Date.parse(d)-DAY).toISOString().slice(0,10);
+    const w0=(d)=>at(ant(d))||pts[0],cv=(a,b)=>{const x=spAt(X.T.cdiS,a),y=spAt(X.T.cdiS,b);return x&&y?(y[1]/x[1]-1)*100:null};
+    rM=(u.idx/w0(m0).idx-1)*100;cM=cv(w0(m0).d,dv);rA=(u.idx/w0(a0).idx-1)*100;cA=cv(w0(a0).d,dv);if(pts[0].d<=d12){const p=at(d12);r12=(u.idx/p.idx-1)*100;c12=cv(p.d,dv)}rT=(u.idx-1)*100;cT=X.T.cdi}
+  else if(R&&R.rets&&R.rets.length){const cl=spCdiLv(R),rets=R.rets,n=rets.length,uk=rets[n-1].k,acc=(i0)=>{let v=1;for(let i=i0;i<n;i++)v*=1+rets[i].r;return (v-1)*100},cc=(i0)=>{const a=cl(i0>0?rets[i0-1].k:R.k0),b=cl(uk);return a&&b?(b/a-1)*100:null};
+    const per=R.diaria?21:1,i12=Math.max(0,n-(R.diaria?252:12));rM=acc(Math.max(0,n-per));cM=cc(Math.max(0,n-per));r12=n>=(R.diaria?252:12)?acc(i12):null;c12=r12!=null?cc(i12):null;rT=acc(0);cT=cc(0);const y=Math.floor(rets[n-1].m/12),ia=rets.findIndex(x=>Math.floor(x.m/12)===y);if(ia>=0){rA=acc(ia);cA=cc(ia)}}
+  return {rM,rA,r12,rT,cM,cA,c12,cT}}
 /* pesos atuais: valor de mercado na posição real, senão o peso proposto */
 function spPesos(c,it){
   const P=SP_POS&&SP_POS.c===c&&SP_POS.X&&!SP_POS.X.erro?SP_POS.X:null;
@@ -47,14 +57,7 @@ function spPainelHtml(c,it,R){
   if(!it.length)return "";
   const {w,real,tot}=spPesos(c,it),X=real?SP_POS.X:null,kp=(a,b,cc,cls)=>'<div class="fnkp'+(cls?' '+cls:'')+'"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
   const pc=v=>v==null||!isFinite(v)?'—':fnPct(v),pcdi=(r,c0)=>r!=null&&c0>0&&r>0?fx(r/c0*100,0)+'% do CDI':'';
-  // rentabilidade por janela: posição real (cotas) ou simulação
-  let rM=null,rA=null,r12=null,rT=null,cM=null,cA=null,c12=null,cT=null;
-  if(X&&X.pts.length>1){const pts=X.pts,u=pts[pts.length-1],at=d=>{let r=null;for(const p of pts){if(p.d<=d)r=p;else break}return r};
-    const dv=u.d,m0=dv.slice(0,8)+"01",a0=dv.slice(0,4)+"-01-01",d12=new Date(Date.parse(dv)-365*DAY).toISOString().slice(0,10),ant=d=>new Date(Date.parse(d)-DAY).toISOString().slice(0,10);
-    const w0=(d)=>at(ant(d))||pts[0],cv=(a,b)=>{const x=spAt(X.T.cdiS,a),y=spAt(X.T.cdiS,b);return x&&y?(y[1]/x[1]-1)*100:null};
-    rM=(u.idx/w0(m0).idx-1)*100;cM=cv(w0(m0).d,dv);rA=(u.idx/w0(a0).idx-1)*100;cA=cv(w0(a0).d,dv);if(pts[0].d<=d12){const p=at(d12);r12=(u.idx/p.idx-1)*100;c12=cv(p.d,dv)}rT=(u.idx-1)*100;cT=X.T.cdi}
-  else if(R&&R.rets&&R.rets.length){const cl=spCdiLv(R),rets=R.rets,n=rets.length,uk=rets[n-1].k,acc=(i0)=>{let v=1;for(let i=i0;i<n;i++)v*=1+rets[i].r;return (v-1)*100},cc=(i0)=>{const a=cl(i0>0?rets[i0-1].k:R.k0),b=cl(uk);return a&&b?(b/a-1)*100:null};
-    const per=R.diaria?21:1,i12=Math.max(0,n-(R.diaria?252:12));rM=acc(Math.max(0,n-per));cM=cc(Math.max(0,n-per));r12=n>=(R.diaria?252:12)?acc(i12):null;c12=r12!=null?cc(i12):null;rT=acc(0);cT=cc(0);const y=Math.floor(rets[n-1].m/12),ia=rets.findIndex(x=>Math.floor(x.m/12)===y);if(ia>=0){rA=acc(ia);cA=cc(ia)}}
+  const {rM,rA,r12,rT,cM,cA,c12,cT}=spJanelas(X,R);
   const st=R&&R.rets?spStats(R,R.rets,R.pts[R.pts.length-1].idx):{};
   // liquidez e concentração
   const L=it.map((x,i)=>({x,w:w[i],l:spLiq(x)})),semLiq=L.filter(o=>o.l.d==null&&o.w>0),carencia=L.filter(o=>o.l.car&&o.w>0);
@@ -73,7 +76,8 @@ function spPainelHtml(c,it,R){
     +kp("Meses acima do CDI",st.acima!=null?fx(st.acima,0)+'%':'—',st.worst!=null?'pior mês '+fnPctT(st.worst):'')+'</div>';
   h+='<div class="label" style="margin-top:10px">Liquidez e concentração</div><div class="fnkpis">'
     +lq.slice(0,3).map(([lab,v])=>kp("Resgatável "+lab.replace(/^Até/,"até"),fx(v,0)+'%','da carteira')).join("")
-    +kp("Maior item",fx(ws[0]*100,1)+'%',esc(spItemNome(maior)).slice(0,40))+kp("Nº efetivo de itens",fx(nEf,1),'de '+it.filter((x,i)=>w[i]>0).length+' itens · '+(nEf<4?'concentrada':nEf<8?'moderada':'diversificada'),nEf<4?'kpalerta':'')+'</div>';
+    +kp("Maior item",fx(ws[0]*100,1)+'%',esc(spItemNome(maior)).slice(0,40))+(()=>{const rb=spRebal(c,it);return kp("Política ("+esc(SP_PERFIS[rb.P.perfil].nome.toLowerCase())+")",rb.fora.length?'<span class="neg">Fora</span>':'<span class="pos">Dentro</span>',rb.fora.length?rb.fora.length+(rb.fora.length>1?' classes':' classe')+' além da tolerância de '+fx(+rb.P.tol||0,1)+' p.p.':'todas as classes dentro da tolerância',rb.fora.length?'kpalerta':'')})()+(()=>{const C=spCredito(c,it);if(!C.fgc&&!C.L.length)return "";return kp("FGC",C.acima>0?'<span class="neg">'+brl(C.acima)+' descoberto</span>':'<span class="pos">Dentro do limite</span>',C.acima>0?'acima de R$ 250 mil por instituição':brl(C.fgc)+' cobertos',C.acima>0?'kpalerta':'')})()
+    +kp("Nº efetivo de itens",fx(nEf,1),'de '+it.filter((x,i)=>w[i]>0).length+' itens · '+(nEf<4?'concentrada':nEf<8?'moderada':'diversificada'),nEf<4?'kpalerta':'')+'</div>';
   if(semLiq.length||carencia.length)h+='<p class="warn" style="font-size:.84rem;margin-top:6px">'+(semLiq.length?'Sem prazo de resgate oficial para '+semLiq.length+(semLiq.length>1?' itens':' item')+' ('+fx(semLiq.reduce((a,o)=>a+o.w,0)*100,0)+'% da carteira): '+semLiq.slice(0,4).map(o=>esc(spItemNome(o.x)).slice(0,34)).join("; ")+(semLiq.length>4?'…':'')+'. Informe o prazo em cada item, na composição (campo "Resgate em D+"). ':'')+(carencia.length?carencia.length+(carencia.length>1?' itens em carência':' item em carência')+' (contam como não resgatáveis até a data).':'')+'</p>';
   h+='<div class="label" style="margin-top:10px">Alocação por classe</div><div class="spbar" role="img" aria-label="Alocação por classe">'+CL.map(([k,v])=>'<i style="width:'+(v*100).toFixed(2)+'%;background:'+SP_CL_COR[k]+'" title="'+esc(SP_CL[k])+' '+fx(v*100,1)+'%"></i>').join("")+'</div><div class="legend">'+CL.map(([k,v])=>'<span><i style="background:'+SP_CL_COR[k]+'"></i>'+esc(SP_CL[k])+' · '+fx(v*100,1)+'%</span>').join("")+'</div>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:6px">'+(real?'Rentabilidade por cotas (sem efeito do momento das aplicações), com as aplicações e resgates informados; risco pela simulação histórica dos pesos atuais.':'Proposta: rentabilidade e risco pela simulação histórica dos pesos propostos.')+' Liquidez: fundos pelo prazo de cotização mais pagamento informado à CVM; Bolsa em D+2; Tesouro Direto em D+1; os demais, pelo prazo informado no item. Nº efetivo de itens = 1 ÷ soma dos pesos ao quadrado (10 itens iguais = 10; um item com 90% puxa para perto de 1). Classe de cada item: automática pela CVM, ANBIMA e B3, ajustável na composição.</p></section>';
@@ -83,7 +87,7 @@ function spPainelHtml(c,it,R){
 function spAjItem(it,j){const l=spLiq(Object.assign({},it,{liq:null,car:null})),auto=spClAuto(it);
   return '<div class="spaj"><select data-spcl="'+j+'" aria-label="Classe do item">'+Object.keys(SP_CL).map(k=>'<option value="'+k+'"'+(spCl(it)===k?' selected':'')+'>'+SP_CL[k]+(k===auto?' (automática)':'')+'</option>').join("")+'</select>'
     +'<label class="spajl">Resgate em D+<input inputmode="numeric" data-spliq="'+j+'" value="'+(it.liq!=null&&it.liq!==""?esc(String(it.liq)):'')+'" placeholder="'+(l.d!=null?String(l.d):'?')+'" title="'+(l.d!=null?'Oficial: D+'+l.d+' ('+l.fonte+'). Preencha só para corrigir.':'Sem dado oficial: informe em quantos dias o dinheiro cai na conta')+'"></label>'
-    +'<label class="spajl">Carência até<input type="date" data-spcar="'+j+'" value="'+esc(it.car||"")+'"></label></div>'}
+    +'<label class="spajl">Carência até<input type="date" data-spcar="'+j+'" value="'+esc(it.car||"")+'"></label></div>'+spAjRf(it,j)}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();let j;
   if((j=t.dataset.spcl)!=null){const it=c.itens[+j];if(!it)return;it.cl=t.value===spClAuto(it)?undefined:t.value;spSave();spCalc();return}
   if((j=t.dataset.spliq)!=null){const it=c.itens[+j];if(!it)return;const v=t.value.trim();it.liq=v===""?undefined:Math.max(0,Math.round(num(v)));if(it.liq!=null&&!isFinite(it.liq))it.liq=undefined;spSave();spCalc();return}
