@@ -139,7 +139,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
 - `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (30 KB)
 - `515-spcorhtml.js` (26 KB)
-- `520-spclasse.js` (6 KB)
+- `520-spclasse.js` (7 KB)
 - `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (15 KB)
 
 **`js/7-saude-favoritos-alertas/`** — Agenda, saúde das fontes, favoritos, alertas e sincronização
