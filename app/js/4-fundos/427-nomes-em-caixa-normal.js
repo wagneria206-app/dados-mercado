@@ -3,7 +3,7 @@
    Só muda o que veio todo em maiúsculas; a busca não muda (ela ignora maiúsculas e acentos). */
 const NC_MIN=new Set(["de","da","do","das","dos","e","em","no","na","nos","nas","ao","aos","a","o","com","para","por","sem","à","às","que","ou","pelo","pela"]);
 const NC_SIG=new Set(["FIF","FIC","FICFI","FIM","FIA","FII","FIDC","FIP","FIRF","FIAGRO","CIC","DTVM","CTVM","DTV","PGBL","VGBL","FGTS","IPCA","AGBI","HSBC","VIII","XIII","XVII","XVIII","S.A.","S.A","S/A","FI-INFRA","IMA-B","IRF-M","IGP-M","ESG","USD","EUA","CDI","CDB","LCI","LCA","CRI","CRA","ETF","SELIC","IBOV","B3","BDR","BDRS","REIT","REITS","MSCI","S&P"]);
-const NC_PAL=new Set(["TOP","MAX","SUL","MIX","ONE","DUO","INC","LTD","PLC","CO","CIA","SUN","BOM","NEW","BIG","GAS","FOX","SKY","SEA","OAK","ZEN","PRO","LUZ","MAR","SOL","PAZ","RIO","FOZ","VIA","LOG","BEM","GOL","OUR","THE","AND","OF","MAIS","ALFA","BETA","GAMA"]);
+const NC_PAL=new Set(["TOP","LOW","VOL","ALL","KEY","ACE","AIR","ART","FIT","JAZ","LIS","OPP","MAX","SUL","MIX","ONE","DUO","INC","LTD","PLC","CO","CIA","SUN","BOM","NEW","BIG","GAS","FOX","SKY","SEA","OAK","ZEN","PRO","LUZ","MAR","SOL","PAZ","RIO","FOZ","VIA","LOG","BEM","GOL","OUR","THE","AND","OF","MAIS","ALFA","BETA","GAMA"]);
 const ncPal=(w,i)=>{
   if(!/[A-ZÀ-Ý]/.test(w))return w;                               // números e símbolos
   const lw=w.toLocaleLowerCase("pt-BR"),so=w.replace(/[^A-Za-zÀ-ÿ]/g,"");

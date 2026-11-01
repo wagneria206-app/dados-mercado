@@ -15,7 +15,7 @@ function spCalc(){
     spBoot().then(()=>{if(activeMod==="sp"&&FN.idx&&AT.idx)spCalc()});return}
   spTopHtml();spRun();
 }
-function spItemNome(it){return it.n||it.k}
+function spItemNome(it){return nomeCx(it.n)||it.k}
 const spHoje=()=>new Date().toISOString().slice(0,10);
 function spClientes(){return [...new Set(SP.carts.map(x=>String(x.cli||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"))}
 function spRotulo(x){return (x.cli?x.cli+" · ":"")+x.nome+(x.sit==="efetivada"?" (efetivada)":" (proposta)")}
