@@ -37,13 +37,13 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 
 ## Fase 3 — descoberta de oportunidades
 
-- [ ] **Quartis e consistência por categoria**: quartil em 12, 24 e 36 meses e % de janelas acima do CDI/benchmark.
-- [ ] **Buscador de crédito privado**: debêntures, CRI e CRA por taxa, spread sobre a NTN-B, duration,
+- [x] **Quartis e consistência por categoria**: quartil em 12, 24 e 36 meses e % de janelas acima do CDI/benchmark.
+- [x] **Buscador de crédito privado**: debêntures, CRI e CRA por taxa, spread sobre a NTN-B, duration,
       indexador e isenção.
-- [ ] **Substitutos melhores** para cada item da carteira (mesma categoria, mais retorno, menos risco,
+- [x] **Substitutos melhores** para cada item da carteira (mesma categoria, mais retorno, menos risco,
       menor taxa ou melhor liquidez), ligando a descoberta ao rebalanceamento.
-- [ ] **Filtros salvos e busca por objetivo** (ex.: renda fixa D+1 acima de 105% do CDI, taxa até 0,5%).
-- [ ] **Ideias automáticas** semanais (Tesouro em taxa historicamente alta, debêntures com spread acima do normal,
+- [x] **Filtros salvos e busca por objetivo** (ex.: renda fixa D+1 acima de 105% do CDI, taxa até 0,5%).
+- [x] **Ideias automáticas** semanais (Tesouro em taxa historicamente alta, debêntures com spread acima do normal,
       fundos de 1º quartil que caíram mais que os pares).
 
 ## Pendências técnicas

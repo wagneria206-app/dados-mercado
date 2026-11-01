@@ -119,8 +119,9 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `435-series-e-retornos.js` — séries e retornos (3 KB)
 - `440-indicadores-de-risco.js` — indicadores de risco (3 KB)
 - `445-graficos.js` — gráficos (6 KB)
-- `450-telas.js` — telas (27 KB)
+- `450-telas.js` — telas (28 KB)
 - `455-fnrklist.js` (8 KB)
+- `457-quartis-consistencia-e-filtros.js` (5 KB)
 
 **`js/5-bolsa/`** — Bolsa (B3 e CVM)
 
@@ -167,6 +168,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `563-raio-x-e-sobreposicao.js` (12 KB)
 - `564-risco-benchmark-e-atribuicao.js` (11 KB)
 - `565-bolsa-eua.js` — Bolsa › EUA (7 KB)
+- `566-substitutos-melhores.js` (5 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)
 - `575-eventos.js` — eventos (1 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
@@ -178,6 +180,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (27 KB)
+- `606-buscador-de-credito-privado.js` (8 KB)
+- `607-ideias-da-semana.js` (5 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)

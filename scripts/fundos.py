@@ -840,6 +840,22 @@ def data_menos_meses(d, n):
     return f"{y}-{m:02d}-{dia:02d}"
 
 
+CDI_ACUM = {}
+
+
+def cdi_acumulado(cdi_d):
+    """Fator acumulado do CDI em cada dia do calendário (para comparar janelas sem refazer o produto)."""
+    k = id(cdi_d)
+    if k not in CDI_ACUM:
+        a, v = [], 1.0
+        for x in cdi_d:
+            v *= 1 + (x or 0) / 100
+            a.append(v)
+        CDI_ACUM.clear()
+        CDI_ACUM[k] = a
+    return CDI_ACUM[k]
+
+
 def metricas(f, cdi_d):
     """Indicadores para o índice e o ranking (em %)."""
     out = {}
@@ -892,6 +908,23 @@ def metricas(f, cdi_d):
                 out["c12"] = (c - 1) * 100
                 if v > 0.001:
                     out["sh"] = ((1 + out["r12"] / 100) - c) / v
+    # consistência: % das janelas de 12 meses (fechamentos mensais dos últimos 36 meses) acima do CDI
+    if cdi_d:
+        acum = cdi_acumulado(cdi_d)
+        tot = acima = 0
+        for k in range(25):
+            e = bisect.bisect_right(CAL, data_menos_meses(dl, k)) - 1
+            b = bisect.bisect_right(CAL, data_menos_meses(dl, k + 12)) - 1
+            if b < f.i[0] or e <= b or desde(b):
+                continue
+            pe, pb = bisect.bisect_right(f.i, e) - 1, bisect.bisect_right(f.i, b) - 1
+            if pb < 0 or f.i[pb] < b - 7 or f.i[pe] < e - 7 or f.q[pb] <= 0:
+                continue
+            tot += 1
+            if f.q[pe] / f.q[pb] > acum[e] / acum[b]:
+                acima += 1
+        if tot >= 12:
+            out["cons"] = acima / tot * 100
     # perda máxima em 36 meses
     alvo = data_menos_meses(dl, 36)
     p = bisect.bisect_left(f.i, bisect.bisect_left(CAL, alvo))
@@ -1119,13 +1152,13 @@ def principal():
                        round(mt.get("cap", 0)), f"{prim[:4]}-{prim[4:]}", flags, inf.get("tadm"),
                        CAL[f.i[-1]] if len(f.i) else None, inf.get("amin"),
                        (inf.get("dcot") or 0) + (inf.get("dpag") or 0) if inf.get("dcot") is not None or inf.get("dpag") is not None else None,
-                       inf.get("tperf"), ix(adm_l, (inf.get("adm") or "").strip()[:60])])
+                       inf.get("tperf"), ix(adm_l, (inf.get("adm") or "").strip()[:60]), r2(mt.get("cons"))])
     inv = lambda d: [a for a, _ in sorted(d.items(), key=lambda x: x[1])]  # noqa: E731
     ult = CAL[-1] if CAL else None
     cab = {
         "dt": ult, "geradoEm": dt.datetime.now().isoformat(timespec="seconds"),
         "cols": ["cnpj", "nome", "tipo", "classe", "anbima", "gestor", "pl", "cotistas", "rm", "ra", "r12", "r24", "r36", "r60",
-                 "v12", "sharpe", "dd36", "capt12", "inicio", "flags", "tadm", "ult", "amin", "dres", "tperf", "adm"],
+                 "v12", "sharpe", "dd36", "capt12", "inicio", "flags", "tadm", "ult", "amin", "dres", "tperf", "adm", "cons"],
         "tipos": inv(tip_l), "classes": inv(cls_l), "anbima": inv(anb_l), "gestores": inv(gestores), "adms": inv(adm_l),
         "cdi12": r2(metricas_cdi(cdi_d)),
         "fonte": "CVM – informe diário, cadastro, extrato, lâmina e CDA"}
