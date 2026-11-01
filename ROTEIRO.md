@@ -64,6 +64,12 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
 - [x] **Proposta antes × depois**: indicadores, alocação e IR da troca.
 - [x] **Liquidez de mercado** de ações, FIIs e ETFs (dias para vender com 20% do volume).
 
+## Usabilidade
+
+- [x] **Carteira em subabas** (Visão geral, Desempenho, Risco, Crédito e caixa, Rebalancear, Oportunidades, Todas as
+      carteiras): só a subaba aberta é montada; composição e parâmetros recolhíveis; o PDF continua com tudo.
+- [ ] **Medir e acelerar no tablet Samsung Galaxy Tab S10 FE** (Chrome no Android).
+
 ## Pendências técnicas
 
 - [x] **ETFs**: incluir os ETFs de renda fixa (IMAB11, FIXA11, B5P211, LFTS11…), que hoje não entram na base da

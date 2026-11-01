@@ -205,6 +205,21 @@ async def interface(pg):
     await pg.wait_for_timeout(1500)
     if not await pg.evaluate("document.querySelector('.tabs button[data-mod=ju]').getAttribute('aria-selected')==='true'"):
         problemas.append("navegação: o botão Voltar não voltou para a aba anterior (Juros)")
+    # carteira em subabas
+    await pg.evaluate("document.querySelector('.areas button[data-area=simu]').click()")
+    await pg.wait_for_timeout(500)
+    await pg.evaluate("document.querySelector('.tabs button[data-mod=sp]').click()")
+    await pg.wait_for_timeout(12000)
+    na = await pg.evaluate("document.querySelectorAll('#spAbas [data-spaba]').length")
+    if na != 7:
+        problemas.append(f"Carteira: {na} subabas (esperadas 7)")
+    else:
+        await pg.evaluate("document.querySelector('[data-spaba=todas]').click()")
+        await pg.wait_for_timeout(800)
+        if not await pg.evaluate("[...document.querySelectorAll('#spRes>section.panel')].some(s=>!s.hidden&&/Painel do assessor/.test(s.textContent))"):
+            problemas.append("Carteira: a subaba 'Todas as carteiras' não mostrou o painel do assessor")
+        await pg.evaluate("document.querySelector('[data-spaba=geral]').click()")
+        await pg.evaluate("localStorage.removeItem('spSub')")
     print("busca, ajustes, tema e apresentação conferidos", flush=True)
 
 

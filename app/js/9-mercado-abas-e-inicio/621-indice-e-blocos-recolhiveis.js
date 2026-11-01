@@ -9,7 +9,7 @@ function rclGuarda(S){try{localStorage.setItem(rclChave(),JSON.stringify([...S])
 function rclTitulo(sec){if(sec.dataset.reltit)return sec.dataset.reltit.replace(/\s*\(.*\)$/,"");const el=sec.querySelector(":scope>h3")||sec.querySelector(":scope>.label")||sec.querySelector("h3");return el?el.textContent.replace(/\s+/g," ").trim():""}
 function rclMonta(root){
   if(!root||!RCL_ABAS.has(activeMod)||root.querySelector(":scope>.tlidx"))return;
-  const secs=[...root.querySelectorAll(":scope>section.panel")].filter(s=>rclTitulo(s));if(secs.length<2)return;
+  const secs=[...root.querySelectorAll(":scope>section.panel")].filter(s=>!s.hidden&&!s.classList.contains("spvazio")&&rclTitulo(s));if(secs.length<2)return;
   const F=rclFechados();
   if(activeMod==="sp"&&!rclSalvo())secs.slice(2).forEach(s=>F.add(rclTitulo(s)));   // carteira: primeira vez, só os dois primeiros abertos
   secs.forEach((s,i)=>{const t=rclTitulo(s);s.id=s.id||"bl-"+activeMod+"-"+i;s.dataset.rcl=t;s.classList.add("rcl");s.classList.toggle("rclsemt",!s.querySelector(":scope>h3,:scope>.label"));s.classList.toggle("fechado",F.has(t));
