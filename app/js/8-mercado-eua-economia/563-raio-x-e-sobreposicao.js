@@ -46,7 +46,7 @@ async function rxCalc(c,it){
   const cob=Math.max(0,100-(G.conf||0)-(G.sem||0)),dts=[...new Set(I.map(o=>o.C.dt).filter(Boolean))].sort();
   return {I,G,L,soma,nEf,rep,P,Fs,cob,dts,velho:I.some(o=>o.x.t==="f"&&o.C.ok===0),aberto:I.reduce((a,o)=>a+(o.C.aberto||0),0)}}
 
-function rxHtml(c,it){if(!it.some(x=>x.t==="f"))return "";
+function rxHtml(c,it){if(!it.some(x=>x.t==="f"))return "";rtLoad();
   const key=JSON.stringify([SP.cur,it.map(x=>[x.k,x.w,x.cl,x.em,x.prod])]);
   if(RX.res&&RX.key===key)return '<section class="panel" data-reltit="Raio-X e sobreposição"><div id="rxBox">'+rxRender(RX.res)+'</div></section>';
   RX.key=key;RX.res=null;
@@ -73,6 +73,9 @@ function rxRender(R){
     if(R.Fs.length<=8&&R.P.length){const Fs=R.Fs,M=(a,b)=>{const p=R.P.find(q=>(q.a===a&&q.b===b)||(q.a===b&&q.b===a));return p?p.s:0};
       h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab rxmat"><thead><tr><th></th>'+Fs.map((f,i)=>'<th title="'+esc(spItemNome(f.x))+'">'+(i+1)+'</th>').join("")+'</tr></thead><tbody>'
         +Fs.map((a,i)=>'<tr><td style="text-align:left" class="tw"><small>'+(i+1)+'. '+esc(spItemNome(a.x)).slice(0,34)+'</small></td>'+Fs.map((b,j)=>{if(i===j)return '<td style="background:var(--line)"></td>';const v=M(a,b);return '<td style="background:rgba(219,39,119,'+Math.min(0.75,v/60).toFixed(2)+')">'+(v>=0.5?fx(v,0):'')+'</td>'}).join("")+'</tr>').join("")+'</tbody></table></div>'}}
+  // crédito por faixa de rating informado pelos fundos (posições com emissor identificado pela raiz do CNPJ)
+  if(RT.r){const F=[0,0,0,0,0,0];let tot=0;R.L.forEach(e=>{if(!/^e:/.test(e.k)||!(e.gr==="banc"||e.gr==="cred"))return;tot+=e.v;const a=rtAg(e.k.slice(2));F[a?a.fx:0]+=e.v});
+    if(tot>0.05){const lab=["Sem rating informado","AAA a AA-","A","BBB","BB e B","CCC ou pior"];h+='<div class="label" style="margin-top:12px">Crédito por rating informado à CVM ('+pc(tot)+' da carteira com emissor identificado)</div><div class="spbar" role="img" aria-label="Crédito por rating">'+[1,2,3,4,5,0].filter(i=>F[i]>0).map(i=>'<i style="width:'+(F[i]/tot*100).toFixed(2)+'%;background:'+(i?RT_COR[i]:'var(--line)')+'" title="'+lab[i]+'"></i>').join("")+'</div><div class="legend">'+[1,2,3,4,5,0].filter(i=>F[i]>0).map(i=>'<span><i style="background:'+(i?RT_COR[i]:'var(--line)')+'"></i>'+lab[i]+' · '+pc(F[i])+' da carteira</span>').join("")+'</div>'}}
   const sem=R.I.filter(o=>o.C.sem);
   if(sem.length)h+='<p class="warn" style="font-size:.84rem;margin-top:6px">Sem carteira divulgada na CVM: '+sem.map(o=>esc(spItemNome(o.x)).slice(0,34)).join("; ")+'. Esses itens ficam como "Fundo sem carteira divulgada".</p>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fonte: Composição e Diversificação das Aplicações (CDA) da CVM, a carteira mais recente de cada fundo; a CVM divulga com defasagem e o fundo pode manter posições em sigilo por até 90 dias (aparecem como "não divulgado"). '+(R.velho?'Alguns fundos ainda estão só com as maiores posições (a abertura completa chega na próxima coleta semanal da CVM). ':'')+'Em comum entre dois fundos = soma, posição a posição, do menor peso entre os dois (0% = nada em comum; 100% = carteiras iguais), sem contar Tesouro Selic e compromissadas, que funcionam como caixa dos fundos. Posições efetivas = 1 ÷ soma dos pesos ao quadrado das posições somadas. Ações pela empresa (ON e PN juntas); títulos públicos pelo tipo e vencimento; crédito pelo emissor (raiz do CNPJ); cotas de outros fundos abertas até 2 níveis. Pulverizada: dois ou mais pares de fundos com 30% ou mais em comum, ou seja, pagando duas taxas pela mesma carteira; um par só, sobreposição pontual.</p>';

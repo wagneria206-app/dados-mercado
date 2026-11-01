@@ -175,6 +175,14 @@ confere("CDA: debênture pelo emissor", fundos.posicao("BLC_6", {"CPF_CNPJ_EMISS
 confere("CDA: cota de outro fundo", fundos.posicao("BLC_2", {"CNPJ_FUNDO_CLASSE_COTA": "12.345.678/0001-90"}, "Cotas de Fundos"), ("f:" + fundos.chave("12.345.678/0001-90"), "cotas"))
 confere("CDA: futuro é derivativo", fundos.posicao("BLC_4", {"CD_ATIVO": "DOLF27"}, "Mercado Futuro - Posições vendidas"), (None, "deriv"))
 
+fundos.RATINGS.clear()
+fundos.anota_rating("BLC_5", {"AG_RISCO": "Fitch", "GRAU_RISCO": "AAA(bra)", "CNPJ_EMISSOR": "60.746.948/0001-12", "EMISSOR": "BANCO BRADESCO", "DT_RISCO": "2026-05-10"})
+fundos.anota_rating("BLC_5", {"AG_RISCO": "Fitch", "GRAU_RISCO": "AAA(bra)", "CNPJ_EMISSOR": "60746948000112", "EMISSOR": "BANCO BRADESCO", "DT_RISCO": "2026-08-01"})
+fundos.anota_rating("BLC_5", {"AG_RISCO": "", "GRAU_RISCO": "AA", "CNPJ_EMISSOR": "60746948000112"})
+r = fundos.ratings_json()["e"]["60746948"]
+confere("rating da CDA: nota por agência e nº de posições", r[2], [["fitch", "AAA(BRA)", 2]])
+confere("rating da CDA: data mais recente", r[1], "2026-08-01")
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")

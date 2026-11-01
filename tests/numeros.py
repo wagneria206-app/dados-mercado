@@ -238,6 +238,12 @@ async def main():
         confere("atribuição soma o retorno", await J("const R={w:[0.5,0.5],irets:[[0.1,0],[0,0.1]],rets:[{},{}]};const C=A.spAtrib(R,0);return Math.round((C[0]+C[1])*1e6)/1e6"), 10)
         # duration: LTN que vence em ~2 anos tem duration igual ao prazo
         confere("duration de prefixado sem cupom = prazo", await J("const x={t:'s',rf:'pre',x:12,venc:new Date(Date.now()+730.5*86400000).toISOString().slice(0,10)};return Math.round(A.spDur(x).d*10)/10"), 2.0)
+        # escala de rating: Fitch nacional, S&P e Moody's na mesma régua; curto prazo fica de fora
+        confere("rating: AAA(bra) = 1", await J("return A.rtNum('AAA(bra)')"), 1)
+        confere("rating: brA- = 7", await J("return A.rtNum('brA-')"), 7)
+        confere("rating: Moody's Baa3 = 10", await J("return A.rtNum('Baa3')"), 10)
+        confere("rating: curto prazo F1+ não entra", await J("return A.rtNum('F1+')"), None)
+        confere("rating: BB vira faixa 4", await J("return A.rtFaixaAg(A.rtNum('BB'))"), 4)
         # criptografia do token e da cópia em arquivo: volta igual com a senha certa e recusa a errada
         c = await J("return (async()=>{const o=await A.segCifra('github_pat_teste','senha-certa');let errada='aceitou';try{await A.segDecifra(o,'senha-errada')}catch(e){errada='recusou'}return [await A.segDecifra(o,'senha-certa'),errada,o.c.includes('github')]})()")
         confere("cripto: senha certa recupera o texto", c[0], "github_pat_teste")

@@ -223,3 +223,5 @@ section.rcl.rclsemt.fechado::before{content:attr(data-rcl);display:block;font:70
 .spajl input[inputmode=numeric]{width:56px}
 html.apres .spaj{display:none}
 .rxmat td,.rxmat th{text-align:center;min-width:34px;font-variant-numeric:tabular-nums}
+.rtselo{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.rtmot{display:block;color:var(--muted);font-size:.72rem;max-width:220px;white-space:normal;line-height:1.25;margin-top:2px}
