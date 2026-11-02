@@ -48,6 +48,8 @@ import zipfile
 
 import requests
 
+csv.field_size_limit(2**31 - 1)   # arquivos da CVM com campos de texto muito longos (o padrão do Python é 128 KB)
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cronograma  # noqa: E402
 
@@ -2481,7 +2483,7 @@ def rapido():
 FONTES_AVULSAS = {"b3_futuros": lambda m: b3_futuros(), "dolar_fundamentos": lambda m: dolar_fundamentos(),
                   "bcb_dolar": lambda m: bcb_dolar(m), "inflacao": lambda m: inflacao_detalhe(), "ima": lambda m: anbima_ima(),
                   "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist(),
-                  "fluxo": lambda m: fluxo_estrangeiro(), "ofertas": lambda m: cvm_ofertas()}
+                  "fluxo": lambda m: fluxo_estrangeiro(), "ofertas": lambda m: cvm_ofertas(), "cri_cra": lambda m: cvm_cri_cra()}
 
 
 def avulsas(nomes):

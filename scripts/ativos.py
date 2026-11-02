@@ -25,6 +25,8 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fundos as FU  # noqa: E402  (baixar, sgs, b3_indice, indices)
 
+csv.field_size_limit(2**31 - 1)   # arquivos da CVM com campos de texto muito longos (o padrão do Python é 128 KB)
+
 ANO0 = 2005
 INICIO = time.time()
 LIMITE = INICIO + float(os.environ.get("MINUTOS", "48")) * 60

@@ -23,6 +23,8 @@ from array import array
 
 import requests
 
+csv.field_size_limit(2**31 - 1)   # arquivos da CVM com campos de texto muito longos (o padrão do Python é 128 KB)
+
 INI_DIARIO = "201901"          # cota diária guardada a partir daqui
 INI_MENSAL = 2005              # cota de fim de mês desde este ano
 INICIO = time.time()
