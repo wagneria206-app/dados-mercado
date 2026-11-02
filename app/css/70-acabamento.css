@@ -235,3 +235,6 @@ details.spcompo{margin-top:12px;border:1px solid var(--line);border-radius:12px;
 details.spcompo>summary{cursor:pointer;font-weight:600;padding:12px 2px;list-style-position:inside}
 details.spcompo>summary small{font-weight:400;color:var(--muted);margin-left:6px}
 details.spcompo[open]{padding-bottom:12px}
+.spitres{display:block;color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:2px}
+.spitacts{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+.spitacts .spmovb{margin:0}

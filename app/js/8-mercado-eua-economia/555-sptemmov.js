@@ -91,7 +91,7 @@ function spPosHtml(c,its,Ds){
 /* eventos do editor de aplicações */
 document.addEventListener("click",e=>{
   if(!(e.target.closest&&e.target.closest("#modFn"))||activeMod!=="sp")return;const g=a=>e.target.closest("["+a+"]");let x;const c=spC();
-  if((x=g("data-spmov"))){const j=+x.dataset.spmov;SP.movOpen=SP.movOpen===j?null:j;spTopHtml();const v=$("spMovV");if(v)v.focus();return}
+  if((x=g("data-spmov"))){const j=+x.dataset.spmov;SP.movOpen=SP.movOpen===j?null:j;SP.edOpen=null;spTopHtml();const v=$("spMovV");if(v)v.focus();return}
   if((x=g("data-spmovadd"))){const j=+x.dataset.spmovadd,it=c.itens[j],d=$("spMovD").value,t=+$("spMovT").value,v=num($("spMovV").value);
     if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>new Date().toISOString().slice(0,10)){$("spMovD").focus();return}if(v==null||v<=0){$("spMovV").focus();return}
     it.mov=(it.mov||[]).concat([{d,v:Math.round(t*v*100)/100}]);SP_CMP=null;spSave();spCalc();return}
