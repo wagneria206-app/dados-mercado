@@ -216,23 +216,57 @@ def gravar_json(nome, obj):
     os.replace(tmp, caminho)
 
 
+FALHAS_TOLERADAS = 3   # falhas seguidas de uma fonte antes de o robô acusar falha (a fonte continua marcada com problema)
+_ANTERIOR = None
+
+
+def anterior(nome):
+    """Situação da fonte na execução anterior (status.json publicado), para contar falhas seguidas."""
+    global _ANTERIOR
+    if _ANTERIOR is None:
+        try:
+            _ANTERIOR = (ler_json("status.json", {}) or {}).get("fontes") or {}
+        except Exception:  # noqa: BLE001
+            _ANTERIOR = {}
+    return _ANTERIOR.get(nome) or {}
+
+
 def fonte(nome):
-    """Decorador: roda a fonte isolada e registra ok/erro em STATUS."""
+    """Decorador: roda a fonte isolada e registra ok/erro em STATUS.
+    Falha passageira (site fora do ar, resposta vazia, HTML no lugar do arquivo) ganha uma segunda tentativa depois de 45 s;
+    se continuar falhando, a fonte fica marcada com problema e o app segue com o último dado válido. O robô só acusa falha
+    quando a mesma fonte falha várias execuções seguidas (FALHAS_TOLERADAS), o que indica mudança de verdade na fonte."""
     def deco(func):
         def rodar(*a, **k):
             inicio = time.time()
-            try:
-                info = func(*a, **k) or {}
-                STATUS[nome] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"),
-                                "segundos": round(time.time() - inicio, 1), **info}
-                print(f"[ok]   {nome}: {info}")
-            except Exception as e:  # noqa: BLE001
-                STATUS[nome] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"),
-                                "erro": str(e)[:500]}
-                print(f"[ERRO] {nome}: {e}")
-                traceback.print_exc()
+            for tentativa in (1, 2):
+                try:
+                    info = func(*a, **k) or {}
+                    STATUS[nome] = {"ok": True, "em": AGORA.isoformat(timespec="seconds"),
+                                    "segundos": round(time.time() - inicio, 1), **info}
+                    if tentativa > 1:
+                        STATUS[nome]["segunda_tentativa"] = True
+                    print(f"[ok]   {nome}: {info}")
+                    return
+                except Exception as e:  # noqa: BLE001
+                    erro = e
+                    traceback.print_exc()
+                    if tentativa == 1 and time.time() - inicio < 240:
+                        print(f"[aviso] {nome}: {e} — nova tentativa em 45 s")
+                        time.sleep(45)
+                        continue
+                    break
+            ant = anterior(nome)
+            seguidas = (int(ant.get("seguidas") or 1) + 1) if ant and not ant.get("ok", True) else 1
+            STATUS[nome] = {"ok": False, "em": AGORA.isoformat(timespec="seconds"), "erro": str(erro)[:500], "seguidas": seguidas}
+            print(f"[ERRO] {nome} ({seguidas}ª falha seguida): {erro}")
         return rodar
     return deco
+
+
+def falhas_graves():
+    """Fontes que falharam várias execuções seguidas: só elas fazem o robô acusar falha."""
+    return [k for k, v in STATUS.items() if not v.get("ok", True) and int(v.get("seguidas") or 1) >= FALHAS_TOLERADAS]
 
 
 # ---------------------------------------------------------------- Tesouro Direto
@@ -2541,10 +2575,13 @@ def main():
     gravar_json("status.json", {"rodou_em": AGORA.isoformat(timespec="seconds"), "fontes": STATUS})
 
     falhas = [k for k, v in STATUS.items() if not v["ok"]]
+    graves = falhas_graves()
     if falhas:
-        print("Fontes com erro:", ", ".join(falhas))
+        print("Fontes com erro:", ", ".join(f"{k} ({STATUS[k].get('seguidas', 1)}ª seguida)" for k in falhas))
+    if graves:
+        print(f"Falhando há {FALHAS_TOLERADAS} execuções ou mais:", ", ".join(graves))
         sys.exit(1)
-    print("Tudo certo.")
+    print("Tudo certo." if not falhas else "Concluído com fontes temporariamente fora; o app segue com o último dado válido.")
 
 
 if __name__ == "__main__":
