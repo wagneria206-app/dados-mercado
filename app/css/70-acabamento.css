@@ -241,3 +241,31 @@ details.spcompo[open]{padding-bottom:12px}
 details.sppar{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
 details.sppar>summary{cursor:pointer;font-weight:600;padding:10px 2px;color:var(--accent)}
 details.sppar>summary small{font-weight:400;color:var(--muted);margin-left:6px}
+/* carteira: cabeçalho, menus e composição */
+.sphead1{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.sphead1 .sphsel{flex:1 1 320px;margin:0}
+.sphbtns{display:flex;gap:8px;align-items:flex-end}
+details.spmenu{position:relative}
+details.spmenu>summary{list-style:none;cursor:pointer;white-space:nowrap}
+details.spmenu>summary::-webkit-details-marker{display:none}
+.spmenul{position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:270px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.16);padding:6px;display:flex;flex-direction:column}
+.spmenul>button,.spmenul>label{display:block;text-align:left;border:0;background:transparent;color:var(--ink);padding:10px 12px;border-radius:8px;cursor:pointer;font:500 .92rem var(--f-body);min-height:44px}
+.spmenul>button:hover,.spmenul>label:hover{background:var(--sunk)}
+.spmenul>button[disabled]{opacity:.45;cursor:default}
+.spmenul small{display:block;color:var(--muted);font-size:.78rem;font-weight:400;margin-top:1px}
+.sphead .spsit{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;color:var(--muted);font-size:.88rem}
+.sphead .spsit .fnq{margin:0}
+.sptab td.spacts{white-space:nowrap;text-align:right}
+.sptab td.spacts .spedb{min-height:36px;padding:6px 12px;font-size:.85rem;margin-right:6px}
+.sptab tr.spedon>td{background:var(--sunk)}
+#spEdit>section+section{margin-top:12px}
+#fnOut section.panel.sphead{overflow:visible;position:relative;z-index:40}
+.spwbox{display:inline-flex;width:128px}
+.spwbox input{text-align:right;min-width:0;width:100%}
+.spmov .sprow{align-items:start}
+.spmov .sprow .field small{display:block;margin-top:2px}
+details.spmenu>summary::before{content:none;display:none}
+details.spmenu>summary{display:inline-flex;align-items:center;gap:6px;border-top:0;padding-top:0;padding-bottom:0;margin:0}
+details.spmenu>summary.btn{padding:10px 18px;min-height:44px}
+details.spmenu{border:0!important;padding:0!important;margin:0!important;background:none}
+#spImpMsg:empty{display:none}

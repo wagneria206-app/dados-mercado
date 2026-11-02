@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-KsTy3ktA6ONFlCADyZTciJZSbMrLvTkXiSG+rLgqN68='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-i70bXoxNyuM/OUlbG/jPcGKAUEBI6LnBTX1h1JoCYJM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1352,6 +1352,34 @@ details.spcompo[open]{padding-bottom:12px}
 details.sppar{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
 details.sppar>summary{cursor:pointer;font-weight:600;padding:10px 2px;color:var(--accent)}
 details.sppar>summary small{font-weight:400;color:var(--muted);margin-left:6px}
+/* carteira: cabeçalho, menus e composição */
+.sphead1{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.sphead1 .sphsel{flex:1 1 320px;margin:0}
+.sphbtns{display:flex;gap:8px;align-items:flex-end}
+details.spmenu{position:relative}
+details.spmenu>summary{list-style:none;cursor:pointer;white-space:nowrap}
+details.spmenu>summary::-webkit-details-marker{display:none}
+.spmenul{position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:270px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.16);padding:6px;display:flex;flex-direction:column}
+.spmenul>button,.spmenul>label{display:block;text-align:left;border:0;background:transparent;color:var(--ink);padding:10px 12px;border-radius:8px;cursor:pointer;font:500 .92rem var(--f-body);min-height:44px}
+.spmenul>button:hover,.spmenul>label:hover{background:var(--sunk)}
+.spmenul>button[disabled]{opacity:.45;cursor:default}
+.spmenul small{display:block;color:var(--muted);font-size:.78rem;font-weight:400;margin-top:1px}
+.sphead .spsit{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;color:var(--muted);font-size:.88rem}
+.sphead .spsit .fnq{margin:0}
+.sptab td.spacts{white-space:nowrap;text-align:right}
+.sptab td.spacts .spedb{min-height:36px;padding:6px 12px;font-size:.85rem;margin-right:6px}
+.sptab tr.spedon>td{background:var(--sunk)}
+#spEdit>section+section{margin-top:12px}
+#fnOut section.panel.sphead{overflow:visible;position:relative;z-index:40}
+.spwbox{display:inline-flex;width:128px}
+.spwbox input{text-align:right;min-width:0;width:100%}
+.spmov .sprow{align-items:start}
+.spmov .sprow .field small{display:block;margin-top:2px}
+details.spmenu>summary::before{content:none;display:none}
+details.spmenu>summary{display:inline-flex;align-items:center;gap:6px;border-top:0;padding-top:0;padding-bottom:0;margin:0}
+details.spmenu>summary.btn{padding:10px 18px;min-height:44px}
+details.spmenu{border:0!important;padding:0!important;margin:0!important;background:none}
+#spImpMsg:empty{display:none}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -4570,46 +4598,61 @@ const spRfLab=(rf,x)=>rf==="cdi"?fx(x,1)+"% do CDI":rf==="cdimais"?"CDI + "+fx(x
 function spRfEd(it,j){ // taxa da renda fixa editável (útil para CDB, LCI e LCA importados com taxa estimada)
   return '<span class="sprfe"><select data-sprfe="'+j+'" aria-label="Indexador">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(it.rf===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s"><input inputmode="decimal" data-sprfv="'+j+'" value="'+fx(+it.x||0,2)+'" aria-label="Taxa"><span class="suf">'+(it.rf==="cdi"?"% CDI":"% a.a.")+'</span></span>'+(it.est?'<small class="warn" style="display:block">taxa estimada na importação: ajuste para a taxa real</small>':'')+'</span>'}
 function spTopHtml(){
-  spModoSync(spC());const c=spC(),tot=c.itens.reduce((a,x)=>a+(+x.w||0),0);
-  let h='<section class="panel"><h3>Carteiras e propostas</h3><p class="sub">Fundos, ações, FIIs, ETFs, BDRs, Tesouro e renda fixa. Cliente por código ou apelido (o nome completo vai só no relatório). Salvas '+(typeof SYNC!=="undefined"&&SYNC.tok?'no seu GitHub privado, em todos os aparelhos':'só neste navegador (conecte o GitHub em Mercado › Favoritos e alertas)')+'.</p>';
+  spModoSync(spC());const c=spC(),tot=c.itens.reduce((a,x)=>a+(+x.w||0),0),cart=c.modo==="carteira";
+  if(!c.itens.length&&SP.sub!=="comp"&&SP.sub!=="todas")SP.sub="comp";
+  // ----- cabeçalho: qual carteira, situação e ações
   const clis=spClientes(),grupo=k=>SP.carts.map((x,j)=>[x,j]).filter(([x])=>(x.cli||"")===k).sort((a,b)=>String(b[0].criada||"").localeCompare(String(a[0].criada||"")));
-  const opt=([x,j])=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(x.nome)+' · '+(x.modo==="carteira"?'carteira':x.sit==="efetivada"?'efetivada':'proposta')+'</option>';
-  const sit=c.modo==="carteira"?'<span class="fnq fnq1">Em andamento'+(c.ef&&c.ef.data?' desde '+fdate(Date.parse(c.ef.data+"T00:00:00Z")):'')+'</span>':c.sit==="efetivada"?'<span class="fnq fnq1">Efetivada em '+fdate(Date.parse(c.ef.data+"T00:00:00Z"))+'</span>':'';
-  h+='<div class="sprow sptopo1"><div class="field"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+clis.map(k=>'<optgroup label="Cliente '+esc(k)+'">'+grupo(k).map(opt).join("")+'</optgroup>').join("")+(grupo("").length?'<optgroup label="Sem cliente">'+grupo("").map(opt).join("")+'</optgroup>':'')+'</select></div>'
-    +'<div class="field"><label for="spModo">Tipo</label><select id="spModo" data-spmodo="1"><option value="proposta"'+(c.modo!=="carteira"?' selected':'')+'>Proposta</option><option value="carteira"'+(c.modo==="carteira"?' selected':'')+'>Carteira em andamento</option></select></div></div>';
-  h+='<div class="spsit" style="margin:2px 0 8px">'+sit+' <small>'+(c.cli?'Cliente '+esc(c.cli):'Sem cliente')+(c.criada?' · criada em '+fdate(Date.parse(c.criada+"T00:00:00Z"))+(c.ver>1?' · versão '+c.ver:''):'')+'</small> <button type="button" class="link" data-spren="1">'+(SP.renOpen?'Fechar':'Renomear ou mudar cliente')+'</button></div>';
+  const opt=([x,j])=>'<option value="'+j+'"'+(j===SP.cur?' selected':'')+'>'+esc(x.nome)+(x.modo==="carteira"?' · carteira':' · proposta')+'</option>';
+  const valor=cart?c.itens.reduce((a,it)=>a+spAplicado(it),0):+c.valor||0,semApl=cart?c.itens.filter(it=>!spAplicado(it)).length:0;
+  let h='<section class="panel sphead"><div class="sphead1"><div class="field sphsel"><label for="spSel">Carteira</label><select id="spSel" data-spsel="1">'+clis.map(k=>'<optgroup label="Cliente '+esc(k)+'">'+grupo(k).map(opt).join("")+'</optgroup>').join("")+(grupo("").length?'<optgroup label="Sem cliente">'+grupo("").map(opt).join("")+'</optgroup>':'')+'</select></div>'
+    +'<div class="sphbtns"><details class="spmenu"><summary class="btn">+ Nova</summary><div class="spmenul">'
+      +'<button type="button" data-spnew="proposta"><b>Nova proposta</b><small>pesos-alvo e simulação do histórico</small></button>'
+      +'<button type="button" data-spnew="carteira"><b>Nova carteira em andamento</b><small>data e valor aplicado de cada ativo</small></button>'
+      +'<button type="button" data-spdup="1"><b>Duplicar esta</b><small>cópia para testar mudanças</small></button>'
+      +'<button type="button" data-spver="1"><b>Nova versão desta</b><small>guarda a anterior como histórico</small></button></div></details>'
+    +'<details class="spmenu"><summary class="btn sec" aria-label="Mais opções">Mais ▾</summary><div class="spmenul">'
+      +'<button type="button" data-spren="1"><b>Renomear ou mudar o cliente</b></button>'
+      +(cart?'':'<button type="button" data-spefform="1"><b>Efetivar</b><small>a proposta vira carteira em andamento</small></button>')
+      +'<label for="spImp" role="button" tabindex="0"><b>Importar posição da B3</b><small>arquivo Excel da Área do Investidor</small></label>'
+      +'<button type="button" data-spobsab="1"><b>Observações internas</b><small>'+(c.obs?'há anotações':'anotações que não vão para o relatório')+'</small></button>'
+      +'<button type="button" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'><b class="neg">Excluir esta carteira</b></button></div></details></div></div>';
+  h+='<div class="spsit">'+(cart?'<span class="fnq fnq1">Em andamento'+(c.ef&&c.ef.data?' desde '+fdate(Date.parse(c.ef.data+"T00:00:00Z")):'')+'</span>':'<span class="fnq fnq3">Proposta</span>')
+    +'<span>'+(c.cli?'Cliente '+esc(c.cli):'Sem cliente')+'</span><span>'+c.itens.length+(c.itens.length===1?' ativo':' ativos')+'</span><span>'+brl(valor)+'</span>'
+    +(semApl?'<button type="button" class="link neg" data-spaba="comp">'+semApl+(semApl>1?' ativos sem aplicação':' ativo sem aplicação')+'</button>':'')+(!cart&&c.itens.length&&Math.abs(tot-100)>0.05?'<button type="button" class="link neg" data-spaba="comp">pesos somam '+fx(tot,1)+'%</button>':'')+'</div>';
   if(SP.renOpen)h+='<div class="spef"><div class="sprow"><div class="field"><label for="spNome">Nome da carteira</label><input id="spNome" data-spnome="1" value="'+esc(c.nome)+'" maxlength="60" autocomplete="off"></div>'
-    +'<div class="field"><label for="spCliI">Cliente (código ou apelido)</label><input id="spCliI" data-spcli="1" list="spCliL" value="'+esc(c.cli||"")+'" maxlength="40" autocomplete="off" placeholder="ex.: C014 (opcional)"><datalist id="spCliL">'+clis.map(k=>'<option value="'+esc(k)+'">').join("")+'</datalist></div>'
+    +'<div class="field"><label for="spCliI">Cliente (código ou apelido, opcional)</label><input id="spCliI" data-spcli="1" list="spCliL" value="'+esc(c.cli||"")+'" maxlength="40" autocomplete="off" placeholder="ex.: C014"><datalist id="spCliL">'+clis.map(k=>'<option value="'+esc(k)+'">').join("")+'</datalist></div>'
     +'<div class="field" style="align-self:end"><button type="button" class="btn" data-spren="1">Concluir</button></div></div></div>';
-  h+='<div class="spbtns"><button type="button" class="btn sec" data-spnew="proposta">Nova proposta</button><button type="button" class="btn sec" data-spnew="carteira">Nova carteira</button><button type="button" class="btn sec" data-spdup="1">Duplicar</button><button type="button" class="btn sec" data-spver="1">Nova versão</button>'
-    +(c.modo==="carteira"?'':c.sit==="efetivada"?'<button type="button" class="btn sec" data-spdesef="1">Voltar para proposta</button>':'<button type="button" class="btn sec" data-spefform="1">Efetivar carteira</button>')
-    +'<button type="button" class="btn sec" data-spdel="1"'+(SP.carts.length<2?' disabled':'')+'>Excluir</button></div>';
-  if(c.modo==="carteira")h+=spModoAviso(c);
-  if(SP.efForm&&c.sit!=="efetivada"&&c.modo!=="carteira")h+='<div class="spef"><p class="sub" style="margin:0 0 6px">A partir da data de efetivação o app acompanha o desempenho real desta carteira e compara com o que foi proposto.</p><div class="sprow"><div class="field"><label for="spEfD">Data da aplicação</label><input id="spEfD" type="date" value="'+new Date().toISOString().slice(0,10)+'" max="'+new Date().toISOString().slice(0,10)+'"></div><div class="field"><label for="spEfV">Valor aplicado</label><div class="affix s"><input id="spEfV" inputmode="decimal" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div><div class="field" style="align-self:end"><div class="spbtns" style="margin:0"><button type="button" class="btn" data-spefok="1">Confirmar</button><button type="button" class="btn sec" data-spefno="1">Cancelar</button></div></div></div></div>';
-  let compAb=SP.compAb!=null?SP.compAb:!c.itens.length||Math.abs(tot-100)>0.05||SP.efForm;try{if(SP.compAb==null&&localStorage.getItem("spCompo")==="1")compAb=true}catch(e){}
-  h+='<details class="spcompo"'+(compAb?' open':'')+' data-spcompo="1"><summary>Composição, aplicações e parâmetros <small>'+c.itens.length+(c.itens.length===1?' item':' itens')+' · total '+fx(tot,1)+'%</small></summary>';
-  h+='<details class="nota" style="margin-top:10px"'+(c.obs?' open':'')+'><summary>Observações internas</summary><textarea id="spObs" data-spobs="1" rows="3" maxlength="2000" placeholder="Anotações suas sobre esta carteira (não vão para o relatório)">'+esc(c.obs||"")+'</textarea></details>';
-  h+='<div class="spimp"><label class="btn sec" for="spImp">Importar posição da B3 (Excel)</label><input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span class="sub" style="font-size:.8rem">Arquivo de posição da Área do Investidor da B3. Fica só neste navegador.</span><span id="spImpMsg"></span></div>';
-  h+='<div class="label" style="margin-top:12px">Composição</div><div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar fundo, ativo da B3 (PETR4, HGLG11…), debênture, CRI ou CRA (código ou emissor)"><div id="spRes2" class="fnres" hidden></div></div>';
-  h+='<div class="sprf"><span class="sub">ou renda fixa:</span><select data-sprft="1">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
+  if(SP.efForm&&!cart)h+='<div class="spef"><p class="sub" style="margin:0 0 6px">Efetivar transforma esta proposta numa carteira em andamento: o valor aplicado é dividido entre os ativos pelos pesos, na data informada. Depois dá para ajustar cada ativo em Composição › Editar.</p><div class="sprow"><div class="field"><label for="spEfD">Data da aplicação</label><input id="spEfD" type="date" value="'+spHoje()+'" max="'+spHoje()+'"></div><div class="field"><label for="spEfV">Valor aplicado</label><div class="affix s"><input id="spEfV" inputmode="decimal" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div><div class="field" style="align-self:end"><div class="spbtns" style="margin:0"><button type="button" class="btn" data-spefok="1">Confirmar</button><button type="button" class="btn sec" data-spefno="1">Cancelar</button></div></div></div></div>';
+  if(SP.obsOpen)h+='<div class="spef"><label for="spObs" class="label">Observações internas</label><textarea id="spObs" data-spobs="1" rows="3" maxlength="2000" placeholder="Anotações suas sobre esta carteira (não vão para o relatório)">'+esc(c.obs||"")+'</textarea><div class="spbtns" style="margin-top:6px"><button type="button" class="btn sec" data-spobsab="1">Fechar</button></div></div>';
+  h+='<input id="spImp" type="file" accept=".xlsx,.xls,.csv" hidden><span id="spImpMsg"></span></section>';
+  $("spTop").innerHTML=h;
+  // ----- subaba Composição: ativos, pesos ou aplicações, e parâmetros da simulação
+  let ed=$("spEdit");if(!ed){ed=document.createElement("div");ed.id="spEdit";const r=$("spRes");if(r)r.before(ed)}
+  let e='<section class="panel"><h3>Ativos da carteira</h3><p class="sub">'+(cart?'Carteira em andamento: o peso de cada ativo sai das aplicações informadas (botão Editar de cada ativo: data e valor de cada aplicação e resgate).':'Proposta: defina o peso de cada ativo. Para acompanhar a carteira real depois, use Mais › Efetivar.')+'</p>';
+  e+='<div class="fnqbox"><input id="spQ" autocomplete="off" placeholder="Adicionar: fundo, ação, FII, ETF, BDR, Tesouro, debênture, CRI ou CRA (nome ou código)"><div id="spRes2" class="fnres" hidden></div></div>';
+  e+='<div class="spbtns" style="margin-top:4px"><button type="button" class="link" data-sprfab="1">'+(SP.rfOpen?'Fechar renda fixa':'+ Renda fixa pela taxa (CDB, LCI, LCA…)')+'</button></div>';
+  if(SP.rfOpen)e+='<div class="sprf"><select data-sprft="1" aria-label="Indexador">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(SP.rf.tipo===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s" style="max-width:130px"><input inputmode="decimal" data-sprfx="1" value="'+esc(SP.rf.taxa)+'" placeholder="'+(SP.rf.tipo==="cdi"?"ex.: 110":"ex.: 6,5")+'" aria-label="Taxa"><span class="suf">'+(SP.rf.tipo==="cdi"?"% CDI":"% a.a.")+'</span></span><button type="button" class="btn sec" data-sprfadd="1">Adicionar</button></div>';
   if(c.itens.length){
-    h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Item</th><th class="c-ph" style="text-align:left">Tipo</th><th>Peso</th><th class="c-ph">Valor inicial</th><th></th></tr></thead><tbody>';
-    c.itens.forEach((it,j)=>{h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':esc(spItemNome(it)))+spItemResumo(it)+'<span class="spitacts">'+spEditBtn(j)+spMovBtn(it,j)+'</span></td><td class="c-ph" style="text-align:left"><small>'+esc(it.tipo||"")+'</small></td><td>'+(c.modo==="carteira"?'<b>'+fx(+it.w||0,1)+'%</b>':'<span class="affix s" style="width:112px;display:inline-flex"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0"><span class="suf">%</span></span>')+'</td><td class="c-ph">'+(c.modo==="carteira"?brl(spAplicado(it))+'<small style="display:block;color:var(--muted)">aplicado</small>':brl((+c.valor||0)*(+it.w||0)/100))+'</td><td><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover">×</button></td></tr>'+(SP.movOpen===j?spMovRow(c,j):'')+(SP.edOpen===j?spEditRow(c,j):'')});
-    h+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b class="'+(Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph">'+brl(+c.valor||0)+'</td><td></td></tr></tfoot></table></div>'
-      +'<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
-  }
-  const rebL=(SP_REB.find(x=>x[0]===String(c.reb))||["",""])[1].toLowerCase();
-  h+='<details class="sppar"'+(SP.parAb?' open':'')+' data-sppar="1"><summary>Parâmetros da simulação <small>'+(c.modo==="carteira"?'':brl(+c.valor||0)+' · ')+(+c.aporte>0?'aporte '+brl(+c.aporte)+'/mês · ':'')+'rebalanceamento '+rebL+' · base '+(c.base==="d"?'diária':'mensal')+(c.ir!==0?' · líquido de IR':'')+'</small></summary>';
-  h+='<div class="spparams"><div class="field"><label for="spV">Valor inicial</label><div class="affix s"><input id="spV" inputmode="decimal" data-spv="valor" value="'+fx(+c.valor||0,2)+'"'+(c.modo==="carteira"?' disabled title="Soma das aplicações informadas"':'')+'><span class="suf">R$</span></div></div>'
+    e+='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab sptab"><thead><tr><th style="text-align:left">Ativo</th><th>'+(cart?'Peso atual':'Peso')+'</th><th class="c-ph">'+(cart?'Aplicado':'Valor')+'</th><th></th></tr></thead><tbody>';
+    c.itens.forEach((it,j)=>{e+='<tr'+(SP.edOpen===j?' class="spedon"':'')+'><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+(it.t==="f"?'<button type="button" class="link" data-fnopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':it.t==="a"?'<button type="button" class="link" data-atopen="'+it.k+'">'+esc(spItemNome(it))+'</button>':'<b>'+esc(spItemNome(it))+'</b>')+spItemResumo(it)+(cart&&!spAplicado(it)?'<small class="neg" style="display:block">sem aplicação informada</small>':'')+'</td>'
+      +'<td>'+(cart?'<b>'+fx(+it.w||0,1)+'%</b>':'<span class="affix s spwbox"><input inputmode="decimal" data-spw="'+j+'" value="'+fx(+it.w||0,1)+'" style="text-align:right;min-width:0" aria-label="Peso"><span class="suf">%</span></span>')+'</td>'
+      +'<td class="c-ph">'+brl(cart?spAplicado(it):(+c.valor||0)*(+it.w||0)/100)+'</td>'
+      +'<td class="spacts"><button type="button" class="btn sec spedb" data-spedit="'+j+'" aria-expanded="'+(SP.edOpen===j)+'">'+(SP.edOpen===j?'Fechar':'Editar')+'</button><button type="button" class="fnx" data-sprm="'+j+'" aria-label="Remover '+esc(spItemNome(it))+'">×</button></td></tr>'+(SP.edOpen===j?spEditRow(c,j):'')});
+    e+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td><b class="'+(cart||Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph"><b>'+brl(valor)+'</b></td><td></td></tr></tfoot></table></div>';
+    if(!cart)e+='<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
+  }else e+='<p class="sub" style="margin-top:10px">Nenhum ativo ainda. Busque acima pelo nome ou código, ou adicione renda fixa pela taxa.</p>';
+  e+='</section>';
+  e+='<section class="panel"><h3>Simulação do histórico</h3><p class="sub">Como esta carteira teria se saído no passado (subabas Desempenho e Risco).</p><div class="spparams">'
+    +(cart?'':'<div class="field"><label for="spV">Valor inicial</label><div class="affix s"><input id="spV" inputmode="decimal" data-spv="valor" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div>')
     +'<div class="field"><label for="spA">Aporte mensal</label><div class="affix s"><input id="spA" inputmode="decimal" data-spv="aporte" value="'+fx(+c.aporte||0,2)+'"><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spI">Início</label><input id="spI" type="month" data-spv="ini" value="'+esc(c.ini||"")+'"><small>Vazio = o mais antigo possível</small></div>'
     +'<div class="field"><label for="spF">Fim</label><input id="spF" type="month" data-spv="fim" value="'+esc(c.fim||"")+'"><small>Vazio = o mais recente</small></div>'
     +'<div class="field"><label for="spR">Rebalanceamento</label><select id="spR" data-spv="reb">'+SP_REB.map(([v,l])=>'<option value="'+v+'"'+(String(c.reb)===v?' selected':'')+'>'+l+'</option>').join("")+'</select></div>'
     +'<div class="field"><label for="spB">Base de cálculo</label><select id="spB" data-spv="base"><option value="m"'+(c.base!=="d"?' selected':'')+'>Mensal (desde 2005)</option><option value="d"'+(c.base==="d"?' selected':'')+'>Diária (desde 2019)</option></select></div>'
-    +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Mostrar o resultado líquido de IR</label></div></div>';
-  h+='<div class="cvsel fnbm" style="margin-top:6px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div>';
-  h+='</details></details></section>';
-  $("spTop").innerHTML=h;
+    +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Resultado líquido de IR</label></div></div>'
+    +'<div class="cvsel fnbm" style="margin-top:8px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div></section>';
+  ed.innerHTML=e;ed.hidden=SP.sub!=="comp";
+  const a=$("spAbas");if(a&&typeof spAbasHtml==="function")a.innerHTML=spAbasHtml();
 }
 /* ----- dados de cada item: níveis mensais e diários, e regime de IR */
 const SP_IR={lp:"Fundo de longo prazo (come-cotas 15%)",cp:"Fundo de curto prazo (come-cotas 20%)",acoes:"Ações, ETFs e BDRs (15% no resgate)",fii:"FII (rendimentos isentos; 20% sobre o ganho de preço)",rf:"Renda fixa (tabela regressiva)",isento:"Isento de IR",prev:"Previdência (IR no plano)"};
@@ -4877,7 +4920,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-speq"))){const n=c.itens.length;c.itens.forEach((it,j)=>it.w=Math.round(100/n*10)/10);const d=100-c.itens.reduce((a,it)=>a+it.w,0);if(n)c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;spSave();spCalc();return}
   if((x=g("data-spnorm"))){const t=c.itens.reduce((a,it)=>a+(+it.w||0),0);if(t>0)c.itens.forEach(it=>it.w=Math.round(it.w/t*1000)/10);spSave();spCalc();return}
   if((x=g("data-spclear"))){c.itens=[];spSave();spCalc();return}
-  if((x=g("data-spnew"))){const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"",cart=x.dataset.spnew==="carteira",n=SP.carts.filter(y=>!cli||y.cli===cli).length+1,nv=spNova((cart?"Carteira ":"Proposta ")+n,cli);if(cart){nv.modo="carteira";SP.compAb=true}SP.carts.push(nv);SP.renOpen=true;SP.parAb=true;SP.efForm=false;SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spnew"))){const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"",cart=x.dataset.spnew==="carteira",n=SP.carts.filter(y=>!cli||y.cli===cli).length+1,nv=spNova((cart?"Carteira ":"Proposta ")+n,cli);if(cart){nv.modo="carteira";SP.compAb=true}SP.carts.push(nv);SP.renOpen=true;SP.sub="comp";try{localStorage.setItem("spSub","comp")}catch(e){}SP.efForm=false;SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdup"))){const d=JSON.parse(JSON.stringify(c));d.nome=c.nome+" (cópia)";d.id=null;d.sit="proposta";delete d.ef;d.criada=spHoje();d.ver=1;SP.carts.push(d);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdel"))){if(SP.carts.length<2)return;if(!confirmLite(x))return;SP.carts.splice(SP.cur,1);SP.cur=Math.max(0,SP.cur-1);SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-sprfadd"))){const v=num(SP.rf.taxa);if(v==null){alertLite("Informe a taxa da renda fixa.");return}spAdd({t:"s",k:SP.rf.tipo+":"+v,rf:SP.rf.tipo,x:v,n:SP.rf.tipo==="cdi"?fx(v,1)+"% do CDI":SP.rf.tipo==="cdimais"?"CDI + "+fx(v,2)+"% a.a.":SP.rf.tipo==="ipca"?"IPCA + "+fx(v,2)+"% a.a.":"Prefixado "+fx(v,2)+"% a.a.",tipo:"Renda fixa"});return}
@@ -4887,7 +4930,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-spefform"))){SP.efForm=true;spTopHtml();return}
   if((x=g("data-spefno"))){SP.efForm=false;spTopHtml();return}
   if((x=g("data-spefok"))){const d=$("spEfD").value,v=num($("spEfV").value);if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>spHoje()){$("spEfD").focus();return}if(v==null||v<=0){$("spEfV").focus();return}
-    c.sit="efetivada";c.ef={data:d,valor:v};{const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d,v:Math.round(v*(+y.w)/tot*100)/100}]})}SP.efForm=false;SP_CMP=null;spSave();spCalc();return}
+    c.sit="efetivada";c.modo="carteira";c.ef={data:d,valor:v};{const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d,v:Math.round(v*(+y.w)/tot*100)/100}]})}SP.efForm=false;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdesef"))){c.sit="proposta";delete c.ef;spSave();spCalc();return}
   if((x=g("data-spotim"))){const o=SP.otim&&SP.otim[x.dataset.spotim];if(!o)return;const at=c.itens.filter(y=>(+y.w||0)>0);at.forEach((y,i)=>y.w=Math.round(o.w[i]*1000)/10);const d=100-c.itens.reduce((a,y)=>a+(+y.w||0),0);if(at.length)at[0].w=Math.round((at[0].w+d)*10)/10;SP_CMP=null;spSave();spCalc();try{$("spTop").scrollIntoView({behavior:"smooth"})}catch(y){}return}
   if((x=g("data-spcsv"))){spCsv();return}
@@ -6598,7 +6641,7 @@ function euDocsHtml(e){const D=(e.docs||[]).slice(0,15);if(!D.length)return "";
 /* ---------- Carteira em subabas: Visão geral, Desempenho, Risco, Crédito e caixa, Rebalancear, Oportunidades, Todas as carteiras
    Só a subaba aberta é montada (os blocos pesados, como raio-X e antes × depois, só carregam quando a subaba é aberta);
    trocar de subaba usa o cálculo já feito, sem refazer a simulação. O relatório em PDF continua com tudo. */
-const SP_ABAS=[["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
+const SP_ABAS=[["comp","Composição"],["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
 try{SP.sub=localStorage.getItem("spSub")||"geral";if(!SP_ABAS.some(a=>a[0]===SP.sub))SP.sub="geral"}catch(e){SP.sub="geral"}
 let SP_LAST=null,SP_TODAS=false;
 /* subaba de cada bloco pelo título */
@@ -6611,13 +6654,13 @@ function spAbaDe(t){t=String(t||"");
   if(/^(Painel do assessor|Comparação entre as carteiras|Comparar carteiras)/.test(t))return "todas";
   return "desemp"}
 const spT=(g,f)=>SP_TODAS||SP.sub===g?f():"";
-function spAbasHtml(){return '<nav class="spabas" role="tablist" aria-label="Partes da carteira">'+SP_ABAS.map(([k,l])=>'<button type="button" role="tab" data-spaba="'+k+'" aria-selected="'+(SP.sub===k)+'">'+l+'</button>').join("")+'</nav>'}
+function spAbasHtml(){const n=(spC().itens||[]).length;return '<nav class="spabas" role="tablist" aria-label="Partes da carteira">'+SP_ABAS.map(([k,l])=>[k,k==="comp"?l+" ("+n+")":l]).map(([k,l])=>'<button type="button" role="tab" data-spaba="'+k+'" aria-selected="'+(SP.sub===k)+'">'+l+'</button>').join("")+'</nav>'}
 /* esconde os blocos de outras subabas (os que sempre são montados, como o histórico) */
-function spSubAplica(box){const a=$("spAbas");if(a)a.innerHTML=spAbasHtml();if(!box)return;
+function spSubAplica(box){const a=$("spAbas");if(a)a.innerHTML=spAbasHtml();const ed=$("spEdit");if(ed)ed.hidden=SP.sub!=="comp";if(!box)return;box.hidden=SP.sub==="comp";if(SP.sub==="comp")return;
   const bm=box.querySelector(':scope>section[data-reltit^="Benchmark"]'),rs=$("spPanel");if(bm&&rs&&rs.parentElement===box)rs.after(bm);   // benchmark logo depois do resumo do histórico
   let vis=0;[...box.children].forEach(s=>{if(!s.matches||!s.matches("section.panel"))return;const t=s.dataset.reltit||((s.querySelector("h3")||{}).textContent||"").trim();const ok=SP_TODAS||spAbaDe(t)===SP.sub;s.hidden=!ok;if(ok)vis++});
   if(!vis&&!SP_TODAS)box.insertAdjacentHTML("beforeend",'<section class="panel spvazio"><p class="sub">Nada para mostrar nesta parte com os itens atuais desta carteira.</p></section>')}
-function spSubRender(){const box=$("spRes");if(!box)return;
+function spSubRender(){const box=$("spRes");if(!box)return;if(SP.sub==="comp"){spTopHtml();spSubAplica(box);return}
   if(!SP_LAST||SP_LAST.c!==spC()){spCalc();return}
   const {c,it,R}=SP_LAST;try{box.innerHTML=(it.length&&R?fnUse(FN,()=>spResHtml(c,it,R)):'<section class="panel"><p class="sub">Adicione fundos, ativos ou renda fixa e defina os pesos.</p></section>')+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box)}catch(e){console.error(e);spCalc()}}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-spaba]");if(!b||activeMod!=="sp")return;SP.sub=b.dataset.spaba;try{localStorage.setItem("spSub",SP.sub)}catch(x){}
@@ -6625,6 +6668,11 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 /* relatório em PDF: todos os blocos, de todas as subabas */
 function spResTudo(){if(!SP_LAST||!SP_LAST.R)return null;SP_TODAS=true;try{return fnUse(FN,()=>spResHtml(SP_LAST.c,SP_LAST.it,SP_LAST.R))}finally{SP_TODAS=false}}
 document.addEventListener("toggle",e=>{const d=e.target;if(!d||!d.dataset||!d.dataset.spcompo)return;SP.compAb=d.open;try{localStorage.setItem("spCompo",d.open?"1":"0")}catch(x){}},true);
+/* menus do cabeçalho (+ Nova, Mais): fecham ao escolher uma opção ou tocar fora */
+document.addEventListener("click",e=>{const m=e.target.closest&&e.target.closest("details.spmenu");document.querySelectorAll("details.spmenu[open]").forEach(d=>{if(d!==m||e.target.closest(".spmenul button,.spmenul label"))d.open=false})});
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;if(activeMod!=="sp")return;
+  if(g("[data-spobsab]")){SP.obsOpen=!SP.obsOpen;spTopHtml();const t=$("spObs");if(t&&SP.obsOpen)t.focus();return}
+  if(g("[data-sprfab]")){SP.rfOpen=!SP.rfOpen;spTopHtml();return}});
 /* ---------- editar qualquer item da carteira: nome exibido, código do ativo, valor ou peso, renda fixa e cada aplicação
    Os demais ajustes (classe, prazo de resgate, carência, produto, emissor, vencimento, indexador e taxa) continuam
    logo abaixo do nome do item, na composição. */
@@ -6635,11 +6683,10 @@ function spItemResumo(it){const P=[SP_CL[spCl(it)]];const l=spLiq(it);if(l.car)P
 function spEditBtn(j){return '<button type="button" class="link spmovb" data-spedit="'+j+'">'+(SP.edOpen===j?'Fechar edição':'Editar')+'</button>'}
 function spEditRow(c,j){const it=c.itens[j];if(!it)return "";const val=(+c.valor||0)*(+it.w||0)/100,mv=(it.mov||[]).map((m,i)=>[m,i]).filter(([m])=>m&&m.d!=null).sort((a,b)=>String(a[0].d).localeCompare(String(b[0].d))),hoje=spHoje();
   const cod=it.t==="f"?fnCnpjF(it.k):it.t==="a"?it.k:/^cr:/.test(it.k||"")?it.k.slice(3):"";
-  let h='<tr class="spmovrow"><td colspan="5" style="text-align:left"><div class="spmov"><div class="label">Editar · '+esc(spItemNome(it))+'</div><div class="sprow">'
+  let h='<tr class="spmovrow"><td colspan="4" style="text-align:left"><div class="spmov"><div class="label">Editar · '+esc(spItemNome(it))+'</div><div class="sprow">'
     +'<div class="field"><label for="spEdN">Nome exibido</label><input id="spEdN" data-sped="n" maxlength="90" value="'+esc(it.n||"")+'"></div>'
     +(it.t==="f"||it.t==="a"?'<div class="field"><label for="spEdK">'+(it.t==="f"?'CNPJ do fundo':'Código na B3')+'</label><input id="spEdK" data-sped="k" maxlength="20" value="'+esc(cod)+'" autocapitalize="characters"><small>Para trocar o ativo; as aplicações são mantidas.</small></div>':'')
-    +(c.modo==="carteira"?'<div class="field"><label>Aplicado</label><b style="display:block;margin-top:10px">'+brl(spAplicado(it))+' · '+fx(+it.w||0,1)+'% da carteira</b></div></div>':'<div class="field"><label for="spEdW">Peso</label><div class="affix s"><input id="spEdW" inputmode="decimal" data-sped="w" value="'+fx(+it.w||0,2)+'"><span class="suf">%</span></div></div>'
-    +'<div class="field"><label for="spEdV">Valor na proposta</label><div class="affix s"><input id="spEdV" inputmode="decimal" data-sped="val" value="'+fx(val,2)+'"><span class="suf">R$</span></div><small>Muda o peso (sobre '+brl(+c.valor||0)+')</small></div></div>');
+    +(c.modo==="carteira"?'<div class="field"><label>Aplicado</label><b style="display:block;margin-top:10px">'+brl(spAplicado(it))+' · '+fx(+it.w||0,1)+'% da carteira</b></div></div>':'<div class="field"><label for="spEdV">Valor na proposta</label><div class="affix s"><input id="spEdV" inputmode="decimal" data-sped="val" value="'+fx(val,2)+'"><span class="suf">R$</span></div><small>Muda o peso (sobre '+brl(+c.valor||0)+')</small></div></div>');
   h+='<div class="label" style="margin-top:8px">Classe, liquidez'+(it.t==="s"?' e renda fixa':'')+'</div>'+(it.t==="s"?'<div style="margin:4px 0">'+spRfEd(it,j)+' <label class="spiso"><input type="checkbox" data-spiso="'+j+'"'+(it.isento?' checked':'')+'>isento de IR</label></div>':'')+spAjItem(it,j);
   h+='<div class="label" style="margin-top:8px">Aplicações e resgates</div>'+(mv.length?'<table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Movimento</th><th>Valor (R$)</th><th></th></tr></thead><tbody>'
     +mv.map(([m,i])=>'<tr><td style="text-align:left"><input type="date" max="'+hoje+'" data-spedmd="'+i+'" value="'+esc(m.d||"")+'"></td><td style="text-align:left"><select style="min-width:130px" data-spedmt="'+i+'"><option value="1"'+(+m.v>=0?' selected':'')+'>Aplicação</option><option value="-1"'+(+m.v<0?' selected':'')+'>Resgate</option></select></td><td><span class="affix s" style="width:150px;display:inline-flex"><input inputmode="decimal" data-spedmv="'+i+'" value="'+fx(Math.abs(+m.v||0),2)+'" style="text-align:right;min-width:0"><span class="suf">R$</span></span></td><td><button type="button" class="fnx" data-spedmx="'+i+'" aria-label="Apagar movimento">×</button></td></tr>').join("")+'</tbody></table>':'<p class="sub" style="margin:4px 0">Nenhuma aplicação informada.</p>')
@@ -6670,7 +6717,10 @@ document.addEventListener("change",e=>{if(e.target&&e.target.dataset&&(e.target.
    Carteira em andamento: cada ativo tem as próprias aplicações e resgates (data e valor); o peso de cada item e o valor
    total são calculados a partir delas, e a carteira é acompanhada pela posição real. */
 function spAplicado(it){return Math.max(0,(it.mov||[]).filter(spMovOk).reduce((a,m)=>a+(+m.v),0))}
-function spModoSync(c){if(!c||c.modo!=="carteira")return;const antes=JSON.stringify([c.valor,c.sit,c.ef,c.itens.map(it=>it.w)]),v=c.itens.map(spAplicado),tot=v.reduce((a,b)=>a+b,0);
+function spModoSync(c){
+  // carteiras efetivadas antes desta versão viram carteira em andamento (aplicações por ativo na data e no valor da efetivação)
+  if(c&&c.sit==="efetivada"&&c.modo!=="carteira"&&c.ef&&c.ef.data){const tw=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(it=>{if(!(it.mov||[]).some(spMovOk)&&+it.w>0)it.mov=[{d:c.ef.data,v:Math.round(+c.ef.valor*(+it.w)/tw*100)/100}]});c.modo="carteira";spSave()}
+  if(!c||c.modo!=="carteira")return;const antes=JSON.stringify([c.valor,c.sit,c.ef,c.itens.map(it=>it.w)]),v=c.itens.map(spAplicado),tot=v.reduce((a,b)=>a+b,0);
   if(tot>0){c.itens.forEach((it,i)=>{it.w=Math.round(v[i]/tot*10000)/100});c.valor=Math.round(tot*100)/100;const d0=c.itens.flatMap(it=>(it.mov||[]).filter(spMovOk).map(m=>m.d)).sort()[0];c.sit="efetivada";c.ef={data:d0,valor:c.valor}}
   else{c.itens.forEach(it=>{it.w=0});if(c.sit==="efetivada"&&!c.itens.some(it=>(it.mov||[]).length)){c.sit="proposta";delete c.ef}}
   if(JSON.stringify([c.valor,c.sit,c.ef,c.itens.map(it=>it.w)])!==antes)spSave()}
@@ -6689,8 +6739,6 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.spsel)SP.renOpen=false},true);
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||t.dataset.spfass==null||activeMod!=="sp")return;SP.fcli=t.value;SP_ASS=null;SP_CMP=null;spSubRender()});
 function spFiltroCli(){const clis=spClientes();if(!clis.length)return "";return '<div class="field" style="max-width:320px;margin:6px 0"><label for="spFass">Cliente</label><select id="spFass" data-spfass="1"><option value="">Todos os clientes</option>'+clis.map(k=>'<option value="'+esc(k)+'"'+(SP.fcli===k?' selected':'')+'>'+esc(k)+'</option>').join("")+'<option value="__sem"'+(SP.fcli==="__sem"?' selected':'')+'>Sem cliente</option></select></div>'}
-document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.dataset&&d.dataset.sppar)SP.parAb=d.open},true);
-document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.spsel)SP.parAb=false},true);
 /* ---------- eventos */
 document.addEventListener("click",e=>{const g=a=>e.target.closest&&e.target.closest("["+a+"]");let x;
   if((x=g("data-euper"))){EU.per=x.dataset.euper;euSave();if(activeMod==="au"){$("euPainel").innerHTML=painelHtml("eua")}else if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc();return}
@@ -7520,12 +7568,13 @@ function rclMonta(root){
   if(!root||!RCL_ABAS.has(activeMod)||root.querySelector(":scope>.tlidx"))return;
   const secs=[...root.querySelectorAll(":scope>section.panel")].filter(s=>!s.hidden&&!s.classList.contains("spvazio")&&rclTitulo(s));if(secs.length<2)return;
   const F=rclFechados();
-  if(activeMod==="sp"&&!rclSalvo())secs.slice(2).forEach(s=>F.add(rclTitulo(s)));   // carteira: primeira vez, só os dois primeiros abertos
+
   secs.forEach((s,i)=>{const t=rclTitulo(s);s.id=s.id||"bl-"+activeMod+"-"+i;s.dataset.rcl=t;s.classList.add("rcl");s.classList.toggle("rclsemt",!s.querySelector(":scope>h3,:scope>.label"));s.classList.toggle("fechado",F.has(t));
     if(!s.querySelector(":scope>.rcltg")){const b=document.createElement("button");b.type="button";b.className="rcltg";b.setAttribute("aria-expanded",F.has(t)?"false":"true");b.setAttribute("aria-label","Recolher ou abrir: "+t);b.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';s.prepend(b)}
     // tabelas compridas: mostra as primeiras linhas e um botão para ver todas
     if(activeMod!=="sp")s.querySelectorAll("table").forEach(tb=>{const R=tb.tBodies[0]?[...tb.tBodies[0].rows]:[];if(R.length<=RCL_LINHAS+4||tb.dataset.rclT)return;tb.dataset.rclT="1";R.slice(RCL_LINHAS).forEach(r=>r.classList.add("rclx"));tb.classList.add("rclcurta");
       const b=document.createElement("button");b.type="button";b.className="link rclmais";b.textContent="Mostrar todas as "+R.length+" linhas";(tb.closest(".tablewrap")||tb).after(b)})});
+  if(activeMod==="sp")return;   // carteira: as subabas já fazem o papel do índice
   const nav=document.createElement("nav");nav.className="tlidx";nav.setAttribute("aria-label","Índice desta tela");
   nav.innerHTML='<span class="tlidxl">Nesta tela</span>'+secs.map(s=>'<button type="button" data-rclir="'+s.id+'">'+esc(s.dataset.rcl.length>42?s.dataset.rcl.slice(0,40).replace(/\s\S*$/,"")+"…":s.dataset.rcl)+'</button>').join("")
     +'<span class="tlidxa"><button type="button" class="link" data-rcltodos="0">Recolher tudo</button><button type="button" class="link" data-rcltodos="1">Abrir tudo</button></span>';

@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (20 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (22 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -138,7 +138,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `495-fundos-similares-e-gross-up.js` — fundos similares e gross-up (página do fundo) (5 KB)
 - `500-gestoras-e-administradoras.js` — gestoras e administradoras (3 KB)
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
-- `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (32 KB)
+- `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (33 KB)
 - `515-spcorhtml.js` (26 KB)
 - `520-spclasse.js` (7 KB)
 - `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (15 KB)
