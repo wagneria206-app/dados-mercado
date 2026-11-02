@@ -191,6 +191,40 @@ confere("B3: vazio", ativos.num_b3(""), None)
 confere("ofertas CVM: coluna pelo nome", atualizar._coluna(["Numero_Requerimento", "Data_Registro", "Nome_Emissor", "Valor_Mobiliario"], ["nome_emissor", "emissor"]), "Nome_Emissor")
 confere("ofertas CVM: coluna ausente", atualizar._coluna(["A", "B"], ["publico_alvo"]), None)
 
+# robô resiliente: segunda tentativa na falha passageira e contagem de falhas seguidas
+_sl = atualizar.time.sleep
+atualizar.time.sleep = lambda s: None
+_n = {"x": 0}
+
+
+@atualizar.fonte("teste_passageira")
+def _passageira():
+    _n["x"] += 1
+    if _n["x"] == 1:
+        raise RuntimeError("site fora do ar")
+    return {"linhas": 1}
+
+
+_passageira()
+confere("fonte: falha passageira resolvida na 2ª tentativa", [atualizar.STATUS["teste_passageira"]["ok"], atualizar.STATUS["teste_passageira"].get("segunda_tentativa")], [True, True])
+
+
+@atualizar.fonte("teste_quebrada")
+def _quebrada():
+    raise RuntimeError("formato mudou")
+
+
+atualizar._ANTERIOR = {"teste_quebrada": {"ok": False, "seguidas": 1}}
+_quebrada()
+confere("fonte: 2ª falha seguida não derruba o robô", [atualizar.STATUS["teste_quebrada"]["seguidas"], "teste_quebrada" in atualizar.falhas_graves()], [2, False])
+atualizar._ANTERIOR = {"teste_quebrada": {"ok": False, "seguidas": 2}}
+_quebrada()
+confere("fonte: 3ª falha seguida faz o robô acusar falha", "teste_quebrada" in atualizar.falhas_graves(), True)
+for k in ("teste_passageira", "teste_quebrada"):
+    atualizar.STATUS.pop(k, None)
+atualizar._ANTERIOR = None
+atualizar.time.sleep = _sl
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")
