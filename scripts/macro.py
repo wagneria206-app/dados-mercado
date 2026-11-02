@@ -21,6 +21,8 @@ import urllib.parse
 
 import requests
 
+csv.field_size_limit(2**31 - 1)   # arquivos da CVM com campos de texto muito longos (o padrão do Python é 128 KB)
+
 INICIO = time.time()
 HOJE = dt.date.today()
 NAV = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",

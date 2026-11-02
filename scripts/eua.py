@@ -21,6 +21,8 @@ import time
 
 import requests
 
+csv.field_size_limit(2**31 - 1)   # arquivos da CVM com campos de texto muito longos (o padrão do Python é 128 KB)
+
 INICIO = time.time()
 LIMITE = INICIO + float(os.environ.get("MINUTOS", "25")) * 60
 HOJE = dt.date.today()
