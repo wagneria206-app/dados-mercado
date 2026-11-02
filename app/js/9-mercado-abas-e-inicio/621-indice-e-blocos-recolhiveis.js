@@ -11,12 +11,13 @@ function rclMonta(root){
   if(!root||!RCL_ABAS.has(activeMod)||root.querySelector(":scope>.tlidx"))return;
   const secs=[...root.querySelectorAll(":scope>section.panel")].filter(s=>!s.hidden&&!s.classList.contains("spvazio")&&rclTitulo(s));if(secs.length<2)return;
   const F=rclFechados();
-  if(activeMod==="sp"&&!rclSalvo())secs.slice(2).forEach(s=>F.add(rclTitulo(s)));   // carteira: primeira vez, só os dois primeiros abertos
+
   secs.forEach((s,i)=>{const t=rclTitulo(s);s.id=s.id||"bl-"+activeMod+"-"+i;s.dataset.rcl=t;s.classList.add("rcl");s.classList.toggle("rclsemt",!s.querySelector(":scope>h3,:scope>.label"));s.classList.toggle("fechado",F.has(t));
     if(!s.querySelector(":scope>.rcltg")){const b=document.createElement("button");b.type="button";b.className="rcltg";b.setAttribute("aria-expanded",F.has(t)?"false":"true");b.setAttribute("aria-label","Recolher ou abrir: "+t);b.innerHTML='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';s.prepend(b)}
     // tabelas compridas: mostra as primeiras linhas e um botão para ver todas
     if(activeMod!=="sp")s.querySelectorAll("table").forEach(tb=>{const R=tb.tBodies[0]?[...tb.tBodies[0].rows]:[];if(R.length<=RCL_LINHAS+4||tb.dataset.rclT)return;tb.dataset.rclT="1";R.slice(RCL_LINHAS).forEach(r=>r.classList.add("rclx"));tb.classList.add("rclcurta");
       const b=document.createElement("button");b.type="button";b.className="link rclmais";b.textContent="Mostrar todas as "+R.length+" linhas";(tb.closest(".tablewrap")||tb).after(b)})});
+  if(activeMod==="sp")return;   // carteira: as subabas já fazem o papel do índice
   const nav=document.createElement("nav");nav.className="tlidx";nav.setAttribute("aria-label","Índice desta tela");
   nav.innerHTML='<span class="tlidxl">Nesta tela</span>'+secs.map(s=>'<button type="button" data-rclir="'+s.id+'">'+esc(s.dataset.rcl.length>42?s.dataset.rcl.slice(0,40).replace(/\s\S*$/,"")+"…":s.dataset.rcl)+'</button>').join("")
     +'<span class="tlidxa"><button type="button" class="link" data-rcltodos="0">Recolher tudo</button><button type="button" class="link" data-rcltodos="1">Abrir tudo</button></span>';

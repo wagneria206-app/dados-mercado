@@ -211,8 +211,8 @@ async def interface(pg):
     await pg.evaluate("document.querySelector('.tabs button[data-mod=sp]').click()")
     await pg.wait_for_timeout(12000)
     na = await pg.evaluate("document.querySelectorAll('#spAbas [data-spaba]').length")
-    if na != 7:
-        problemas.append(f"Carteira: {na} subabas (esperadas 7)")
+    if na != 8:
+        problemas.append(f"Carteira: {na} subabas (esperadas 8)")
     else:
         await pg.evaluate("document.querySelector('[data-spaba=todas]').click()")
         await pg.wait_for_timeout(800)

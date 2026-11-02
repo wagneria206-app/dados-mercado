@@ -113,7 +113,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-speq"))){const n=c.itens.length;c.itens.forEach((it,j)=>it.w=Math.round(100/n*10)/10);const d=100-c.itens.reduce((a,it)=>a+it.w,0);if(n)c.itens[0].w=Math.round((c.itens[0].w+d)*10)/10;spSave();spCalc();return}
   if((x=g("data-spnorm"))){const t=c.itens.reduce((a,it)=>a+(+it.w||0),0);if(t>0)c.itens.forEach(it=>it.w=Math.round(it.w/t*1000)/10);spSave();spCalc();return}
   if((x=g("data-spclear"))){c.itens=[];spSave();spCalc();return}
-  if((x=g("data-spnew"))){const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"",cart=x.dataset.spnew==="carteira",n=SP.carts.filter(y=>!cli||y.cli===cli).length+1,nv=spNova((cart?"Carteira ":"Proposta ")+n,cli);if(cart){nv.modo="carteira";SP.compAb=true}SP.carts.push(nv);SP.efForm=false;SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
+  if((x=g("data-spnew"))){const cli=SP.fcli&&SP.fcli!=="__sem"?SP.fcli:"",cart=x.dataset.spnew==="carteira",n=SP.carts.filter(y=>!cli||y.cli===cli).length+1,nv=spNova((cart?"Carteira ":"Proposta ")+n,cli);if(cart){nv.modo="carteira";SP.compAb=true}SP.carts.push(nv);SP.renOpen=true;SP.sub="comp";try{localStorage.setItem("spSub","comp")}catch(e){}SP.efForm=false;SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdup"))){const d=JSON.parse(JSON.stringify(c));d.nome=c.nome+" (cópia)";d.id=null;d.sit="proposta";delete d.ef;d.criada=spHoje();d.ver=1;SP.carts.push(d);SP.cur=SP.carts.length-1;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdel"))){if(SP.carts.length<2)return;if(!confirmLite(x))return;SP.carts.splice(SP.cur,1);SP.cur=Math.max(0,SP.cur-1);SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-sprfadd"))){const v=num(SP.rf.taxa);if(v==null){alertLite("Informe a taxa da renda fixa.");return}spAdd({t:"s",k:SP.rf.tipo+":"+v,rf:SP.rf.tipo,x:v,n:SP.rf.tipo==="cdi"?fx(v,1)+"% do CDI":SP.rf.tipo==="cdimais"?"CDI + "+fx(v,2)+"% a.a.":SP.rf.tipo==="ipca"?"IPCA + "+fx(v,2)+"% a.a.":"Prefixado "+fx(v,2)+"% a.a.",tipo:"Renda fixa"});return}
@@ -123,7 +123,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-spefform"))){SP.efForm=true;spTopHtml();return}
   if((x=g("data-spefno"))){SP.efForm=false;spTopHtml();return}
   if((x=g("data-spefok"))){const d=$("spEfD").value,v=num($("spEfV").value);if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>spHoje()){$("spEfD").focus();return}if(v==null||v<=0){$("spEfV").focus();return}
-    c.sit="efetivada";c.ef={data:d,valor:v};{const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d,v:Math.round(v*(+y.w)/tot*100)/100}]})}SP.efForm=false;SP_CMP=null;spSave();spCalc();return}
+    c.sit="efetivada";c.modo="carteira";c.ef={data:d,valor:v};{const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d,v:Math.round(v*(+y.w)/tot*100)/100}]})}SP.efForm=false;SP_CMP=null;spSave();spCalc();return}
   if((x=g("data-spdesef"))){c.sit="proposta";delete c.ef;spSave();spCalc();return}
   if((x=g("data-spotim"))){const o=SP.otim&&SP.otim[x.dataset.spotim];if(!o)return;const at=c.itens.filter(y=>(+y.w||0)>0);at.forEach((y,i)=>y.w=Math.round(o.w[i]*1000)/10);const d=100-c.itens.reduce((a,y)=>a+(+y.w||0),0);if(at.length)at[0].w=Math.round((at[0].w+d)*10)/10;SP_CMP=null;spSave();spCalc();try{$("spTop").scrollIntoView({behavior:"smooth"})}catch(y){}return}
   if((x=g("data-spcsv"))){spCsv();return}
@@ -133,9 +133,9 @@ function confirmLite(btn){if(btn.dataset.ok==="1")return true;btn.dataset.ok="1"
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();
   if(t.dataset.spsel){SP.cur=+t.value;SP.efForm=false;SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spclif!=null&&t.id==="spCliF"){SP.fcli=t.value;const j=SP.carts.findIndex(x=>!SP.fcli||(SP.fcli==="__sem"?!x.cli:x.cli===SP.fcli));if(j>=0&&!(!SP.fcli||(SP.fcli==="__sem"?!spC().cli:spC().cli===SP.fcli)))SP.cur=j;SP_CMP=null;spSave();spCalc()}
-  else if(t.dataset.spcli!=null&&t.id==="spCliI"){c.cli=t.value.trim().slice(0,40);spSave();spTopHtml()}
+  else if(t.dataset.spcli!=null&&t.id==="spCliI"){c.cli=t.value.trim().slice(0,40);SP_CMP=null;if(typeof SP_ASS!=="undefined")SP_ASS=null;spSave();setTimeout(spTopHtml,0)}
   else if(t.dataset.spobs!=null&&t.id==="spObs"){c.obs=t.value.slice(0,2000);spSave()}
-  else if(t.dataset.spnome!=null&&t.dataset.spnome!==undefined&&t.id==="spNome"){c.nome=t.value.trim()||c.nome;SP_CMP=null;spSave();spCalc()}
+  else if(t.dataset.spnome!=null&&t.dataset.spnome!==undefined&&t.id==="spNome"){c.nome=t.value.trim()||c.nome;SP_CMP=null;spSave();setTimeout(spTopHtml,0)}
   else if(t.dataset.spw!=null){const v=num(t.value);c.itens[+t.dataset.spw].w=v==null?0:Math.max(0,v);SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spv){const k=t.dataset.spv;c[k]=k==="valor"||k==="aporte"?(num(t.value)||0):t.value;SP_CMP=null;spSave();spCalc()}
   else if(t.dataset.spir){c.ir=t.checked?1:0;spSave();spCalc()}

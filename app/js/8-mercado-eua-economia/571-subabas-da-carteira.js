@@ -1,7 +1,7 @@
 /* ---------- Carteira em subabas: Visão geral, Desempenho, Risco, Crédito e caixa, Rebalancear, Oportunidades, Todas as carteiras
    Só a subaba aberta é montada (os blocos pesados, como raio-X e antes × depois, só carregam quando a subaba é aberta);
    trocar de subaba usa o cálculo já feito, sem refazer a simulação. O relatório em PDF continua com tudo. */
-const SP_ABAS=[["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
+const SP_ABAS=[["comp","Composição"],["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
 try{SP.sub=localStorage.getItem("spSub")||"geral";if(!SP_ABAS.some(a=>a[0]===SP.sub))SP.sub="geral"}catch(e){SP.sub="geral"}
 let SP_LAST=null,SP_TODAS=false;
 /* subaba de cada bloco pelo título */
@@ -14,13 +14,13 @@ function spAbaDe(t){t=String(t||"");
   if(/^(Painel do assessor|Comparação entre as carteiras|Comparar carteiras)/.test(t))return "todas";
   return "desemp"}
 const spT=(g,f)=>SP_TODAS||SP.sub===g?f():"";
-function spAbasHtml(){return '<nav class="spabas" role="tablist" aria-label="Partes da carteira">'+SP_ABAS.map(([k,l])=>'<button type="button" role="tab" data-spaba="'+k+'" aria-selected="'+(SP.sub===k)+'">'+l+'</button>').join("")+'</nav>'}
+function spAbasHtml(){const n=(spC().itens||[]).length;return '<nav class="spabas" role="tablist" aria-label="Partes da carteira">'+SP_ABAS.map(([k,l])=>[k,k==="comp"?l+" ("+n+")":l]).map(([k,l])=>'<button type="button" role="tab" data-spaba="'+k+'" aria-selected="'+(SP.sub===k)+'">'+l+'</button>').join("")+'</nav>'}
 /* esconde os blocos de outras subabas (os que sempre são montados, como o histórico) */
-function spSubAplica(box){const a=$("spAbas");if(a)a.innerHTML=spAbasHtml();if(!box)return;
+function spSubAplica(box){const a=$("spAbas");if(a)a.innerHTML=spAbasHtml();const ed=$("spEdit");if(ed)ed.hidden=SP.sub!=="comp";if(!box)return;box.hidden=SP.sub==="comp";if(SP.sub==="comp")return;
   const bm=box.querySelector(':scope>section[data-reltit^="Benchmark"]'),rs=$("spPanel");if(bm&&rs&&rs.parentElement===box)rs.after(bm);   // benchmark logo depois do resumo do histórico
   let vis=0;[...box.children].forEach(s=>{if(!s.matches||!s.matches("section.panel"))return;const t=s.dataset.reltit||((s.querySelector("h3")||{}).textContent||"").trim();const ok=SP_TODAS||spAbaDe(t)===SP.sub;s.hidden=!ok;if(ok)vis++});
   if(!vis&&!SP_TODAS)box.insertAdjacentHTML("beforeend",'<section class="panel spvazio"><p class="sub">Nada para mostrar nesta parte com os itens atuais desta carteira.</p></section>')}
-function spSubRender(){const box=$("spRes");if(!box)return;
+function spSubRender(){const box=$("spRes");if(!box)return;if(SP.sub==="comp"){spTopHtml();spSubAplica(box);return}
   if(!SP_LAST||SP_LAST.c!==spC()){spCalc();return}
   const {c,it,R}=SP_LAST;try{box.innerHTML=(it.length&&R?fnUse(FN,()=>spResHtml(c,it,R)):'<section class="panel"><p class="sub">Adicione fundos, ativos ou renda fixa e defina os pesos.</p></section>')+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box)}catch(e){console.error(e);spCalc()}}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-spaba]");if(!b||activeMod!=="sp")return;SP.sub=b.dataset.spaba;try{localStorage.setItem("spSub",SP.sub)}catch(x){}
@@ -28,3 +28,8 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 /* relatório em PDF: todos os blocos, de todas as subabas */
 function spResTudo(){if(!SP_LAST||!SP_LAST.R)return null;SP_TODAS=true;try{return fnUse(FN,()=>spResHtml(SP_LAST.c,SP_LAST.it,SP_LAST.R))}finally{SP_TODAS=false}}
 document.addEventListener("toggle",e=>{const d=e.target;if(!d||!d.dataset||!d.dataset.spcompo)return;SP.compAb=d.open;try{localStorage.setItem("spCompo",d.open?"1":"0")}catch(x){}},true);
+/* menus do cabeçalho (+ Nova, Mais): fecham ao escolher uma opção ou tocar fora */
+document.addEventListener("click",e=>{const m=e.target.closest&&e.target.closest("details.spmenu");document.querySelectorAll("details.spmenu[open]").forEach(d=>{if(d!==m||e.target.closest(".spmenul button,.spmenul label"))d.open=false})});
+document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.closest(s);let x;if(activeMod!=="sp")return;
+  if(g("[data-spobsab]")){SP.obsOpen=!SP.obsOpen;spTopHtml();const t=$("spObs");if(t&&SP.obsOpen)t.focus();return}
+  if(g("[data-sprfab]")){SP.rfOpen=!SP.rfOpen;spTopHtml();return}});
