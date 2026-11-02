@@ -22,3 +22,5 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.spsel)SP.renOpen=false},true);
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||t.dataset.spfass==null||activeMod!=="sp")return;SP.fcli=t.value;SP_ASS=null;SP_CMP=null;spSubRender()});
 function spFiltroCli(){const clis=spClientes();if(!clis.length)return "";return '<div class="field" style="max-width:320px;margin:6px 0"><label for="spFass">Cliente</label><select id="spFass" data-spfass="1"><option value="">Todos os clientes</option>'+clis.map(k=>'<option value="'+esc(k)+'"'+(SP.fcli===k?' selected':'')+'>'+esc(k)+'</option>').join("")+'<option value="__sem"'+(SP.fcli==="__sem"?' selected':'')+'>Sem cliente</option></select></div>'}
+document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.dataset&&d.dataset.sppar)SP.parAb=d.open},true);
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.spsel)SP.parAb=false},true);

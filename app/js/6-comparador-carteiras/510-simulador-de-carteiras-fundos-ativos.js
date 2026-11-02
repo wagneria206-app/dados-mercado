@@ -57,6 +57,8 @@ function spTopHtml(){
     h+='</tbody><tfoot><tr><td style="text-align:left"><b>Total</b></td><td class="c-ph"></td><td><b class="'+(Math.abs(tot-100)<0.05?'':'neg')+'">'+fx(tot,1)+'%</b></td><td class="c-ph">'+brl(+c.valor||0)+'</td><td></td></tr></tfoot></table></div>'
       +'<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
   }
+  const rebL=(SP_REB.find(x=>x[0]===String(c.reb))||["",""])[1].toLowerCase();
+  h+='<details class="sppar"'+(SP.parAb?' open':'')+' data-sppar="1"><summary>Parâmetros da simulação <small>'+(c.modo==="carteira"?'':brl(+c.valor||0)+' · ')+(+c.aporte>0?'aporte '+brl(+c.aporte)+'/mês · ':'')+'rebalanceamento '+rebL+' · base '+(c.base==="d"?'diária':'mensal')+(c.ir!==0?' · líquido de IR':'')+'</small></summary>';
   h+='<div class="spparams"><div class="field"><label for="spV">Valor inicial</label><div class="affix s"><input id="spV" inputmode="decimal" data-spv="valor" value="'+fx(+c.valor||0,2)+'"'+(c.modo==="carteira"?' disabled title="Soma das aplicações informadas"':'')+'><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spA">Aporte mensal</label><div class="affix s"><input id="spA" inputmode="decimal" data-spv="aporte" value="'+fx(+c.aporte||0,2)+'"><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spI">Início</label><input id="spI" type="month" data-spv="ini" value="'+esc(c.ini||"")+'"><small>Vazio = o mais antigo possível</small></div>'
@@ -65,7 +67,7 @@ function spTopHtml(){
     +'<div class="field"><label for="spB">Base de cálculo</label><select id="spB" data-spv="base"><option value="m"'+(c.base!=="d"?' selected':'')+'>Mensal (desde 2005)</option><option value="d"'+(c.base==="d"?' selected':'')+'>Diária (desde 2019)</option></select></div>'
     +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Mostrar o resultado líquido de IR</label></div></div>';
   h+='<div class="cvsel fnbm" style="margin-top:6px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div>';
-  h+='</details></section>';
+  h+='</details></details></section>';
   $("spTop").innerHTML=h;
 }
 /* ----- dados de cada item: níveis mensais e diários, e regime de IR */
