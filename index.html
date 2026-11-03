@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-cTGeU8aVn4qU6Iu//1lFoUHFAmDzLQBOkYT+M3VYDZc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-DZaeJGAj/O7J9lcTk3Y4ROUf+2bTqeiOGR/ZqUrEyTs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -4968,16 +4968,21 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.d
 
 /* ----- debêntures, CRI e CRA no simulador: entram como renda fixa pela taxa indicativa atual da ANBIMA */
 const SP_CRED={L:null,load:null};
-function spCredLoad(){if(SP_CRED.L||SP_CRED.load)return;const g=f=>fetch(ROBO+f,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
-  SP_CRED.load=Promise.all([g("debentures.json"),g("cri_cra_anbima.json")]).then(([d,c])=>{const L=[];
+/* CRI e CRA sem taxa indicativa da ANBIMA (a ANBIMA precifica só uma parte deles) entram pela taxa de emissão do informe da CVM */
+const SP_CVM_IX={IPCA:"ipca",DI_SPREAD:"cdimais",DI_PCT:"cdi",PRE:"pre"};
+function spCredLoad(){if(SP_CRED.L||SP_CRED.load)return;const g=f=>roboGet(f).catch(()=>null);
+  SP_CRED.load=Promise.all([g("debentures.json"),g("cri_cra_anbima.json"),g("cri_cra_cvm.json")]).then(([d,c,v])=>{const L=[],tem=new Set();
     [[d,"Debênture"],[c,"CRI/CRA"]].forEach(([j,tipo])=>{if(!j||!j.papers)return;Object.entries(j.papers).forEach(([cod,p])=>{const ind=String(p.indice||""),tx=p.taxa;if(tx==null||!isFinite(tx))return;
       let rf=null;if(/^DI\s*\+/i.test(ind))rf="cdimais";else if(/%\s*do\s*DI/i.test(ind))rf="cdi";else if(/^IPCA/i.test(ind))rf="ipca";else if(/PREFIXADO/i.test(ind))rf="pre";if(!rf)return;
-      const nome=String(p.nome||p.risco||p.emissor||"").replace(/\s*\(\*\)\s*/,"").trim(),inc=/\(\*\)/.test(String(p.nome||""));
+      const nome=String(p.nome||p.risco||p.emissor||"").replace(/\s*\(\*\)\s*/,"").trim(),inc=/\(\*\)/.test(String(p.nome||""));tem.add(cod.toUpperCase());
       L.push({cod,nome,tipo,rf,x:+tx,ind,venc:p.venc,isento:tipo==="CRI/CRA"||inc?1:0,ref:j.refDate,sk:fnNorm(cod+" "+nome+" "+(p.emissor||""))})})});
+    const hoje=spHoje(),C=v&&v.certificados||{};Object.entries(C).forEach(([cod,p])=>{const rf=SP_CVM_IX[p.index],tx=+p.rate;if(!rf||!(tx>0)||tem.has(cod.toUpperCase()))return;if(p.vencimento&&p.vencimento<hoje)return;if(rf==="pre"&&/TR/.test(p.taxaTexto||""))return;
+      const em=String(p.securitizadora||"").trim(),nome=em.replace(/\s+(S\.?A\.?|LTDA\.?)$/i,"")+(p.emissao?" · "+p.emissao+"ª em.":"")+(p.serie?" "+p.serie+"ª série":"");
+      L.push({cod,nome,tipo:(p.type||"CRI")+" · taxa de emissão (CVM)",rf,x:tx,ind:p.taxaTexto||"",venc:p.vencimento,isento:1,cvm:1,atraso:/atraso/i.test(p.situacao||""),sk:fnNorm(cod+" "+nome+" "+(p.isin||"")+" "+(p.nomeEmissao||""))})});
     SP_CRED.L=L;SP_CRED.load=null;const q=$("spQ");if(q&&q.value.trim().length>=2)q.dispatchEvent(new Event("input",{bubbles:true}))})}
-function spCredSearch(q){if(!SP_CRED.L){spCredLoad();return []}const t=fnNorm(q).split(/\s+/).filter(Boolean);if(!t.length||q.trim().length<3)return [];
-  return SP_CRED.L.filter(x=>t.every(w=>x.sk.includes(w))).slice(0,6).map(x=>{const lab=spRfLab(x.rf,x.x);return {t:"s",k:"cr:"+x.cod,rf:x.rf,x:x.x,isento:x.isento,n:x.cod+" · "+x.nome.slice(0,40)+" ("+lab+")",tipo:x.tipo,
-    s:x.ind+" · taxa ANBIMA "+lab+" · vence "+fdate(Date.parse(x.venc+"T00:00:00Z"))+(x.isento?" · isento de IR":"")}})}
+function spCredSearch(q){if(!SP_CRED.L){spCredLoad();return []}q=String(q).replace(/^\s*(cri|cra|deb)[\s:\-]*(?=[0-9a-z]{4})/i,"");const t=fnNorm(q).split(/\s+/).filter(Boolean);if(!t.length||q.trim().length<3)return [];
+  return SP_CRED.L.filter(x=>t.every(w=>x.sk.includes(w))).sort((a,b)=>(a.cvm||0)-(b.cvm||0)).slice(0,6).map(x=>{const lab=spRfLab(x.rf,x.x);return {t:"s",k:"cr:"+x.cod,rf:x.rf,x:x.x,isento:x.isento,n:x.cod+" · "+x.nome.slice(0,40)+" ("+lab+")",tipo:x.tipo,
+    s:(x.cvm?"taxa de emissão "+lab+" (a ANBIMA não divulga taxa indicativa deste papel)":x.ind+" · taxa ANBIMA "+lab)+(x.venc?" · vence "+fdate(Date.parse(x.venc+"T00:00:00Z")):"")+(x.isento?" · isento de IR":"")+(x.atraso?" · em atraso na CVM":"")}})}
 
 /* ----- propostas: desempenho desde a efetivação, composição, itens e fichas */
 function spEfHtml(c,it,E,stP){
