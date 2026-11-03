@@ -28,14 +28,14 @@ function spAliq(reg,dias){if(reg==="lp"||reg==="rf")return dias<=180?0.225:dias<
 function spPosCalc(c,its,Ds){
   const L=FN.L,cdiS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.cdi&&L.d.cdi[i])a.push([d,L.d.cdi[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.cdi||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.cdi[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
   const ipS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.ipca&&L.d.ipca[i])a.push([d,L.d.ipca[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.ipca||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.ipca[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
-  const P=[];its.forEach((x,i)=>{const mv=(x.mov||[]).filter(spMovOk).map(m=>({d:m.d,v:+m.v})).sort((a,b)=>a.d<b.d?-1:1);if(!mv.length)return;const S=spSerie(Ds[i]);mv.forEach(m=>{const a=spAt(S,m.d);m.ed=a?a[0]:null});P.push({x,D:Ds[i],S,mv})});
+  const P=[];its.forEach((x,i)=>{const mv=(x.mov||[]).filter(spMovOk).map(m=>({d:m.d,v:+m.v,q:x.t==="f"&&+m.q>0?+m.q:null})).sort((a,b)=>a.d<b.d?-1:1);if(!mv.length)return;const S=spSerie(Ds[i]);mv.forEach(m=>{const a=spAt(S,m.d);m.ed=a?a[0]:null});P.push({x,D:Ds[i],S,mv})});
   if(!P.length)return null;
   // data de avaliação: o dia mais recente que todos os itens com saldo já publicaram
   let dv="9999";P.forEach(p=>{const u=p.S.length?p.S[p.S.length-1][0]:"0000";if(u<dv)dv=u});
   const d0=P.reduce((a,p)=>{const e=p.mv.find(m=>m.ed);return e&&e.ed<a?e.ed:a},"9999");if(dv<d0)return {erro:"As aplicações informadas são mais recentes que os últimos dados publicados ("+fdate(Date.parse(dv+"T00:00:00Z"))+")."};
   // cotas por item e lotes (para o IR por aplicação, resgates saem dos lotes mais antigos)
   P.forEach(p=>{p.lotes=[];p.cotas=0;p.apl=0;p.resg=0;p.cf=[];p.sem=[];
-    p.mv.forEach(m=>{if(m.d>dv)return;const lv=spAt(p.S,m.d);if(!lv){p.sem.push(m.d);return}const q=Math.abs(m.v)/lv[1];
+    p.mv.forEach(m=>{if(m.d>dv)return;const lv=spAt(p.S,m.d);if(!lv){p.sem.push(m.d);return}const q=m.q||Math.abs(m.v)/lv[1];   // fundo com quantidade de cotas informada: vale a quantidade do extrato
       if(m.v>0){p.lotes.push({d:m.d,q,custo:m.v,lv:lv[1]});p.cotas+=q;p.apl+=m.v;p.cf.push([m.d,-m.v])}
       else{let r=q;p.resg+=-m.v;p.cf.push([m.d,-m.v]);while(r>1e-12&&p.lotes.length){const l=p.lotes[0],t=Math.min(r,l.q),f=t/l.q;l.custo-=l.custo*f;l.q-=t;r-=t;if(l.q<=1e-12)p.lotes.shift()}p.cotas=p.lotes.reduce((a,l)=>a+l.q,0)}});
     const lv=spAt(p.S,dv);p.lvF=lv?lv[1]:null;p.v=p.lvF?p.cotas*p.lvF:0;p.custo=p.lotes.reduce((a,l)=>a+l.custo,0);
