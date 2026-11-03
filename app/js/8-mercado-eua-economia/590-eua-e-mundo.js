@@ -70,7 +70,7 @@ function mcGlobalHtml(){
   if(dx.length){const u=dx[dx.length-1];k.push(mcKp("Dólar no mundo (índice do Fed) · "+fdate(u[0]).slice(0,5),fx(u[1],2),mcSig(v(dx,30),1)+' em 30 dias · '+mcSig(v(dx,365),1)+' em 12 meses'))}
   const th=P=>fnThin(mcCut(P,5).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
   return '<h3>Petróleo e dólar no mundo</h3><p class="sub">Petróleo caro ajuda Petrobras e a balança comercial, mas pressiona a inflação. Dólar forte no mundo costuma tirar dinheiro de países emergentes como o Brasil.</p><div class="fnkpis">'+k.join("")+'</div>'
-    +(br.length?'<div class="label" style="margin-top:12px">Petróleo Brent, 5 anos (US$ por barril)</div>'+fnChart([{lab:"Brent",col:"#0f172a",w:1.8,pts:th(br)}],{fmt:"num",h:190,aria:"Brent"}):'')
+    +(br.length?'<div class="label" style="margin-top:12px">Petróleo Brent, 5 anos (US$ por barril)</div>'+fnChart([{lab:"Brent",col:"#f59e0b",w:1.8,pts:th(br)}],{fmt:"num",h:190,aria:"Brent"}):'')
     +'<p class="sub" style="font-size:.8rem">Fontes: EIA (Brent à vista) e Federal Reserve (índice amplo nominal do dólar contra as moedas dos principais parceiros comerciais dos EUA, jan/2006 = 100). Commodities em geral (IC-Br) estão na aba Dólar.</p>';
 }
 
