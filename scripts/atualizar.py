@@ -2514,10 +2514,128 @@ def rapido():
     print("Intradiário:", STATUS.get("tesouro_direto_site"))
 
 
+# ---------------------------------------------------------------- ANBIMA: projeções de IPCA e IGP-M
+# Consenso do Grupo Consultivo Macroeconômico da ANBIMA (o mesmo usado no VNA das NTN-B enquanto o IBGE não divulga o índice).
+# A página monta a tabela pelo navegador (portal Lumis); o robô faz o mesmo pedido que a página faz.
+URL_PROJ = "https://www.anbima.com.br/pt_br/informar/estatisticas/precos-e-indices/projecao-de-inflacao-gp-m.htm"
+MESES_PT = {m: i + 1 for i, m in enumerate(["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
+                                           "agosto", "setembro", "outubro", "novembro", "dezembro"])}
+
+
+def _mes_pt(t):
+    m = re.fullmatch(r"(?i)\s*([a-zç]+)\s+de\s+(\d{4})\s*", t or "")
+    if not m or m.group(1).lower() not in MESES_PT:
+        return None
+    return f"{m.group(2)}-{MESES_PT[m.group(1).lower()]:02d}"
+
+
+def _dia_br(t):
+    m = re.fullmatch(r"\s*(\d{2})/(\d{2})/(\d{2,4})\s*", t or "")
+    if not m:
+        return None
+    a = m.group(3)
+    return f"{'20' + a if len(a) == 2 else a}-{m.group(2)}-{m.group(1)}"
+
+
+def _pct(t):
+    t = (t or "").strip()
+    return None if t in ("", "-", "–") else num(t)
+
+
+def html_celulas(html):
+    """HTML → lista de textos das células/parágrafos, na ordem da página."""
+    t = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", html)
+    t = re.sub(r"(?s)<[^>]+>", "|", t).replace("&nbsp;", " ")
+    return [x.strip() for x in re.split(r"\s*\|[\s|]*", t) if x.strip()]
+
+
+def ler_projecoes(cel):
+    """Lê as tabelas de projeção (mês corrente, mês posterior e histórico × efetivo) de IGP-M e IPCA."""
+    def bloco(ini, fim):
+        try:
+            i = next(k for k, x in enumerate(cel) if x.upper().startswith(ini))
+        except StopIteration:
+            return None, []
+        j = next((k for k in range(i + 1, len(cel)) if any(cel[k].upper().startswith(f) for f in fim)), len(cel))
+        return i, cel[i + 1:j]
+
+    out = {}
+    corte = next((k for k, x in enumerate(cel) if re.match(r"(?i)a coleta das informa\S+ para as proje\S+ do ipca", x)), None)
+    partes = {"igpm": cel[:corte] if corte else [], "ipca": cel[corte:] if corte else []}
+    for nome, C in partes.items():
+        if not C:
+            continue
+        cel_ant, cel = cel, C
+        r = {}
+        i, b = bloco("PROJEÇÕES PARA O MÊS (", ["FONTE:", "PROJEÇÕES PARA O MÊS POSTERIOR"])
+        if b:
+            mes = _mes_pt(b[0].title())
+            col = []
+            k = 1 + next((n for n, x in enumerate(b[1:]) if x.lower().startswith("data de validade")), 3) + 1
+            while k + 3 < len(b) and _mes_pt(b[k]) and _dia_br(b[k + 1]):
+                col.append({"coleta": _mes_pt(b[k]), "d": _dia_br(b[k + 1]), "v": _pct(b[k + 2]), "val": _dia_br(b[k + 3])})
+                k += 4
+            r["mes"] = {"ref": mes, "coletas": col}
+        i, b = bloco("PROJEÇÕES PARA O MÊS POSTERIOR", ["NO DIA DA", "QUANDO NÃO", "HISTÓRICO", "FONTE:"])
+        if b:
+            mes = _mes_pt(b[0].title())
+            col, k = [], 1 + next((n for n, x in enumerate(b[1:]) if x.lower().startswith("projeção")), 2) + 1
+            while k + 2 < len(b) and _mes_pt(b[k]) and _dia_br(b[k + 1]):
+                col.append({"coleta": _mes_pt(b[k]), "d": _dia_br(b[k + 1]), "v": _pct(b[k + 2])})
+                k += 3
+            r["posterior"] = {"ref": mes, "coletas": col}
+        i, b = bloco("HISTÓRICO DOS ÚLTIMOS 12 MESES", ["A COLETA DAS INFORMA", "FONTE:"])
+        if b:
+            k = next((n for n, x in enumerate(b) if re.search(r"(?i)efetivo", x)), -1) + 1
+            hist, cur = [], None
+            while k < len(b):
+                m = _mes_pt(b[k])
+                if m and k + 4 < len(b):
+                    cur = {"ref": m, "efetivo": _pct(b[k + 4]), "coletas": [{"d": _dia_br(b[k + 1]), "v": _pct(b[k + 2]), "val": _dia_br(b[k + 3])}]}
+                    hist.append(cur)
+                    k += 5
+                elif cur and k + 2 < len(b) and _dia_br(b[k]) and _dia_br(b[k + 2]):
+                    cur["coletas"].append({"d": _dia_br(b[k]), "v": _pct(b[k + 1]), "val": _dia_br(b[k + 2])})
+                    k += 3
+                else:
+                    break
+            for h in hist:
+                h["coletas"].sort(key=lambda c: c["d"] or "")
+            r["historico"] = hist
+        cel = cel_ant
+        if r:
+            out[nome] = r
+    return out
+
+
+@fonte("anbima_projecoes")
+def anbima_projecoes():
+    """Projeções ANBIMA de IPCA e IGP-M para o mês corrente e o seguinte, com o histórico de 12 meses (projeção × efetivo)."""
+    from urllib.parse import quote
+    r = baixar(URL_PROJ, tentativas=2, timeout=(10, 60), headers=UA_WEB)
+    raw = texto(r)
+    act = re.search(r'id="LumisPortalRenderInterfaceForm"[^>]*action="([^"]+)"', raw)
+    ii = re.search(r"renderInterfaceInstance\(null,\s*'([0-9A-F]+)'", raw)
+    if not act or not ii:
+        raise RuntimeError("página de projeções da ANBIMA mudou (não achei o pedido da tabela)")
+    u = "https://www.anbima.com.br/" + act.group(1).replace("&amp;", "&").lstrip("./") + "&lumScript=1&lumRenderII=" + ii.group(1) + "&lumReferer=" + quote(URL_PROJ, safe="")
+    q = baixar(u, tentativas=2, timeout=(10, 60), dados="lumPrevParams=&lumNewParams=&lumReplIntfState=",
+               headers={**UA_WEB, "Content-Type": "application/x-www-form-urlencoded", "Referer": URL_PROJ})
+    P = ler_projecoes(html_celulas(texto(q)))
+    ip = P.get("ipca") or {}
+    if not (ip.get("mes") or {}).get("coletas") or not ip.get("historico"):
+        raise RuntimeError("tabela de projeções do IPCA sem dados (formato mudou?)")
+    gravar_json("projecoes_inflacao.json", {"fonte": "ANBIMA – Grupo Consultivo Permanente Macroeconômico", "url": URL_PROJ,
+                                            "atualizadoEm": AGORA.isoformat(timespec="seconds"), **P})
+    ult = lambda b: next((c for c in reversed((b or {}).get("coletas") or []) if c.get("v") is not None), {})
+    return {"ipca_mes": [ip["mes"]["ref"], ult(ip["mes"]).get("v")], "ipca_posterior": [(ip.get("posterior") or {}).get("ref"), ult(ip.get("posterior")).get("v")],
+            "historico": len(ip["historico"]), "igpm": bool(P.get("igpm"))}
+
+
 FONTES_AVULSAS = {"b3_futuros": lambda m: b3_futuros(), "dolar_fundamentos": lambda m: dolar_fundamentos(),
                   "bcb_dolar": lambda m: bcb_dolar(m), "inflacao": lambda m: inflacao_detalhe(), "ima": lambda m: anbima_ima(),
                   "credito": lambda m: credito_spreads(), "curva_hist": lambda m: anbima_curva_hist(),
-                  "fluxo": lambda m: fluxo_estrangeiro(), "ofertas": lambda m: cvm_ofertas(), "cri_cra": lambda m: cvm_cri_cra()}
+                  "fluxo": lambda m: fluxo_estrangeiro(), "ofertas": lambda m: cvm_ofertas(), "cri_cra": lambda m: cvm_cri_cra(), "projecoes": lambda m: anbima_projecoes()}
 
 
 def avulsas(nomes):
@@ -2558,6 +2676,7 @@ def main():
     anbima_debentures()
     credito_spreads()
     inflacao_detalhe()
+    anbima_projecoes()
     anbima_ima()
     snd_catalogo()
     anbima_cri_cra()

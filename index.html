@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-51EcZOfmv9QUNATMI/N2BiWHZqFT2UFoUcRoHbov0MI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-SLnOIgd1GAM5/2Z6GMd1CFAYakpf9NoD98y1XdKhmK8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -7044,7 +7044,7 @@ document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dat
 const MK={di:null,inf:null,ima:null,cred:null,tit:null,deb:null,loaded:0,loading:false};
 async function mkLoad(force){if(MK.loading||(!force&&MK.loaded&&Date.now()-MK.loaded<25*60000))return;MK.loading=true;
   const g=f=>roboJson(f).catch(()=>null);
-  try{const [di,inf,ima,cred,tit,taxas]=await Promise.all([g("di_futuro.json"),g("inflacao.json"),g("ima.json"),g("credito_hist.json"),g("titulos_hist.json"),g("taxas_hist.json")]);
+  try{const [di,inf,ima,cred,tit,taxas,proj]=await Promise.all([g("di_futuro.json"),g("inflacao.json"),g("ima.json"),g("credito_hist.json"),g("titulos_hist.json"),g("taxas_hist.json"),g("projecoes_inflacao.json")]);MK.proj=proj&&proj.ipca?proj:null;
     MK.di=di&&di.dias&&Object.keys(di.dias).length?di:null;MK.inf=inf;MK.ima=ima&&ima.indices?ima:null;MK.cred=cred&&cred.dias?cred:null;MK.tit=tit&&tit.dias?tit:null;MK.taxas=taxas;if(di||inf||ima||cred||tit)MK.loaded=Date.now();
     if(!FX)fxLoad()}finally{MK.loading=false}
   if(MKM.has(activeMod))mkCalc()}
@@ -7128,6 +7128,23 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="debCode"&&e.key==="Enter"){e.preventDefault();MK.debc=e.target.value.toUpperCase().trim();const o=$("debOut");if(o)o.innerHTML=debOne(MK.debc)}});
 // Inflação em detalhe
 function m12(L,i){let f=1;for(let k=i-11;k<=i;k++){if(k<0||!L[k])return NaN;f*=1+L[k][1]/100}return (f-1)*100}
+// projeções ANBIMA do IPCA: mês corrente (até o IBGE divulgar) e mês seguinte
+const ymK=ym=>(+ym.slice(0,4))*12+(+ym.slice(5,7))-1;
+function ipcaProjUlt(b){const L=(b&&b.coletas||[]).filter(c=>c.v!=null&&isFinite(c.v));return {u:L[L.length-1],a:L[L.length-2]}}
+function ipcaProjCards(ip,n){const P=MK.proj&&MK.proj.ipca;if(!P)return "";const ym=ip[n][0];let h="";
+  const card=(b,lab)=>{if(!b||!b.ref||b.ref<=ym)return "";const {u,a}=ipcaProjUlt(b);if(!u)return "";
+    let x='coletada em '+fdate(Date.parse(u.d+"T00:00:00Z"))+(a?' · antes '+fx(a.v,2)+'%':'');
+    if(ymK(b.ref)===ymK(ym)+1&&n>=11){const v12=(m12(ip,n)/100+1)*(1+u.v/100)/(1+ip[n-11][1]/100);x+='<br>12 meses projetado '+fx((v12-1)*100,2)+'%'}
+    return '<div><span>'+lab+' · '+mname(ymK(b.ref))+'</span><b>'+fx(u.v,2)+'%</b><small>'+x+'</small></div>'};
+  h+=card(P.mes,"Projeção ANBIMA");
+  h+=card(P.posterior,"Projeção ANBIMA");
+  return h}
+function ipcaProjHist(){const H=MK.proj&&MK.proj.ipca&&MK.proj.ipca.historico;if(!H||!H.length)return "";
+  const L=H.filter(x=>x.efetivo!=null).slice().sort((a,b)=>a.ref<b.ref?1:-1).slice(0,6).map(x=>{const {u}=ipcaProjUlt(x);return u?[x.ref,u.v,x.efetivo]:null}).filter(Boolean);if(!L.length)return "";
+  const em=L.reduce((s,r)=>s+Math.abs(r[2]-r[1]),0)/L.length;
+  return '<div class="label" style="margin-top:14px">Projeção ANBIMA × IPCA oficial</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab fxstat"><thead><tr><th style="text-align:left">Mês</th><th>Última projeção</th><th>IPCA oficial</th><th>Diferença</th></tr></thead><tbody>'
+    +L.map(([m,p,e])=>'<tr><td style="text-align:left">'+mname(ymK(m))+'</td><td>'+fx(p,2)+'%</td><td><b>'+fx(e,2)+'%</b></td><td>'+((e-p)>=0?'+':'−')+fx(Math.abs(e-p),2)+'\u00a0p.p.</td></tr>').join("")
+    +'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:4px">Erro médio das últimas '+L.length+' projeções: '+fx(em,2)+' p.p. A ANBIMA coleta as projeções duas vezes por mês (na divulgação do IPCA e do IPCA-15), para o mês corrente e o seguinte; a projeção do mês sai de cena quando o IBGE divulga o índice.</p>'}
 function ipcaHtml(){
   const I=MK.inf;if(!I||!I.sgs||!I.sgs.ipca)return '<span class="label">Inflação</span><p class="sub">Os dados detalhados de inflação aparecem aqui depois da próxima coleta do robô.</p>';
   const S=I.sgs,ip=S.ipca,n=ip.length-1,last=ip[n],ym=last[0],k=(+ym.slice(0,4))*12+(+ym.slice(5,7))-1;
@@ -7137,6 +7154,7 @@ function ipcaHtml(){
    +'<div><span>IPCA em 12 meses</span><b class="'+(m12(ip,n)>META+TOL?'neg':m12(ip,n)<META-TOL?'pos':'')+'">'+fx(m12(ip,n),2)+'%</b><small>meta '+fx(META,1)+'% (tolerância de '+fx(META-TOL,1)+'% a '+fx(META+TOL,1)+'%)</small></div>'
    +'<div><span>No ano</span><b>'+fx((yr-1)*100,2)+'%</b><small>'+ym.slice(0,4)+'</small></div>';
   if(I.ipca15){const ms=Object.keys(I.ipca15).sort(),u=ms[ms.length-1],G=I.ipca15[u],v=Object.values(G)[0]||{},mv=Object.entries(v).find(([a])=>/varia\S*o mensal/i.test(a)),a12=Object.entries(v).find(([a])=>/12 meses/i.test(a));if(mv)h+='<div><span>IPCA-15 · '+mname((+u.slice(0,4))*12+(+u.slice(4,6))-1)+'</span><b>'+fx(mv[1],2)+'%</b><small>'+(a12?'12 meses '+fx(a12[1],2)+'%':'prévia do IPCA')+'</small></div>'}
+  h+=ipcaProjCards(ip,n);
   const sel=I.selic_meta;if(sel)h+='<div><span>Selic meta</span><b>'+fx(sel.valor,2)+'%</b><small>juro real ex-post ≈ '+fx(((1+sel.valor/100)/(1+m12(ip,n)/100)-1)*100,2)+'%</small></div>';
   h+='</div>';
   const R=[["ipca","IPCA (cheio)"],["nucleo_ms","Núcleo médias aparadas (MS)"],["nucleo_dp","Núcleo dupla ponderação (DP)"],["servicos","Serviços"],["livres","Preços livres"],["monitorados","Preços monitorados (administrados)"],["comercializaveis","Comercializáveis"]].filter(x=>S[x[0]]&&S[x[0]].length>12);
@@ -7151,7 +7169,8 @@ function ipcaHtml(){
     if(row.length){const gv=(o,re)=>{const e=Object.entries(o).find(([a])=>re.test(a));return e?e[1]:NaN};
       h+='<div class="label" style="margin-top:14px">IPCA por grupo · '+mname((+u.slice(0,4))*12+(+u.slice(4,6))-1)+'</div><div class="tablewrap" style="max-height:none;margin-top:4px"><table class="ctab fxstat"><thead><tr><th style="text-align:left">Grupo</th><th>No mês</th><th>12 meses</th><th>Peso</th><th>Contribuição no mês</th></tr></thead><tbody>'
        +row.map(([c,o])=>{const v=gv(o,/varia\S*o mensal/i),a=gv(o,/12 meses/i),w=gv(o,/peso/i);return [c,v,a,w,v*w/100]}).sort((a,b)=>(b[4]||0)-(a[4]||0)).map(([c,v,a,w,ct])=>'<tr><td style="text-align:left">'+esc(c.replace(/^\d\.\s*/,""))+'</td><td>'+(isFinite(v)?fx(v,2)+'%':'—')+'</td><td>'+(isFinite(a)?fx(a,2)+'%':'—')+'</td><td>'+(isFinite(w)?fx(w,1)+'%':'—')+'</td><td>'+(isFinite(ct)?(ct>=0?'+':'−')+fx(Math.abs(ct),2)+' p.p.':'—')+'</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:4px">Contribuição = variação do grupo × peso; mostra quem mais empurrou o índice no mês.</p>'}}
-  return h+'<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: IBGE (IPCA, grupos e IPCA-15, via SIDRA) e Banco Central (núcleos, serviços, livres e monitorados, via SGS). Meta de inflação contínua de 3% (CMN).</p>';
+  h+=ipcaProjHist();
+  return h+'<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: IBGE (IPCA, grupos e IPCA-15, via SIDRA) e Banco Central (núcleos, serviços, livres e monitorados, via SGS). Meta de inflação contínua de 3% (CMN).'+(MK.proj?' Projeções: ANBIMA (consenso do Grupo Consultivo Macroeconômico, as mesmas usadas no valor nominal das NTN-B até sair o índice oficial).':'')+'</p>';
 }
 // Índices ANBIMA
 function imaHtml(){
