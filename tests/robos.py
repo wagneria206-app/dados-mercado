@@ -225,6 +225,15 @@ for k in ("teste_passageira", "teste_quebrada"):
 atualizar._ANTERIOR = None
 atualizar.time.sleep = _sl
 
+# ---------------- ANBIMA: projeções do IPCA (trecho real da tabela, 03/11/2026)
+_proj = "IGP-M|IPCA|" + 'A coleta das informações para as projeções do IPCA é feita duas vezes ao mês: no dia da divulgação do IPCA fechado e do IPCA-15. Em ambos os casos, a projeção apurada é para o mês corrente e o mês imediatamente posterior.|PROJEÇÕES PARA O MÊS (**)|OUTUBRO DE 2026|Mês de Coleta|Data|Projeção (%)|Data de Validade*|Outubro de 2026|09/10/26|0,27|16/10/26|Outubro de 2026|23/10/26|0,21|26/10/26|Fonte: Grupo Consultivo Permanente Macroeconômico da ANBIMA.|* Data para efeito de atualização do Valor Nominal dos títulos indexados pelo IPCA.|PROJEÇÕES PARA O MÊS POSTERIOR|NOVEMBRO DE 2026|Mês de Coleta|Data|Projeção (%)|Outubro de 2026|09/10/26|0,27|Outubro de 2026|23/10/26|0,32|Quando não for possível apurar a projeção para os índices, a ANBIMA repetirá a última estimativa disponível para o mês corrente, até que uma nova projeção seja calculada. Se a impossibilidade ocorrer após a divulgação dos índices fechados para o mês, ou seja, nos casos em que mudar o mês de referência da projeção, será repetida a última taxa oficial disponível, divulgada pelas entidades que calculam os índices de preços, até que uma nova projeção também se faça possível.|HISTÓRICO DOS ÚLTIMOS 12 MESES|Mês da Projeção|Data|Projeção (%)|Data de Validade|IPCA Efetivo (%)|Setembro de 2026|25/09/26|0,72|28/09/26|0,82|11/09/26|0,56|16/09/26|Agosto de 2026|26/08/26|-0,28|27/08/26|-0,32|11/08/26|-0,20|18/08/26|Julho de 2026|28/07/26|0,05|29/07/26|0,07|10/07/26|0,23|16/07/26|'
+P = atualizar.ler_projecoes([x.strip() for x in _proj.split("|") if x.strip()])["ipca"]
+confere("projeção ANBIMA: mês corrente", P["mes"]["ref"], "2026-10")
+confere("projeção ANBIMA: última coleta do mês", [P["mes"]["coletas"][-1]["d"], P["mes"]["coletas"][-1]["v"]], ["2026-10-23", 0.21])
+confere("projeção ANBIMA: mês seguinte", [P["posterior"]["ref"], P["posterior"]["coletas"][-1]["v"]], ["2026-11", 0.32])
+confere("projeção ANBIMA: histórico com o efetivo", [P["historico"][0]["ref"], P["historico"][0]["efetivo"], P["historico"][1]["coletas"][-1]["v"]], ["2026-09", 0.82, -0.28])
+confere("projeção ANBIMA: meses do histórico", len(P["historico"]), 3)
+
 import saude  # noqa: E402
 _tz = dt.timezone(dt.timedelta(hours=-3))
 confere("Focus: terça depois de feriado, antes da divulgação, ainda vale a semana anterior", saude.focus_esperado(dt.datetime(2026, 11, 3, 7, 32, tzinfo=_tz)), dt.date(2026, 10, 23))

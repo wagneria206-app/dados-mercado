@@ -89,6 +89,7 @@ feriado não contam) e, no Focus, pela data de divulgação esperada. Ajustar es
 | CVM (fundos: informe diário, cadastro, CDA) | diário, madrugada | 8h17 e 20h47 |
 | CVM (CRI/CRA, ofertas) | mensal / diário | 8h00 e 19h30 |
 | IBGE (IPCA, PIB…) | calendário do IBGE, 9h | 9h20 e 18h50 |
+| ANBIMA · projeções de IPCA e IGP-M | por volta das 17h30, no dia do IPCA, do IPCA-15 e das prévias do IGP-M | 19h30 e 21h40 |
 | EUA (Cboe, SEC, BLS, Fed) | após o fechamento em Nova York | 19h25 e 7h45 |
 
 ## Pendências técnicas

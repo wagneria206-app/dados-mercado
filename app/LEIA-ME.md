@@ -185,7 +185,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
-- `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (27 KB)
+- `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
 - `608-ofertas-publicas.js` (4 KB)
