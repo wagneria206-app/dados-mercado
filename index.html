@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-jcxlfgInW1P6SAyvtrU3qHj18tUp/naA7LC6SpQfjK8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-/cRDZycnaKRZE5VPpWldgNA4fIv8tSh3B6ophrQ2j3c='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3681,6 +3681,12 @@ async function fnFund(k){
   if(FN.files.has(k))return FN.files.get(k);
   const j=await fnGet("f/"+k+".json");const F=fnDecode(j);FN.files.set(k,F);return F;
 }
+/* as variações diárias vêm em milionésimos e o arredondamento se acumula ao longo dos anos (~0,002%):
+   em cada mês, a cota do último dia volta a ser a cota oficial do mês (CVM) e o mês inteiro é ajustado na mesma proporção */
+function fnAncora(I,Q,M){if(!I.length||!M.size||!FN.cal)return;const ult=new Map();
+  I.forEach((ix,j)=>{const d=FN.cal[ix];if(d)ult.set(+d.slice(0,4)*12+(+d.slice(5,7))-1,j)});
+  const fat=new Map();ult.forEach((j,k)=>{const m=M.get(k);if(!m||!(m.q>0)||!(Q[j]>0))return;const x=m.q/Q[j];if(Math.abs(x-1)<1e-4)fat.set(k,x)});
+  if(!fat.size)return;I.forEach((ix,j)=>{const d=FN.cal[ix];if(!d)return;const x=fat.get(+d.slice(0,4)*12+(+d.slice(5,7))-1);if(x)Q[j]*=x})}
 function fnDecode(j){
   const I=[],Q=[];
   if(j.i0!=null&&j.q0){let q=j.q0;I.push(j.i0);Q.push(q);(j.r||[]).forEach((r,n)=>{if(r==null)return;q*=Array.isArray(r)?r[0]:1+r/1e6;if(!(q>0))return;I.push(j.i0+1+n);Q.push(q)})}
@@ -3689,6 +3695,7 @@ function fnDecode(j){
     (j.mq||[]).forEach((q,n)=>{if(q==null)return;const k=k0+n,o=d0!=null?k-d0:-1,g=a=>a&&o>=0&&o<a.length?a[o]:null;
       M.set(k,{q,pl:j.mpl&&j.mpl[n]!=null?j.mpl[n]*1e3:null,cot:g(j.mc),ca:g(j.mca)!=null?g(j.mca)*1e3:null,re:g(j.mre)!=null?g(j.mre)*1e3:null})})}
   const MK=[...M.keys()].sort((a,b)=>a-b);
+  fnAncora(I,Q,M);
   ["n","nf","fan","ges","adm","cus","aud"].forEach(k=>{if(typeof j[k]==="string")j[k]=nomeCx(j[k])});
   return Object.assign(j,{I,Q,M,MK});
 }
@@ -5769,14 +5776,14 @@ function spAliq(reg,dias){if(reg==="lp"||reg==="rf")return dias<=180?0.225:dias<
 function spPosCalc(c,its,Ds){
   const L=FN.L,cdiS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.cdi&&L.d.cdi[i])a.push([d,L.d.cdi[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.cdi||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.cdi[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
   const ipS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.ipca&&L.d.ipca[i])a.push([d,L.d.ipca[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.ipca||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.ipca[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
-  const P=[];its.forEach((x,i)=>{const mv=(x.mov||[]).filter(spMovOk).map(m=>({d:m.d,v:+m.v})).sort((a,b)=>a.d<b.d?-1:1);if(!mv.length)return;const S=spSerie(Ds[i]);mv.forEach(m=>{const a=spAt(S,m.d);m.ed=a?a[0]:null});P.push({x,D:Ds[i],S,mv})});
+  const P=[];its.forEach((x,i)=>{const mv=(x.mov||[]).filter(spMovOk).map(m=>({d:m.d,v:+m.v,q:x.t==="f"&&+m.q>0?+m.q:null})).sort((a,b)=>a.d<b.d?-1:1);if(!mv.length)return;const S=spSerie(Ds[i]);mv.forEach(m=>{const a=spAt(S,m.d);m.ed=a?a[0]:null});P.push({x,D:Ds[i],S,mv})});
   if(!P.length)return null;
   // data de avaliação: o dia mais recente que todos os itens com saldo já publicaram
   let dv="9999";P.forEach(p=>{const u=p.S.length?p.S[p.S.length-1][0]:"0000";if(u<dv)dv=u});
   const d0=P.reduce((a,p)=>{const e=p.mv.find(m=>m.ed);return e&&e.ed<a?e.ed:a},"9999");if(dv<d0)return {erro:"As aplicações informadas são mais recentes que os últimos dados publicados ("+fdate(Date.parse(dv+"T00:00:00Z"))+")."};
   // cotas por item e lotes (para o IR por aplicação, resgates saem dos lotes mais antigos)
   P.forEach(p=>{p.lotes=[];p.cotas=0;p.apl=0;p.resg=0;p.cf=[];p.sem=[];
-    p.mv.forEach(m=>{if(m.d>dv)return;const lv=spAt(p.S,m.d);if(!lv){p.sem.push(m.d);return}const q=Math.abs(m.v)/lv[1];
+    p.mv.forEach(m=>{if(m.d>dv)return;const lv=spAt(p.S,m.d);if(!lv){p.sem.push(m.d);return}const q=m.q||Math.abs(m.v)/lv[1];   // fundo com quantidade de cotas informada: vale a quantidade do extrato
       if(m.v>0){p.lotes.push({d:m.d,q,custo:m.v,lv:lv[1]});p.cotas+=q;p.apl+=m.v;p.cf.push([m.d,-m.v])}
       else{let r=q;p.resg+=-m.v;p.cf.push([m.d,-m.v]);while(r>1e-12&&p.lotes.length){const l=p.lotes[0],t=Math.min(r,l.q),f=t/l.q;l.custo-=l.custo*f;l.q-=t;r-=t;if(l.q<=1e-12)p.lotes.shift()}p.cotas=p.lotes.reduce((a,l)=>a+l.q,0)}});
     const lv=spAt(p.S,dv);p.lvF=lv?lv[1]:null;p.v=p.lvF?p.cotas*p.lvF:0;p.custo=p.lotes.reduce((a,l)=>a+l.custo,0);

@@ -46,6 +46,12 @@ async function fnFund(k){
   if(FN.files.has(k))return FN.files.get(k);
   const j=await fnGet("f/"+k+".json");const F=fnDecode(j);FN.files.set(k,F);return F;
 }
+/* as variações diárias vêm em milionésimos e o arredondamento se acumula ao longo dos anos (~0,002%):
+   em cada mês, a cota do último dia volta a ser a cota oficial do mês (CVM) e o mês inteiro é ajustado na mesma proporção */
+function fnAncora(I,Q,M){if(!I.length||!M.size||!FN.cal)return;const ult=new Map();
+  I.forEach((ix,j)=>{const d=FN.cal[ix];if(d)ult.set(+d.slice(0,4)*12+(+d.slice(5,7))-1,j)});
+  const fat=new Map();ult.forEach((j,k)=>{const m=M.get(k);if(!m||!(m.q>0)||!(Q[j]>0))return;const x=m.q/Q[j];if(Math.abs(x-1)<1e-4)fat.set(k,x)});
+  if(!fat.size)return;I.forEach((ix,j)=>{const d=FN.cal[ix];if(!d)return;const x=fat.get(+d.slice(0,4)*12+(+d.slice(5,7))-1);if(x)Q[j]*=x})}
 function fnDecode(j){
   const I=[],Q=[];
   if(j.i0!=null&&j.q0){let q=j.q0;I.push(j.i0);Q.push(q);(j.r||[]).forEach((r,n)=>{if(r==null)return;q*=Array.isArray(r)?r[0]:1+r/1e6;if(!(q>0))return;I.push(j.i0+1+n);Q.push(q)})}
@@ -54,6 +60,7 @@ function fnDecode(j){
     (j.mq||[]).forEach((q,n)=>{if(q==null)return;const k=k0+n,o=d0!=null?k-d0:-1,g=a=>a&&o>=0&&o<a.length?a[o]:null;
       M.set(k,{q,pl:j.mpl&&j.mpl[n]!=null?j.mpl[n]*1e3:null,cot:g(j.mc),ca:g(j.mca)!=null?g(j.mca)*1e3:null,re:g(j.mre)!=null?g(j.mre)*1e3:null})})}
   const MK=[...M.keys()].sort((a,b)=>a-b);
+  fnAncora(I,Q,M);
   ["n","nf","fan","ges","adm","cus","aud"].forEach(k=>{if(typeof j[k]==="string")j[k]=nomeCx(j[k])});
   return Object.assign(j,{I,Q,M,MK});
 }

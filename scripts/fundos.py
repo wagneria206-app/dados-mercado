@@ -178,6 +178,33 @@ def ler_mes(ym, filtro=None):
 
 # ------------------------------------------------------------------ estado dos fundos
 
+def ancorar(f):
+    """Corrige o desvio acumulado das cotas diárias lidas do arquivo (variações guardadas em milionésimos):
+    em cada mês, a cota do último dia volta a ser a cota oficial do mês e o mês inteiro é ajustado na mesma proporção."""
+    if not len(f.i) or not f.m:
+        return 0
+    ult = {}
+    for j in range(len(f.i)):
+        ix = f.i[j]
+        if 0 <= ix < len(CAL):
+            ult[CAL[ix][:7].replace("-", "")] = j
+    fator, n = {}, 0
+    for ym, reg in f.m.items():
+        j = ult.get(ym)
+        if j is None or not reg[1] or not f.q[j] > 0:
+            continue
+        x = reg[1] / f.q[j]
+        if abs(x - 1) < 1e-4:       # só desvio de arredondamento; diferença maior é outra coisa (cota de outro dia)
+            fator[ym] = x
+    for j in range(len(f.i)):
+        ix = f.i[j]
+        x = fator.get(CAL[ix][:7].replace("-", "")) if 0 <= ix < len(CAL) else None
+        if x and x != 1:
+            f.q[j] *= x
+            n += 1
+    return n
+
+
 def ler_mensal(f, j):
     """Reconstrói os registros mensais a partir do formato compacto do arquivo."""
     m0 = j.get("m0")
@@ -256,6 +283,7 @@ def carregar_estado(pasta):
                     q = q * x[0] if isinstance(x, list) else q * (1 + x / ESC)
                     f.i.append(i0 + 1 + k)
                     f.q.append(q)
+            ancorar(f)
             F[nome[:-5]] = f
             if j.get("cart") or j.get("carth"):
                 OLD[nome[:-5]] = (j.get("cart"), j.get("carth") or {})
@@ -986,11 +1014,18 @@ def codificar(f):
         return None, None, []
     i0, q0 = f.i[0], f.q[0]
     r = [None] * (f.i[-1] - i0)
+    qr = q0          # cota como o app vai reconstruir: cada variação é medida contra ela, para o arredondamento não se acumular
     for j in range(1, len(f.i)):
-        a, b = f.q[j - 1], f.q[j]
-        x = b / a if a > 0 else 1.0
+        b = f.q[j]
+        x = b / qr if qr > 0 else 1.0
         # variações extremas (cota reiniciada, grupamento) vão como razão exata para não zerar a cota
-        r[f.i[j] - i0 - 1] = round((x - 1) * ESC) if 0.5 < x < 2 else [float(f"{x:.12g}")]
+        if 0.5 < x < 2:
+            c = round((x - 1) * ESC)
+            r[f.i[j] - i0 - 1] = c
+            qr *= 1 + c / ESC
+        else:
+            r[f.i[j] - i0 - 1] = [float(f"{x:.12g}")]
+            qr *= float(f"{x:.12g}")
     return i0, q0, r
 
 
