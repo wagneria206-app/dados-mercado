@@ -174,7 +174,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `569-antes-e-depois.js` (6 KB)
 - `570-pagina-do-bdr-dados-da.js` — página do BDR: dados da empresa nos EUA (9 KB)
 - `571-subabas-da-carteira.js` (4 KB)
-- `572-editar-item.js` (7 KB)
+- `572-editar-item.js` (9 KB)
 - `573-proposta-ou-carteira.js` (4 KB)
 - `575-eventos.js` — eventos (1 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
