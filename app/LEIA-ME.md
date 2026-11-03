@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (22 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (24 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -158,7 +158,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `545-proximas-divulgacoes-do-ibge-calendario.js` — Próximas divulgações do IBGE (calendário oficial, lido direto pelo navegador; se não carregar, a seção some) (2 KB)
 - `546-calendario-dos-eua.js` (5 KB)
 - `550-mercado-resumo-capital-estrangeiro-banco.js` — Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito (3 KB)
-- `555-sptemmov.js` (14 KB)
+- `555-sptemmov.js` (18 KB)
 - `557-relatorio-mensal-do-cliente.js` (7 KB)
 - `558-painel-da-carteira.js` (12 KB)
 - `559-politica-e-rebalanceamento.js` (8 KB)
