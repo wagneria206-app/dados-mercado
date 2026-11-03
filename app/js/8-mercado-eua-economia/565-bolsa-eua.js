@@ -12,7 +12,7 @@ function euJurosHtml(){
   const S=EU.S;if(!S.vix)return "";
   return '<h3>Volatilidade nos EUA (VIX)</h3><div class="label">VIX, 5 anos (volatilidade esperada do S&P 500 para os próximos 30 dias)</div>'+fnChart([{lab:"VIX",col:"#9333ea",w:1.8,pts:euSer5("vix")}],{fmt:"num",h:180,aria:"VIX"})+'<p class="sub" style="font-size:.8rem">VIX acima de 30 costuma indicar estresse no mercado; abaixo de 15, calmaria. Os juros dos EUA (Treasuries, Fed e SOFR), com o histórico de 5 anos, estão em Mercado › Juros.</p>';
 }
-/* Mercado › Juros: histórico dos Treasuries, abaixo dos cartões de juros dos EUA */
+/* Mercado › EUA e mundo: histórico dos Treasuries, abaixo dos cartões de juros dos EUA */
 function euTreasuryHtml(){
   if(!EU.S){euBoot();return ""}const S=EU.S;if(!S.t10)return "";
   const u10=S.t10[S.t10.length-1],u2=S.t2&&S.t2[S.t2.length-1];

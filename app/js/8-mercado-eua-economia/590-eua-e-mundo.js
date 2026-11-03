@@ -1,7 +1,8 @@
 /* ---------- EUA e mundo */
 function mundoHtml(){
   const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
-  return [mcTransHtml(),mcEuaHtml(),euaCalHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
+  if(!FXJ)fxLoad();const ju=euaHtml()+euTreasuryHtml();
+  return [mcEuaHtml(),euaCalHtml(),mcFedHtml(),ju,mcTransHtml(),mcGlobalHtml()].filter(Boolean);
 }
 const MC_W0=Date.UTC(1970,0,5);
 function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
@@ -66,7 +67,7 @@ function mcFedHtml(){
 function mcGlobalHtml(){
   const br=mcSer("brent"),dx=mcSer("dxy");if(!br.length&&!dx.length)return "";const k=[];
   const v=(P,n)=>{const u=P[P.length-1],a=euAt(P,u[0]-n*DAY);return a?(u[1]/a[1]-1)*100:null};
-  if(br.length){const u=br[br.length-1];k.push(mcKp("Petróleo Brent · "+fdate(u[0]).slice(0,5),'US$ '+fx(u[1],2),mcSig(v(br,30),1)+' em 30 dias · '+mcSig(v(br,365),1)+' em 12 meses'))}
+  if(br.length){const u=br[br.length-1];k.push(mcKp("Petróleo Brent · "+fdate(u[0]).slice(0,5),'US$ '+fx(u[1],2),mcSig(v(br,30),1)+' em 30 dias · '+mcSig(v(br,365),1)+' em 12 meses<br>a EIA publica uma vez por semana, às quartas, com os preços até a véspera'))}
   if(dx.length){const u=dx[dx.length-1];k.push(mcKp("Dólar no mundo (índice do Fed) · "+fdate(u[0]).slice(0,5),fx(u[1],2),mcSig(v(dx,30),1)+' em 30 dias · '+mcSig(v(dx,365),1)+' em 12 meses'))}
   const th=P=>fnThin(mcCut(P,5).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
   return '<h3>Petróleo e dólar no mundo</h3><p class="sub">Petróleo caro ajuda Petrobras e a balança comercial, mas pressiona a inflação. Dólar forte no mundo costuma tirar dinheiro de países emergentes como o Brasil.</p><div class="fnkpis">'+k.join("")+'</div>'

@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-SLnOIgd1GAM5/2Z6GMd1CFAYakpf9NoD98y1XdKhmK8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-cTGeU8aVn4qU6Iu//1lFoUHFAmDzLQBOkYT+M3VYDZc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mercado e Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>Mercado e Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3230,7 +3230,7 @@ function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
-  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml()+euTreasuryHtml());
+  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
   else if(activeMod==="cr")h=P(crBuscaHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+'<p class="sub" style="margin:4px 4px 12px">O calendário das próximas divulgações do IBGE está na aba Economia.</p>';
   else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
@@ -6387,7 +6387,7 @@ function euJurosHtml(){
   const S=EU.S;if(!S.vix)return "";
   return '<h3>Volatilidade nos EUA (VIX)</h3><div class="label">VIX, 5 anos (volatilidade esperada do S&P 500 para os próximos 30 dias)</div>'+fnChart([{lab:"VIX",col:"#9333ea",w:1.8,pts:euSer5("vix")}],{fmt:"num",h:180,aria:"VIX"})+'<p class="sub" style="font-size:.8rem">VIX acima de 30 costuma indicar estresse no mercado; abaixo de 15, calmaria. Os juros dos EUA (Treasuries, Fed e SOFR), com o histórico de 5 anos, estão em Mercado › Juros.</p>';
 }
-/* Mercado › Juros: histórico dos Treasuries, abaixo dos cartões de juros dos EUA */
+/* Mercado › EUA e mundo: histórico dos Treasuries, abaixo dos cartões de juros dos EUA */
 function euTreasuryHtml(){
   if(!EU.S){euBoot();return ""}const S=EU.S;if(!S.t10)return "";
   const u10=S.t10[S.t10.length-1],u2=S.t2&&S.t2[S.t2.length-1];
@@ -6859,7 +6859,8 @@ function mcCredHtml(B){
 /* ---------- EUA e mundo */
 function mundoHtml(){
   const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
-  return [mcTransHtml(),mcEuaHtml(),euaCalHtml(),mcFedHtml(),mcGlobalHtml()].filter(Boolean);
+  if(!FXJ)fxLoad();const ju=euaHtml()+euTreasuryHtml();
+  return [mcEuaHtml(),euaCalHtml(),mcFedHtml(),ju,mcTransHtml(),mcGlobalHtml()].filter(Boolean);
 }
 const MC_W0=Date.UTC(1970,0,5);
 function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
@@ -6924,7 +6925,7 @@ function mcFedHtml(){
 function mcGlobalHtml(){
   const br=mcSer("brent"),dx=mcSer("dxy");if(!br.length&&!dx.length)return "";const k=[];
   const v=(P,n)=>{const u=P[P.length-1],a=euAt(P,u[0]-n*DAY);return a?(u[1]/a[1]-1)*100:null};
-  if(br.length){const u=br[br.length-1];k.push(mcKp("Petróleo Brent · "+fdate(u[0]).slice(0,5),'US$ '+fx(u[1],2),mcSig(v(br,30),1)+' em 30 dias · '+mcSig(v(br,365),1)+' em 12 meses'))}
+  if(br.length){const u=br[br.length-1];k.push(mcKp("Petróleo Brent · "+fdate(u[0]).slice(0,5),'US$ '+fx(u[1],2),mcSig(v(br,30),1)+' em 30 dias · '+mcSig(v(br,365),1)+' em 12 meses<br>a EIA publica uma vez por semana, às quartas, com os preços até a véspera'))}
   if(dx.length){const u=dx[dx.length-1];k.push(mcKp("Dólar no mundo (índice do Fed) · "+fdate(u[0]).slice(0,5),fx(u[1],2),mcSig(v(dx,30),1)+' em 30 dias · '+mcSig(v(dx,365),1)+' em 12 meses'))}
   const th=P=>fnThin(mcCut(P,5).map(p=>({t:p[0],v:p[1]})),500).map(p=>[p.t,p.v]);
   return '<h3>Petróleo e dólar no mundo</h3><p class="sub">Petróleo caro ajuda Petrobras e a balança comercial, mas pressiona a inflação. Dólar forte no mundo costuma tirar dinheiro de países emergentes como o Brasil.</p><div class="fnkpis">'+k.join("")+'</div>'
@@ -7086,7 +7087,11 @@ function diHtml(){
 // Juros dos EUA
 function euaHtml(){const U=FXJ&&FXJ.ultimo;if(!U)return "";const R=[["fed_funds","Fed funds (juro do Fed)"],["juro_eua","SOFR (overnight)"],["treasury_2a","Treasury 2 anos"],["treasury_10a","Treasury 10 anos"],["juro_real_eua_10a","Juro real 10 anos (TIPS)"]].filter(x=>U[x[0]]);if(!R.length)return "";
   const M=FXJ.mensal||{},m1=k=>{const s=M[k];if(!s)return NaN;const ks=Object.keys(s).sort();return ks.length>1?s[ks[ks.length-2]]:NaN};
-  return '<span class="label">Juros dos EUA</span><div class="rsgrid">'+R.map(([k,l])=>{const v=U[k].valor,p=m1(k);return '<div><span>'+l+'</span><b>'+fx(v,2)+'%</b><small>'+fdate(Date.parse(U[k].data))+(isFinite(p)?' · '+bpsC(v-p)+' sobre a média do mês anterior':'')+'</small></div>'}).join("")+'</div><p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Tesouro americano (Treasuries e juro real) e Fed de Nova York (juro do Fed e SOFR). Juro alto nos EUA tende a fortalecer o dólar e pressionar os juros longos no Brasil.</p>'}
+  return '<h3>Juros dos EUA</h3><p class="sub">O juro do Fed e os Treasuries são o resultado da inflação, do emprego e das projeções acima; logo abaixo, quanto eles costumam mexer nos juros e no câmbio do Brasil.</p><div class="rsgrid">'+R.map(([k,l])=>{const v=U[k].valor,p=m1(k);return '<div><span>'+l+'</span><b>'+fx(v,2)+'%</b><small>'+fdate(Date.parse(U[k].data))+(isFinite(p)?' · '+bpsC(v-p)+' sobre a média do mês anterior':'')+'</small></div>'}).join("")+'</div><p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: Tesouro americano (Treasuries e juro real) e Fed de Nova York (juro do Fed e SOFR). Juro alto nos EUA tende a fortalecer o dólar e pressionar os juros longos no Brasil.</p>'}
+// na aba Juros fica só a referência americana; o bloco completo está em EUA e mundo
+function euaLinhaHtml(){const t=FXJ&&FXJ.ultimo&&FXJ.ultimo.treasury_10a,f=FXJ&&FXJ.ultimo&&FXJ.ultimo.fed_funds;
+  return '<p class="sub" style="margin:4px 4px 12px">'+(t?'Referência americana: Treasury 10 anos <b>'+fx(t.valor,2)+'%</b> ('+fdate(Date.parse(t.data))+')'+(f?' · juro do Fed '+fx(f.valor,2)+'%':'')+'. ':'')+'Os juros dos EUA (Fed, Treasuries, juro real e curva) e quanto eles mexem nos juros daqui estão na aba <button type="button" class="link" data-mkgo="mu">EUA e mundo</button>.</p>'}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-mkgo]");if(x)setMod(x.dataset.mkgo)});
 // Taxas indicativas dos títulos públicos (ANBIMA), com variação
 function titHtml(){
   const T=MK.tit&&MK.tit.dias,ks=T?Object.keys(T).sort():[];if(!ks.length)return "";const dk=ks[ks.length-1],D=T[dk],pv=ks.length>1?T[ks[ks.length-2]]:null,t=Date.parse(dk+"T00:00:00Z");
@@ -7409,7 +7414,7 @@ try{FX_PER=localStorage.getItem("fxPer")||"1y";FX_MA=localStorage.getItem("fxMa"
 const FX_PERS=[["1m","1 mês",1],["3m","3 meses",3],["6m","6 meses",6],["1y","1 ano",12],["2y","2 anos",24],["5y","5 anos",60],["10y","10 anos",120],["all","Desde 1995",0]];
 function fxTopHtml(){const d=FX_TOP;if(!d||!d.venda)return "";const b=d.boletim&&d.boletim.data>d.data?d.boletim:null,v=b?b.venda:d.venda,ref=b?d.venda:d.anterior&&d.anterior.venda,ch=ref?(v/ref-1)*100:NaN;
   return '<span class="fxtop" data-fxgo="1" title="Abrir o acompanhamento do dólar">Dólar PTAX<b>'+fx(v,4)+(isFinite(ch)?' <small class="'+(ch>0?'neg':ch<0?'pos':'')+'">'+(ch>0?'▲':ch<0?'▼':'')+fx(Math.abs(ch),2)+'%</small>':'')+'</b></span>'}
-async function fxLoad(){if(FX_LOADING)return;FX_LOADING=true;try{const [D,F2,J2]=await Promise.all([roboJson("dolar.json"),roboJson("dolar_futuro.json").catch(()=>null),roboJson("dolar_fundamentos.json").catch(()=>null)]);if(D&&Array.isArray(D.serie)&&D.serie.length){FX=D;FX._t=D.serie.map(r=>Date.parse(r[0]+"T00:00:00Z"));FX._v=D.serie.map(r=>+r[2]);FX._ma50=fxMA(FX._v,50);FX._ma200=fxMA(FX._v,200)}FXF=F2&&F2.dias&&Object.keys(F2.dias).length?F2:null;FXJ=J2&&J2.mensal&&J2.mensal.cpi_eua?J2:null;FX_IPCA=null;if(FX){FX._f1=fxFront1();FX._m=null}}catch(e){if(!FX){const o=$("fxOut");if(o)o.innerHTML='<p class="err">Não deu para ler os dados do dólar agora. Toque em Atualizar dados em instantes.</p>'}}finally{FX_LOADING=false}if(FX&&activeMod==="fx")fxCalc()}
+async function fxLoad(){if(FX_LOADING)return;FX_LOADING=true;try{const [D,F2,J2]=await Promise.all([roboJson("dolar.json"),roboJson("dolar_futuro.json").catch(()=>null),roboJson("dolar_fundamentos.json").catch(()=>null)]);if(D&&Array.isArray(D.serie)&&D.serie.length){FX=D;FX._t=D.serie.map(r=>Date.parse(r[0]+"T00:00:00Z"));FX._v=D.serie.map(r=>+r[2]);FX._ma50=fxMA(FX._v,50);FX._ma200=fxMA(FX._v,200)}FXF=F2&&F2.dias&&Object.keys(F2.dias).length?F2:null;FXJ=J2&&J2.mensal&&J2.mensal.cpi_eua?J2:null;FX_IPCA=null;if(FX){FX._f1=fxFront1();FX._m=null}}catch(e){if(!FX){const o=$("fxOut");if(o)o.innerHTML='<p class="err">Não deu para ler os dados do dólar agora. Toque em Atualizar dados em instantes.</p>'}}finally{FX_LOADING=false}if(FX&&activeMod==="fx")fxCalc();else if(FXJ&&activeMod==="mu")mkCalc()}
 function fxMA(V,n){const o=new Array(V.length).fill(NaN);let s=0;for(let i=0;i<V.length;i++){s+=V[i];if(i>=n)s-=V[i-n];if(i>=n-1)o[i]=s/n}return o}
 function fxIdx(t){const T=FX._t;let lo=0,hi=T.length-1;if(t<T[0])return -1;if(t>=T[hi])return hi;while(hi-lo>1){const m=(lo+hi)>>1;if(T[m]<=t)lo=m;else hi=m}return lo}
 function fxPct(a,b){return isFinite(a)&&isFinite(b)&&b>0?(a/b-1)*100:NaN}
@@ -7650,8 +7655,8 @@ function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
 function inicioMod(){const v=lsGet("inicio","ultima");return v&&v!=="ultima"&&AREA_OF[v]?v:null}
 
 /* ---------- busca única */
-const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury payroll inflacao americana petroleo brent dolar global dxy exterior",
-  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b treasury",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
+const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
+  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
   ix:"indices ima ima-b irf-m ima-s anbima renda fixa",fx:"dolar ptax cambio cupom cambial moeda",fa:"fundo analise cnpj",fr:"ranking fundos melhores",fc:"comparar fundos",fg:"gestoras administradoras",aa:"acao acoes fii etf bdr ativo analise",
   ar:"ranking acoes fiis dividendos etf etfs renda fixa cripto internacional categoria",ac:"comparar acoes ativos",au:"bolsa americana eua sec balancos",ag:"agenda proventos dividendos jcp rendimentos",sc:"cenarios juros estresse simulacao",sim:"equivalencia lci lca cdb escada vencimentos",
   sp:"carteira simulador fronteira eficiente alocacao",pub:"calcular tesouro titulo marcacao a mercado agio desagio",pc:"calcular credito privado debenture cri cra",bank:"cdb lci lca rdb bancarios",fund:"fundos previdencia pgbl vgbl come-cotas"};

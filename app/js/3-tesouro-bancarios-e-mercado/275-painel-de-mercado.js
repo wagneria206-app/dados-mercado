@@ -43,7 +43,7 @@ function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
-  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+P(euaHtml()+euTreasuryHtml());
+  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
   else if(activeMod==="cr")h=P(crBuscaHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+'<p class="sub" style="margin:4px 4px 12px">O calendário das próximas divulgações do IBGE está na aba Economia.</p>';
   else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
