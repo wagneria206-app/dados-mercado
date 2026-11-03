@@ -80,10 +80,7 @@ function spPosHtml(c,its,Ds){
   const c0=spAt(T.cdiS,d0);if(c0)S.push({lab:"CDI",col:FN_BM.cdi.col,w:1.5,pts:pts.map(p=>{const x=spAt(T.cdiS,p.d);return [p.t,x?(x[1]/c0[1]-1)*100:null]})});
   if(pts.length>2)h+='<div class="label" style="margin-top:6px">Rentabilidade acumulada da carteira</div>'+fnChart(S,{fmt:"pct",zero:true,aria:"Rentabilidade real da carteira"});
   if(pts.length>2)h+='<div class="label" style="margin-top:10px">Patrimônio</div>'+fnChart([{lab:"Valor da carteira",col:FN_COLS[0],w:2,pts:pts.map(p=>[p.t,p.v])}],{fmt:"money",aria:"Patrimônio da carteira"});
-  const totW=c.itens.reduce((a,x)=>a+(+x.w||0),0)||1;
-  h+='<div class="tablewrap" style="max-height:none;margin-top:8px"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Aplicado</th><th>Valor atual</th><th>Ganho</th><th>Rentab. (cotas)</th><th class="c-sm">% do CDI</th><th>TIR a.a.</th><th class="c-md">IR estimado</th><th class="c-ph">Peso atual</th><th class="c-ph">Peso proposto</th></tr></thead><tbody>';
-  P.forEach(p=>{const g=p.v+p.resg-p.apl;h+='<tr><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[c.itens.indexOf(p.x)%CMP_COLS.length]+'"></i>'+esc(spItemNome(p.x))+'<small style="display:block;color:var(--muted)">desde '+fdate(Date.parse(p.mv[0].d+"T00:00:00Z"))+(p.resg?' · resgatado '+brl(p.resg):'')+'</small></td><td>'+brl(p.apl)+'</td><td>'+brl(p.v)+'</td><td class="'+(g>=0?'pos':'neg')+'">'+brl(g)+'</td><td>'+pct(p.ret)+'</td><td class="c-sm">'+(p.cdi&&p.ret!=null&&p.cdi>0&&p.ret>0?fx(p.ret/p.cdi*100,0)+'%':'—')+'</td><td>'+(p.tir!=null?fnPctT(p.tir*100):'—')+'</td><td class="c-md">'+brl(p.ir)+'</td><td class="c-ph">'+(T.v?fx(p.v/T.v*100,1)+'%':'—')+'</td><td class="c-ph">'+fx((+p.x.w||0)/totW*100,1)+'%</td></tr>'});
-  h+='<tr class="cmpbm"><td style="text-align:left"><b>Carteira</b></td><td><b>'+brl(T.apl)+'</b></td><td><b>'+brl(T.v)+'</b></td><td><b>'+brl(T.ganho)+'</b></td><td><b>'+pct(T.twr)+'</b></td><td class="c-sm">'+(T.cdi&&T.twr>0&&T.cdi>0?fx(T.twr/T.cdi*100,0)+'%':'—')+'</td><td><b>'+(T.tir!=null?fnPctT(T.tir*100):'—')+'</b></td><td class="c-md"><b>'+brl(T.ir)+'</b></td><td class="c-ph">100%</td><td class="c-ph">100%</td></tr></tbody></table></div>';
+  h+=spPosTabela(c,P,T);
   if(X.semDado.length)h+='<p class="warn" style="font-size:.84rem">Sem cota ou cotação na data de alguma aplicação de: '+esc(X.semDado.join(", "))+'. Essas aplicações ficaram de fora; confira a data.</p>';
   h+='<p class="sub" style="font-size:.8rem">Rentabilidade da carteira: por cotas (TWR), sem o efeito do momento dos aportes e resgates; é a que se compara com o CDI e com a proposta. Rentabilidade do cliente: taxa interna de retorno (TIR) dos valores aplicados e resgatados nas datas informadas, ao ano. Real: rentabilidade da carteira descontado o IPCA do período. IR estimado se tudo fosse resgatado hoje, aplicação por aplicação (tabela regressiva na renda fixa e nos fundos de renda fixa e multimercado, já contando o come-cotas; 15% em ações, ETFs e BDRs sem a isenção de R$ 20 mil; 20% sobre o ganho de preço dos FIIs). Valores brutos de taxas de corretagem e custódia. Não substitui o extrato da instituição.</p></section>';
   return h;
@@ -99,3 +96,40 @@ document.addEventListener("click",e=>{
   if((x=g("data-spmovgen"))){const tot=c.itens.reduce((a,y)=>a+(+y.w||0),0)||1;c.itens.forEach(y=>{if(!(y.mov&&y.mov.length)&&(+y.w||0)>0)y.mov=[{d:c.ef.data,v:Math.round((+c.ef.valor||0)*(+y.w)/tot*100)/100}]});spSave();spCalc();return}
 });
 
+
+/* posição por tipo de ativo (como no extrato da instituição): produto, vencimento, taxa, quantidade, preço, saldos e peso atual;
+   o "+" de cada linha abre o desempenho do item (aplicado, ganho, rentabilidade, % do CDI, TIR, IR e peso proposto) */
+const SP_GRP_ORD=["Tesouro Direto","CDB","RDB","LC","LCI","LCA","LCD","LIG","Poupança","Debênture","CRI","CRA","Renda fixa","Fundos de investimento","Ações","Fundos imobiliários","ETFs","BDRs","Outros"];
+function spGrupo(x){if(spTd(x))return "Tesouro Direto";if(x.t==="f")return "Fundos de investimento";
+  if(x.t==="s"){const p=spProd(x);return p&&p!=="Outro"?p:"Renda fixa"}
+  const r=AT.idx&&atRow(x.k),tp=r?String(r[AT.C.tipo]||""):"";return /FII|Fiagro|imobili/i.test(tp)?"Fundos imobiliários":/ETF/i.test(tp)?"ETFs":/BDR/i.test(tp)?"BDRs":/Tesouro/i.test(tp)?"Tesouro Direto":tp?"Ações":"Outros"}
+/* produto em duas linhas: código ou nome curto em cima, emissor / empresa / CNPJ embaixo */
+function spPosProd(x){const nm=String(spItemNome(x)),sm=t=>t?'<small style="display:block;color:var(--muted)">'+esc(String(t)).slice(0,60)+'</small>':'';
+  if(x.t==="a"){const r=AT.idx&&atRow(x.k);return '<b>'+esc(x.k)+'</b>'+sm(r?r[1]:nm.replace(/^\S+\s*·\s*/,""))}
+  if(x.t==="f")return esc(nm)+sm(fnCnpjF(x.k));
+  const cod=/^cr:/.test(x.k||"")?x.k.slice(3):null,em=spEmissor(x),pr=spProd(x);
+  if(cod)return '<b>'+esc((pr&&pr!=="Outro"?pr+" ":"")+cod)+'</b>'+sm(em||nm.replace(/^\S+\s*·\s*/,"").replace(/\s*\([^()]*\)\s*$/,""));
+  return esc(nm.replace(/\s*\([^()]*\)\s*$/,"")||nm)+sm(em)}
+function spPosTabela(c,P,T){
+  if(!SP_CRED.L)spCredLoad();const totW=c.itens.reduce((a,x)=>a+(+x.w||0),0)||1,pct=v=>v==null?'—':fnPct(v),G=new Map();
+  P.forEach(p=>{const g=spGrupo(p.x);if(!G.has(g))G.set(g,[]);G.get(g).push(p)});
+  const ord=[...G.keys()].sort((a,b)=>{const ia=SP_GRP_ORD.indexOf(a),ib=SP_GRP_ORD.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b,"pt-BR")});
+  const NC=9;let h='<div class="tablewrap" style="max-height:none;margin-top:10px"><table class="ctab sppos">';
+  ord.forEach(g=>{const L=G.get(g).sort((a,b)=>b.v-a.v),vg=L.reduce((a,p)=>a+p.v,0);
+    h+='<tbody><tr class="spgrp"><th colspan="'+NC+'"><span>'+esc(g)+'</span><span>'+brl(vg)+' · '+(T.v?fx(vg/T.v*100,1):'0')+'%</span></th></tr>'
+      +'<tr class="spgrph"><th></th><th style="text-align:left">Produto</th><th class="c-sm">Vencimento</th><th class="c-md" style="text-align:left">Taxa de aplicação</th><th class="c-ph">Quantidade</th><th class="c-ph">Preço (R$)</th><th class="c-sm">Saldo líquido (R$)</th><th>Saldo bruto (R$)</th><th>Peso atual</th></tr>';
+    L.forEach(p=>{const x=p.x,j=c.itens.indexOf(x),v=spVenc(x),q=typeof spQtd==="function"?spQtd(x):null,g2=p.v+p.resg-p.apl;
+      const tx=x.t==="s"&&x.rf?spRfLab(x.rf,+x.x||0):'—',pu=q>0&&p.v>0?p.v/q:null;
+      h+='<tr class="sppl"><td><button type="button" class="sppm" data-spposab="'+j+'" aria-expanded="false" aria-label="Ver o desempenho">+</button></td><td style="text-align:left" class="tw"><i class="fndot" style="background:'+CMP_COLS[j%CMP_COLS.length]+'"></i>'+spPosProd(x)+'</td>'
+        +'<td class="c-sm">'+(v?fdate(Date.parse(v.d+"T00:00:00Z")):'—')+'</td><td class="c-md" style="text-align:left">'+esc(tx)+'</td><td class="c-ph">'+(q>0?fx(q,spQd(q)):'—')+'</td><td class="c-ph">'+(pu?fx(pu,x.t==="a"?2:x.t==="f"||pu<100?6:4):'—')+'</td>'
+        +'<td class="c-sm">'+fx(p.liq,2)+'</td><td><b>'+fx(p.v,2)+'</b></td><td><b>'+(T.v?fx(p.v/T.v*100,1)+'%':'—')+'</b></td></tr>'
+        +'<tr class="spdet" hidden><td></td><td colspan="'+(NC-1)+'" style="text-align:left"><div class="spdetg">'
+        +[["Aplicado",brl(p.apl)+(p.resg?' · resgatado '+brl(p.resg):'')],["Desde",fdate(Date.parse(p.mv[0].d+"T00:00:00Z"))],["Ganho",'<span class="'+(g2>=0?'pos':'neg')+'">'+brl(g2)+'</span>'],["Rentabilidade (cotas)",pct(p.ret)],
+          ["% do CDI",p.cdi&&p.ret!=null&&p.cdi>0&&p.ret>0?fx(p.ret/p.cdi*100,0)+'%':'—'],["TIR",p.tir!=null?fnPctT(p.tir*100)+' a.a.':'—'],["IR estimado",brl(p.ir)],["Peso proposto",fx((+x.w||0)/totW*100,1)+'%']]
+          .map(([a,b])=>'<div><span>'+a+'</span><b>'+b+'</b></div>').join("")+'</div></td></tr>'});
+    h+='</tbody>'});
+  h+='<tbody><tr class="cmpbm sptot"><td></td><td style="text-align:left"><b>Total da carteira</b></td><td class="c-sm"></td><td class="c-md"></td><td class="c-ph"></td><td class="c-ph"></td><td class="c-sm"><b>'+fx(T.liq,2)+'</b></td><td><b>'+fx(T.v,2)+'</b></td><td><b>100%</b></td></tr></tbody></table></div>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:4px">Saldo bruto = valor atual; saldo líquido = descontado o IR estimado se resgatasse hoje. Preço = saldo bruto ÷ quantidade (aparece quando a quantidade das aplicações foi informada). Toque no <b>+</b> para ver o desempenho do item.</p>';
+  return h}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-spposab]");if(!b)return;const tr=b.closest("tr"),d=tr&&tr.nextElementSibling;if(!d||!d.classList.contains("spdet"))return;
+  d.hidden=!d.hidden;b.textContent=d.hidden?"+":"−";b.setAttribute("aria-expanded",d.hidden?"false":"true")});
