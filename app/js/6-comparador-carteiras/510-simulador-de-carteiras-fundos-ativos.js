@@ -28,6 +28,7 @@ function spListaHtml(){
 const spRfLab=(rf,x)=>rf==="cdi"?fx(x,1)+"% do CDI":rf==="cdimais"?"CDI + "+fx(x,2)+"% a.a.":rf==="ipca"?"IPCA + "+fx(x,2)+"% a.a.":"Prefixado "+fx(x,2)+"% a.a.";
 function spRfEd(it,j){ // taxa da renda fixa editável (útil para CDB, LCI e LCA importados com taxa estimada)
   return '<span class="sprfe"><select data-sprfe="'+j+'" aria-label="Indexador">'+Object.keys(SP_RF).map(k=>'<option value="'+k+'"'+(it.rf===k?' selected':'')+'>'+SP_RF[k]+'</option>').join("")+'</select><span class="affix s"><input inputmode="decimal" data-sprfv="'+j+'" value="'+fx(+it.x||0,2)+'" aria-label="Taxa"><span class="suf">'+(it.rf==="cdi"?"% CDI":"% a.a.")+'</span></span>'+(it.est?'<small class="warn" style="display:block">taxa estimada na importação: ajuste para a taxa real</small>':'')+'</span>'}
+function spSimSt(R){const st=$("spSimSt");if(st&&R)st.textContent=R.erro?R.erro:'Último cálculo: de '+(R.diaria?fdate(Date.parse(R.k0+"T00:00:00Z")):mname(R.k0))+' a '+(R.diaria?fdate(Date.parse(R.last+"T00:00:00Z")):mname(R.last))+(R.ir?' · líquido de IR':'')}
 function spTopHtml(){
   spModoSync(spC());const c=spC(),tot=c.itens.reduce((a,x)=>a+(+x.w||0),0),cart=c.modo==="carteira";
   if(!c.itens.length&&SP.sub!=="comp"&&SP.sub!=="todas")SP.sub="comp";
@@ -73,7 +74,7 @@ function spTopHtml(){
     if(!cart)e+='<div class="spbtns" style="margin-top:6px"><button type="button" class="link" data-speq="1">Distribuir igualmente</button>'+(Math.abs(tot-100)>0.05&&tot>0?'<button type="button" class="link" data-spnorm="1">Ajustar para somar 100%</button>':'')+'<button type="button" class="link" data-spclear="1">Remover todos</button></div>';
   }else e+='<p class="sub" style="margin-top:10px">Nenhum ativo ainda. Busque acima pelo nome ou código, ou adicione renda fixa pela taxa.</p>';
   e+='</section>';
-  e+='<section class="panel"><h3>Simulação do histórico</h3><p class="sub">Como esta carteira teria se saído no passado (subabas Desempenho e Risco).</p><div class="spparams">'
+  e+='<section class="panel"><h3>Simulação do histórico</h3><p class="sub">Como esta carteira teria se saído no passado. O cálculo é automático: refaz sozinho a cada mudança nos ativos ou nos campos abaixo. O resultado fica nas subabas Desempenho e Risco.</p><div class="spbtns" style="margin:6px 0 10px"><button type="button" class="btn" data-spaba="desemp"'+(c.itens.length?'':' disabled')+'>Ver o resultado da simulação</button><button type="button" class="btn sec" data-spaba="risco"'+(c.itens.length?'':' disabled')+'>Ver o risco</button><span class="sub" id="spSimSt" style="align-self:center;font-size:.82rem"></span></div><div class="spparams">'
     +(cart?'':'<div class="field"><label for="spV">Valor inicial</label><div class="affix s"><input id="spV" inputmode="decimal" data-spv="valor" value="'+fx(+c.valor||0,2)+'"><span class="suf">R$</span></div></div>')
     +'<div class="field"><label for="spA">Aporte mensal</label><div class="affix s"><input id="spA" inputmode="decimal" data-spv="aporte" value="'+fx(+c.aporte||0,2)+'"><span class="suf">R$</span></div></div>'
     +'<div class="field"><label for="spI">Início</label><input id="spI" type="month" data-spv="ini" value="'+esc(c.ini||"")+'"><small>Vazio = o mais antigo possível</small></div>'
@@ -82,7 +83,7 @@ function spTopHtml(){
     +'<div class="field"><label for="spB">Base de cálculo</label><select id="spB" data-spv="base"><option value="m"'+(c.base!=="d"?' selected':'')+'>Mensal (desde 2005)</option><option value="d"'+(c.base==="d"?' selected':'')+'>Diária (desde 2019)</option></select></div>'
     +'<div class="field"><label>Imposto de renda</label><label class="spiso" style="margin-top:8px"><input type="checkbox" data-spir="1"'+(c.ir!==0?' checked':'')+'>Resultado líquido de IR</label></div></div>'
     +'<div class="cvsel fnbm" style="margin-top:8px"><span class="sub" style="margin-right:4px">Comparar com:</span>'+Object.keys(FN_BM).map(b=>'<label><input type="checkbox" data-spbm="'+b+'"'+(c.bm&&c.bm[b]?' checked':'')+'><i style="background:'+FN_BM[b].col+'"></i>'+FN_BM[b].lab+'</label>').join("")+'<label>IPCA + <span class="affix s" style="width:84px;display:inline-flex"><input inputmode="decimal" data-spv="ipcax" value="'+esc(c.ipcax||"")+'" placeholder="6"><span class="suf">%</span></span></label></div></section>';
-  ed.innerHTML=e;ed.hidden=SP.sub!=="comp";
+  ed.innerHTML=e;ed.hidden=SP.sub!=="comp";if(SP_LAST&&SP_LAST.c===c&&SP_LAST.R)spSimSt(SP_LAST.R);
   const a=$("spAbas");if(a&&typeof spAbasHtml==="function")a.innerHTML=spAbasHtml();
 }
 /* ----- dados de cada item: níveis mensais e diários, e regime de IR */
@@ -131,7 +132,7 @@ async function spRunCore(){
   if(tok!==SP_TOKEN)return;
   try{const R=spSim(c,it,D);R.D=D;if(spTemMov(c))R.pos={its:it.concat(itM),Ds:D.concat(DM)};
     if(c.sit==="efetivada"&&c.ef&&c.ef.data){const d=c.ef.data,dia=FN.cal&&d>=FN.cal[0];R.ef=spSim(Object.assign({},c,{base:dia?"d":"m",ini:dia?"":d.slice(0,7),iniD:dia?d:"",fim:"",aporte:0,valor:+c.ef.valor||0}),it,D)}
-    SP_LAST={c,it,R};box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box)}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
+    SP_LAST={c,it,R};spSimSt(R);box.innerHTML=fnUse(FN,()=>spResHtml(c,it,R))+spT("todas",()=>spAssHtml()+spCmpCartsHtml());if(SP_ASS&&SP.sub==="todas")spAssRender();spSubAplica(box)}catch(e){box.innerHTML='<section class="panel"><p class="err">'+esc(e.message)+'</p></section>';console.error(e)}
 }
 /* ----- grade de datas e simulação */
 function spGrid(c,D){
