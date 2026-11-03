@@ -44,7 +44,9 @@ NOMES = {"cvm_ofertas": "CVM · ofertas públicas (Resolução 160)", "anbima_cr
          "cm": "Tesouro Transparente · juros de prazo constante", "us": "BLS · inflação e emprego nos EUA", "fed": "Fed · projeções",
          "dxy": "Fed · índice do dólar", "brent": "EIA · petróleo Brent",
          "ativos": "B3 e CVM · cotações, proventos e balanços", "fundos": "CVM · cotas, cadastro e carteiras dos fundos"}
-LIMITE_H = 60  # sem nova leitura há mais que isso (horas) = atrasada
+LIMITE_H = 60  # (antigo) sem nova leitura há mais que isso (horas) = atrasada
+# atraso medido em dias úteis (fim de semana e feriado não contam): até quantos dias úteis sem leitura nova é normal
+TOLERANCIA_DU = {"Mercado": 1, "Bolsa": 1, "Fundos": 1, "Bolsa americana": 2, "Economia": 2}
 
 
 def pascoa(y):
@@ -66,6 +68,16 @@ def feriado(d):
         return True
     p = pascoa(d.year)
     return d in (p - dt.timedelta(days=48), p - dt.timedelta(days=47), p - dt.timedelta(days=2), p + dt.timedelta(days=60))
+
+
+def dias_uteis(a, b):
+    """Dias úteis depois de a até b (inclusive), sem fins de semana e feriados nacionais."""
+    n, d = 0, a
+    while d < b:
+        d += dt.timedelta(days=1)
+        if d.weekday() < 5 and not feriado(d):
+            n += 1
+    return n
 
 
 def focus_esperado(agora_brt):
@@ -124,9 +136,10 @@ def fontes():
             horas = (AGORA - em).total_seconds() / 3600
         except Exception:  # noqa: BLE001
             horas = None
-        if f["ok"] and (horas is None or horas > LIMITE_H):
+        du = dias_uteis(em.astimezone(dt.timezone(dt.timedelta(hours=-3))).date(), dt.date.fromisoformat(HOJE)) if horas is not None else None
+        if f["ok"] and (du is None or (du > TOLERANCIA_DU.get(f["grupo"], 1) and horas > 30)):
             f["ok"] = False
-            f["erro"] = "sem leitura nova " + (f"há {horas / 24:.0f} dias" if horas is not None else "registrada")
+            f["erro"] = "sem leitura nova " + (f"há {du} dias úteis" if du is not None else "registrada")
     return out
 
 

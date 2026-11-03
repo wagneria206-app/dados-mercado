@@ -3,6 +3,7 @@ name: Atualizar dados de mercado
 on:
   schedule:
     - cron: "30 22 * * 1-5"   # 19h30 de Brasília, dias úteis (depois da ANBIMA)
+    - cron: "40 0 * * 2-6"    # 21h40 de Brasília, segunda tentativa do dia (ANBIMA e B3 às vezes publicam tarde)
     - cron: "0 11 * * 1-6"    # 8h de Brasília (pega o CSV do Tesouro do dia anterior)
   workflow_dispatch:          # botão "Run workflow" na aba Actions
     inputs:

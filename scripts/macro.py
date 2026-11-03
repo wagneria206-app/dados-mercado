@@ -61,15 +61,20 @@ def get(url, timeout=90, tentativas=3, **kw):
 
 
 def parte(nome, f, velho):
-    """Roda uma coleta; se falhar, mantém o que foi publicado antes."""
-    try:
-        v = f()
-        log(nome, "ok")
-        return v
-    except Exception as e:  # noqa: BLE001
-        DIAG[nome] = str(e)[:300]
-        log(nome, "FALHOU:", e)
-        return velho.get(nome)
+    """Roda uma coleta; na falha passageira tenta de novo depois de 45 s; se continuar falhando, mantém o que foi publicado antes."""
+    for tentativa in (1, 2):
+        try:
+            v = f()
+            log(nome, "ok" + (" (2ª tentativa)" if tentativa > 1 else ""))
+            return v
+        except Exception as e:  # noqa: BLE001
+            erro = e
+            if tentativa == 1:
+                log(nome, "falhou, nova tentativa em 45 s:", e)
+                time.sleep(45)
+    DIAG[nome] = str(erro)[:300]
+    log(nome, "FALHOU:", erro)
+    return velho.get(nome)
 
 
 # ------------------------------------------------------------------ Focus

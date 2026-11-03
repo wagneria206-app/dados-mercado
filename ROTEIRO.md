@@ -70,6 +70,27 @@ e sobreposição entre fundos), Mais Retorno (filtros e comparadores de fundos),
       carteiras): só a subaba aberta é montada; composição e parâmetros recolhíveis; o PDF continua com tudo.
 - [ ] **Medir e acelerar no tablet Samsung Galaxy Tab S10 FE** (Chrome no Android).
 
+## Robôs sem falhas: calendário de divulgação das fontes
+
+Regra: cada robô roda logo depois do horário oficial de divulgação, tenta de novo na falha passageira (45 s depois) e só
+acusa falha quando a mesma fonte falha 3 execuções seguidas; o painel de saúde mede atraso em dias úteis (fim de semana e
+feriado não contam) e, no Focus, pela data de divulgação esperada. Ajustar esta tabela sempre que uma fonte mudar de horário.
+
+| Fonte | Divulgação oficial | Coleta do robô (Brasília) |
+|---|---|---|
+| Focus (Banco Central) | 8h25 do 1º dia útil da semana (terça, se segunda for feriado) | 9h20 seg–sáb e 18h50 |
+| CDI e Selic (Banco Central) | manhã do dia útil seguinte | 8h00, 19h30 e 21h40 |
+| PTAX (Banco Central) | boletins ao longo do dia; fechamento ~13h | a cada 30 min, 9h05–18h35 |
+| Tesouro Direto (site) | durante o pregão | a cada 30 min, 9h05–18h35 |
+| Tesouro Transparente (histórico) | dia útil seguinte, manhã | 8h00 |
+| ANBIMA (títulos públicos, curvas, debêntures, CRI/CRA, IMA) | ~18h–20h do dia útil | 19h30 e 21h40 |
+| B3 (ajustes de DI e dólar futuro, ETFs de renda fixa) | ~18h30–20h | 18h30 em diante (intradiário), 19h30, 21h40 e 20h07 (Bolsa) |
+| B3 (cotações do pregão) | noite do pregão | 20h07 e 7h37 |
+| CVM (fundos: informe diário, cadastro, CDA) | diário, madrugada | 8h17 e 20h47 |
+| CVM (CRI/CRA, ofertas) | mensal / diário | 8h00 e 19h30 |
+| IBGE (IPCA, PIB…) | calendário do IBGE, 9h | 9h20 e 18h50 |
+| EUA (Cboe, SEC, BLS, Fed) | após o fechamento em Nova York | 19h25 e 7h45 |
+
 ## Pendências técnicas
 
 - [x] **ETFs**: incluir os ETFs de renda fixa (IMAB11, FIXA11, B5P211, LFTS11…), que hoje não entram na base da

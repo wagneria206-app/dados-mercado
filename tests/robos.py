@@ -231,6 +231,9 @@ confere("Focus: terça depois de feriado, antes da divulgação, ainda vale a se
 confere("Focus: terça depois de feriado, depois da coleta, vale a pesquisa da sexta", saude.focus_esperado(dt.datetime(2026, 11, 3, 11, 0, tzinfo=_tz)), dt.date(2026, 10, 30))
 confere("Focus: segunda comum antes das 10h30 ainda vale a semana anterior", saude.focus_esperado(dt.datetime(2026, 10, 26, 10, 0, tzinfo=_tz)), dt.date(2026, 10, 16))
 
+confere("saúde: sexta até terça depois de feriado na segunda = 1 dia útil", saude.dias_uteis(dt.date(2026, 10, 30), dt.date(2026, 11, 3)), 1)
+confere("saúde: sexta até segunda comum = 1 dia útil", saude.dias_uteis(dt.date(2026, 10, 23), dt.date(2026, 10, 26)), 1)
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")
