@@ -225,6 +225,12 @@ for k in ("teste_passageira", "teste_quebrada"):
 atualizar._ANTERIOR = None
 atualizar.time.sleep = _sl
 
+import saude  # noqa: E402
+_tz = dt.timezone(dt.timedelta(hours=-3))
+confere("Focus: terça depois de feriado, antes da divulgação, ainda vale a semana anterior", saude.focus_esperado(dt.datetime(2026, 11, 3, 7, 32, tzinfo=_tz)), dt.date(2026, 10, 23))
+confere("Focus: terça depois de feriado, depois da coleta, vale a pesquisa da sexta", saude.focus_esperado(dt.datetime(2026, 11, 3, 11, 0, tzinfo=_tz)), dt.date(2026, 10, 30))
+confere("Focus: segunda comum antes das 10h30 ainda vale a semana anterior", saude.focus_esperado(dt.datetime(2026, 10, 26, 10, 0, tzinfo=_tz)), dt.date(2026, 10, 16))
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")

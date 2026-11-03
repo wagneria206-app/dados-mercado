@@ -47,6 +47,40 @@ NOMES = {"cvm_ofertas": "CVM · ofertas públicas (Resolução 160)", "anbima_cr
 LIMITE_H = 60  # sem nova leitura há mais que isso (horas) = atrasada
 
 
+def pascoa(y):
+    a, b, c = y % 19, y // 100, y % 100
+    d, e = b // 4, b % 4
+    f = (b + 8) // 25
+    g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30
+    i, k = c // 4, c % 4
+    l_ = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l_) // 451
+    mes = (h + l_ - 7 * m + 114) // 31
+    return dt.date(y, mes, (h + l_ - 7 * m + 114) % 31 + 1)
+
+
+def feriado(d):
+    """Feriados nacionais com expediente fechado no Banco Central (fixos, Carnaval, Paixão e Corpus Christi)."""
+    if (d.month, d.day) in ((1, 1), (4, 21), (5, 1), (9, 7), (10, 12), (11, 2), (11, 15), (11, 20), (12, 25)):
+        return True
+    p = pascoa(d.year)
+    return d in (p - dt.timedelta(days=48), p - dt.timedelta(days=47), p - dt.timedelta(days=2), p + dt.timedelta(days=60))
+
+
+def focus_esperado(agora_brt):
+    """Data da pesquisa Focus que já deveria estar no app: a sexta-feira cuja divulgação (8h25 do primeiro dia útil
+    seguinte) mais a coleta do robô (9h20, com folga até 10h30) já passou."""
+    sexta = agora_brt.date() - dt.timedelta(days=(agora_brt.weekday() - 4) % 7)
+    while True:
+        pub = sexta + dt.timedelta(days=1)
+        while pub.weekday() >= 5 or feriado(pub):
+            pub += dt.timedelta(days=1)
+        if agora_brt >= dt.datetime.combine(pub, dt.time(10, 30), tzinfo=agora_brt.tzinfo):
+            return sexta
+        sexta -= dt.timedelta(days=7)
+
+
 def show(ref, caminho):
     try:
         return json.loads(subprocess.run(["git", "show", f"origin/{ref}:{caminho}"], capture_output=True, check=True).stdout)
@@ -159,12 +193,14 @@ def conferencias():
         add("x_cdi", "CDI × Selic", abs(sel - cdi) <= 0.25, f"Selic {sel:.2f}% e CDI {cdi:.2f}% ao ano")
     except Exception as e:  # noqa: BLE001
         add("x_cdi", "CDI × Selic", False, f"não deu para conferir: {e}")
-    # 5) Focus recente (o Banco Central publica toda segunda-feira)
+    # 5) Focus recente: o Banco Central publica às 8h25 do primeiro dia útil da semana (segunda, ou terça depois de feriado),
+    #    com a pesquisa da sexta anterior; o robô de economia coleta às 9h20. Só é atraso depois desse horário.
     try:
         m = show("macro", "macro.json") or {}
         d = m["focus"]["selic"]["data"]
-        dias = (dt.date.fromisoformat(HOJE) - dt.date.fromisoformat(d)).days
-        add("x_focus", "Boletim Focus em dia", dias <= 10, f"última pesquisa de {d} ({dias} dias)")
+        esperado = focus_esperado(AGORA - dt.timedelta(hours=3))
+        ok = d >= esperado.isoformat()
+        add("x_focus", "Boletim Focus em dia", ok, f"última pesquisa de {d}" + ("" if ok else f"; esperada a de {esperado.isoformat()}"))
     except Exception as e:  # noqa: BLE001
         add("x_focus", "Boletim Focus em dia", False, f"não deu para conferir: {e}")
     return out
