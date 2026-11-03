@@ -22,8 +22,8 @@ function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
 function inicioMod(){const v=lsGet("inicio","ultima");return v&&v!=="ultima"&&AREA_OF[v]?v:null}
 
 /* ---------- busca única */
-const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury payroll inflacao americana petroleo brent dolar global dxy exterior",
-  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b treasury",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
+const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
+  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
   ix:"indices ima ima-b irf-m ima-s anbima renda fixa",fx:"dolar ptax cambio cupom cambial moeda",fa:"fundo analise cnpj",fr:"ranking fundos melhores",fc:"comparar fundos",fg:"gestoras administradoras",aa:"acao acoes fii etf bdr ativo analise",
   ar:"ranking acoes fiis dividendos etf etfs renda fixa cripto internacional categoria",ac:"comparar acoes ativos",au:"bolsa americana eua sec balancos",ag:"agenda proventos dividendos jcp rendimentos",sc:"cenarios juros estresse simulacao",sim:"equivalencia lci lca cdb escada vencimentos",
   sp:"carteira simulador fronteira eficiente alocacao",pub:"calcular tesouro titulo marcacao a mercado agio desagio",pc:"calcular credito privado debenture cri cra",bank:"cdb lci lca rdb bancarios",fund:"fundos previdencia pgbl vgbl come-cotas"};
