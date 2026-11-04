@@ -51,7 +51,7 @@ document.addEventListener("click",async e=>{const g=s=>e.target.closest&&e.targe
   if(g("[data-segsem]")){if(!SYNC.tok)return;try{localStorage.removeItem("ghTokC");localStorage.setItem("ghTok",SYNC.tok)}catch(y){}segRefaz();return}
   if((x=g("[data-segbkp]"))){SEG.bkp=x.dataset.segbkp==="1";SEG.erro="";segRefaz();const i=$("segBkpS");if(i)i.focus();return}
   if(g("[data-segbkpok]")){const s=$("segBkpS").value||"";if(s.length<8){SEG.erro="A senha do arquivo precisa ter pelo menos 8 caracteres.";segRefaz();return}
-    const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}));segBaixa("mercado-copia-"+new Date().toISOString().slice(0,10)+".json",{v:2,app:"Mercado e Investimentos",cifrado:await segCifra(txt,s)});SEG.bkp=false;SEG.erro="";segRefaz();return}
+    const txt=JSON.stringify(Object.assign(syncLocal(),{v:1,exportadoEm:new Date().toISOString()}));segBaixa("mercado-copia-"+new Date().toISOString().slice(0,10)+".json",{v:2,app:"WF Investimentos",cifrado:await segCifra(txt,s)});SEG.bkp=false;SEG.erro="";segRefaz();return}
   if(g("[data-segrestok]")){try{const D=JSON.parse(await segDecifra(SEG.rest,$("segRestS").value||""));if(!D||!Array.isArray(D.favs))throw new Error("arquivo inválido");await segRestaura(D);SEG.rest=null;SEG.erro="";segRefaz()}catch(x){SEG.erro="Senha errada ou arquivo inválido.";segRefaz()}return}
   if(g("[data-segapaga]")){if(!SEG.apagar){SEG.apagar=true;segRefaz();setTimeout(()=>{SEG.apagar=false;segRefaz()},6000);return}
     try{localStorage.clear();sessionStorage.clear()}catch(y){}try{if(window.caches)(await caches.keys()).forEach(k=>caches.delete(k))}catch(y){}
