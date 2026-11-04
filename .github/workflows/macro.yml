@@ -42,7 +42,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -q -m "Bolsa americana de $(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')"
-          git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" macro
+          # o GitHub às vezes recusa o envio por instabilidade passageira (erro 500): tenta de novo antes de acusar falha
+          for t in 1 2 3 4; do git push -q -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" macro && break; if [ $t = 4 ]; then exit 1; fi; echo "envio recusado (tentativa $t); nova tentativa em $((t*20)) s"; sleep $((t*20)); done
       - name: Avisar falha (issue no GitHub)
         if: failure()
         env:
