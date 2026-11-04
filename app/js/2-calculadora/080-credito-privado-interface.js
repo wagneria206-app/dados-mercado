@@ -237,6 +237,7 @@ function setMod(m){
   try{localStorage.setItem("mod2",m)}catch(e){}
   try{navHist(m)}catch(e){}
   if(FNM.has(m))fnCalc(m);else if(MKM.has(m))mkCalc();else if(m==="pub")calc();else if(m==="pc")pcCalc();else if(m==="bank")bkCalc();else if(m==="fund")fdCalc();else if(m==="sim")simCalc();else if(m==="tx"){oppRender();txCalc()}else if(m==="fx")fxCalc();else{scRefreshSources();if(!LAST.pub&&LAST.pc)$("scSrc").value="pc";scCalc()}
+  setTimeout(()=>{try{rclMonta()}catch(e){}},0);   // recolher e abrir blocos também na tela que só foi reexibida
 }
 function pcBind(){
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setMod(b.dataset.mod)));
