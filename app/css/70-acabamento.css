@@ -139,7 +139,7 @@ section.rcl{position:relative}
 .rcltg svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
 .rcltg:hover{color:var(--ink);border-color:var(--muted)}
 section.rcl.fechado .rcltg svg{transform:rotate(-90deg)}
-section.rcl>:is(h3,.label):first-of-type{padding-right:44px}
+section.rcl>:is(h2,h3,.label):first-of-type{padding-right:44px}
 section.rcl .fnacts[style*="float:right"]{margin-right:40px}
 section.rcl.fechado{cursor:pointer;padding-block:14px}
 section.rcl.fechado>*:not(.rcltg):not(h3):not(.label):not(.fnacts){display:none!important}
@@ -290,3 +290,7 @@ section.rcl.fechado>.rcltg,#fnOut section.rcl.fechado>.rcltg{top:50%;transform:t
 .sppos td:first-child,.sppos th:first-child{width:40px;padding-left:6px!important;padding-right:0!important}
 .sppos tr.spgrp th:first-child{width:auto;padding-left:14px!important}
 .spdetg b,.spdetg b *{font-size:.9rem!important;font-weight:700}
+
+/* recolher e abrir também nas calculadoras e notas */
+section.notes.rcl{position:relative}
+.grid>section.rcl.fechado{align-self:start}

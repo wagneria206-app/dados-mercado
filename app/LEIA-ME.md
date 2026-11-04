@@ -194,7 +194,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)
 - `620-pcrebase.js` (2 KB)
-- `621-indice-e-blocos-recolhiveis.js` (5 KB)
+- `621-indice-e-blocos-recolhiveis.js` (6 KB)
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
 - `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (15 KB)
 - `624-fontes-e-metodologia.js` — "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes (12 KB)
