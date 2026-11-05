@@ -2,7 +2,7 @@
 function mundoHtml(){
   const w=mcWait();if(w)return [w];if(!EU.S){euBoot();if(!EU.err)return ['<p class="sub">Carregando os índices…</p>']}
   if(!FXJ)fxLoad();const ju=euaHtml()+euTreasuryHtml();
-  return [mcEuaHtml(),euaCalHtml(),mcFedHtml(),ju,mcTransHtml(),mcGlobalHtml()].filter(Boolean);
+  return [mcEuaHtml(),mcFedHtml(),ju,mcTransHtml(),mcGlobalHtml(),agmAtalho("As próximas divulgações dos EUA (emprego, inflação, PIB e PCE) e as reuniões do Fed estão na aba")].filter(Boolean);
 }
 const MC_W0=Date.UTC(1970,0,5);
 function mcWk(P){const m=new Map();(P||[]).forEach(p=>{if(p[1]!=null&&isFinite(p[1]))m.set(Math.floor((p[0]-MC_W0)/(7*DAY)),p[1])});return m}
