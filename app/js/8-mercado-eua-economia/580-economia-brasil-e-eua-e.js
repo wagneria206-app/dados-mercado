@@ -2,7 +2,7 @@
 const MC_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/macro/";
 const MC={d:null,load:null,err:null};
 function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
-function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu")&&typeof mkCalc==="function")mkCalc()}
+function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs")&&typeof mkCalc==="function")mkCalc()}
 /* datas: "2026-09" (mês), "202609" (mês do IBGE), "202602" com trimestre (PIB) */
 const mcTm=s=>{s=String(s);return s.length===7?Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,15):Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,15)};
 const mcTq=s=>{s=String(s);return Date.UTC(+s.slice(0,4),(+s.slice(4,6)-1)*3+1,15)};

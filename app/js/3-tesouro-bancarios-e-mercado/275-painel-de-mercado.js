@@ -45,8 +45,9 @@ function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
   else if(activeMod==="cr")h=P(crBuscaHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml());
-  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+'<p class="sub" style="margin:4px 4px 12px">O calendário das próximas divulgações do IBGE está na aba Economia.</p>';
-  else if(activeMod==="ix")h=P(imaHtml())}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
+  else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+agmAtalho("A data do próximo IPCA e do IPCA-15 e as novas projeções da ANBIMA estão na aba");
+  else if(activeMod==="ix")h=P(imaHtml());
+  else if(activeMod==="agm")h=agmTela().map(P).join("")}catch(e){h=P('<p class="err">Não deu para montar esta tela: '+esc(String(e&&e.message||e))+'</p>')}
   o.innerHTML=h;const s=$("piMode");if(s)s.value=PI_MODE}
 let TX_BACK=null;
 async function mkClick(e){

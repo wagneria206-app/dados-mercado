@@ -2,7 +2,7 @@
 function economiaHtml(){
   const w=mcWait();if(w)return [w];const D=MC.d,F=D.focus||{},B=D.br||{},out=[];
   out.push(mcFocusHtml(F));out.push(mcAtivHtml(B));out.push(mcFiscalHtml(B,F));out.push(mcCredHtml(B));
-  if(typeof ibgeCalHtml==="function")out.push(ibgeCalHtml());
+  out.push(agmAtalho("As próximas divulgações do IBGE (IPCA, PIB, emprego, indústria, comércio e serviços), o Focus e o Copom estão juntos na aba"));
   return out.filter(Boolean);
 }
 function mcFocusSer(F,ind,ref){const A=F.anuais&&F.anuais[ind];return A&&A[ref]?A[ref]:null}

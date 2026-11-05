@@ -328,6 +328,25 @@ def brent():
     return {"s": out, "fonte": "U.S. Energy Information Administration (EIA) — Brent à vista, US$ por barril"}
 
 
+# ------------------------------------------------------------------ calendário do IBGE (cópia para a Agenda quando o navegador não alcança o IBGE)
+def ibge_calendario():
+    hj = dt.date.today()
+    ate = hj + dt.timedelta(days=100)
+    f = lambda d: d.strftime("%m-%d-%Y")  # noqa: E731
+    r = get(f"https://servicodados.ibge.gov.br/api/v3/calendario/?qtd=400&de={f(hj)}&ate={f(ate)}", timeout=60)
+    j = r.json()
+    itens = j if isinstance(j, list) else j.get("items") or []
+    out = []
+    for x in itens:
+        tit = str(x.get("titulo") or x.get("nome_produto") or x.get("titulo_produto") or "").strip()
+        dd = str(x.get("data_divulgacao") or x.get("data") or "")
+        if tit and dd:
+            out.append([tit, dd])
+    if not out:
+        raise RuntimeError("calendário do IBGE vazio")
+    return out
+
+
 def main(ent, sai):
     os.makedirs(sai, exist_ok=True)
     velho = ler(os.path.join(ent, "macro.json"), {})
@@ -339,6 +358,7 @@ def main(ent, sai):
     out["fed"] = parte("fed", fed_sep, velho)
     out["dxy"] = parte("dxy", dolar_global, velho)
     out["brent"] = parte("brent", brent, velho)
+    out["ibgecal"] = parte("ibgecal", ibge_calendario, velho)
     out["ts"] = dt.datetime.utcnow().isoformat(timespec="seconds") + "Z"
     out["diag"] = DIAG
     with open(os.path.join(sai, "macro.json"), "w", encoding="utf-8") as f:

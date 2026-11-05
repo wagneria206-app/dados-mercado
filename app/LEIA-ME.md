@@ -64,7 +64,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `40-telas.css` — Metodologia e telas de mercado, fundos, Bolsa e carteiras (15 KB)
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
-- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (24 KB)
+- `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (25 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
@@ -155,8 +155,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/8-mercado-eua-economia/`** — Mercado › Resumo, posição real, Bolsa americana, economia, estresse e exterior
 
-- `545-proximas-divulgacoes-do-ibge-calendario.js` — Próximas divulgações do IBGE (calendário oficial, lido direto pelo navegador; se não carregar, a seção some) (2 KB)
-- `546-calendario-dos-eua.js` (5 KB)
+- `545-proximas-divulgacoes-do-ibge-calendario.js` — Próximas divulgações do IBGE (calendário oficial, lido direto pelo navegador; se não carregar, a seção some) (3 KB)
+- `546-calendario-dos-eua.js` (4 KB)
 - `550-mercado-resumo-capital-estrangeiro-banco.js` — Mercado › Resumo: capital estrangeiro (Banco Central) e risco-país implícito (3 KB)
 - `555-sptemmov.js` (18 KB)
 - `557-relatorio-mensal-do-cliente.js` (7 KB)
@@ -185,10 +185,11 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
-- `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (30 KB)
+- `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
 - `608-ofertas-publicas.js` (4 KB)
+- `609-agenda-do-mercado.js` (9 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)

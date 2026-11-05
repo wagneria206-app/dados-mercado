@@ -22,9 +22,3 @@ const EUA_CAL=[
 /* 8h30 em Nova York = 9h30 de Brasília no horário de verão americano (2º domingo de março ao 1º domingo de novembro) e 10h30 no resto do ano */
 function euaHoraBr(d){const y=+d.slice(0,4),dom=(m,n)=>{const p=new Date(Date.UTC(y,m,1)).getUTCDay();return 1+((7-p)%7)+7*(n-1)},ini=Date.UTC(y,2,dom(2,2)),fim=Date.UTC(y,10,dom(10,1)),t=Date.parse(d+"T00:00:00Z");return t>=ini&&t<fim?"9h30":"10h30"}
 function euaCalProx(dias){const hj=new Date().toISOString().slice(0,10),lim=new Date(Date.now()+(dias||9999)*864e5).toISOString().slice(0,10);return EUA_CAL.filter(x=>x[0]>=hj&&x[0]<=lim)}
-function euaCalHtml(){
-  const L=euaCalProx(75).slice(0,14);
-  if(!L.length)return '<h3>Próximas divulgações dos EUA</h3><p class="warn">O calendário embutido termina em '+fdate(Date.parse(EUA_CAL_ATE+"T00:00:00Z"))+'. É preciso incluir as datas do ano seguinte (BLS e BEA).</p>';
-  return '<h3>Próximas divulgações dos EUA</h3><p class="sub">Os dados americanos que mais mexem com juros, dólar e Bolsas. Saem às 8h30 de Nova York (horário de Brasília na tabela).</p><div class="tablewrap" style="max-height:none;margin-top:6px"><table class="ctab"><thead><tr><th style="text-align:left">Data</th><th style="text-align:left">Divulgação</th><th style="text-align:left">Referência</th><th>Hora (Brasília)</th></tr></thead><tbody>'
-    +L.map(x=>{const t=Date.parse(x[0]+"T00:00:00Z");return '<tr><td style="text-align:left;white-space:nowrap">'+["dom","seg","ter","qua","qui","sex","sáb"][new Date(t).getUTCDay()]+' '+fdate(t)+'</td><td style="text-align:left">'+EUA_CAL_T[x[1]][0]+' <small>'+EUA_CAL_T[x[1]][1]+'</small></td><td style="text-align:left">'+x[2]+'</td><td>'+euaHoraBr(x[0])+'</td></tr>'}).join("")
-    +'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: calendários oficiais do Bureau of Labor Statistics (emprego, CPI e PPI) e do Bureau of Economic Analysis (PIB e PCE). Decisões do Fed na agenda do Resumo.</p>'}
