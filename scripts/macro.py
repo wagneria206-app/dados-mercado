@@ -54,6 +54,12 @@ def get(url, timeout=90, tentativas=3, **kw):
             if r.status_code == 200:
                 return r
             ult = f"HTTP {r.status_code}"
+            if r.status_code == 304:
+                # o cache do Banco Central às vezes responde "não mudou" sem ter recebido pergunta condicional:
+                # pede de novo sem cache e com um parâmetro que muda a cada tentativa
+                hdr = {**hdr, "Cache-Control": "no-cache", "Pragma": "no-cache"}
+                url = re.sub(r"[?&]_=\d+", "", url)
+                url += ("&" if "?" in url else "?") + f"_={int(time.time() * 1000)}"
         except Exception as e:  # noqa: BLE001
             ult = repr(e)
         time.sleep(3 + 4 * t)
@@ -264,7 +270,7 @@ def bls_fred():
     """As mesmas séries do BLS republicadas pelo Fed de St. Louis (FRED), em CSV."""
     out = {}
     for sid, k in BLS.items():
-        r = get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + FRED_DE_BLS[sid], timeout=60)
+        r = get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={FRED_DE_BLS[sid]}&cosd={HOJE.year - 19}-01-01", timeout=120)
         for row in list(csv.reader(io.StringIO(r.text)))[1:]:
             if len(row) >= 2 and row[1] not in ("", "."):
                 try:
