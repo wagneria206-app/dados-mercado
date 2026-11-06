@@ -285,7 +285,7 @@ def bls_fred():
 def bls():
     fonte = "U.S. Bureau of Labor Statistics (CPI-U, payroll e desemprego)"
     try:
-        out = bls_api()
+        out = bls_api() if os.environ.get("TESTE_FRED") != "1" else (_ for _ in ()).throw(RuntimeError("teste do FRED"))
     except Exception as e:  # noqa: BLE001
         log("us: API do BLS falhou (", str(e)[:200], "); usando as mesmas séries pelo FRED (Fed de St. Louis)")
         out = bls_fred()
@@ -390,4 +390,5 @@ def main(ent, sai):
 
 
 if __name__ == "__main__":
+    os.environ["TESTE_FRED"] = "1"
     main(sys.argv[1], sys.argv[2])
