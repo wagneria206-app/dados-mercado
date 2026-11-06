@@ -270,7 +270,8 @@ def bls_fred():
     """As mesmas séries do BLS republicadas pelo Fed de St. Louis (FRED), em CSV."""
     out = {}
     for sid, k in BLS.items():
-        r = get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={FRED_DE_BLS[sid]}&cosd={HOJE.year - 19}-01-01", timeout=120)
+        r = get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={FRED_DE_BLS[sid]}&cosd={HOJE.year - 19}-01-01", timeout=90, tentativas=2,
+                headers={"User-Agent": NAV["User-Agent"], "Accept": "text/csv,text/plain,*/*"})   # pedindo JSON o FRED não responde
         for row in list(csv.reader(io.StringIO(r.text)))[1:]:
             if len(row) >= 2 and row[1] not in ("", "."):
                 try:
