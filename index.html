@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-Le8hjfKB3TCoiyh47FHty9DGQE1awqPJE6yWkKnKEtE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-Ufc+WB+15CWAkUa+Cnq6lP+9hKbonncpdH04ezE1uXs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3891,7 +3891,7 @@ function fnHome(){
   h+=list("Maiores fundos abertos ao público",R.filter(r=>ok(r)&&!(r[C.flags]&2)).sort((a,b)=>(b[C.pl]||0)-(a[C.pl]||0)).slice(0,8),r=>'PL '+fnMoney(r[C.pl])+' · '+fnInt(r[C.cotistas])+' cotistas');
   return h;
 }
-function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(F&&F.pai)t.push("Subclasse");if(F&&/^s/i.test(F.prev||""))t.push("Previdenciário");if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
+function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(F&&F.pai)t.push("Subclasse");if((F&&/^s/i.test(F.prev||""))||(r&&fnPrev(r))){const pl=r?fnPrevPlano(r):"";t.push(pl==="pgbl"?"Previdência · PGBL":pl==="vgbl"?"Previdência · VGBL":"Previdência")}if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");else if(fl&1024)t.push("Sem aplicações nos últimos 2 meses");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
 function fnHead(F){
   const r=fnRow(F.c),C=FN.C,l=fnLast(F),r12=fnRet(F,"12"),ra=fnRet(F,"ano"),cd12=r12?fnBmRet("cdi",r12.p0,r12.p1):null,rk=fnRisk(F,fnStart(F,"12"));
   const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
@@ -4032,13 +4032,16 @@ function fnRk(){
     +fnRkExtraSel(sel)
     +'<div class="field"><label for="rkTxt">Nome, CNPJ ou gestora</label><input id="rkTxt" data-fnrk="rkTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>'
     +((rk.ges!==""&&I.gestores[rk.ges])||(rk.adm!==""&&I.adms&&I.adms[rk.adm])?'<div class="fnchips">'+(rk.ges!==""&&I.gestores[rk.ges]?'<span class="fnchip">Gestora: '+esc(I.gestores[rk.ges])+' <button type="button" class="fnx" data-fnrkx="ges" aria-label="Remover">×</button></span>':'')+(rk.adm!==""&&I.adms&&I.adms[rk.adm]?'<span class="fnchip">Administradora: '+esc(I.adms[rk.adm])+' <button type="button" class="fnx" data-fnrkx="adm" aria-label="Remover">×</button></span>':'')+'</div>':'')
-    +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>';
+    +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>'
+    +(rk.prev&&rk.prev!=="fi"?'<p class="sub" style="font-size:.8rem;margin-top:4px">Previdência: fundos marcados como previdenciários na CVM, FAPI e fundos com PREV, PGBL ou VGBL no nome. Esses fundos pertencem à seguradora (exclusivos, para investidor profissional), por isso entram mesmo com as caixas acima desmarcadas. PGBL e VGBL são planos da SUSEP, não da CVM: a separação vem só do nome do fundo, e muitos atendem os dois planos ou não dizem qual.</p>':'')
+    +(rk.capt?'<p class="sub" style="font-size:.8rem;margin-top:4px">Captação: fechado = condomínio fechado na CVM ou nenhuma aplicação nos dois últimos meses no informe diário da CVM. A CVM não publica a situação de captação de cada fundo; consulte o distribuidor antes de aplicar.</p>':'');
   fnRkTable();
 }
 function fnRkList(){
   fnQuartis();const I=FN.idx,C=FN.C,rk=FN.rk,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
   const L=[];I.rows.forEach((r,j)=>{if(rk.tipo!==""&&r[C.tipo]!==+rk.tipo)return;if(rk.cls!==""&&r[C.classe]!==+rk.cls)return;if(rk.anb!==""&&r[C.anbima]!==+rk.anb)return;
-    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags];if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return;
+    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags],pv=rk.prev&&rk.prev!=="fi"&&fnPrev(r);   // fundos de previdência são da seguradora (exclusivos, para investidor profissional): entram quando o filtro é de previdência
+    if(!pv){if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return}
     if(tx.length&&!tx.every(w=>FN.sk[j].includes(w)))return;
     if(rk.ges!==""&&r[C.gestor]!==+rk.ges)return;if(rk.adm!==""&&C.adm!=null&&r[C.adm]!==+rk.adm)return;
     if(rk.tmax!==""&&(r[C.tadm]==null||r[C.tadm]>+rk.tmax))return;
@@ -4119,15 +4122,25 @@ function fnRkExtra(r){const rk=FN.rk,C=FN.C;
   if(rk.cons!==""&&(C.cons==null||r[C.cons]==null||r[C.cons]<+rk.cons))return false;
   if(rk.q12!==""&&(r[C.q12]==null||r[C.q12]>+rk.q12))return false;
   if(rk.q36!==""&&(r[C.q36]==null||r[C.q36]>+rk.q36))return false;
+  if(rk.prev){const p=fnPrev(r);if(rk.prev==="fi"?p:rk.prev==="prev"?!p:!(p&&[rk.prev,"ambos"].includes(fnPrevPlano(r))))return false}
+  if(rk.capt){const f=fnFechado(r);if(rk.capt==="aberto"?f:!f)return false}
   return true}
+/* previdência: marcação do robô (classe previdenciária na CVM, FIE ou FAPI) ou, enquanto o robô não refaz o índice, o nome */
+const FN_PREV_RE=/\b(FIE|FAPI|PREV|PREVIDENCIA|PREVIDENCIARIO|PGBL|VGBL)\b/;
+function fnPrev(r){const fl=r[FN.C.flags]||0;if(fl&128)return true;const t=FN.idx.tipos&&FN.idx.tipos[r[FN.C.tipo]];return FN_PREV_RE.test(fnNorm(r[FN.C.nome]).toUpperCase())||/FIE|FAPI|PREVID/i.test(t||"")}
+function fnPrevPlano(r){const fl=r[FN.C.flags]||0,n=fnNorm(r[FN.C.nome]).toUpperCase();const pg=fl&256||/\bPGBL\b/.test(n),vg=fl&512||/\bVGBL\b/.test(n);return pg&&!vg?"pgbl":vg&&!pg?"vgbl":pg&&vg?"ambos":""}
+/* fechado para captação: condomínio fechado (CVM) ou nenhuma aplicação nos dois últimos meses (informe diário da CVM) */
+function fnFechado(r){const fl=r[FN.C.flags]||0;return !!(fl&16||fl&1024)}
 function fnRkExtraSel(sel){const rk=FN.rk;
   return sel("rkPcdi","12 meses acima de",[["","Qualquer"],[90,"90% do CDI"],[100,"100% do CDI"],[105,"105% do CDI"],[110,"110% do CDI"],[120,"120% do CDI"],[150,"150% do CDI"]],rk.pcdi)
     +sel("rkQ12","Quartil em 12 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q12)
     +sel("rkQ36","Quartil em 36 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q36)
-    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')}
-const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons"};
+    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')
+    +sel("rkPrev","Previdência",[["","Todos os fundos"],["prev","Só previdência (PGBL e VGBL)"],["pgbl","Previdência · PGBL"],["vgbl","Previdência · VGBL"],["fi","Só fundos de investimento (sem previdência)"]],rk.prev)
+    +sel("rkCapt","Captação",[["","Abertos e fechados"],["aberto","Abertos para captação"],["fechado","Fechados para captação"]],rk.capt)}
+const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons",rkPrev:"prev",rkCapt:"capt"};
 /* busca por objetivo e filtros salvos */
-const FN_RK0={tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
+const FN_RK0={prev:"",capt:"",tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
 function fnClsIdx(re){const j=(FN.idx.classes||[]).findIndex(x=>re.test(fnNorm(x||"")));return j<0?"":String(j)}
 function fnObjetivos(){return [
   ["Caixa: renda fixa com resgate até D+1, acima de 100% do CDI e taxa até 0,5%",{cls:fnClsIdx(/^renda fixa$/),rmax:"1",pcdi:"100",tmax:"0.5",pl:50e6,sort:"r12"}],

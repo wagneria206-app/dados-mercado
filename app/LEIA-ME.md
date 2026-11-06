@@ -119,9 +119,9 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `435-series-e-retornos.js` — séries e retornos (3 KB)
 - `440-indicadores-de-risco.js` — indicadores de risco (3 KB)
 - `445-graficos.js` — gráficos (6 KB)
-- `450-telas.js` — telas (28 KB)
-- `455-fnrklist.js` (8 KB)
-- `457-quartis-consistencia-e-filtros.js` (5 KB)
+- `450-telas.js` — telas (29 KB)
+- `455-fnrklist.js` (9 KB)
+- `457-quartis-consistencia-e-filtros.js` (7 KB)
 
 **`js/5-bolsa/`** — Bolsa (B3 e CVM)
 
