@@ -1,7 +1,7 @@
 /* ---------- tour de boas-vindas: aparece na primeira abertura em cada aparelho (e pode ser revisto em Ajustes)
    Destaca cada parte do app com um balão curto. Não aparece em navegadores automatizados (testes). */
 const TOUR=[
-  [null,"Bem-vindo ao WF Radar","Mercado, economia, fundos, Bolsa e carteiras num só lugar, sempre com dados de fontes oficiais. São 6 passos rápidos."],
+  [null,"Bem-vindo ao WF Investimentos","Mercado, economia, fundos, Bolsa e carteiras num só lugar, sempre com dados de fontes oficiais. São 6 passos rápidos."],
   [".areas","Áreas do app","Mercado (juros, inflação, dólar, economia, EUA), Fundos, Bolsa, Carteiras e Simulações e a calculadora de títulos. Em cada área, as abas logo abaixo levam aos assuntos."],
   [".busca","Busca","Ache qualquer fundo, ação, FII, ETF, BDR, título do Tesouro ou tela do app. No computador, a tecla / leva direto para cá."],
   ["#mkOut .rsgrid>div,#mkOut .pnlc","De onde vem cada número","Toque no pequeno i de um cartão para ver a fonte oficial. Se uma fonte atrasar, um aviso amarelo aparece no topo da tela."],
