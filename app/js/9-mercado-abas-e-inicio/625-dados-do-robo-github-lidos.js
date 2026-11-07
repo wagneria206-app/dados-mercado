@@ -1,6 +1,6 @@
 /* ---------- dados do robô (GitHub) lidos direto pela página ---------- */
 const PAGES=/github\.io$/.test(location.hostname)||!(window.claude&&typeof window.claude.use==="function");
-const ROBO="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/site/data/";
+const ROBO=DADOS_RAIZ+"site/data/";
 let ROBO_ST={ok:null,at:null,refDate:null,erro:null,papeis:0};
 async function roboJson(f){const r=await fetch(ROBO+f+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error(f+": HTTP "+r.status);return r.json()}
 function roboStat(){

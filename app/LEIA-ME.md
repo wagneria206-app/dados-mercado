@@ -69,6 +69,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
 - `000-inicio-day.js` (1 KB)
+- `001-onde-ficam-os-dados.js` (2 KB)
 - `005-series-historicas-embutidas.js` — séries históricas embutidas (4 KB)
 - `010-retrato-de-mercado-embutido-substituido.js` — retrato de mercado embutido (substituído pelo botão Atualizar) (7 KB)
 - `015-calendario.js` — calendário (1 KB)
@@ -199,4 +200,4 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
 - `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (15 KB)
 - `624-fontes-e-metodologia.js` — "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes (12 KB)
-- `625-dados-do-robo-github-lidos.js` — dados do robô (GitHub) lidos direto pela página (13 KB)
+- `625-dados-do-robo-github-lidos.js` — dados do robô (GitHub) lidos direto pela página (12 KB)

@@ -1,5 +1,5 @@
 /* ===== Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) ===== */
-const EU_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/eua/";
+const EU_URL=DADOS_RAIZ+"eua/";
 const EU={ix:null,idx:null,C:null,S:null,B:null,cal:null,emp:new Map(),load:null,err:null,per:"12",
   rk:{setor:"",liq:1e5,txt:"",sort:"mcap",dir:-1,n:50}};
 try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="object")Object.assign(EU.rk,r,{n:50})}catch(e){}
