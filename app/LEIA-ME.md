@@ -1,4 +1,4 @@
-# Código do app (WF Investimentos)
+# Código do app (WF Radar)
 
 O app publicado é um único arquivo, `index.html`, montado a partir dos módulos desta pasta.
 **Nunca edite o `index.html` à mão**: edite os módulos e rode a montagem.

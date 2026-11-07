@@ -1,6 +1,6 @@
 # dados-mercado
 
-Robô que busca, todo dia útil, dados públicos oficiais e publica o app **WF Investimentos**
+Robô que busca, todo dia útil, dados públicos oficiais e publica o app **WF Radar**
 (GitHub Pages: https://wagneria206-app.github.io/dados-mercado/).
 
 ## Onde ficam os dados
