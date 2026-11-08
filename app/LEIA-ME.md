@@ -69,7 +69,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
 - `000-inicio-day.js` (1 KB)
-- `001-onde-ficam-os-dados.js` (2 KB)
+- `001-onde-ficam-os-dados.js` (3 KB)
 - `005-series-historicas-embutidas.js` — séries históricas embutidas (4 KB)
 - `010-retrato-de-mercado-embutido-substituido.js` — retrato de mercado embutido (substituído pelo botão Atualizar) (7 KB)
 - `015-calendario.js` — calendário (1 KB)
