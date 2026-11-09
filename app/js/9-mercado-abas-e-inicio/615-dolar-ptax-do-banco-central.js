@@ -87,12 +87,12 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 applyData(DATA0);
 buildOptions();applyFam();renderMkt();
 pcBind();pcList();
-let m0="rs";try{m0=inicioMod()||localStorage.getItem("mod2")||"rs"}catch(e){}
+let m0="rd";try{m0=inicioMod()||localStorage.getItem("mod2")||"rd"}catch(e){}
 scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem","rd"].includes(m0)?m0:"rd");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 

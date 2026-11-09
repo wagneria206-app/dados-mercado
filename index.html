@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hmJp1md1u1QqMViVO/sqFaLwv3yzp39zoEdowi//1E8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-rDmp+6F13HZxHeeUDNNRJDEQJnNRO4lMjuyC8jbkSgo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -889,6 +889,12 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
 .tecler{margin:4px 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}
+.rdl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rdb{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit;color:var(--ink)}
+.rdb:hover{background:var(--sunk)}
+.rdn{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rdt{font-weight:600;line-height:1.35}
+.rdb small{color:var(--muted);font-size:.84rem}
 /* Favoritos, alertas e documentos */
 /* favoritos,alertas e documentos */
 .fvhd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
@@ -1450,6 +1456,7 @@ html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTra
     <span class="rstat" id="rstat">Dados embutidos de 15/10/2026.</span>
   </header>
   <nav class="areas" role="tablist" aria-label="Áreas do aplicativo">
+    <button type="button" role="tab" data-area="rad" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/><circle cx="12" cy="12" r="1.2"/></svg><span>Radar</span></button>
     <button type="button" role="tab" data-area="mkt" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 15l4.5-5 3.5 3.5L20 6"/><path d="M15 6h5v5"/></svg><span>Mercado</span></button>
     <button type="button" role="tab" data-area="fnd" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Fundos</span></button>
     <button type="button" role="tab" data-area="bolsa" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M6 4v16M6 8h-2v8h2M12 6v14M12 9h-2v6h2M18 3v15M18 7h-2v7h2"/></svg><span>Bolsa</span></button>
@@ -1462,7 +1469,7 @@ html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTra
   <dialog id="ajustes" class="ajdlg" aria-label="Ajustes"></dialog>
   <button type="button" id="apresSai" class="apressai">Sair da apresentação</button>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="sem" aria-selected="false">Semana</button><button type="button" role="tab" data-mod="agm" aria-selected="false">Agenda</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ff" aria-selected="false">Fluxo</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="af" aria-selected="false">FIIs</button><button type="button" role="tab" data-mod="ab" aria-selected="false">Estratégias</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button><button type="button" role="tab" data-mod="pj" aria-selected="false">Planejamento</button><button type="button" role="tab" data-mod="dj" aria-selected="false">Diário de decisões</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rd" aria-selected="false">Radar</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="sem" aria-selected="false">Semana</button><button type="button" role="tab" data-mod="agm" aria-selected="false">Agenda</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Taxas do Tesouro</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Mercado de crédito</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ff" aria-selected="false">Fluxo</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="af" aria-selected="false">FIIs</button><button type="button" role="tab" data-mod="ab" aria-selected="false">Estratégias</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button><button type="button" role="tab" data-mod="pj" aria-selected="false">Planejamento</button><button type="button" role="tab" data-mod="dj" aria-selected="false">Diário de decisões</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -2635,8 +2642,8 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",agm:"mkt",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ab:"bolsa",pj:"simu",dj:"simu",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
-const MKM=new Set(["rs","sem","agm","fv","ec","mu","ju","cr","in","ix"]);
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",rd:"rad",agm:"rad",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ab:"bolsa",pj:"simu",dj:"simu",ac:"bolsa",au:"bolsa",fv:"rad",ec:"mkt",mu:"mkt"},AREA_T={rad:"Radar",calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={rad:"rd",calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const MKM=new Set(["rd","rs","sem","agm","fv","ec","mu","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;try{fonteAviso(m)}catch(e){}if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
@@ -3414,7 +3421,8 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=rsResumoHtml(P);
+  try{if(activeMod==="rd")h=rdTela().map(P).join("");
+  else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
@@ -6752,7 +6760,7 @@ try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="o
 try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
 function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
 const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
-function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
 function euBoot(){
   if(EU.S||EU.load)return EU.load;EU.err=null;
   const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);
@@ -7653,7 +7661,7 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.da
 const MC_URL=DADOS_RAIZ+"macro/";
 const MC={d:null,load:null,err:null};
 function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
-function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs"||activeMod==="sem")&&typeof mkCalc==="function")mkCalc()}
+function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs"||activeMod==="sem"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc()}
 /* datas: "2026-09" (mês), "202609" (mês do IBGE), "202602" com trimestre (PIB) */
 const mcTm=s=>{s=String(s);return s.length===7?Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,15):Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,15)};
 const mcTq=s=>{s=String(s);return Date.UTC(+s.slice(0,4),(+s.slice(4,6)-1)*3+1,15)};
@@ -8560,6 +8568,92 @@ function bkHtml(){
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-bkabre],[data-bkord]");if(!x)return;if(x.dataset.bkabre)BK.abre=BK.abre===x.dataset.bkabre?null:x.dataset.bkabre;if(x.dataset.bkord)BK.ord=x.dataset.bkord;mkCalc()});
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="bkQ"){BK.q=e.target.value;clearTimeout(BK.tq);BK.tq=setTimeout(()=>{mkCalc();const i=$("bkQ");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},350)}});
+/* ---------- Radar: o que mudou e merece atenção, em ordem de urgência.
+   Não cria análise nova: junta os sinais que o app já calcula (carteiras, favoritos, mercado e qualidade dos dados).
+   Níveis: 1 Agir (a carteira pede decisão) · 2 Atenção (mudou algo relevante) · 3 Oportunidade (para estudar). */
+const RD={f:"todos",vistos:{}};
+try{RD.vistos=JSON.parse(localStorage.getItem("rdVistos")||"{}")||{}}catch(e){}
+function rdCarrega(){ // pede o que falta; cada carga chama o Radar de novo quando chega
+  const falta=[];
+  if(!AT.idx&&!AT.err){falta.push("Bolsa");const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="rd")mkCalc()})}
+  if(!FN.idx&&!FN.err&&typeof fnBoot==="function"){falta.push("fundos");const p=fnBoot();if(p&&p.then)p.then(()=>{if(activeMod==="rd")mkCalc()})}
+  if(!EU.S)euBoot();if(!MC.d)mcBoot();if(!MK.loaded)mkLoad();if(!CURV)curvasLoad();
+  if(typeof bkBoot==="function")bkBoot();if(typeof emBoot==="function")emBoot();if(typeof insBoot==="function")insBoot();if(typeof alBoot==="function")alBoot();if(typeof sdLoad==="function")sdLoad();
+  if(typeof AG==="object"&&!AG.dados&&!AG.load&&!AG.err)AG.load=atGet("agenda.json").then(j=>{AG.dados=j;AG.load=null;if(activeMod==="rd")mkCalc()}).catch(e=>{AG.err=e;AG.load=null});
+  return falta;
+}
+function rdAtivos(){ // códigos da B3 nas carteiras e nos favoritos
+  const S=new Map();
+  (SP.carts||[]).forEach(c=>(c.itens||[]).forEach(x=>{if(x.t==="a"&&x.k&&!/^TD-/.test(x.k))S.set(x.k,(S.get(x.k)||"")+"c")}));
+  (FV.l||[]).forEach(f=>{if(f.k&&f.k[0]==="a")S.set(f.k.slice(2),(S.get(f.k.slice(2))||"")+"f")});
+  return S;
+}
+function rdZ(P,dias){ // variação do último dia contra o desvio dos últimos "dias" dias
+  if(!P||P.length<dias+2)return null;const r=[];for(let i=P.length-dias;i<P.length;i++)r.push(P[i][1]/P[i-1][1]-1);
+  const u=r.pop(),mu=r.reduce((a,b)=>a+b,0)/r.length,sd=Math.sqrt(r.reduce((a,b)=>a+(b-mu)**2,0)/(r.length-1));return sd?{z:(u-mu)/sd,u:u*100,t:P[P.length-1][0]}:null;
+}
+function rdSinais(){
+  const L=[],add=(nv,alvo,tit,det,go,chave)=>L.push({nv,alvo,tit,det,go:go||"",chave:chave||tit});
+  const hj=Date.parse(agmHoje()+"T00:00:00Z");
+  // 1) carteiras
+  (SP.carts||[]).forEach((c,ci)=>{const it=c.itens||[];if(!it.length)return;const nm=c.nome||("Carteira "+(ci+1)),go='data-rdcart="'+ci+'"';
+    let C=null;try{C=spCredito(c,it)}catch(e){}
+    if(C){C.L.forEach(g=>{
+      if(g.acima>0)add(1,"carteira",nm+": "+brl(g.acima)+" acima do FGC em "+g.em,"o FGC cobre até R$ 250 mil por instituição; o excedente corre o risco do banco",go);
+      if(g.cred>0&&g.pc>SP_EMIS_LIM)add(2,"carteira",nm+": "+fx(g.pc,1)+"% num só emissor ("+g.em+")","concentração acima de "+SP_EMIS_LIM+"% em crédito privado",go);
+      if(g.fgc>0&&typeof bkAcha==="function"&&BK.d){const b=bkAcha(g.em);if(b){const k=bkSaudeCalc(b);if(k.nivel===3)add(1,"carteira",nm+": banco "+nomeCx(g.em)+" está frágil",k.al.slice(0,2).join(", ")||"indicadores do Banco Central",go)}}
+      if(g.cred>0&&typeof EM==="object"&&EM.d){const k=bkNome(g.em),e=Object.values(EM.d.e).find(x=>{const n=bkNome(x.n);return n===k||(n.length>=6&&(n.includes(k)||k.includes(n)))});if(e){const q=emCalc(e);if(q&&q.nivel===3)add(1,"carteira",nm+": emissor "+nomeCx(g.em)+" está frágil",q.alerta.slice(0,2).join(", "),go)}}})}
+    it.forEach(x=>{const vc=spVenc(x);if(vc&&vc.d){const d=(Date.parse(vc.d+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=15)add(1,"carteira",nm+": "+spItemNome(x).slice(0,40)+" vence em "+fdate(Date.parse(vc.d+"T00:00:00Z")),"decidir onde reaplicar o dinheiro",go)}});
+    const temFundoTrib=it.some(x=>x.t==="f");
+    if(temFundoTrib){const cc=spComeCotas(agmHoje()),d=(cc.prox-hj)/DAY;if(d>=0&&d<=20)add(2,"carteira",nm+": come-cotas em "+fdate(cc.prox),"os fundos de renda fixa e multimercado antecipam o IR nessa data",go,"come"+ci)}});
+  // 2) ativos das carteiras e dos favoritos
+  const A=rdAtivos();
+  if(AT.idx&&A.size){const C=AT.C;
+    A.forEach((orig,t)=>{const r=atRow(t);if(!r)return;const alvo=orig.includes("c")?"carteira":"favoritos",go='data-atopen="'+t+'"';
+      if(C.cruz!=null&&r[C.cruz]===1)add(2,alvo,t+": média de 50 dias cruzou para cima a de 200","cruzamento de alta nos últimos 20 pregões",go);
+      if(C.cruz!=null&&r[C.cruz]===-1)add(2,alvo,t+": média de 50 dias cruzou para baixo a de 200","cruzamento de baixa nos últimos 20 pregões",go);
+      if(C.ifr!=null&&r[C.ifr]!=null&&(r[C.ifr]>=75||r[C.ifr]<=25))add(2,alvo,t+": IFR em "+fx(r[C.ifr],0),r[C.ifr]>=75?"sobrecomprado: subiu forte em pouco tempo":"sobrevendido: caiu forte em pouco tempo",go);
+      if(C.max52d!=null&&r[C.max52d]!=null&&r[C.max52d]>-1)add(2,alvo,t+": na máxima de 52 semanas","R$ "+fx(r[C.preco],2),go);
+      if(C.min52d!=null&&r[C.min52d]!=null&&r[C.min52d]<1)add(2,alvo,t+": na mínima de 52 semanas","R$ "+fx(r[C.preco],2),go);
+      if(C.d1!=null&&r[C.d1]!=null&&Math.abs(r[C.d1])>=5)add(2,alvo,t+": "+(r[C.d1]>0?"+":"")+fx(r[C.d1],1)+"% no dia","variação forte no último pregão",go);
+      if(C.res!=null&&r[C.res]){const d=(Date.parse(r[C.res]+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=7)add(2,alvo,t+": resultado previsto para "+fdate(Date.parse(r[C.res]+"T00:00:00Z")),"data estimada pela entrega do mesmo trimestre no ano passado",go)}
+      if(typeof AL==="object"&&AL.d){const H=AL.d.t[t];if(H&&H.length>22){const u=H[H.length-1][1],a=H[H.length-22][1];if(a&&u/a>1.2)add(2,alvo,t+": aluguel de ações subiu "+fx((u/a-1)*100,0)+"% em um mês","mais investidores apostando na queda",go)}}
+      if(typeof INS==="object"&&INS.d&&INS.emp){const e=INS.emp[t.slice(0,4)],ci=e&&e.cnpj&&INS.d.cias[e.cnpj];if(ci){const s=insSaldo(ci,2,["ctl","cons","dir","out"]);if(Math.abs(s.s)>=1e6)add(2,alvo,t+": insiders "+(s.s>0?"compraram":"venderam")+" "+fnMoney(Math.abs(s.s))+" (saldo)","controladores, conselheiros e diretores nos 2 meses mais recentes",go)}}
+    });
+    if(typeof AG==="object"&&AG.dados&&AG.dados.rows){const ag=AG.dados,ix=k=>ag.cols.indexOf(k);ag.rows.forEach(r=>{const t=r[ix("t")];if(!A.has(t))return;const dc=r[ix("datacom")];const d=(Date.parse(dc+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=7)add(2,A.get(t).includes("c")?"carteira":"favoritos",t+": data-com de provento em "+fdate(Date.parse(dc+"T00:00:00Z")),"R$ "+fx(r[ix("valor")],4)+" por ação"+(r[ix("yield")]!=null?" ("+fx(r[ix("yield")],2)+"%)":""),'data-atopen="'+t+'"',"prov"+t+dc)})}
+  }
+  // 3) alertas dos favoritos que estão valendo agora
+  (FV.a||[]).forEach(a=>{const I=fvInfo(a.k),t=fvTest(a,I);if(t&&t.ok)add(1,"favoritos",(I.n||a.k)+": "+fvAlLong(a).charAt(0).toLowerCase()+fvAlLong(a).slice(1),"agora "+fvFv(a,t.x),a.k[0]==="a"?'data-atopen="'+a.k.slice(2)+'"':'data-mkgo="fv"',"al"+a.id)});
+  // 4) mercado: movimentos fora do normal, Focus, oportunidades
+  if(EU.S){[["ibov","Ibovespa"],["usd","Dólar"],["spx","S&P 500"]].forEach(([k,n])=>{const z=rdZ(EU.S[k],250);if(z&&Math.abs(z.z)>=2)add(2,"mercado",n+": "+(z.u>0?"+":"")+fx(z.u,2)+"% em "+fdate(z.t),"movimento "+fx(Math.abs(z.z),1)+" vezes maior que o normal do último ano",'data-mkgo="sem"')})}
+  if(MK.di){const ks=Object.keys(MK.di.dias).sort();if(ks.length>40){const y=+ks[ks.length-1].slice(2,4)+2,c="F"+String(y).padStart(2,"0"),S=ks.map(k=>{const x=(MK.di.dias[k]||[]).find(r=>r[0]===c);return x&&x[3]!=null?+x[3]:null});const d=[];for(let i=1;i<S.length;i++)if(S[i]!=null&&S[i-1]!=null)d.push(S[i]-S[i-1]);if(d.length>30){const u=d[d.length-1],r=d.slice(-61,-1),mu=r.reduce((a,b)=>a+b,0)/r.length,sd=Math.sqrt(r.reduce((a,b)=>a+(b-mu)**2,0)/(r.length-1));if(sd&&Math.abs((u-mu)/sd)>=2)add(2,"mercado","Juros futuros: DI de janeiro de "+(2000+y)+" "+(u>0?"subiu":"caiu")+" "+fx(Math.abs(u)*100,0)+" bps no último pregão","movimento fora do normal dos últimos 60 pregões",'data-mkgo="ju"')}}}
+  if(MC.d&&MC.d.focus){const y=new Date().getUTCFullYear();[["IPCA",y,"IPCA de "+y],["Selic",y+1,"Selic no fim de "+(y+1)]].forEach(([i,a,n])=>{const f=semFocus(i,a);if(f&&Math.abs(f.d)>=0.1)add(2,"mercado","Focus: "+n+" "+(f.d>0?"subiu":"caiu")+" para "+fx(f.v,2)+"%",(f.d>0?"+":"")+fx(f.d,2)+" p.p. na última pesquisa",'data-mkgo="ec"',"focus"+i)})}
+  try{oppData().filter(o=>isFinite(o.pctl)&&o.pctl>=95&&o.n>=500&&o.fam!=="selic").sort((a,b)=>b.pctl-a.pctl).slice(0,3).forEach(o=>add(3,"mercado",o.name+" a "+(o.fam==="ipca"?"IPCA + ":"")+fx(o.buy,2)+"%","taxa maior que em "+fx(o.pctl,0)+"% dos dias da história do título",'data-mkgo="tx"',"td"+o.k))}catch(e){}
+  if(AT.idx&&AT.C.pvp!=null){const C=AT.C,F=AT.idx.rows.filter(r=>r[C.tipo]==="FII"&&(r[C.liq]||0)>=2e6&&r[C.pvp]>0&&r[C.pvp]<=0.85&&r[C.dy]>=12&&r[C.dy]<30).sort((a,b)=>a[C.pvp]-b[C.pvp]).slice(0,3);F.forEach(r=>add(3,"mercado",r[0]+": FII com P/VP "+fx(r[C.pvp],2)+" e rendimento de "+fx(r[C.dy],1)+"%","desconto sobre o patrimônio com bom rendimento; confira vacância e inadimplência",'data-atopen="'+r[0]+'"'))}
+  // 5) qualidade dos dados
+  try{const at=du(VAL,hj);if(at>2)add(2,"app","Dados de "+fdate(VAL)+": "+at+" dias úteis sem atualização","os robôs não rodaram desde então",'data-mkgo="rs"',"dados")}catch(e){}
+  if(typeof SD==="object"&&SD.d&&SD.d.fontes){const ruins=SD.d.fontes.filter(f=>!f.ok);if(ruins.length)add(2,"app",ruins.length+(ruins.length>1?" fontes com problema":" fonte com problema")+" ou valor suspeito",ruins.slice(0,3).map(f=>f.nome).join("; "),'data-rdsaude="1"',"saude")}
+  return L;
+}
+function rdTela(){
+  const falta=rdCarrega(),L=rdSinais(),NV=["","Agir","Atenção","Oportunidade"],COR=["","var(--loss)","var(--warn)","var(--accent)"],ALV={carteira:"Carteiras",favoritos:"Favoritos",mercado:"Mercado",app:"Dados"};
+  const V=L.filter(x=>RD.f==="todos"||x.alvo===RD.f).sort((a,b)=>a.nv-b.nv||["carteira","favoritos","mercado","app"].indexOf(a.alvo)-["carteira","favoritos","mercado","app"].indexOf(b.alvo));
+  const novo=x=>!RD.vistos[x.chave];
+  let h='<h3>Radar</h3><p class="sub">O que mudou e merece atenção nas suas carteiras, nos seus favoritos e no mercado, do mais urgente ao que é só para estudar. Toque num item para abrir o detalhe.</p>'
+    +(falta.length?'<p class="sub">Carregando: '+falta.join(", ")+'…</p>':'')
+    +'<div class="fnkpis">'+[1,2,3].map(n=>tecKp(NV[n],'<span style="color:'+COR[n]+'">'+L.filter(x=>x.nv===n).length+'</span>',n===1?'pede decisão':n===2?'mudou algo relevante':'para estudar')).join("")+tecKp("Novos desde a última visita",String(L.filter(novo).length),'')+'</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px">'+fnSeg("rdf",[["todos","Tudo"],["carteira","Carteiras"],["favoritos","Favoritos"],["mercado","Mercado"],["app","Dados"]],RD.f)+'</div>';
+  if(!V.length)h+='<p class="sub">Nada pedindo atenção agora'+(RD.f!=="todos"?' neste filtro':'')+'. O Radar olha as carteiras e os favoritos: monte uma carteira em Carteiras e Simulações e favorite ativos e fundos para acompanhá-los aqui.</p>';
+  else h+='<ul class="rdl">'+V.map(x=>'<li class="rdi" style="--c:'+COR[x.nv]+'"><button type="button" class="rdb" '+x.go+'><span class="rdn">'+NV[x.nv]+' · '+ALV[x.alvo]+(novo(x)?' <b class="tag">novo</b>':'')+'</span><b class="rdt">'+esc(x.tit)+'</b>'+(x.det?'<small>'+esc(x.det)+'</small>':'')+'</button></li>').join("")+'</ul>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">Os sinais vêm das telas do app: crédito e FGC das carteiras, saúde dos bancos e emissores, análise técnica, insiders, aluguel, calendário de resultados e proventos, alertas dos favoritos, juros futuros, Focus, Tesouro e FIIs. Fica tudo neste aparelho.</p>';
+  // marca como visto depois de mostrar
+  setTimeout(()=>{L.forEach(x=>RD.vistos[x.chave]=Date.now());const lim=Date.now()-30*DAY;Object.keys(RD.vistos).forEach(k=>{if(RD.vistos[k]<lim)delete RD.vistos[k]});try{localStorage.setItem("rdVistos",JSON.stringify(RD.vistos))}catch(e){}},3000);
+  return [h];
+}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-rdf],[data-rdcart],[data-rdsaude]");if(!x)return;
+  if(x.dataset.rdf){RD.f=x.dataset.rdf;mkCalc();return}
+  if(x.dataset.rdcart!=null){SP.cur=+x.dataset.rdcart;try{localStorage.setItem("spCur",String(SP.cur))}catch(y){}if(typeof SP_CMP!=="undefined")SP_CMP=null;setMod("sp");return}
+  if(x.dataset.rdsaude){const b=$("btSaude");if(b)b.click()}});
 /* ---------- Dólar: PTAX do Banco Central ---------- */
 let FX=null,FX_LOADING=false,FX_PER="1y",FX_MA=false,FXF=null,FXJ=null,FX_F1=false;
 try{FX_PER=localStorage.getItem("fxPer")||"1y";FX_MA=localStorage.getItem("fxMa")==="1";FX_F1=localStorage.getItem("fxF1")==="1"}catch(e){}
@@ -8649,12 +8743,12 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 applyData(DATA0);
 buildOptions();applyFam();renderMkt();
 pcBind();pcList();
-let m0="rs";try{m0=inicioMod()||localStorage.getItem("mod2")||"rs"}catch(e){}
+let m0="rd";try{m0=inicioMod()||localStorage.getItem("mod2")||"rd"}catch(e){}
 scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem","rd"].includes(m0)?m0:"rd");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
@@ -8809,7 +8903,7 @@ function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
 function inicioMod(){const v=lsGet("inicio","ultima");return v&&v!=="ultima"&&AREA_OF[v]?v:null}
 
 /* ---------- busca única */
-const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
+const BZ_PAL={rd:"radar sinais atencao agir oportunidades o que mudou hoje alertas carteira favoritos",sem:"semana resumo semanal placar destaques pdf",af:"fiis fundos imobiliarios papel tijolo vacancia p/vp rendimento fiagro",ab:"estrategias filtro combinado backtest teste historico dividendos valor momento formula magica setores forca relativa",ff:"fluxo captacao resgate industria fundos categorias",pj:"planejamento aposentadoria monte carlo meta renda aporte",dj:"diario decisoes tese anotacoes",rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
   fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
   ix:"indices ima ima-b irf-m ima-s anbima renda fixa",fx:"dolar ptax cambio cupom cambial moeda",fa:"fundo analise cnpj",fr:"ranking fundos melhores",fc:"comparar fundos",fg:"gestoras administradoras",aa:"acao acoes fii etf bdr ativo analise",
   ar:"ranking acoes fiis dividendos etf etfs renda fixa cripto internacional categoria",ac:"comparar acoes ativos",au:"bolsa americana eua sec balancos",ag:"agenda proventos dividendos jcp rendimentos",sc:"cenarios juros estresse simulacao",sim:"equivalencia lci lca cdb escada vencimentos",

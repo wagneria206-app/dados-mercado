@@ -39,7 +39,8 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=rsResumoHtml(P);
+  try{if(activeMod==="rd")h=rdTela().map(P).join("");
+  else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
