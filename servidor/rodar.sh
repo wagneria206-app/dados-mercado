@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Roda um robô no servidor, do mesmo jeito que rodava no GitHub, e publica o resultado para o app.
 #   rodar.sh <robô> [argumentos]
-#   robôs: ativos, eua, fundos, macro, insiders, bancos, aluguel, emissores (pasta de entrada → pasta de saída), atualizar, rapido (dados do site),
+#   robôs: ativos, eua, fundos, macro, insiders, bancos, aluguel, opcoes, emissores (pasta de entrada → pasta de saída), atualizar, rapido (dados do site),
 #          saude (confere tudo), exportar (só republica)
 # Os dados ficam num repositório git local (um ramo por robô, como no GitHub). Depois de cada coleta bem-sucedida o
 # ramo é trocado de uma vez e exportado para a pasta que o servidor web entrega ao app.
@@ -36,7 +36,7 @@ exportar() { "$PY" "$CODIGO/servidor/exportar.py" "$DADOS" "$WWW" "$@"; }
 
 inicio=$(date +%s); st=0
 case "$ROBO" in
-  ativos|eua|fundos|macro|insiders|bancos|aluguel)
+  ativos|eua|fundos|macro|insiders|bancos|aluguel|opcoes)
     ent=$(mktemp -d) sai=$(mktemp -d)
     entrada "$ROBO" "$ent"
     ( cd "$CODIGO" && "$PY" "scripts/$ROBO.py" "$ent" "$sai" "$@" ); st=$?

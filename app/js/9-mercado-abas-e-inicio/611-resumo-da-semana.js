@@ -67,6 +67,7 @@ function semanaTela(){
     out.push('<h3>Destaques da Bolsa na semana</h3><p class="sub" style="font-size:.82rem">Ações e units com liquidez acima de R$ 10 milhões por dia ('+R.length+' papéis). Variação dos últimos 5 pregões, sem proventos.</p>'+tab("Maiores altas",S.slice(0,5))+tab("Maiores quedas",S.slice(-5).reverse()))}
   try{const x=insSemanaHtml();if(x)out.push(x)}catch(e){}
   try{const x=alSemanaHtml();if(x)out.push(x)}catch(e){}
+  try{const x=setoresHtml();if(x)out.push(x)}catch(e){}
   // ideias automáticas (Tesouro, crédito e fundos)
   try{const id=typeof ideiasHtml==="function"?ideiasHtml():"";if(id)out.push(id)}catch(e){}
   // próxima semana

@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-rGMHPMFUI+ZR4wAz0OOmuc6VSRCfF+Lh5p4GeLPKUOI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-uWYDmmdfSh/b40ZvcJsgRoU3F3Y3YAImKdBpxIWNOj0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -4374,7 +4374,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -4807,7 +4807,8 @@ const BT_EST={
 function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela()})}
 function btTela(){
   const o=$("fnOut");if(!o)return;
-  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
+  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
+  {const st=$("btSet");if(st){const x=AT.idx?setoresHtml():"";st.innerHTML=x||'<p class="sub">Carregando os setores…</p>'}}
   if(!AT.idx){$("btFR").innerHTML='<p class="sub">Carregando a base de ativos…</p>';if(!AT.err)atBoot();}
   else btFiltro();
   btTeste();
@@ -4896,6 +4897,36 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.da
   const mf={btTipo:"tipo",btLiq:"liq",btDy:"dy",btPl:"pl",btPvp:"pvp",btRoe:"roe",btR12:"r12",btTend:"tend",btIfr:"ifr",btOrd:"ord"},mt={btEst:"est",btN:"n",btReb:"reb",btIni:"ini",btTliq:"liq",btCusto:"custo"};
   if(mf[id]){BT.f[mf[id]]=id==="btLiq"?+v:v;btSave();if(AT.idx)btFiltro();if(BT.t.est==="perso")btTeste()}
   else if(mt[id]){BT.t[mt[id]]=mt[id]==="est"?v:+v;btSave();btTeste()}});
+/* ---------- Opções (volatilidade implícita e puts ÷ calls, robô scripts/opcoes.py) e mapa setorial com força relativa */
+const OP={d:null,err:null,load:null};
+function opBoot(){if(OP.d||OP.load||OP.err)return;OP.load=fetch(DADOS_RAIZ+"opcoes/opcoes.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{OP.d=d;OP.load=null;if(activeMod==="aa"&&typeof atAa==="function")atAa()}).catch(e=>{OP.err=e;OP.load=null})}
+function atOpcHtml(A){
+  if(!(A.tipo==="Ação"||A.tipo==="Unit"||A.tipo==="ETF"))return "";
+  if(!OP.d){opBoot();return ""}const L=OP.d.t[A.t];if(!L||!L.length)return "";
+  const u=L[L.length-1],iv=u[1]!=null&&u[2]!=null?(u[1]+u[2])/2:u[1]!=null?u[1]:u[2],T=tecCalc(A),hv=T?T.vol:null;
+  const ivs=L.map(x=>x[1]!=null&&x[2]!=null?(x[1]+x[2])/2:x[1]!=null?x[1]:x[2]).filter(v=>v!=null),rk=iv!=null&&ivs.length>20?vqRank(ivs,iv):null;
+  let h='<section class="panel"><h3>Opções</h3><div class="fnkpis">'
+    +tecKp("Volatilidade implícita",iv!=null?fx(iv,1)+'%':'—','o que o mercado de opções espera de oscilação, ao ano')
+    +tecKp("Volatilidade realizada (21 dias)",hv!=null?fx(hv,1)+'%':'—',iv!=null&&hv?'implícita '+(iv>hv*1.15?'acima':iv<hv*0.85?'abaixo':'perto')+' da realizada':'')
+    +tecKp("Puts ÷ calls (volume)",u[3]!=null?fx(u[3],2):'—',u[3]==null?'':u[3]>1.2?'muita procura por proteção (puts)':u[3]<0.6?'mais apostas na alta (calls)':'equilibrado')
+    +tecKp("Volume em opções",fnMoney(u[4]),'no pregão de '+fdate(Date.parse(u[0]+"T00:00:00Z")))+'</div>';
+  if(rk!=null)h+='<p style="margin:2px 0 8px">A volatilidade implícita está mais alta que em '+fx(rk,0)+'% dos pregões guardados: '+(rk>=80?'o mercado está pagando caro por proteção (bom momento para quem vende opções, ruim para quem compra).':rk<=20?'proteção barata em relação ao histórico.':'dentro do normal.')+'</p>';
+  if(L.length>5)h+='<div class="label">Volatilidade implícita no dinheiro (% ao ano)</div>'+fnChart([{lab:"Call",col:FN_COLS[0],w:1.8,pts:L.filter(x=>x[1]!=null).map(x=>[Date.parse(x[0]+"T00:00:00Z"),x[1]])},{lab:"Put",col:FN_COLS[1],w:1.8,pts:L.filter(x=>x[2]!=null).map(x=>[Date.parse(x[0]+"T00:00:00Z"),x[2]])}],{fmt:"pct",h:160,aria:"Volatilidade implícita"});
+  return h+'<p class="sub" style="font-size:.8rem">Fonte: B3, negócios do dia com opções. Volatilidade implícita pelo modelo de Black-Scholes, na call e na put mais próximas do preço da ação, no primeiro vencimento com pelo menos 7 dias. Puts ÷ calls: volume financeiro negociado em opções de venda sobre o de compra.</p></section>';
+}
+function setoresHtml(){ // força relativa por setor: retorno mediano das ações de cada setor contra o Ibovespa
+  if(!AT.idx)return "";const I=AT.idx,C=AT.C,G=new Map();
+  I.rows.forEach(r=>{if(!(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")||(r[C.liq]||0)<2e6)return;const s=I.setores[r[C.setor]];if(!s||/n[ãa]o classificad|^outros$/i.test(s))return;const g=G.get(s)||{s,k:r[C.setor],L:[]};g.L.push(r);G.set(s,g)});
+  const med=(L,c)=>vqPct(L.map(r=>r[C[c]]).filter(v=>v!=null),.5);
+  const ib=EU.S&&EU.S.ibov?{m1:semVar("ibov",30),m12:semVar("ibov",365)}:null;
+  const S=[...G.values()].filter(g=>g.L.length>=3).map(g=>({s:g.s,k:g.k,n:g.L.length,d5:C.r5!=null?med(g.L,"r5"):null,m1:med(g.L,"r1m"),ra:med(g.L,"ra"),m12:med(g.L,"r12"),alta:C.tend!=null?g.L.filter(r=>r[C.tend]===1).length/g.L.length*100:null}));
+  if(!S.length)return "";S.sort((a,b)=>(b.m1??-99)-(a.m1??-99));
+  const cel=v=>{if(v==null)return '<td>—</td>';const a=Math.min(1,Math.abs(v)/15);return '<td style="background:color-mix(in srgb,'+(v>=0?'var(--gain)':'var(--loss)')+' '+Math.round(a*45)+'%,transparent)">'+(v>=0?'+':'')+fx(v,1)+'%</td>'};
+  if(!EU.S)euBoot();
+  return '<h3>Setores: força relativa</h3><p class="sub">Retorno mediano das ações de cada setor (liquidez acima de R$ 2 milhões por dia). Ordenado pelo último mês'+(ib&&ib.m1?'; o Ibovespa fez '+(ib.m1.r>=0?'+':'')+fx(ib.m1.r,1)+'% em um mês e '+(ib.m12.r>=0?'+':'')+fx(ib.m12.r,1)+'% em 12 meses':'')+'. Setores com mais ações em tendência de alta mostram força generalizada, não só de uma empresa.</p>'
+    +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Setor</th><th class="c-ph">Ações</th>'+(C.r5!=null?'<th>Semana</th>':'')+'<th>1 mês</th><th>No ano</th><th>12 meses</th>'+(C.tend!=null?'<th class="c-ph">Em tendência de alta</th>':'')+'</tr></thead><tbody>'
+    +S.map(x=>'<tr><td style="text-align:left"><button type="button" class="link" data-atrkcat="Ação|'+x.k+'">'+esc(x.s)+'</button></td><td class="c-ph">'+x.n+'</td>'+(C.r5!=null?cel(x.d5):'')+cel(x.m1)+cel(x.ra)+cel(x.m12)+(C.tend!=null?'<td class="c-ph">'+fx(x.alta,0)+'%</td>':'')+'</tr>').join("")+'</tbody></table></div>';
+}
 /* ---------- eventos */
 document.addEventListener("click",e=>{
   if(!(e.target.closest&&e.target.closest("#modFn")))return;const g=a=>e.target.closest("["+a+"]");let x;
@@ -8302,6 +8333,7 @@ function semanaTela(){
     out.push('<h3>Destaques da Bolsa na semana</h3><p class="sub" style="font-size:.82rem">Ações e units com liquidez acima de R$ 10 milhões por dia ('+R.length+' papéis). Variação dos últimos 5 pregões, sem proventos.</p>'+tab("Maiores altas",S.slice(0,5))+tab("Maiores quedas",S.slice(-5).reverse()))}
   try{const x=insSemanaHtml();if(x)out.push(x)}catch(e){}
   try{const x=alSemanaHtml();if(x)out.push(x)}catch(e){}
+  try{const x=setoresHtml();if(x)out.push(x)}catch(e){}
   // ideias automáticas (Tesouro, crédito e fundos)
   try{const id=typeof ideiasHtml==="function"?ideiasHtml():"";if(id)out.push(id)}catch(e){}
   // próxima semana
