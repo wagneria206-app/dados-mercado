@@ -1,5 +1,5 @@
 /* ===== Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) ===== */
-const AT_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/ativos/";
+const AT_URL=DADOS_RAIZ+"ativos/";
 const AT={idx:null,C:null,sk:null,T:null,cal:null,L:null,files:new Map(),load:null,err:null,cur:null,q:"",pview:"ret",cmp:[],
   rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50}};
 try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,25)}catch(e){}
