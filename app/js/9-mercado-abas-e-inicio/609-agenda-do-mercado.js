@@ -29,10 +29,15 @@ function agmEventos(dias){
   if(typeof AT==="object"&&AT.idx&&AT.C.res!=null){const C=AT.C;AT.idx.rows.forEach(r=>{const d=r[C.res];if(!d||!(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")||(r[C.liq]||0)<2e7)return;
     add(agmT(d),{tit:"Resultado: "+r[0]+" · "+nomeCx(r[1]).slice(0,30),det:"data prevista (mesmo trimestre do ano passado + 1 ano); depois do fechamento, em geral",pais:"BR",tema:"resultados",imp:(r[C.liq]||0)>=2e8?2:1,fonte:"CVM",tk:r[0]})})}
   else if(typeof AT==="object"&&!AT.idx&&!AT.err&&!AT.load){const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="agm"||activeMod==="sem")mkCalc()})}
+  // proventos dos ativos das carteiras e dos favoritos (agenda de proventos da B3): data-com e pagamento
+  if(typeof AG==="object"&&AG.dados&&AG.dados.rows&&typeof rdAtivos==="function"){const A=rdAtivos(),g=AG.dados,ix=k=>g.cols.indexOf(k);
+    g.rows.forEach(r=>{const t=r[ix("t")];if(!A.has(t))return;const v=r[ix("valor")],y=r[ix("yield")],det="R$ "+fx(v,4)+" por cota/ação"+(y!=null?" ("+fx(y,2)+"%)":"")+(A.get(t).includes("c")?" · está numa carteira":" · favorito");
+      if(r[ix("datacom")])add(agmT(r[ix("datacom")]),{tit:"Data-com: "+t+" ("+(r[ix("prov")]||"provento")+")",det:"último dia para ter direito · "+det,pais:"BR",tema:"proventos",imp:1,fonte:"B3"});
+      if(r[ix("pagamento")])add(agmT(r[ix("pagamento")]),{tit:"Pagamento: "+t,det,pais:"BR",tema:"proventos",imp:1,fonte:"B3"})})}
   const hr=h=>{const m=/(\d+)h(\d*)/.exec(h||"");return m?(+m[1])*60+(+m[2]||0):9999};
   E.sort((a,b)=>a.t-b.t||hr(a.hora)-hr(b.hora));
   return {E,ibge:IB}}
-const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados"};
+const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados",proventos:"Proventos"};
 function agmGrupo(t,t0){const dif=Math.round((t-t0)/DAY);if(dif===0)return ["d0","Hoje"];if(dif===1)return ["d1","Amanhã"];
   const dw=(new Date(t0).getUTCDay()+6)%7,seg=t0-dw*DAY,s=Math.floor((t-seg)/(7*DAY));if(s===0)return ["s0","Esta semana"];if(s===1)return ["s1","Próxima semana"];
   const x=new Date(t);return ["m"+x.getUTCFullYear()+x.getUTCMonth(),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}

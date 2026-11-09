@@ -190,7 +190,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `573-proposta-ou-carteira.js` (4 KB)
 - `574-imposto-liquidez-e-juros.js` (12 KB)
 - `575-eventos.js` — eventos (1 KB)
-- `576-diario-e-planejamento.js` (10 KB)
+- `576-diario-e-planejamento.js` (16 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
 - `585-economia-brasil.js` — Economia (Brasil) (12 KB)
 - `587-ano-a-ano-precificado.js` — Ano a ano: juros e inflação que o mercado precifica para cada ano × Focus (2 KB)
