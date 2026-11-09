@@ -1,7 +1,8 @@
 function fnRkList(){
   fnQuartis();const I=FN.idx,C=FN.C,rk=FN.rk,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
   const L=[];I.rows.forEach((r,j)=>{if(rk.tipo!==""&&r[C.tipo]!==+rk.tipo)return;if(rk.cls!==""&&r[C.classe]!==+rk.cls)return;if(rk.anb!==""&&r[C.anbima]!==+rk.anb)return;
-    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags];if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return;
+    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags],pv=rk.prev&&rk.prev!=="fi"&&fnPrev(r);   // fundos de previdência são da seguradora (exclusivos, para investidor profissional): entram quando o filtro é de previdência
+    if(!pv){if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return}
     if(tx.length&&!tx.every(w=>FN.sk[j].includes(w)))return;
     if(rk.ges!==""&&r[C.gestor]!==+rk.ges)return;if(rk.adm!==""&&C.adm!=null&&r[C.adm]!==+rk.adm)return;
     if(rk.tmax!==""&&(r[C.tadm]==null||r[C.tadm]>+rk.tmax))return;

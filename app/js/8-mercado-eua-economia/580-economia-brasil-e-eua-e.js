@@ -1,5 +1,5 @@
 /* ===== Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA ===== */
-const MC_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/macro/";
+const MC_URL=DADOS_RAIZ+"macro/";
 const MC={d:null,load:null,err:null};
 function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
 function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs")&&typeof mkCalc==="function")mkCalc()}

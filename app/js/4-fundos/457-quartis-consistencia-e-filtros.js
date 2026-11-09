@@ -15,15 +15,25 @@ function fnRkExtra(r){const rk=FN.rk,C=FN.C;
   if(rk.cons!==""&&(C.cons==null||r[C.cons]==null||r[C.cons]<+rk.cons))return false;
   if(rk.q12!==""&&(r[C.q12]==null||r[C.q12]>+rk.q12))return false;
   if(rk.q36!==""&&(r[C.q36]==null||r[C.q36]>+rk.q36))return false;
+  if(rk.prev){const p=fnPrev(r);if(rk.prev==="fi"?p:rk.prev==="prev"?!p:!(p&&[rk.prev,"ambos"].includes(fnPrevPlano(r))))return false}
+  if(rk.capt){const f=fnFechado(r);if(rk.capt==="aberto"?f:!f)return false}
   return true}
+/* previdência: marcação do robô (classe previdenciária na CVM, FIE ou FAPI) ou, enquanto o robô não refaz o índice, o nome */
+const FN_PREV_RE=/\b(FIE|FAPI|PREV|PREVIDENCIA|PREVIDENCIARIO|PGBL|VGBL)\b/;
+function fnPrev(r){const fl=r[FN.C.flags]||0;if(fl&128)return true;const t=FN.idx.tipos&&FN.idx.tipos[r[FN.C.tipo]];return FN_PREV_RE.test(fnNorm(r[FN.C.nome]).toUpperCase())||/FIE|FAPI|PREVID/i.test(t||"")}
+function fnPrevPlano(r){const fl=r[FN.C.flags]||0,n=fnNorm(r[FN.C.nome]).toUpperCase();const pg=fl&256||/\bPGBL\b/.test(n),vg=fl&512||/\bVGBL\b/.test(n);return pg&&!vg?"pgbl":vg&&!pg?"vgbl":pg&&vg?"ambos":""}
+/* fechado para captação: condomínio fechado (CVM) ou nenhuma aplicação nos dois últimos meses (informe diário da CVM) */
+function fnFechado(r){const fl=r[FN.C.flags]||0;return !!(fl&16||fl&1024)}
 function fnRkExtraSel(sel){const rk=FN.rk;
   return sel("rkPcdi","12 meses acima de",[["","Qualquer"],[90,"90% do CDI"],[100,"100% do CDI"],[105,"105% do CDI"],[110,"110% do CDI"],[120,"120% do CDI"],[150,"150% do CDI"]],rk.pcdi)
     +sel("rkQ12","Quartil em 12 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q12)
     +sel("rkQ36","Quartil em 36 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q36)
-    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')}
-const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons"};
+    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')
+    +sel("rkPrev","Previdência",[["","Todos os fundos"],["prev","Só previdência (PGBL e VGBL)"],["pgbl","Previdência · PGBL"],["vgbl","Previdência · VGBL"],["fi","Só fundos de investimento (sem previdência)"]],rk.prev)
+    +sel("rkCapt","Captação",[["","Abertos e fechados"],["aberto","Abertos para captação"],["fechado","Fechados para captação"]],rk.capt)}
+const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons",rkPrev:"prev",rkCapt:"capt"};
 /* busca por objetivo e filtros salvos */
-const FN_RK0={tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
+const FN_RK0={prev:"",capt:"",tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
 function fnClsIdx(re){const j=(FN.idx.classes||[]).findIndex(x=>re.test(fnNorm(x||"")));return j<0?"":String(j)}
 function fnObjetivos(){return [
   ["Caixa: renda fixa com resgate até D+1, acima de 100% do CDI e taxa até 0,5%",{cls:fnClsIdx(/^renda fixa$/),rmax:"1",pcdi:"100",tmax:"0.5",pl:50e6,sort:"r12"}],

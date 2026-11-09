@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-Le8hjfKB3TCoiyh47FHty9DGQE1awqPJE6yWkKnKEtE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-2G5OQgdB8GkD+BENjh/Xt983d/UNoRrKlSkCBswJUug='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
-<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
+<meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
@@ -1420,6 +1420,21 @@ section.notes.rcl{position:relative}
 .agmprov li{padding:3px 0}
 .agmprov li>span{display:inline-block;min-width:74px;font-variant-numeric:tabular-nums;color:var(--muted)}
 @media (max-width:560px){.agml li{grid-template-columns:86px 1fr}}
+/* Tela de senha de acesso (só aparece quando o index.html traz a meta wf-senha) */
+html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTrava){display:none!important}
+#wfTrava{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:16px;background:var(--navy);color:var(--hdr-ink)}
+.wftr-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center;background:var(--surface);color:var(--ink);border-radius:16px;padding:28px 22px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.wftr-box .logo{margin:0 auto 4px;width:48px;height:48px}
+.wftr-box h1{margin:0;font:600 1.35rem var(--f-serif)}
+.wftr-box p{margin:0;color:var(--muted);font:400 .92rem var(--f-body)}
+.wftr-box input[type=password]{font:500 1.05rem var(--f-body);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);min-height:48px}
+.wftr-box input[type=password]:focus{outline:2px solid var(--accent);outline-offset:1px}
+.wftr-lb{display:flex;gap:8px;align-items:center;justify-content:center;font:400 .88rem var(--f-body);color:var(--muted)}
+.wftr-box .btn{min-height:48px;font-size:1rem}
+.wftr-box .btn:disabled{opacity:.6}
+.wftr-msg{min-height:1.2em;color:var(--loss)!important}
+.wftr-lb input[type=checkbox]{all:revert;width:18px;height:18px;margin:0;flex:none;accent-color:var(--accent)}
+.wftr-box .logo svg{width:26px;height:26px}
 </style>
 <div class="wrap" data-area="calc">
   <header class="appbar">
@@ -1427,7 +1442,7 @@ section.notes.rcl{position:relative}
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>
       <div class="brand"><h1>WF Investimentos</h1><span>Mercado, economia, fundos, Bolsa e carteiras, com dados oficiais</span></div>
       <div class="busca" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="busca" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" placeholder="Buscar fundo, ação, FII, título ou tela" aria-label="Buscar fundo, ação, FII, título do Tesouro ou tela do app" aria-controls="buscaRes"><kbd aria-hidden="true">/</kbd><div id="buscaRes" class="buscares" role="listbox" hidden></div></div>
-      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btSaude" aria-label="Saúde das fontes" title="Saúde das fontes"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg><i class="sdponto"></i></button><button type="button" class="hbtn" id="btMetodo" aria-label="Metodologia e fontes" title="Metodologia e fontes"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M8 7h8M8 11h6"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
+      <div class="hstat"><button type="button" class="hbtn" id="btApres" aria-pressed="false" aria-label="Modo apresentação" title="Modo apresentação"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></button><button type="button" class="hbtn" id="btTema" aria-label="Alternar tema" title="Tema"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button><button type="button" class="hbtn" id="btSaude" aria-label="Saúde das fontes" title="Saúde das fontes"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg><i class="sdponto"></i></button><button type="button" class="hbtn" id="btMetodo" aria-label="Metodologia e fontes" title="Metodologia e fontes"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M8 7h8M8 11h6"/></svg></button><button type="button" class="hbtn" id="btTrava" hidden aria-label="Bloquear o app neste aparelho" title="Bloquear"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button><button type="button" class="hbtn" id="btAjustes" aria-label="Ajustes" title="Ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button><button type="button" class="btn ref" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>Atualizar dados</button></div>
     </div>
     <div class="mktbar"><div id="mkt"></div></div>
     <div id="healthBar" hidden></div>
@@ -1828,6 +1843,85 @@ const utc=(y,m,d)=>Date.UTC(y,m,d);
 const $=id=>document.getElementById(id);
 
 
+/* ---------- onde ficam os dados dos robôs (etiqueta <meta name="wf-dados">)
+   "github": ramos de dados do repositório no GitHub (raw.githubusercontent.com).
+   "local": pasta dados/ junto do app (cópia congelada, publicada com o app).
+   um endereço (https://…/): o servidor dos robôs; se ele não responder, o app usa a cópia dados/ publicada junto.
+   Fora do GitHub, os arquivos de cada fundo, ativo e empresa americana vêm agrupados em pacotes (<ramo>/pk/),
+   porque os serviços de hospedagem limitam o número de arquivos. */
+const DADOS_META=(document.querySelector('meta[name="wf-dados"]')||{}).content||"github";
+const DADOS_LOCAL=DADOS_META!=="github";
+const DADOS_RAIZ=DADOS_META==="github"?"https://raw.githubusercontent.com/wagneria206-app/dados-mercado/":DADOS_META==="local"?"dados/":DADOS_META.replace(/\/?$/,"/");
+const DADOS_RESERVA=DADOS_LOCAL&&DADOS_RAIZ!=="dados/";   // servidor com a cópia publicada como reserva
+const DADOS_EST={reserva:false};
+/* chave do pacote: 2 primeiros dígitos do CNPJ (letras viram X, fundos) ou a 1ª letra do código (ativos, empresas americanas) */
+function dadosPacoteChave(dir,nome){if(dir==="f")return [0,1].map(i=>/\d/.test(nome.charAt(i))?nome.charAt(i):"X").join("");const c=nome.charAt(0).toUpperCase();return /[A-Z0-9]/.test(c)?c:"_"}
+/* busca no servidor; se ele falhar (fora do ar, erro 5xx), busca a mesma coisa na cópia publicada com o app */
+function dadosBusca(u,o){const rel=DADOS_RESERVA&&typeof u==="string"&&u.startsWith(DADOS_RAIZ)?u.slice(DADOS_RAIZ.length):null;
+  if(rel==null)return window.fetch(u,o);
+  return window.fetch(u,o).then(r=>{if(r.status>=500)throw new Error("HTTP "+r.status);return r}).catch(()=>{DADOS_EST.reserva=true;return window.fetch("dados/"+rel.split("?")[0],o)})}
+const DADOS_PK={};
+function dadosPacote(url){const k=url.split("?")[0];if(!DADOS_PK[k])DADOS_PK[k]=dadosBusca(k,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).catch(e=>{delete DADOS_PK[k];throw e});return DADOS_PK[k]}
+/* fora do GitHub, os pedidos de um arquivo por ativo são atendidos pelo pacote correspondente */
+const fetch=(u,o)=>{if(DADOS_LOCAL&&typeof u==="string"&&u.startsWith(DADOS_RAIZ)){const m=/^(fundos|ativos|eua)\/(f|a|d|s)\/([^/?#]+)\.json/.exec(u.slice(DADOS_RAIZ.length));
+    if(m)return dadosPacote(DADOS_RAIZ+m[1]+"/pk/"+m[2]+"-"+dadosPacoteChave(m[2],m[3])+".json").then(P=>{const x=P[m[3]];return x===undefined?new Response("não encontrado",{status:404}):new Response(JSON.stringify(x),{status:200,headers:{"Content-Type":"application/json"}})});
+    return dadosBusca(u,o)}
+  return window.fetch(u,o)};
+/* Senha de acesso: barra quem só digita o endereço. Os dados do app são públicos; a senha não fica no código, só o hash dela */
+// A configuração vem de <meta name="wf-senha" content="v1:<iterações>:<sal base64>:<hash base64>">, gerada fora do app
+// pela página gerar-senha.html. Sem essa meta (ou vazia) o app abre direto.
+// Conta: K = PBKDF2-SHA256(senha, sal, iterações); a meta guarda SHA-256(K). Ao lembrar o aparelho, guarda-se K no
+// navegador: quem só tem o código público não consegue fabricar um K válido sem saber a senha.
+const SENHA_CFG=(()=>{const m=/^v1:(\d{4,7}):([A-Za-z0-9+/=]{16,}):([A-Za-z0-9+/=]{40,})$/.exec(((document.querySelector('meta[name="wf-senha"]')||{}).content||"").trim());return m?{it:+m[1],sal:m[2],h:m[3]}:null})();
+const SENHA_LS="wf-acesso";
+function senhaB64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)))}
+function senhaDeB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+async function senhaChave(senha){
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(senha.normalize("NFC")),"PBKDF2",false,["deriveBits"]);
+  return crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:senhaDeB64(SENHA_CFG.sal),iterations:SENHA_CFG.it},base,256);
+}
+async function senhaConfere(chave){
+  const h=senhaB64(await crypto.subtle.digest("SHA-256",chave));
+  if(h.length!==SENHA_CFG.h.length)return false;
+  let d=0;for(let i=0;i<h.length;i++)d|=h.charCodeAt(i)^SENHA_CFG.h.charCodeAt(i);return d===0;
+}
+function senhaLivre(){document.documentElement.classList.add("wf-livre");const t=document.getElementById("wfTrava");if(t)t.remove();const b=document.getElementById("btTrava");if(b)b.hidden=!SENHA_CFG}
+function senhaBloquear(){try{localStorage.removeItem(SENHA_LS)}catch(e){}location.reload()}
+function senhaTela(){
+  if(document.getElementById("wfTrava"))return;
+  const d=document.createElement("div");d.id="wfTrava";
+  d.innerHTML='<form class="wftr-box" autocomplete="off"><div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16v-5M10 16V8M14 16v-3M18 16V6"/></svg></div>'
+    +'<h1>WF Investimentos</h1><p>Digite a senha de acesso.</p>'
+    +'<input type="password" id="wftrSenha" aria-label="Senha de acesso" autocomplete="current-password" required>'
+    +'<label class="wftr-lb"><input type="checkbox" id="wftrLembrar" checked> Lembrar neste aparelho</label>'
+    +'<button type="submit" class="btn">Entrar</button><p class="wftr-msg" id="wftrMsg" role="alert"></p></form>';
+  document.body.appendChild(d);
+  const f=d.querySelector("form"),inp=d.querySelector("#wftrSenha"),msg=d.querySelector("#wftrMsg"),bt=d.querySelector("button");
+  let erros=0;
+  f.addEventListener("submit",async ev=>{
+    ev.preventDefault();if(bt.disabled)return;
+    bt.disabled=true;msg.textContent="Conferindo…";
+    try{
+      const k=await senhaChave(inp.value);
+      if(await senhaConfere(k)){
+        if(d.querySelector("#wftrLembrar").checked){try{localStorage.setItem(SENHA_LS,senhaB64(k))}catch(e){}}
+        senhaLivre();return;
+      }
+      erros++;msg.textContent="Senha incorreta.";inp.value="";
+      await new Promise(r=>setTimeout(r,Math.min(8000,500*2**Math.max(0,erros-3))));
+    }catch(e){msg.textContent="Este navegador não conseguiu conferir a senha."}
+    bt.disabled=false;inp.focus();
+  });
+  setTimeout(()=>inp.focus(),50);
+}
+async function senhaInicio(){
+  if(!SENHA_CFG){senhaLivre();return}
+  let k=null;try{k=localStorage.getItem(SENHA_LS)}catch(e){}
+  if(k){try{if(await senhaConfere(senhaDeB64(k))){senhaLivre();return}}catch(e){}try{localStorage.removeItem(SENHA_LS)}catch(e){}}
+  senhaTela();
+}
+senhaInicio();
+document.addEventListener("click",ev=>{if(ev.target.closest&&ev.target.closest("#btTrava"))senhaBloquear()});
 /* ---------- séries históricas embutidas ---------- */
 const BASE_IDX=1614.62;          // IPCA jun/2000: VNA = R$ 1.000 em 15/07/2000
 const IPCA_RAW="200501 2412.83 2427.07 2441.87 2463.11 2475.18 2474.68 2480.87 2485.09 2493.79 2512.49 2526.31 2535.40 2550.36 2560.82 2571.83 2577.23 2579.81 2574.39 2579.28 2580.57 2585.99 2594.52 2602.56 2615.05 2626.56 2638.12 2647.88 2654.50 2661.93 2669.38 2675.79 2688.37 2693.21 2701.29 2711.55 2731.62 2746.37 2759.83 2773.08 2788.33 2810.36 2831.16 2846.16 2854.13 2861.55 2874.43 2884.78 2892.86 2906.74 2922.73 2928.57 2942.63 2956.46 2967.10 2974.22 2978.68 2985.83 2994.19 3006.47 3017.59 3040.22 3063.93 3079.86 3097.42 3110.74 3110.74 3111.05 3112.29 3126.29 3149.74 3175.88 3195.89 3222.42 3248.20 3273.86 3299.07 3314.58 3319.55 3324.86 3337.16 3354.85 3369.28 3386.80 3403.73 3422.79 3438.19 3445.41 3467.46 3479.94 3482.72 3497.70 3512.04 3532.06 3552.90 3574.22 3602.46 3633.44 3655.24 3672.42 3692.62 3706.28 3715.92 3717.03 3725.95 3738.99 3760.30 3780.61 3815.39 3836.37 3862.84 3898.38 3924.50 3942.55 3958.32 3958.72 3968.62 3991.24 4008.00 4028.44 4059.86 4110.20 4160.34 4215.26 4245.19 4276.60 4310.39 4337.11 4346.65 4370.12 4405.95 4450.45 4493.17 4550.23 4591.18 4610.92 4639.05 4675.23 4691.59 4715.99 4736.74 4740.53 4752.86 4761.42 4775.70 4793.85 4809.67 4821.69 4828.44 4843.41 4832.27 4843.87 4853.07 4860.83 4881.25 4894.92 4916.46 4930.72 4946.50 4950.95 4961.84 4981.69 5044.46 5061.11 5056.56 5080.83 5103.69 5092.97 5100.61 5116.93 5138.93 5177.47 5206.98 5213.75 5214.27 5224.18 5229.93 5227.84 5233.07 5259.76 5320.25 5331.42 5344.75 5348.49 5331.91 5311.65 5325.46 5344.63 5357.46 5391.75 5438.12 5486.52 5560.59 5574.49 5622.43 5674.72 5692.31 5739.56 5769.98 5825.37 5876.05 5944.21 6018.51 6075.69 6120.04 6153.09 6215.24 6315.93 6382.88 6412.88 6455.85 6411.95 6388.87 6370.34 6407.93 6434.20 6474.09 6508.40 6563.07 6609.67 6649.99 6665.28 6659.95 6667.94 6683.28 6700.66 6716.74 6735.55 6773.27 6801.72 6858.17 6869.14 6895.24 6926.96 6941.51 6967.89 6966.50 6997.15 7036.33 7063.77 7100.50 7111.86 7205.03 7245.38 7276.54 7295.46 7312.97 7331.98 7323.91 7359.06 7365.68 7378.94 7403.29 7427.72 7479.71 7545.53 7596.09 7640.15 7652.37 7657.73 7633.23 7695.82";
@@ -3613,7 +3707,7 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkClick({target:{id:"piSave",closest:()=>null}})});
 let FX_TOP=null;
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
-const FN_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/";
+const FN_URL=DADOS_RAIZ+"fundos/";
 const FNM=new Set(["fa","fr","fc","fg","aa","ar","ac","au","ag","sp"]);
 const FN_BM={cdi:{lab:"CDI",col:"#7c8aa5"},ibov:{lab:"Ibovespa",col:"#f97316"},ipca:{lab:"IPCA",col:"#eab308"},usd:{lab:"Dólar",col:"#22c55e"},ifix:{lab:"IFIX",col:"#a16207"}};
 Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#06b6d4"},imab5:{lab:"IMA-B 5",col:"#38bdf8"},imab5p:{lab:"IMA-B 5+",col:"#0f766e"},irfm:{lab:"IRF-M",col:"#c026d3"},imas:{lab:"IMA-S",col:"#94a3b8"},imag:{lab:"IMA-Geral",col:"#ec4899"}});
@@ -3891,7 +3985,7 @@ function fnHome(){
   h+=list("Maiores fundos abertos ao público",R.filter(r=>ok(r)&&!(r[C.flags]&2)).sort((a,b)=>(b[C.pl]||0)-(a[C.pl]||0)).slice(0,8),r=>'PL '+fnMoney(r[C.pl])+' · '+fnInt(r[C.cotistas])+' cotistas');
   return h;
 }
-function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(F&&F.pai)t.push("Subclasse");if(F&&/^s/i.test(F.prev||""))t.push("Previdenciário");if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
+function fnTags(r,F){const t=[];const fl=r?r[FN.C.flags]:0;if(F&&F.pai)t.push("Subclasse");if((F&&/^s/i.test(F.prev||""))||(r&&fnPrev(r))){const pl=r?fnPrevPlano(r):"";t.push(pl==="pgbl"?"Previdência · PGBL":pl==="vgbl"?"Previdência · VGBL":"Previdência")}if(fl&1)t.push("Exclusivo");if(fl&4)t.push("Investidor profissional");else if(fl&2)t.push("Investidor qualificado");else t.push("Público geral");if(fl&8)t.push("Fundo de cotas");if(fl&16)t.push("Condomínio fechado");else if(fl&1024)t.push("Sem aplicações nos últimos 2 meses");if(F&&/^s/i.test(F.lp||""))t.push("Longo prazo");return t}
 function fnHead(F){
   const r=fnRow(F.c),C=FN.C,l=fnLast(F),r12=fnRet(F,"12"),ra=fnRet(F,"ano"),cd12=r12?fnBmRet("cdi",r12.p0,r12.p1):null,rk=fnRisk(F,fnStart(F,"12"));
   const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
@@ -4032,13 +4126,16 @@ function fnRk(){
     +fnRkExtraSel(sel)
     +'<div class="field"><label for="rkTxt">Nome, CNPJ ou gestora</label><input id="rkTxt" data-fnrk="rkTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>'
     +((rk.ges!==""&&I.gestores[rk.ges])||(rk.adm!==""&&I.adms&&I.adms[rk.adm])?'<div class="fnchips">'+(rk.ges!==""&&I.gestores[rk.ges]?'<span class="fnchip">Gestora: '+esc(I.gestores[rk.ges])+' <button type="button" class="fnx" data-fnrkx="ges" aria-label="Remover">×</button></span>':'')+(rk.adm!==""&&I.adms&&I.adms[rk.adm]?'<span class="fnchip">Administradora: '+esc(I.adms[rk.adm])+' <button type="button" class="fnx" data-fnrkx="adm" aria-label="Remover">×</button></span>':'')+'</div>':'')
-    +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>';
+    +'<div class="cvsel" style="margin-top:4px"><label><input type="checkbox" data-fnrkc="qual"'+(rk.qual?' checked':'')+'>Incluir fundos para investidor qualificado</label><label><input type="checkbox" data-fnrkc="prof"'+(rk.prof?' checked':'')+'>Incluir investidor profissional</label><label><input type="checkbox" data-fnrkc="exc"'+(rk.exc?' checked':'')+'>Incluir exclusivos</label></div>'
+    +(rk.prev&&rk.prev!=="fi"?'<p class="sub" style="font-size:.8rem;margin-top:4px">Previdência: fundos marcados como previdenciários na CVM, FAPI e fundos com PREV, PGBL ou VGBL no nome. Esses fundos pertencem à seguradora (exclusivos, para investidor profissional), por isso entram mesmo com as caixas acima desmarcadas. PGBL e VGBL são planos da SUSEP, não da CVM: a separação vem só do nome do fundo, e muitos atendem os dois planos ou não dizem qual.</p>':'')
+    +(rk.capt?'<p class="sub" style="font-size:.8rem;margin-top:4px">Captação: fechado = condomínio fechado na CVM ou nenhuma aplicação nos dois últimos meses no informe diário da CVM. A CVM não publica a situação de captação de cada fundo; consulte o distribuidor antes de aplicar.</p>':'');
   fnRkTable();
 }
 function fnRkList(){
   fnQuartis();const I=FN.idx,C=FN.C,rk=FN.rk,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
   const L=[];I.rows.forEach((r,j)=>{if(rk.tipo!==""&&r[C.tipo]!==+rk.tipo)return;if(rk.cls!==""&&r[C.classe]!==+rk.cls)return;if(rk.anb!==""&&r[C.anbima]!==+rk.anb)return;
-    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags];if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return;
+    if((r[C.pl]||0)<+rk.pl||(r[C.cotistas]||0)<+rk.cot)return;const fl=r[C.flags],pv=rk.prev&&rk.prev!=="fi"&&fnPrev(r);   // fundos de previdência são da seguradora (exclusivos, para investidor profissional): entram quando o filtro é de previdência
+    if(!pv){if(!rk.exc&&fl&1)return;if(!rk.prof&&fl&4)return;if(!rk.qual&&fl&2)return}
     if(tx.length&&!tx.every(w=>FN.sk[j].includes(w)))return;
     if(rk.ges!==""&&r[C.gestor]!==+rk.ges)return;if(rk.adm!==""&&C.adm!=null&&r[C.adm]!==+rk.adm)return;
     if(rk.tmax!==""&&(r[C.tadm]==null||r[C.tadm]>+rk.tmax))return;
@@ -4119,15 +4216,25 @@ function fnRkExtra(r){const rk=FN.rk,C=FN.C;
   if(rk.cons!==""&&(C.cons==null||r[C.cons]==null||r[C.cons]<+rk.cons))return false;
   if(rk.q12!==""&&(r[C.q12]==null||r[C.q12]>+rk.q12))return false;
   if(rk.q36!==""&&(r[C.q36]==null||r[C.q36]>+rk.q36))return false;
+  if(rk.prev){const p=fnPrev(r);if(rk.prev==="fi"?p:rk.prev==="prev"?!p:!(p&&[rk.prev,"ambos"].includes(fnPrevPlano(r))))return false}
+  if(rk.capt){const f=fnFechado(r);if(rk.capt==="aberto"?f:!f)return false}
   return true}
+/* previdência: marcação do robô (classe previdenciária na CVM, FIE ou FAPI) ou, enquanto o robô não refaz o índice, o nome */
+const FN_PREV_RE=/\b(FIE|FAPI|PREV|PREVIDENCIA|PREVIDENCIARIO|PGBL|VGBL)\b/;
+function fnPrev(r){const fl=r[FN.C.flags]||0;if(fl&128)return true;const t=FN.idx.tipos&&FN.idx.tipos[r[FN.C.tipo]];return FN_PREV_RE.test(fnNorm(r[FN.C.nome]).toUpperCase())||/FIE|FAPI|PREVID/i.test(t||"")}
+function fnPrevPlano(r){const fl=r[FN.C.flags]||0,n=fnNorm(r[FN.C.nome]).toUpperCase();const pg=fl&256||/\bPGBL\b/.test(n),vg=fl&512||/\bVGBL\b/.test(n);return pg&&!vg?"pgbl":vg&&!pg?"vgbl":pg&&vg?"ambos":""}
+/* fechado para captação: condomínio fechado (CVM) ou nenhuma aplicação nos dois últimos meses (informe diário da CVM) */
+function fnFechado(r){const fl=r[FN.C.flags]||0;return !!(fl&16||fl&1024)}
 function fnRkExtraSel(sel){const rk=FN.rk;
   return sel("rkPcdi","12 meses acima de",[["","Qualquer"],[90,"90% do CDI"],[100,"100% do CDI"],[105,"105% do CDI"],[110,"110% do CDI"],[120,"120% do CDI"],[150,"150% do CDI"]],rk.pcdi)
     +sel("rkQ12","Quartil em 12 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q12)
     +sel("rkQ36","Quartil em 36 meses",[["","Qualquer"],[1,"1º quartil"],[2,"1º ou 2º"]],rk.q36)
-    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')}
-const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons"};
+    +(FN.C.cons!=null?sel("rkCons","Consistência mínima",[["","Qualquer"],[50,"50% das janelas"],[70,"70%"],[80,"80%"],[90,"90%"],[100,"100%"]],rk.cons):'')
+    +sel("rkPrev","Previdência",[["","Todos os fundos"],["prev","Só previdência (PGBL e VGBL)"],["pgbl","Previdência · PGBL"],["vgbl","Previdência · VGBL"],["fi","Só fundos de investimento (sem previdência)"]],rk.prev)
+    +sel("rkCapt","Captação",[["","Abertos e fechados"],["aberto","Abertos para captação"],["fechado","Fechados para captação"]],rk.capt)}
+const FN_RKX={rkPcdi:"pcdi",rkQ12:"q12",rkQ36:"q36",rkCons:"cons",rkPrev:"prev",rkCapt:"capt"};
 /* busca por objetivo e filtros salvos */
-const FN_RK0={tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
+const FN_RK0={prev:"",capt:"",tipo:"",cls:"",anb:"",pl:10e6,cot:0,exc:0,qual:1,prof:0,txt:"",sort:"r12",dir:-1,n:50,ges:"",adm:"",tmax:"",amax:"",rmax:"",idade:"",pcdi:"",cons:"",q12:"",q36:""};
 function fnClsIdx(re){const j=(FN.idx.classes||[]).findIndex(x=>re.test(fnNorm(x||"")));return j<0?"":String(j)}
 function fnObjetivos(){return [
   ["Caixa: renda fixa com resgate até D+1, acima de 100% do CDI e taxa até 0,5%",{cls:fnClsIdx(/^renda fixa$/),rmax:"1",pcdi:"100",tmax:"0.5",pl:50e6,sort:"r12"}],
@@ -4148,7 +4255,7 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
   if((x=g("[data-fnfilx]"))){const a=fnFiltros();a.splice(+x.dataset.fnfilx,1);fnFiltrosGuarda(a);fnRk();return}
   if((x=g("[data-fnfilsalva]"))){const i=$("fnFilNome"),nome=(i&&i.value.trim())||"Filtro "+(fnFiltros().length+1);const rk=Object.assign({},FN.rk);delete rk.n;const a=fnFiltros().filter(f=>f.nome!==nome);a.unshift({nome,rk});fnFiltrosGuarda(a);fnRk();return}});
 /* ===== Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) ===== */
-const AT_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/ativos/";
+const AT_URL=DADOS_RAIZ+"ativos/";
 const AT={idx:null,C:null,sk:null,T:null,cal:null,L:null,files:new Map(),load:null,err:null,cur:null,q:"",pview:"ret",cmp:[],
   rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50}};
 try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,25)}catch(e){}
@@ -5315,7 +5422,7 @@ document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#re
 
 /* ---------- Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) ---------- */
 const SD={d:null,load:null,err:false};
-function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch("https://raw.githubusercontent.com/wagneria206-app/dados-mercado/saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}try{sdIcone()}catch(e){}}).catch(()=>{SD.err=true;SD.load=null})}
+function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch(DADOS_RAIZ+"saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}try{sdIcone()}catch(e){}}).catch(()=>{SD.err=true;SD.load=null})}
 function sdFaixa(dias,hoje){const out=[],t0=Date.parse((hoje||new Date().toISOString().slice(0,10))+"T00:00:00Z");
   for(let k=29;k>=0;k--){const d=new Date(t0-k*DAY).toISOString().slice(0,10),v=dias&&dias[d];out.push('<i class="'+(v==="ok"?"ok":v==="falha"?"fa":v==="parcial"?"pa":"")+'" title="'+fdate(Date.parse(d+"T00:00:00Z"))+': '+(v==="ok"?"funcionou":v==="falha"?"falhou":v==="parcial"?"falhou e depois funcionou":"sem registro")+'"></i>')}
   return '<span class="sdfaixa" aria-label="últimos 30 dias">'+out.join("")+'</span>'}
@@ -6102,7 +6209,7 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activ
   if(t.dataset.sppolvend){P.vender=t.checked?1:0;spSave();spCalc();return}});
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-sppoladd]");if(!x||activeMod!=="sp")return;const P=spPol(spC());P.alvo[x.dataset.sppoladd]=+P.alvo[x.dataset.sppoladd]||5;P.perfil="pers";spSave();spCalc()});
 /* ===== Painel de índices e Bolsa americana (Cboe, Nasdaq, Tesouro dos EUA, SEC; B3 e Banco Central) ===== */
-const EU_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/eua/";
+const EU_URL=DADOS_RAIZ+"eua/";
 const EU={ix:null,idx:null,C:null,S:null,B:null,cal:null,emp:new Map(),load:null,err:null,per:"12",
   rk:{setor:"",liq:1e5,txt:"",sort:"mcap",dir:-1,n:50}};
 try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="object")Object.assign(EU.rk,r,{n:50})}catch(e){}
@@ -6849,7 +6956,7 @@ let EU_QT=null;
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="euTxt")return;EU.rk.txt=t.value;EU.rk.n=50;clearTimeout(EU_QT);EU_QT=setTimeout(()=>{euSave();euRkTable()},200)});
 
 /* ===== Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA ===== */
-const MC_URL="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/macro/";
+const MC_URL=DADOS_RAIZ+"macro/";
 const MC={d:null,load:null,err:null};
 function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
 function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs")&&typeof mkCalc==="function")mkCalc()}
@@ -8005,7 +8112,7 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
 if(/#metodologia/.test(location.hash))setTimeout(metAbre,600);
 /* ---------- dados do robô (GitHub) lidos direto pela página ---------- */
 const PAGES=/github\.io$/.test(location.hostname)||!(window.claude&&typeof window.claude.use==="function");
-const ROBO="https://raw.githubusercontent.com/wagneria206-app/dados-mercado/site/data/";
+const ROBO=DADOS_RAIZ+"site/data/";
 let ROBO_ST={ok:null,at:null,refDate:null,erro:null,papeis:0};
 async function roboJson(f){const r=await fetch(ROBO+f+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error(f+": HTTP "+r.status);return r.json()}
 function roboStat(){

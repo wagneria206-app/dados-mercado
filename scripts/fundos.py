@@ -1218,6 +1218,18 @@ def principal():
             flags |= 32
         if mt.get("salto"):
             flags |= 64
+        # previdência: classe marcada como previdenciária na CVM, FIE/FAPI ou o nome do fundo (PGBL e VGBL só aparecem no nome)
+        nn = f" {norm(reg['n'])} "
+        if norm(inf.get("prev")).startswith("s") or re.search(r"\b(fie|fapi|prev|previdencia|previdenciario|pgbl|vgbl)\b", nn) or "fie" in norm(tipo):
+            flags |= 128
+        if re.search(r"\bpgbl\b", nn):
+            flags |= 256
+        if re.search(r"\bvgbl\b", nn):
+            flags |= 512
+        # sem nenhuma aplicação nos dois últimos meses com dados (fundo fechado para captação ou sem entrada de cotistas)
+        ult2 = [f.m[ym] for ym in meses[-2:] if ym in f.m]
+        if len(ult2) == 2 and all((x[4] or 0) <= 0 for x in ult2) and (u[3] or 0) > 0:
+            flags |= 1024
         prim = meses[0]
         linhas.append([k, reg["n"][:90], ix(tip_l, tipo), ix(cls_l, classe_cvm(inf.get("cls"), tipo)),
                        ix(anb_l, anbima_nome(inf.get("anb"))), ix(gestores, (inf.get("ges") or "").strip()[:60]),

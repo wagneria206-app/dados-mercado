@@ -1,0 +1,15 @@
+/* Tela de senha de acesso (só aparece quando o index.html traz a meta wf-senha) */
+html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTrava){display:none!important}
+#wfTrava{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:16px;background:var(--navy);color:var(--hdr-ink)}
+.wftr-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center;background:var(--surface);color:var(--ink);border-radius:16px;padding:28px 22px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.wftr-box .logo{margin:0 auto 4px;width:48px;height:48px}
+.wftr-box h1{margin:0;font:600 1.35rem var(--f-serif)}
+.wftr-box p{margin:0;color:var(--muted);font:400 .92rem var(--f-body)}
+.wftr-box input[type=password]{font:500 1.05rem var(--f-body);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);min-height:48px}
+.wftr-box input[type=password]:focus{outline:2px solid var(--accent);outline-offset:1px}
+.wftr-lb{display:flex;gap:8px;align-items:center;justify-content:center;font:400 .88rem var(--f-body);color:var(--muted)}
+.wftr-box .btn{min-height:48px;font-size:1rem}
+.wftr-box .btn:disabled{opacity:.6}
+.wftr-msg{min-height:1.2em;color:var(--loss)!important}
+.wftr-lb input[type=checkbox]{all:revert;width:18px;height:18px;margin:0;flex:none;accent-color:var(--accent)}
+.wftr-box .logo svg{width:26px;height:26px}

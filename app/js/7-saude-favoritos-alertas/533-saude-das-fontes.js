@@ -1,6 +1,6 @@
 /* ---------- Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) ---------- */
 const SD={d:null,load:null,err:false};
-function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch("https://raw.githubusercontent.com/wagneria206-app/dados-mercado/saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}try{sdIcone()}catch(e){}}).catch(()=>{SD.err=true;SD.load=null})}
+function sdLoad(){if(SD.d||SD.load||SD.err)return;SD.load=fetch(DADOS_RAIZ+"saude/saude.json",{cache:"no-cache"}).then(r=>r.ok?r.json():Promise.reject()).then(j=>{SD.d=j;SD.load=null;try{fonteAviso(activeMod)}catch(e){}try{sdIcone()}catch(e){}}).catch(()=>{SD.err=true;SD.load=null})}
 function sdFaixa(dias,hoje){const out=[],t0=Date.parse((hoje||new Date().toISOString().slice(0,10))+"T00:00:00Z");
   for(let k=29;k>=0;k--){const d=new Date(t0-k*DAY).toISOString().slice(0,10),v=dias&&dias[d];out.push('<i class="'+(v==="ok"?"ok":v==="falha"?"fa":v==="parcial"?"pa":"")+'" title="'+fdate(Date.parse(d+"T00:00:00Z"))+': '+(v==="ok"?"funcionou":v==="falha"?"falhou":v==="parcial"?"falhou e depois funcionou":"sem registro")+'"></i>')}
   return '<span class="sdfaixa" aria-label="últimos 30 dias">'+out.join("")+'</span>'}
