@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-2G5OQgdB8GkD+BENjh/Xt983d/UNoRrKlSkCBswJUug='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-WfyazfuhW27uqrHIphu+0v8T6Qx5MaaN0/s7CiQxpqk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -888,6 +888,7 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 .spiso input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
+.tecler{margin:4px 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}
 /* Favoritos, alertas e documentos */
 /* favoritos,alertas e documentos */
 .fvhd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
@@ -4257,7 +4258,7 @@ document.addEventListener("click",e=>{const g=s=>e.target.closest&&e.target.clos
 /* ===== Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) ===== */
 const AT_URL=DADOS_RAIZ+"ativos/";
 const AT={idx:null,C:null,sk:null,T:null,cal:null,L:null,files:new Map(),load:null,err:null,cur:null,q:"",pview:"ret",cmp:[],
-  rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50}};
+  rk:{tipo:"Ação",setor:"",liq:1e6,txt:"",sort:"liq",dir:-1,n:50,vis:"fund",sin:""}};
 try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))AT.cmp=c.slice(0,25)}catch(e){}
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
 function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
@@ -4325,7 +4326,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -4434,10 +4435,116 @@ function atSrcHtml(A){const tp=A&&A.tipo||"",td=tp==="Tesouro Direto",bdr=tp==="
     :'B3 (cotações históricas, proventos, desdobramentos, cadastro, Ibovespa e IFIX), '+(AT_FUNDO.has(tp)?'CVM (informe mensal dos fundos)':bdr?'SEC (balanços e documentos da empresa nos EUA), Nasdaq (cotação em Nova York), Cboe (S&P 500)':'CVM (demonstrações financeiras e composição do capital)')+' e Banco Central (CDI, IPCA e dólar)';
   return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: '+f+'. Rentabilidade passada não garante rentabilidade futura. Cotações até '+(AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
 
+/* ---------- análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências */
+// Mesmas contas do robô (scripts/tecnica.py), que grava as colunas técnicas no índice para o ranking.
+// Cotação de fechamento ajustada só por desdobramentos e grupamentos (sem proventos), como nos gráficos técnicos.
+function tecSerie(A){
+  const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S")).sort((a,b)=>a[0]-b[0]);
+  const c=new Array(A.I.length);let acc=1,k=spl.length-1;
+  for(let x=A.I.length-1;x>=0;x--){while(k>=0&&spl[k][0]>A.I[x]){acc*=spl[k][1];k--}c[x]=A.R[x]*acc}
+  return {t:A.I.map(ix=>AT.T[ix]),c};
+}
+function tecMedia(c,n){const o=new Array(c.length).fill(null);let s=0;for(let k=0;k<c.length;k++){s+=c[k];if(k>=n)s-=c[k-n];if(k>=n-1)o[k]=s/n}return o}
+function tecMME(c,n){const o=new Array(c.length).fill(null),a=2/(n+1);let e=null;for(let k=0;k<c.length;k++){if(k===n-1){let s=0;for(let j=0;j<n;j++)s+=c[j];e=s/n}else if(k>=n)e=c[k]*a+e*(1-a);if(k>=n-1)o[k]=e}return o}
+function tecIFR(c,n){
+  n=n||14;const o=new Array(c.length).fill(null);if(c.length<=n+1)return o;
+  let mg=0,mp=0;for(let k=1;k<=n;k++){const d=c[k]-c[k-1];if(d>0)mg+=d;else mp-=d}mg/=n;mp/=n;
+  const v=()=>mp===0?(mg>0?100:50):100-100/(1+mg/mp);o[n]=v();
+  for(let k=n+1;k<c.length;k++){const d=c[k]-c[k-1];mg=(mg*(n-1)+Math.max(0,d))/n;mp=(mp*(n-1)+Math.max(0,-d))/n;o[k]=v()}
+  return o;
+}
+function tecNiveis(c,p){
+  // pivôs: mínimas e máximas locais (5 pregões de cada lado) no último ano, agrupadas quando a menos de 2% entre si
+  const u=c.slice(-250),pv=[];
+  for(let k=5;k<u.length-5;k++){const w=u.slice(k-5,k+6);if(u[k]===Math.min(...w))pv.push(u[k]);else if(u[k]===Math.max(...w))pv.push(u[k])}
+  pv.sort((a,b)=>a-b);const g=[];
+  pv.forEach(v=>{const l=g[g.length-1];if(l&&v<=l.m*1.02){l.s+=v;l.n++;l.m=l.s/l.n}else g.push({s:v,n:1,m:v})});
+  const sup=g.filter(x=>x.m<p*0.995).sort((a,b)=>b.m-a.m).slice(0,2),res=g.filter(x=>x.m>p*1.005).sort((a,b)=>a.m-b.m).slice(0,2);
+  return {sup,res};
+}
+function tecCalc(A){
+  const S=tecSerie(A),c=S.c,n=c.length;if(n<60||!c[n-1])return null;
+  const m21=tecMedia(c,21),m50=tecMedia(c,50),m200=tecMedia(c,200),ifr=tecIFR(c,14);
+  const e12=tecMME(c,12),e26=tecMME(c,26),macd=c.map((_,k)=>e12[k]!=null&&e26[k]!=null?e12[k]-e26[k]:null);
+  const mv=macd.filter(v=>v!=null),sg=tecMME(mv,9),sig=new Array(n-mv.length).fill(null).concat(sg);
+  const p=c[n-1],u=c.slice(-252),L=k=>k<0?k+n:k;
+  let cruz=0,cruzT=null;
+  for(let k=n-20;k<n;k++){if(k<1)continue;const a0=m50[k-1],b0=m200[k-1],a1=m50[k],b1=m200[k];if([a0,b0,a1,b1].some(v=>v==null))continue;
+    if(a0<=b0&&a1>b1){cruz=1;cruzT=S.t[k]}else if(a0>=b0&&a1<b1){cruz=-1;cruzT=S.t[k]}}
+  const r=[];for(let k=Math.max(1,n-21);k<n;k++)r.push(Math.log(c[k]/c[k-1]));
+  const mu=r.reduce((a,b)=>a+b,0)/r.length,vol=Math.sqrt(r.reduce((a,b)=>a+(b-mu)**2,0)/Math.max(1,r.length-1)*252)*100;
+  const M50=m50[L(-1)],M200=m200[L(-1)];
+  return {S,p,m21,m50,m200,ifr,macd,sig,cruz,cruzT,vol,
+    M21:m21[L(-1)],M50,M200,IFR:ifr[L(-1)],MACD:macd[L(-1)],SIG:sig[L(-1)],
+    tend:M50&&M200?(p>M50&&M50>M200?1:p<M50&&M50<M200?-1:0):null,
+    max52:Math.max(...u),min52:Math.min(...u),niv:tecNiveis(c,p)};
+}
+function tecKp(l,v,s,cls){return '<div class="fnkp"><span>'+l+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b>'+(s?'<small>'+s+'</small>':'')+'</div>'}
+const tecDist=(p,m)=>m?(p/m-1)*100:null;
+const tecSinalPct=v=>v==null?'—':(v>=0?'+':'')+fx(v,1)+'%';
+function atTecHtml(A){
+  if(A.tipo==="Tesouro Direto")return "";
+  const T=tecCalc(A);if(!T)return "";
+  const n=T.S.c.length,k0=Math.max(0,n-252),tt=T.S.t;
+  const ser=(arr,lab,col,w,dash)=>({lab,col,w,dash,pts:arr.slice(k0).map((v,j)=>[tt[k0+j],v])});
+  let h='<section class="panel tec" id="tecnica"><h3>Análise técnica</h3>';
+  const tl=T.tend===1?['Alta','pos']:T.tend===-1?['Baixa','neg']:T.tend===0?['Lateral','']:['—',''];
+  const il=T.IFR==null?'':T.IFR>=70?'sobrecomprado':T.IFR<=30?'sobrevendido':'neutro';
+  h+='<div class="fnkpis">'+tecKp("Tendência",tl[0],T.M200?'preço × médias de 50 e 200':'menos de 200 pregões',tl[1])
+    +tecKp("IFR (14)",T.IFR!=null?fx(T.IFR,0):'—',il,T.IFR>=70?'neg':T.IFR<=30?'pos':'')
+    +tecKp("Média de 200 dias",T.M200?'R$ '+fx(T.M200,2):'—',T.M200?tecSinalPct(tecDist(T.p,T.M200))+' do preço':'')
+    +tecKp("Máxima de 52 semanas",'R$ '+fx(T.max52,2),tecSinalPct(tecDist(T.p,T.max52))+' do preço')
+    +tecKp("Volatilidade (21 dias)",fx(T.vol,0)+'%','ao ano')+'</div>';
+  h+='<div class="label">Últimos 12 meses: cotação e médias móveis</div>'
+    +fnChart([ser(T.S.c,A.t,FN_COLS[0],2),ser(T.m50,"Média de 50 dias",FN_COLS[4],1.4),ser(T.m200,"Média de 200 dias",FN_COLS[1],1.4,"5 3")],{fmt:"brl",aria:"Cotação e médias móveis"});
+  const lim=v=>({lab:"",col:"var(--muted)",w:1,dash:"3 4",pts:[[tt[k0],v],[tt[n-1],v]]});
+  h+='<div class="label">IFR de 14 dias (acima de 70: sobrecomprado; abaixo de 30: sobrevendido)</div>'
+    +fnChart([ser(T.ifr,"IFR",FN_COLS[3],1.6),lim(70),lim(30)],{fmt:"int",h:150,noLegend:true,aria:"IFR"});
+  // níveis
+  const nv=(arr,tp)=>arr.length?arr.map(x=>'R$ '+fx(x.m,2)+' <small>('+tecSinalPct(tecDist(x.m,T.p))+', '+x.n+(x.n>1?' toques':' toque')+')</small>').join('<br>'):'<small>nenhum no último ano</small>';
+  h+='<div class="tablewrap"><table class="ctab"><tbody>'
+    +'<tr><th style="text-align:left">Resistências (acima)</th><td>'+nv(T.niv.res)+'</td></tr>'
+    +'<tr><th style="text-align:left">Preço atual</th><td><b>R$ '+fx(T.p,2)+'</b></td></tr>'
+    +'<tr><th style="text-align:left">Suportes (abaixo)</th><td>'+nv(T.niv.sup)+'</td></tr>'
+    +'<tr><th style="text-align:left">Médias de 21, 50 e 200 dias</th><td>'+[T.M21,T.M50,T.M200].map(m=>m?'R$ '+fx(m,2)+' <small>('+tecSinalPct(tecDist(T.p,m))+')</small>':'—').join(' · ')+'</td></tr>'
+    +'<tr><th style="text-align:left">MACD (12, 26, 9)</th><td>'+(T.MACD!=null&&T.SIG!=null?(T.MACD>T.SIG?'acima da linha de sinal (força compradora)':'abaixo da linha de sinal (força vendedora)'):'—')+'</td></tr>'
+    +'<tr><th style="text-align:left">Mínima de 52 semanas</th><td>R$ '+fx(T.min52,2)+' <small>('+tecSinalPct(tecDist(T.p,T.min52))+' do preço)</small></td></tr>'
+    +'</tbody></table></div>';
+  // leitura
+  const L=[];
+  if(T.tend===1)L.push('Tendência de <b>alta</b>: o preço está acima da média de 50 dias, que está acima da de 200.');
+  else if(T.tend===-1)L.push('Tendência de <b>baixa</b>: o preço está abaixo da média de 50 dias, que está abaixo da de 200.');
+  else if(T.tend===0)L.push('Sem tendência definida: preço e médias de 50 e 200 dias não estão alinhados.');
+  if(T.cruz===1)L.push('A média de 50 dias cruzou <b>para cima</b> a de 200 em '+fdate(T.cruzT)+' (cruzamento de alta, conhecido como "golden cross").');
+  if(T.cruz===-1)L.push('A média de 50 dias cruzou <b>para baixo</b> a de 200 em '+fdate(T.cruzT)+' (cruzamento de baixa, conhecido como "death cross").');
+  if(T.IFR>=70)L.push('IFR em '+fx(T.IFR,0)+': o ativo subiu forte em pouco tempo e está <b>sobrecomprado</b>; correções são comuns nessa faixa.');
+  else if(T.IFR<=30)L.push('IFR em '+fx(T.IFR,0)+': o ativo caiu forte em pouco tempo e está <b>sobrevendido</b>; repiques são comuns nessa faixa.');
+  const dm=tecDist(T.p,T.max52);if(dm!=null&&dm>-3)L.push('Negocia <b>perto da máxima de 52 semanas</b> ('+tecSinalPct(dm)+').');
+  const dn=tecDist(T.p,T.min52);if(dn!=null&&dn<3)L.push('Negocia <b>perto da mínima de 52 semanas</b> ('+tecSinalPct(dn)+').');
+  if(T.niv.sup[0])L.push('Suporte mais próximo em R$ '+fx(T.niv.sup[0].m,2)+' ('+tecSinalPct(tecDist(T.niv.sup[0].m,T.p))+').');
+  if(T.niv.res[0])L.push('Resistência mais próxima em R$ '+fx(T.niv.res[0].m,2)+' ('+tecSinalPct(tecDist(T.niv.res[0].m,T.p))+').');
+  h+='<div class="label" style="margin-top:12px">Leitura</div><ul class="tecler">'+L.map(x=>'<li>'+x+'</li>').join("")+'</ul>';
+  h+='<p class="sub" style="font-size:.8rem">Fechamentos diários da B3 até '+fdate(tt[n-1])+', ajustados por desdobramentos e grupamentos (sem proventos). Suportes e resistências: mínimas e máximas locais do último ano, agrupadas quando a menos de 2% entre si.</p></section>';
+  return h;
+}
+const TEC_SINAIS=[["","Todos"],["alta","Tendência de alta"],["baixa","Tendência de baixa"],["lat","Sem tendência"],["cra","Cruzamento de alta (20 pregões)"],["crb","Cruzamento de baixa (20 pregões)"],["sc","IFR sobrecomprado (70+)"],["sv","IFR sobrevendido (30−)"],["max","Perto da máxima de 52 semanas"],["min","Perto da mínima de 52 semanas"]];
+function tecFiltro(r,C,s){
+  if(!s)return true;const v=k=>C[k]==null?null:r[C[k]];
+  switch(s){case"alta":return v("tend")===1;case"baixa":return v("tend")===-1;case"lat":return v("tend")===0;case"cra":return v("cruz")===1;case"crb":return v("cruz")===-1;
+    case"sc":return v("ifr")!=null&&v("ifr")>=70;case"sv":return v("ifr")!=null&&v("ifr")<=30;case"max":return v("max52d")!=null&&v("max52d")>-3;case"min":return v("min52d")!=null&&v("min52d")<3}
+  return true;
+}
+function tecCel(c,v){
+  if(c==="tend")return v===1?'<span class="pos">Alta</span>':v===-1?'<span class="neg">Baixa</span>':v===0?'Lateral':'—';
+  if(c==="cruz")return v===1?'<span class="pos">↑ alta</span>':v===-1?'<span class="neg">↓ baixa</span>':'—';
+  if(c==="ifr")return v==null?'—':'<span class="'+(v>=70?'neg':v<=30?'pos':'')+'">'+fx(v,0)+'</span>';
+  return tecSinalPct(v);
+}
 /* ---------- ranking */
 const AT_RKCOLS={
   acao:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano","c-ph"],["r12","12m",""],["dy","DY",""],["pl","P/L",""],["pvp","P/VP","c-ph"],["roe","ROE","c-ph"],["ml","Marg. líq.","c-ph c-sm"],["dlebit","DL/EBIT","c-ph c-md"],["evebit","EV/EBIT","c-ph c-md"],["mcap","Valor de mercado","c-ph"],["liq","Liquidez/dia","c-ph c-sm"],["v12","Vol. 12m","c-ph c-md"]],
   fii:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano","c-ph"],["r12","12m",""],["dy","DY",""],["pvp","P/VP",""],["mcap","Valor de mercado","c-ph"],["cot","Cotistas","c-ph"],["liq","Liquidez/dia","c-ph"],["v12","Vol. 12m","c-ph"]],
+  tec:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["tend","Tendência",""],["cruz","Cruzamento","c-ph"],["ifr","IFR (14)",""],["mm50d","× média 50","c-ph"],["mm200d","× média 200",""],["max52d","× máx. 52 sem.","c-ph"],["min52d","× mín. 52 sem.","c-ph c-sm"],["r12","12m","c-ph c-md"],["liq","Liquidez/dia","c-ph c-sm"]],
   out:[["t","Ativo",""],["preco","Preço",""],["d1","Dia","c-ph"],["ra","Ano",""],["r12","12m",""],["r36","36m","c-ph"],["v12","Vol. 12m","c-ph"],["dd36","Perda máx. 36m","c-ph"],["beta","Beta","c-ph"],["liq","Liquidez/dia",""]]};
 function atRk(){
   const f=$("atRkF");if(!f)return;const I=AT.idx,C=AT.C,rk=AT.rk;
@@ -4445,20 +4552,21 @@ function atRk(){
   const sel=(id,lab,opts,v)=>'<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-atrk="'+id+'">'+opts.map(([a,b])=>'<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>';
   f.innerHTML='<div class="fnfilt">'+sel("arTipo","Tipo",[["","Todos"]].concat(tipos.map(x=>[x,x])),rk.tipo)+sel("arSet",rk.tipo==="ETF"?"Categoria do ETF":"Setor ou segmento",[["","Todos"]].concat([...set.entries()].sort((a,b)=>I.setores[a[0]].localeCompare(I.setores[b[0]])).map(([j,n])=>[j,I.setores[j]+" ("+n+")"])),rk.setor)
     +sel("arLiq","Liquidez mínima por dia",[[0,"Qualquer"],[1e5,"R$ 100 mil"],[1e6,"R$ 1 milhão"],[1e7,"R$ 10 milhões"],[5e7,"R$ 50 milhões"]],rk.liq)
+    +(AT.C.tend!=null?sel("arVis","Visão",[["fund","Retorno e fundamentos"],["tec","Análise técnica"]],rk.vis||"fund")+(rk.vis==="tec"?sel("arSin","Sinal técnico",TEC_SINAIS,rk.sin||""):""):"")
     +'<div class="field"><label for="arTxt">Código ou nome</label><input id="arTxt" value="'+esc(rk.txt)+'" autocomplete="off"></div></div>';
   atRkTable();
 }
 function atRkTable(){
   const t=$("atRkT");if(!t)return;const I=AT.idx,C=AT.C,rk=AT.rk,tx=fnNorm(rk.txt).split(/\s+/).filter(Boolean);
-  const L=[];I.rows.forEach((r,j)=>{if(rk.tipo&&r[C.tipo]!==rk.tipo)return;if(rk.setor!==""&&r[C.setor]!==+rk.setor)return;if(r[C.tipo]!=="Tesouro Direto"&&(r[C.liq]||0)<+rk.liq)return;if(tx.length&&!tx.every(w=>AT.sk[j].includes(w)))return;L.push(r)});
+  const L=[];I.rows.forEach((r,j)=>{if(rk.tipo&&r[C.tipo]!==rk.tipo)return;if(rk.setor!==""&&r[C.setor]!==+rk.setor)return;if(r[C.tipo]!=="Tesouro Direto"&&(r[C.liq]||0)<+rk.liq)return;if(tx.length&&!tx.every(w=>AT.sk[j].includes(w)))return;if(rk.vis==="tec"&&!tecFiltro(r,C,rk.sin))return;L.push(r)});
   const k=C[rk.sort],d=rk.dir;L.sort((a,b)=>{const x=a[k],y=b[k];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return typeof x==="string"?d*x.localeCompare(y):d*(x-y)});
-  const cols=AT_RKCOLS[rk.tipo==="Ação"||rk.tipo==="Unit"?"acao":AT_FUNDO.has(rk.tipo)?"fii":rk.tipo===""?"acao":"out"];
+  const cols=rk.vis==="tec"&&C.tend!=null?AT_RKCOLS.tec:AT_RKCOLS[rk.tipo==="Ação"||rk.tipo==="Unit"?"acao":AT_FUNDO.has(rk.tipo)?"fii":rk.tipo===""?"acao":"out"];
   const cell=(r,c)=>{const v=r[C[c]];if(c==="t")return '<button type="button" class="link fnnm" data-atopen="'+r[0]+'">'+r[0]+'</button><small>'+esc(r[1])+'</small>';
-    if(c==="preco")return 'R$ '+fx(v,2);if(["d1","ra","r12","r36","dy","roe","ml","dd36"].includes(c))return fnPct(v);if(c==="v12")return v!=null?fx(v,2)+'%':'—';
+    if(c==="preco")return 'R$ '+fx(v,2);if(["tend","cruz","ifr","mm50d","mm200d","max52d","min52d"].includes(c))return tecCel(c,v);if(["d1","ra","r12","r36","dy","roe","ml","dd36"].includes(c))return fnPct(v);if(c==="v12")return v!=null?fx(v,2)+'%':'—';
     if(c==="mcap"||c==="liq")return fnMoney(v);if(c==="cot")return fnInt(v);return v!=null?fx(v,c==="pl"||c==="evebit"?1:2):'—'};
   let h='<p class="sub" style="margin:8px 0 4px">'+fx(L.length,0)+' ativos.</p><div class="tablewrap" style="max-height:none"><table class="ctab fnrk"><thead><tr><th>#</th>'+cols.map(([c,l,cl])=>'<th data-atsort="'+c+'" class="'+cl+'"'+(c==="t"?' style="text-align:left"':'')+'>'+l+(rk.sort===c?(rk.dir<0?' ▾':' ▴'):'')+'</th>').join("")+'<th></th></tr></thead><tbody>';
   L.slice(0,rk.n).forEach((r,j)=>{h+='<tr><td><small>'+(j+1)+'</small></td>'+cols.map(([c,,cl])=>'<td class="'+cl+(c==="t"?' tw" style="text-align:left;min-width:150px':'')+'">'+cell(r,c)+'</td>').join("")+'<td><button type="button" class="link" data-atcmp="'+r[0]+'">'+(AT.cmp.includes(r[0])?'✓':'+')+'</button></td></tr>'});
-  h+='</tbody></table></div>'+(L.length>rk.n?'<button type="button" class="btn sec" data-atmore="1" style="margin-top:10px">Mostrar mais 50</button>':'')+'<p class="sub" style="font-size:.8rem;margin-top:6px">Retornos com proventos. DY: proventos dos últimos 12 meses ÷ cotação. P/L, P/VP, ROE, margens e dívida pelos últimos balanços entregues à CVM.</p>';
+  h+='</tbody></table></div>'+(L.length>rk.n?'<button type="button" class="btn sec" data-atmore="1" style="margin-top:10px">Mostrar mais 50</button>':'')+'<p class="sub" style="font-size:.8rem;margin-top:6px">'+(rk.vis==="tec"?'Análise técnica com os fechamentos diários ajustados por desdobramentos. Tendência: alta quando preço &gt; média de 50 &gt; média de 200; baixa no inverso. Cruzamento: média de 50 cruzando a de 200 nos últimos 20 pregões. Toque no ativo para ver gráfico, suportes e resistências. ':'')+'Retornos com proventos. DY: proventos dos últimos 12 meses ÷ cotação. P/L, P/VP, ROE, margens e dívida pelos últimos balanços entregues à CVM.</p>';
   t.innerHTML=h;
 }
 
@@ -4476,7 +4584,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-atmore"))){AT.rk.n+=50;atRkTable();return}
   if((x=g("data-atrkcat"))){const [tp,st]=x.dataset.atrkcat.split("|");Object.assign(AT.rk,{tipo:tp,setor:st,txt:"",n:50,sort:"r12",dir:-1,liq:1e5});atSave();setMod("ar");return}
 });
-document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.atrk))return;const m={arTipo:"tipo",arSet:"setor",arLiq:"liq"}[t.id];AT.rk[m]=t.value;if(m==="tipo")AT.rk.setor="";AT.rk.n=50;atSave();if(m==="tipo")atRk();else atRkTable()});
+document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.atrk))return;const m={arTipo:"tipo",arSet:"setor",arLiq:"liq",arVis:"vis",arSin:"sin"}[t.id];AT.rk[m]=t.value;if(m==="tipo")AT.rk.setor="";if(m==="vis"&&t.value==="fund")AT.rk.sin="";AT.rk.n=50;atSave();if(m==="tipo"||m==="vis")atRk();else atRkTable()});
 let AT_QT=null;
 document.addEventListener("input",e=>{
   const t=e.target;if(!t||!AT.idx)return;

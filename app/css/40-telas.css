@@ -366,3 +366,4 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 .spiso input{width:15px;height:15px;margin:0;accent-color:var(--accent)}
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
+.tecler{margin:4px 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}

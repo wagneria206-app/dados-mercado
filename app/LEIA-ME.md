@@ -131,7 +131,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `460-bolsa-acoes-units-fiis-fiagros.js` — Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) (4 KB)
 - `465-casca-e-carga.js` — casca e carga (3 KB)
 - `470-pagina-do-ativo.js` — página do ativo (17 KB)
-- `475-ranking.js` — ranking (4 KB)
+- `472-analise-tecnica.js` — análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências (9 KB)
+- `475-ranking.js` — ranking (6 KB)
 - `480-eventos.js` — eventos (2 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF

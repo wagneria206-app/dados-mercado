@@ -1417,6 +1417,11 @@ def principal():
                  "liq", "dy", "mcap", "pl", "pvp", "roe", "ml", "dlebit", "evebit", "cot", "sharpe"],
         "setores": inv, "rows": rows,
         "fonte": "B3 (cotações, proventos, cadastro) e CVM (balanços, informe dos FIIs)"})
+    try:
+        import tecnica
+        log("análise técnica:", tecnica.aplicar(sai), "ativos")
+    except Exception as e:  # noqa: BLE001  (as colunas técnicas não podem derrubar o robô)
+        log("análise técnica falhou:", e)
     FU.gravar(os.path.join(sai, "cal.json"), {"d": CAL})
     FU.gravar(os.path.join(sai, "bench.json"), bench)
     FU.gravar(os.path.join(sai, "emp.json"), emp)
