@@ -65,11 +65,13 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `50-favoritos-e-alertas.css` — Favoritos, alertas e documentos (3 KB)
 - `60-ajustes-de-largura.css` — Ajustes por largura de tela, gráficos, notas e grade de indicadores (6 KB)
 - `70-acabamento.css` — Acabamento: abas, títulos de seção, cartões de indicador, busca, ajustes e modo apresentação (25 KB)
+- `80-senha-de-acesso.css` — Tela de senha de acesso (só aparece quando o index.html traz a meta wf-senha) (1 KB)
 
 **`js/1-nucleo/`** — Núcleo: datas, calendário, VNA, preços dos títulos, dados embutidos
 
 - `000-inicio-day.js` (1 KB)
 - `001-onde-ficam-os-dados.js` (3 KB)
+- `002-senha-de-acesso.js` — Senha de acesso: barra quem só digita o endereço. Os dados do app são públicos; a senha não fica no código, só o hash dela (4 KB)
 - `005-series-historicas-embutidas.js` — séries históricas embutidas (4 KB)
 - `010-retrato-de-mercado-embutido-substituido.js` — retrato de mercado embutido (substituído pelo botão Atualizar) (7 KB)
 - `015-calendario.js` — calendário (1 KB)
