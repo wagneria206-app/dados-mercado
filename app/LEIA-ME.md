@@ -147,7 +147,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (34 KB)
 - `515-spcorhtml.js` (27 KB)
 - `520-spclasse.js` (7 KB)
-- `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (15 KB)
+- `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (16 KB)
 
 **`js/7-saude-favoritos-alertas/`** — Agenda, saúde das fontes, favoritos, alertas e sincronização
 
@@ -198,6 +198,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `608-ofertas-publicas.js` (4 KB)
 - `609-agenda-do-mercado.js` (9 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
+- `611-resumo-da-semana.js` — Mercado › Semana: o que mudou nos últimos 5 pregões, leitura automática, destaques da Bolsa e agenda da próxima semana (com PDF) (9 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)

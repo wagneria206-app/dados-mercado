@@ -1,4 +1,5 @@
-"""Análise técnica dos ativos da B3: médias móveis, IFR, tendência, cruzamentos e distância da máxima de 52 semanas.
+"""Análise técnica dos ativos da B3: médias móveis, IFR, tendência, cruzamentos, distância da máxima de 52 semanas e
+variação da semana (5 pregões).
 
 Lê o idx.json e as cotações de cada ativo (a/<código>.json ou os pacotes pk/a-<letra>.json) e acrescenta ao idx.json
 as colunas técnicas. Não acessa a internet: roda logo depois do robô de ativos, ou sobre uma cópia já coletada.
@@ -13,7 +14,7 @@ import os
 import re
 import sys
 
-COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d"]
+COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d", "r5"]
 JANELA = 320  # pregões usados (bastam para a média de 200 e o IFR estabilizar)
 
 
@@ -78,6 +79,7 @@ def indicadores(c):
             elif a0 >= b0 and a1 < b1:
                 cruz = -1
         o["cruz"] = cruz
+    o["r5"] = (p / c[-6] - 1) * 100 if c[-6] else None   # variação nos últimos 5 pregões (semana), sem proventos
     u = c[-252:]
     o["max52d"] = (p / max(u) - 1) * 100
     o["min52d"] = (p / min(u) - 1) * 100
