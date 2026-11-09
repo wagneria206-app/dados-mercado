@@ -132,6 +132,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `460-bolsa-acoes-units-fiis-fiagros.js` — Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) (4 KB)
 - `465-casca-e-carga.js` — casca e carga (3 KB)
 - `470-pagina-do-ativo.js` — página do ativo (18 KB)
+- `471-barra-de-acoes-e-sinais.js` — Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação (4 KB)
 - `472-analise-tecnica.js` — análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências (9 KB)
 - `473-insiders.js` — Insiders: compras e vendas de controladores, conselheiros e diretores (CVM, Resolução 44) (5 KB)
 - `474-valuation-qualidade-aluguel.js` (11 KB)

@@ -17,7 +17,7 @@ function spIrHtml(c,it){
   const tot={v:0,ir:0,come:0};L.forEach(x=>{tot.v+=x.p.v;tot.ir+=x.p.ir;tot.come+=x.come});
   const perdaAc=L.filter(x=>x.reg==="acoes"&&x.p.x.t==="a"&&x.g<0).reduce((a,x)=>a-x.g,0),perdaFii=L.filter(x=>x.reg==="fii"&&x.g<0).reduce((a,x)=>a-x.g,0);
   const ganhoAc=L.filter(x=>x.reg==="acoes"&&x.p.x.t==="a"&&x.g>0);
-  h+='<div class="fnkpis">'+tecKp("IR se vendesse tudo hoje",brl(tot.ir),tot.v>0?fx(tot.ir/tot.v*100,2)+'% do patrimônio':'')
+  h+='<div class="fnkpis">'+tecKp("IR se vendesse tudo hoje <span class=\"tag est\" title=\"aproximação: veja a nota no fim do bloco\">estimado</span>",brl(tot.ir),tot.v>0?fx(tot.ir/tot.v*100,2)+'% do patrimônio':'')
     +tecKp("Próximo come-cotas",tot.come>0?brl(tot.come):'R$ 0',cc.prox?'estimado para '+fdate(cc.prox):'')
     +(perdaAc||perdaFii?tecKp("Prejuízo que pode compensar",brl(perdaAc+perdaFii),(perdaAc?'ações '+brl(perdaAc):'')+(perdaAc&&perdaFii?' · ':'')+(perdaFii?'FIIs '+brl(perdaFii):'')):'')+'</div>';
   h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left" class="c-ph">Tributação</th><th>Valor</th><th>Ganho</th><th>IR se vender hoje</th><th class="c-ph">Come-cotas</th></tr></thead><tbody>'
@@ -45,7 +45,7 @@ function spLiqHtml(c,it){
   it.forEach((x,i)=>{const v=w[i]*(tot||1);if(!(v>0))return;const d=spLiqDias(x,v);L.push({x,v,d});F.forEach((f,k)=>{if(d<=f[0])S[k]+=w[i]})});
   const lt=L.filter(x=>x.d>90).sort((a,b)=>b.v-a.v);
   let h='<section class="panel" data-reltit="Liquidez da carteira"><h3>Liquidez da carteira</h3><p class="sub">Quanto da carteira vira dinheiro na conta em cada prazo, pelo prazo de resgate dos fundos, pela liquidez diária das ações e pelo vencimento ou negociação no secundário da renda fixa.</p>'
-    +'<div class="fnkpis">'+F.map((f,k)=>tecKp("Em até "+f[1],fx(S[k]*100,0)+'%',real&&tot?brl(S[k]*tot):'')).join("")+'</div>';
+    +'<div class="fnkpis">'+F.map((f,k)=>tecKp("Em até "+f[1]+(k===0?' <span class="tag est" title="aproximação: veja a nota no fim do bloco">estimado</span>':''),fx(S[k]*100,0)+'%',real&&tot?brl(S[k]*tot):'')).join("")+'</div>';
   if(lt.length)h+='<div class="label" style="margin-top:8px">Itens que levam mais de 90 dias</div><div class="tablewrap" style="max-height:none"><table class="ctab"><tbody>'
     +lt.slice(0,10).map(x=>'<tr><td style="text-align:left" class="tw">'+esc(spItemNome(x.x)).slice(0,50)+'</td><td>'+(x.d>=9999?'só no vencimento':'cerca de '+fx(x.d,0)+' dias')+'</td><td>'+fx(x.v/(tot||1)*100,1)+'%</td></tr>').join("")+'</tbody></table></div>';
   return h+'<p class="sub" style="font-size:.8rem">Aproximação: fundos pelo prazo de cotização e pagamento do resgate na CVM; ações vendendo até 20% do volume médio diário; Tesouro em 1 dia; CDB, LCI e LCA só no vencimento (marque "liquidez diária" no item quando houver); debêntures, CRI e CRA pelo número de dias com negócios no secundário.</p></section>';
@@ -60,7 +60,7 @@ function spJurosHtml(c,it){
   const lin=k=>{const g=G[k],d=g.d/g.v,perda=g.d*0.01;return '<tr><td style="text-align:left">'+(k==="pre"?"Prefixados":"Atrelados ao IPCA (juro real)")+'</td><td>'+fx(g.v/(tot||1)*100,1)+'%</td><td>'+fx(d,1)+' anos</td><td><span class="neg">−'+(real&&tot?brl(perda):fx(perda/(tot||1)*100,2)+'% da carteira')+'</span></td><td><span class="pos">+'+(real&&tot?brl(perda):fx(perda/(tot||1)*100,2)+'%')+'</span></td></tr>'};
   const tp=it2.reduce((a,k)=>a+G[k].d*0.01,0);
   return '<section class="panel" data-reltit="Sensibilidade a juros"><h3>Sensibilidade a juros</h3><p class="sub">Quanto o valor de mercado dos títulos prefixados e de inflação muda se as taxas subirem ou caírem 1 ponto percentual (marcação a mercado). Quem leva até o vencimento recebe a taxa contratada; a variação importa para quem vende antes.</p>'
-    +'<div class="fnkpis">'+tecKp("Se os juros subirem 1 ponto",'<span class="neg">−'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','perda na marcação a mercado')+tecKp("Se caírem 1 ponto",'<span class="pos">+'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','ganho na marcação a mercado')+'</div>'
+    +'<div class="fnkpis">'+tecKp("Se os juros subirem 1 ponto <span class=\"tag est\" title=\"aproximação: veja a nota no fim do bloco\">estimado</span>",'<span class="neg">−'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','perda na marcação a mercado')+tecKp("Se caírem 1 ponto",'<span class="pos">+'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','ganho na marcação a mercado')+'</div>'
     +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Grupo</th><th>Peso</th><th>Duração média</th><th>Juros +1 ponto</th><th>Juros −1 ponto</th></tr></thead><tbody>'+it2.map(lin).join("")+'</tbody></table></div>'
     +'<p class="sub" style="font-size:.8rem">Duração modificada aproximada pelo prazo até o vencimento (títulos com cupom: cerca de 65% do prazo). Pós-fixados (CDI, Selic) quase não oscilam com a curva. Fundos de renda fixa e multimercados ficam no teste de estresse (subaba Risco), que usa a sensibilidade histórica de cada fundo.</p></section>';
 }
