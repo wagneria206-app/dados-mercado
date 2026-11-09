@@ -21,7 +21,7 @@ function djLista(){
   if(!DJ.L.length){b.innerHTML='<p class="sub">Nenhuma anotação ainda. Comece pela decisão mais recente: escrever a tese ajuda a não mudar de ideia por impulso.</p>';return}
   const hj=new Date().toISOString().slice(0,10);
   const L=DJ.L.slice().sort((a,b)=>a.d<b.d?1:-1).map(x=>{const p=djPreco(x.k),r=p&&x.p0?(p/x.p0-1)*100:null,i0=djIbov(x.d),i1=EU.S&&EU.S.ibov?EU.S.ibov[EU.S.ibov.length-1][1]:null,ri=i0&&i1?(i1/i0-1)*100:null;
-    const certo=r==null?null:x.a==="compra"?r>(ri||0):x.a==="venda"?r<(ri||0):null;const alvo=x.alvo&&p?(x.a==="venda"?p<=x.alvo:p>=x.alvo):false;
+    const certo=r==null||x.d>=hj?null:x.a==="compra"?r>(ri||0):x.a==="venda"?r<(ri||0):null;const alvo=x.alvo&&p?(x.a==="venda"?p<=x.alvo:p>=x.alvo):false;
     return Object.assign({},x,{p,r,ri,certo,alvo,rev:x.rev&&x.rev<=hj})});
   const dec=L.filter(x=>x.certo!=null),acertos=dec.filter(x=>x.certo).length;
   let h='<h3>Anotações</h3>'+(dec.length?'<div class="fnkpis">'+tecKp("Decisões acompanhadas",fx(dec.length,0),'compras e vendas com preço')+tecKp("Melhores que o Ibovespa",fx(acertos/dec.length*100,0)+'%',acertos+' de '+dec.length+' (venda: acerta se o ativo foi pior que o índice)')+tecKp("Para revisar",fx(L.filter(x=>x.rev).length,0),'data de revisão chegou')+tecKp("Alvo atingido",fx(L.filter(x=>x.alvo).length,0),'preço-alvo alcançado')+'</div>':'');
