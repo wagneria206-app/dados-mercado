@@ -1,6 +1,6 @@
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
 const FN_URL=DADOS_RAIZ+"fundos/";
-const FNM=new Set(["fa","fr","fc","fg","ff","af","ab","aa","ar","ac","au","ag","sp"]);
+const FNM=new Set(["fa","fr","fc","fg","ff","af","ab","pj","dj","aa","ar","ac","au","ag","sp"]);
 const FN_BM={cdi:{lab:"CDI",col:"#7c8aa5"},ibov:{lab:"Ibovespa",col:"#f97316"},ipca:{lab:"IPCA",col:"#eab308"},usd:{lab:"Dólar",col:"#22c55e"},ifix:{lab:"IFIX",col:"#a16207"}};
 Object.assign(FN_BM,{imab:{lab:"IMA-B",col:"#06b6d4"},imab5:{lab:"IMA-B 5",col:"#38bdf8"},imab5p:{lab:"IMA-B 5+",col:"#0f766e"},irfm:{lab:"IRF-M",col:"#c026d3"},imas:{lab:"IMA-S",col:"#94a3b8"},imag:{lab:"IMA-Geral",col:"#ec4899"}});
 const FN_COLS=["#2563eb","#dc2626","#16a34a","#9333ea","#f59e0b","#0891b2"];
