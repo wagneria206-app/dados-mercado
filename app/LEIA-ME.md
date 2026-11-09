@@ -188,7 +188,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `571-subabas-da-carteira.js` (5 KB)
 - `572-editar-item.js` (9 KB)
 - `573-proposta-ou-carteira.js` (4 KB)
-- `574-imposto-liquidez-e-juros.js` (12 KB)
+- `574-imposto-liquidez-e-juros.js` (14 KB)
 - `575-eventos.js` — eventos (1 KB)
 - `576-diario-e-planejamento.js` (16 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
