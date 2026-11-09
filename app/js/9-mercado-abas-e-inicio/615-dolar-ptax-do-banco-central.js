@@ -92,7 +92,7 @@ scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","ac","au","ag","sp","agm"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ac","au","ag","sp","agm"].includes(m0)?m0:"rs");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 

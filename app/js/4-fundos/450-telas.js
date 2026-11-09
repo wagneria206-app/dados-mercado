@@ -11,7 +11,7 @@ function fnShell(m){
 }
 function fnRender(){if(activeMod==="aa")atAa();else if(activeMod==="ac")atCmp();else if(activeMod==="fa")fnFa();else if(activeMod==="fc")fnCmp()}
 function fnCalc(m){
-  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="au")return euCalc();if(m==="fg")return fnGest();if(m==="ff")return fnFluxo();if(m==="sp")return spCalc();if(m==="ag")return agCalc();const o=fnShell(m);if(!o)return;
+  m=m||(FNM.has(activeMod)?activeMod:"fa");if(m==="aa"||m==="ar"||m==="ac")return atCalc(m);if(m==="au")return euCalc();if(m==="fg")return fnGest();if(m==="ff")return fnFluxo();if(m==="af")return fiiTela();if(m==="sp")return spCalc();if(m==="ag")return agCalc();const o=fnShell(m);if(!o)return;
   const body=m==="fa"?$("fnBody"):m==="fr"?$("fnRkT"):$("fnCbody");
   if(!FN.idx){
     if(FN.err){const h='<section class="panel"><p class="warn">A base de fundos ainda não está disponível ('+esc(FN.err.message||FN.err)+'). Na primeira vez o robô leva cerca de uma hora para montar o histórico de todos os fundos da CVM. Tente de novo em alguns minutos.</p><button type="button" class="btn sec" data-fnretry="1">Tentar de novo</button></section>';if(body)body.innerHTML=h;else o.innerHTML=h}
