@@ -141,6 +141,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `490-janelas-moveis-na-pagina-do.js` — janelas móveis na página do fundo ou ativo (1 KB)
 - `495-fundos-similares-e-gross-up.js` — fundos similares e gross-up (página do fundo) (5 KB)
 - `500-gestoras-e-administradoras.js` — gestoras e administradoras (3 KB)
+- `502-fluxo-dos-fundos.js` — Fundos › Fluxo: captação líquida da indústria por categoria e por tipo ANBIMA (informes da CVM) (5 KB)
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
 - `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (34 KB)
 - `515-spcorhtml.js` (27 KB)

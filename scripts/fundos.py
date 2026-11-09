@@ -1258,6 +1258,11 @@ def principal():
     estado.update(geradoEm=dt.datetime.now().isoformat(timespec="seconds"), fundos=len(linhas), dias=len(CAL),
                   diag=DIAG, minutos=round((time.time() - INICIO) / 60, 1))
     gravar(os.path.join(sai, "estado.json"), estado)
+    try:  # fluxo da indústria por categoria (lê os arquivos já gravados; não pode derrubar o robô)
+        import fluxo_fundos
+        gravar(os.path.join(sai, "fluxo.json"), fluxo_fundos.calcular(sai))
+    except Exception as e:  # noqa: BLE001
+        log("fluxo dos fundos falhou:", e)
     log("gravado:", len(linhas), "fundos; diário até", estado["diario_ate"], "; anos mensais", estado["mensal_anos"])
 
 
