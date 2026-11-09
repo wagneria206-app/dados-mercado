@@ -14,7 +14,7 @@ import os
 import re
 import sys
 
-COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d", "r5"]
+COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d", "r5", "mand", "vac", "res"]
 JANELA = 320  # pregões usados (bastam para a média de 200 e o IFR estabilizar)
 
 
@@ -86,6 +86,28 @@ def indicadores(c):
     return o
 
 
+def proximo_resultado(receb, hoje=None):
+    """Data prevista da próxima divulgação de resultados: a do mesmo trimestre do ano anterior, um ano depois.
+    receb: {data de referência: data de entrega à CVM}."""
+    import datetime as dt
+    hoje = hoje or dt.date.today()
+    if not receb:
+        return None
+    ult = max(receb)
+    y, m = int(ult[:4]), int(ult[5:7]) + 3          # próximo trimestre depois do último entregue
+    y, m = y + (m - 1) // 12, (m - 1) % 12 + 1
+    ref_ant = f"{y - 1}-{m:02d}"
+    ant = [v for k, v in receb.items() if k.startswith(ref_ant)]
+    if not ant:
+        return None
+    a = dt.date.fromisoformat(ant[0])
+    try:
+        prev = a.replace(year=a.year + 1)
+    except ValueError:
+        prev = a + dt.timedelta(days=365)
+    return prev.isoformat() if prev >= hoje - dt.timedelta(days=7) else None
+
+
 def r2(v):
     return None if v is None else round(v, 2)
 
@@ -121,7 +143,15 @@ def aplicar(pasta):
             if j:
                 ind = indicadores(serie_desdobramentos(j))
                 n += 1 if ind else 0
-        rows.append(base + [r2(ind.get(c)) if c not in ("tend", "cruz") else ind.get(c) for c in COLS])
+                f = j.get("fii") or {}
+                if f.get("mand"):
+                    ind["mand"] = f["mand"].strip()[:40]     # mandato do FII na CVM (renda, títulos e valores mobiliários...)
+                if (f.get("tri") or {}).get("vac") is not None:
+                    ind["vac"] = f["tri"]["vac"]
+                prox = proximo_resultado(((j.get("fund") or {}).get("receb")) or {})
+                if prox:
+                    ind["res"] = prox
+        rows.append(base + [ind.get(c) if c in ("tend", "cruz", "mand", "res") else r2(ind.get(c)) for c in COLS])
     ordem = {r[0]: k for k, r in enumerate(idx["rows"])}
     rows.sort(key=lambda r: ordem[r[0]])
     idx["cols"], idx["rows"] = cols + COLS, rows

@@ -97,6 +97,7 @@ function pcInfo(P,code){
   h+='<div class="row"><dt>Pagamentos a receber</dt><dd>'+fut.length+'</dd></div>';
   if(P.anbima&&isFinite(P.anbima.rate))h+='<div class="row"><dt>Taxa indicativa ANBIMA ('+fdate(parseDate(P.anbima.refDate))+')</dt><dd>'+F.txt(P.anbima.rate)+(chk===true?' <span class="tag">preço conferido</span>':chk==="adj"?' <span class="tag est">saldo ajustado ao preço oficial</span>':chk===false?' <span class="tag est">preço não confere</span>':'')+'</dd></div>'+(chk==="adj"?'<div class="row"><dt>Preço oficial (PU ANBIMA)</dt><dd>R$ '+fx(P.anbima.pu,6)+'</dd></div><p class="warn" style="font-size:.84rem;margin:6px 0">A agenda publicada no SND não fecha com o preço oficial (diferença de '+fx(Math.abs((PADJ_BIG.get(P.code)?1/PADJ_BIG.get(P.code)-1:0)*100),1)+'%), em geral porque amortizações antigas não aparecem. O app usa o preço oficial da ANBIMA e ajusta o saldo devedor na mesma proporção. Os pagamentos já recebidos e o valor na data da compra não puderam ser conferidos: use o preço pago da nota.</p>':'');
   h+='</dl>';
+  try{h+=pcFicha(P,code)}catch(e){console.error(e)}
   if(P.notes)h+='<p class="sub" style="font-size:.85rem;margin-top:8px">'+P.notes+'</p>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: '+(P.sources||[]).join("; ")+'</p>';
   box.innerHTML=h;
@@ -224,7 +225,7 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",agm:"mkt",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",agm:"mkt",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ab:"bolsa",pj:"simu",dj:"simu",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
 const MKM=new Set(["rs","sem","agm","fv","ec","mu","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;try{fonteAviso(m)}catch(e){}if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;

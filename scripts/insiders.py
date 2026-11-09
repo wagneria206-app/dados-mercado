@@ -15,7 +15,6 @@ Uso: python scripts/insiders.py <entrada> <saída>
 """
 import datetime as dt
 import io
-import json
 import os
 import re
 import sys
@@ -130,7 +129,7 @@ def ler(anos):
 
 
 def principal():
-    ent, sai = sys.argv[1], sys.argv[2]
+    sai = sys.argv[2]   # a entrada (sys.argv[1]) não é usada: o robô baixa tudo de novo
     os.makedirs(sai, exist_ok=True)
     linhas, diag = ler([HOJE.year - 2, HOJE.year - 1, HOJE.year])
     k_fim = HOJE.year * 12 + HOJE.month - 1

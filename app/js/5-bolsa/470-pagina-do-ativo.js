@@ -6,7 +6,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -71,6 +71,7 @@ function atFundHtml(A){
   const i=A.ind||{},f=A.fund||{};let h='<section class="panel"><h3>Indicadores fundamentalistas</h3>';
   const it=[];const add=(a,b,c)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+(c?' <small>'+c+'</small>':'')+'</dt><dd>'+b+'</dd></div>')};
   const n1=(v,d)=>v==null?"—":fx(v,d==null?2:d);
+  {const rc=f.receb||{},ks=Object.keys(rc).sort(),r=AT.C.res!=null?atRow(A.t):null,px=r?r[AT.C.res]:null;if(px)add("Próximo resultado",fdate(Date.parse(px+"T00:00:00Z")),"data prevista pelo ano anterior");else if(ks.length)add("Último resultado entregue",fdate(Date.parse(rc[ks[ks.length-1]]+"T00:00:00Z")),"referente a "+fdate(Date.parse(ks[ks.length-1]+"T00:00:00Z")))}
   add("P/L",n1(i.pl_r,1),"preço ÷ lucro por ação");add("P/VP",n1(i.pvp),"preço ÷ valor patrimonial");add("EV/EBIT",n1(i.ev_ebit,1));add("Dividend yield",fnPctT(A.met&&A.met.dy),"12 meses");
   add("ROE",fnPctT(i.roe,1),"lucro ÷ patrimônio");add("Margem líquida",fnPctT(i.ml,1));add("Margem EBIT",fnPctT(i.me,1));add("Dívida líquida ÷ EBIT",n1(i.dl_ebit));
   add("LPA",i.lpa!=null?"R$ "+fx(i.lpa,2):"—");add("VPA",i.vpa!=null?"R$ "+fx(i.vpa,2):"—");add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
@@ -90,6 +91,7 @@ function atFiiHtml(A){
   const f=A.fii;if(!f||!f.m)return "";const k0=+f.m0.slice(0,4)*12+(+f.m0.slice(4))-1;const pts=[],vp=[],cot=[],dy=[];
   f.m.forEach((v,j)=>{if(!v)return;const k=k0+j,t=Date.UTC(Math.floor(k/12),k%12+1,0);if(v[0]){vp.push([t,v[0]]);const p=fnPtAt(A,t);if(p){const x=A.I.indexOf(p.i);if(x>=0)pts.push([t,A.R[x]])}}if(v[2])cot.push([t,v[2]]);if(v[3]!=null)dy.push([Date.UTC(Math.floor(k/12),k%12,15),(v[3]>0.2?v[3]/100:v[3])*100])});
   let h='<section class="panel"><h3>Informe mensal do fundo (CVM)</h3>';
+  if(f.tri&&(f.tri.vac!=null||f.tri.inad!=null))h+='<div class="fnkpis">'+tecKp("Vacância",f.tri.vac!=null?fx(f.tri.vac,1)+'%':'—','média dos imóveis, ponderada pela área')+tecKp("Inadimplência",f.tri.inad!=null?fx(f.tri.inad,1)+'%':'—','média dos imóveis')+tecKp("Imóveis",fx(f.tri.imoveis||0,0),'informe trimestral de '+fdate(Date.parse(f.tri.dt+"T00:00:00Z")))+'</div>';
   if(vp.length>1)h+='<div class="label">Cotação × valor patrimonial da cota</div>'+fnChart([{lab:"Cotação (fim do mês)",col:FN_COLS[0],w:2,pts:pts.slice(-72)},{lab:"Valor patrimonial da cota",col:"var(--s2)",w:2,pts:vp.slice(-72)}],{fmt:"brl",h:200,aria:"P/VP"});
   if(dy.length>3)h+='<div class="label" style="margin-top:10px">Rendimento distribuído no mês (% do valor patrimonial)</div>'+fnChart([{lab:"DY mensal",col:"var(--gain)",pts:dy.slice(-36)}],{fmt:"pct",bars:true,zero:true,h:160,aria:"DY mensal"});
   if(cot.length>3)h+='<div class="label" style="margin-top:10px">Número de cotistas</div>'+fnChart([{lab:"Cotistas",col:FN_COLS[2],pts:cot.slice(-72)}],{fmt:"int",h:160,aria:"Cotistas"});

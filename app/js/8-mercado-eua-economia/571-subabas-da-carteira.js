@@ -1,7 +1,7 @@
 /* ---------- Carteira em subabas: Visão geral, Desempenho, Risco, Crédito e caixa, Rebalancear, Oportunidades, Todas as carteiras
    Só a subaba aberta é montada (os blocos pesados, como raio-X e antes × depois, só carregam quando a subaba é aberta);
    trocar de subaba usa o cálculo já feito, sem refazer a simulação. O relatório em PDF continua com tudo. */
-const SP_ABAS=[["comp","Composição"],["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
+const SP_ABAS=[["comp","Composição"],["geral","Visão geral"],["desemp","Desempenho"],["risco","Risco"],["credito","Crédito e caixa"],["ir","Imposto e liquidez"],["rebal","Rebalancear"],["oport","Oportunidades"],["todas","Todas as carteiras"]];
 try{SP.sub=localStorage.getItem("spSub")||"geral";if(!SP_ABAS.some(a=>a[0]===SP.sub))SP.sub="geral"}catch(e){SP.sub="geral"}
 let SP_LAST=null,SP_TODAS=false;
 /* subaba de cada bloco pelo título */
@@ -9,6 +9,7 @@ function spAbaDe(t){t=String(t||"");
   if(/^(Painel da carteira|Adequação|Posição atual|Desde a efetivação)/.test(t))return "geral";
   if(/^(Política|Boleta|Antes e depois|Proposta|Otimização)/.test(t))return "rebal";
   if(/^Crédito/.test(t))return "credito";
+  if(/^(Imposto|Liquidez|Sensibilidade a juros)/.test(t))return "ir";
   if(/^(Raio-X|Risco de mercado|Contribuição de cada item|Perda a partir|Exposições|Projeção)/.test(t))return "risco";
   if(/^Substitutos/.test(t))return "oport";
   if(/^(Painel do assessor|Comparação entre as carteiras|Comparar carteiras)/.test(t))return "todas";

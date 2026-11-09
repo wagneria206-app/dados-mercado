@@ -2,6 +2,12 @@
 const FII_ST={tipo:"FII",liq:5e5};
 function fiiMed(a){const v=a.filter(x=>x!=null&&isFinite(x)).sort((x,y)=>x-y);if(!v.length)return null;const m=v.length>>1;return v.length%2?v[m]:(v[m-1]+v[m])/2}
 function fiiNtnb5(){try{const v=realAt(VAL+5*365.25*DAY);return isFinite(v)?v:null}catch(e){return null}}
+function fiiClasse(r,C,I){ // papel (recebíveis), tijolo (imóveis), fundo de fundos ou híbrido, pelo mandato da CVM e pelo nome
+  const nm=fnNorm(r[1]||""),md=fnNorm(C.mand!=null?r[C.mand]||"":""),sg=fnNorm(I.setores[r[C.setor]]||"");
+  if(/titulos e val|valores mobiliarios/.test(md)||/receb|credito|\bcri\b|papel|high yield|hy\b|renda fixa|securit|crédito/.test(nm))return "Papel (recebíveis)";
+  if(/\bfof\b|fundo de fundos|fdo fdos|fundos imobiliarios|multiestrat/.test(nm))return "Fundo de fundos";
+  if(/logist|shopping|escritor|residenc|hospital|hotel|varejo|agencia|educac|industrial|galp/.test(sg)||/renda|desenvolvimento/.test(md))return "Tijolo (imóveis)";
+  return "Híbrido e outros"}
 function fiiTela(){
   const o=$("fnOut");if(!o)return;
   if(FN.view!=="af"){FN.view="af";o.innerHTML='<section class="panel"><h3>Fundos imobiliários</h3><p class="sub">Panorama dos fundos listados na B3: rendimento, preço sobre o valor patrimonial e liquidez por segmento, os que negociam com desconto e quanto o rendimento paga acima do Tesouro IPCA+.</p><div id="fiiCtl"></div></section><div id="fiiBody"></div>'}
@@ -24,9 +30,13 @@ function fiiTela(){
   const S=[...G.values()].map(g=>({k:g.k,s:g.s,n:g.L.length,dy:fiiMed(g.L.filter(dyOk).map(r=>r[C.dy])),pvp:fiiMed(g.L.map(r=>r[C.pvp])),r12:fiiMed(g.L.map(r=>r[C.r12])),liq:g.L.reduce((a,r)=>a+(r[C.liq]||0),0),mc:g.L.reduce((a,r)=>a+(r[C.mcap]||0),0)})).sort((a,b)=>b.mc-a.mc);
   h+='<div class="label">Por segmento (medianas)</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Segmento</th><th>Fundos</th><th>Rendimento 12m</th><th>P/VP</th><th class="c-ph">Retorno 12m</th><th class="c-ph">Liquidez/dia</th><th class="c-ph c-sm">Valor de mercado</th></tr></thead><tbody>'
     +S.map(x=>'<tr><td style="text-align:left">'+(x.s!=null&&x.k!=="Sem segmento informado"?'<button type="button" class="link" data-atrkcat="'+esc(st.tipo)+'|'+x.s+'">'+esc(x.k)+'</button>':esc(x.k))+'</td><td>'+x.n+'</td><td>'+(x.dy!=null?fx(x.dy,2)+'%':'—')+'</td><td>'+(x.pvp!=null?fx(x.pvp,2):'—')+'</td><td class="c-ph">'+fnPct(x.r12)+'</td><td class="c-ph">'+fnMoney(x.liq)+'</td><td class="c-ph c-sm">'+(x.mc?fnMoney(x.mc):'—')+'</td></tr>').join("")+'</tbody></table></div>';
+  // papel × tijolo × fundo de fundos
+  if(st.tipo==="FII"){const K=new Map();R.forEach(r=>{const k=fiiClasse(r,C,I),g=K.get(k)||[];g.push(r);K.set(k,g)});
+    h+='<div class="label" style="margin-top:12px">Papel, tijolo e fundo de fundos (medianas)</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Tipo</th><th>Fundos</th><th>Rendimento 12m</th><th>P/VP</th><th class="c-ph">Retorno 12m</th>'+(C.vac!=null?'<th class="c-ph">Vacância</th>':'')+'</tr></thead><tbody>'
+      +[...K.entries()].sort((a,b)=>b[1].length-a[1].length).map(([k,L])=>'<tr><td style="text-align:left">'+k+'</td><td>'+L.length+'</td><td>'+(fiiMed(L.filter(dyOk).map(r=>r[C.dy]))!=null?fx(fiiMed(L.filter(dyOk).map(r=>r[C.dy])),2)+'%':'—')+'</td><td>'+(fiiMed(L.map(r=>r[C.pvp]))!=null?fx(fiiMed(L.map(r=>r[C.pvp])),2):'—')+'</td><td class="c-ph">'+fnPct(fiiMed(L.map(r=>r[C.r12])))+'</td>'+(C.vac!=null?'<td class="c-ph">'+(fiiMed(L.map(r=>r[C.vac]))!=null?fx(fiiMed(L.map(r=>r[C.vac])),1)+'%':'—')+'</td>':'')+'</tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Papel: recebíveis imobiliários (CRI), rendimento ligado a juros e inflação. Tijolo: imóveis físicos, rendimento ligado a aluguéis e vacância. Classificação pelo mandato informado à CVM e pelo nome do fundo.</p>'}
   // listas
   const segDy=new Map(S.map(x=>[x.k,x.dy]));
-  const linha=r=>'<button type="button" class="fnri" data-atopen="'+r[0]+'"><b>'+r[0]+' · '+esc(r[1])+'</b><small>'+esc(seg(r))+' · rendimento '+(r[C.dy]!=null?fx(r[C.dy],2)+'%':'—')+' · P/VP '+(r[C.pvp]!=null?fx(r[C.pvp],2):'—')+' · liquidez '+fnMoney(r[C.liq])+'/dia</small></button>';
+  const linha=r=>'<button type="button" class="fnri" data-atopen="'+r[0]+'"><b>'+r[0]+' · '+esc(r[1])+'</b><small>'+esc(seg(r))+' · rendimento '+(r[C.dy]!=null?fx(r[C.dy],2)+'%':'—')+' · P/VP '+(r[C.pvp]!=null?fx(r[C.pvp],2):'—')+(C.vac!=null&&r[C.vac]!=null?' · vacância '+fx(r[C.vac],1)+'%':'')+' · liquidez '+fnMoney(r[C.liq])+'/dia</small></button>';
   const bloco=(tt,sub,L)=>'<section class="panel"><div class="label">'+tt+'</div><p class="sub" style="font-size:.82rem;margin:2px 0 6px">'+sub+'</p><div class="fnlist">'+(L.length?L.map(linha).join(""):'<p class="sub">Nenhum fundo com esses critérios.</p>')+'</div></section>';
   const desc=R.filter(r=>r[C.pvp]!=null&&r[C.pvp]<=0.95&&dyOk(r)&&segDy.get(seg(r))!=null&&r[C.dy]>=segDy.get(seg(r))).sort((a,b)=>a[C.pvp]-b[C.pvp]).slice(0,10);
   const agio=R.filter(r=>r[C.pvp]!=null&&r[C.pvp]>=1.1).sort((a,b)=>b[C.pvp]-a[C.pvp]).slice(0,10);

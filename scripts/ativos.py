@@ -36,6 +36,7 @@ UA = FU.UA
 URL_COTAHIST = "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A{}.ZIP"
 B3 = "https://sistemaswebb3-listados.b3.com.br/"
 URL_FII = "https://dados.cvm.gov.br/dados/FII/DOC/INF_MENSAL/DADOS/inf_mensal_fii_{}.zip"
+URL_FII_TRI = "https://dados.cvm.gov.br/dados/FII/DOC/INF_TRIMESTRAL/DADOS/inf_trimestral_fii_{}.zip"
 URL_DFP = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/dfp_cia_aberta_{}.zip"
 URL_ITR = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/itr_cia_aberta_{}.zip"
 URL_FCA = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/FCA/DADOS/fca_cia_aberta_{}.zip"
@@ -576,6 +577,74 @@ def fii_cvm(anos, por_isin):
     log("FIIs CVM:", lidos, "registros")
 
 
+def fii_trimestral(por_isin):
+    """Informe trimestral dos FIIs: imóveis com área, vacância e inadimplência (média ponderada pela área do último
+    trimestre entregue). As colunas são localizadas pelo nome, e as encontradas ficam no diagnóstico."""
+    por_cnpj = {}
+    for a in por_isin.values():
+        if a.fii and a.fii.get("cnpj"):
+            por_cnpj[a.fii["cnpj"]] = a
+    if not por_cnpj:
+        return
+    lidos = 0
+    for ano in (HOJE.year, HOJE.year - 1):
+        try:
+            r = FU.baixar(URL_FII_TRI.format(ano), aceita_404=True, timeout=(15, 300))
+        except Exception as e:  # noqa: BLE001
+            DIAG[f"fii_tri_{ano}"] = str(e)[:150]
+            continue
+        if r is None:
+            continue
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        nomes = [n for n in z.namelist() if "imovel" in n.lower() and "renda" not in n.lower()] or [n for n in z.namelist() if "imovel" in n.lower()]
+        DIAG[f"fii_tri_{ano}_arquivos"] = z.namelist()[:20]
+        if not nomes:
+            continue
+        acc = {}
+        for n in nomes:
+            for L in FU.ler_csv(z.open(n)):
+                cols = {norm(k): k for k in L}
+                if "fii_tri_colunas" not in DIAG:
+                    DIAG["fii_tri_colunas"] = list(L.keys())[:30]
+                ck = next((cols[k] for k in cols if k.startswith("cnpj")), None)
+                cd = next((cols[k] for k in cols if "data_referencia" in k or k == "data referencia"), None)
+                cv = next((cols[k] for k in cols if "vacancia" in k), None)
+                ci = next((cols[k] for k in cols if "inadimplencia" in k), None)
+                ca = next((cols[k] for k in cols if k.startswith("area")), None)
+                if not ck or not cd:
+                    continue
+                cnpj = re.sub(r"\D", "", L.get(ck, ""))
+                if cnpj not in por_cnpj:
+                    continue
+                d = (L.get(cd) or "")[:10]
+                x = acc.setdefault(cnpj, {})
+                if d < x.get("dt", ""):
+                    continue
+                if d > x.get("dt", ""):
+                    x.clear()
+                    x.update(dt=d, n=0, area=0.0, vac=0.0, inad=0.0, ni=0)
+                area = num(L.get(ca)) if ca else None
+                p = area if area and area > 0 else 1.0
+                v, i = (num(L.get(cv)) if cv else None), (num(L.get(ci)) if ci else None)
+                x["n"] += 1
+                if v is not None:
+                    v = v * 100 if v <= 1 else v      # percentual informado como fração em alguns informes
+                    x["vac"] += v * p
+                    x["area"] += p
+                if i is not None:
+                    x["inad"] += (i * 100 if i <= 1 else i)
+                    x["ni"] += 1
+        for cnpj, x in acc.items():
+            a = por_cnpj[cnpj]
+            velho = (a.fii or {}).get("tri") or {}
+            if velho.get("dt", "") > x["dt"]:
+                continue
+            a.fii["tri"] = {"dt": x["dt"], "imoveis": x["n"], "vac": round(x["vac"] / x["area"], 2) if x["area"] else None,
+                            "inad": round(x["inad"] / x["ni"], 2) if x["ni"] else None}
+            lidos += 1
+    log("FIIs trimestral:", lidos, "fundos com imóveis")
+
+
 # ------------------------------------------------------------------ CVM: balanços
 
 def ler_dfs(z, nome_parte, anual):
@@ -654,6 +723,20 @@ def capital(z):
     return out
 
 
+def entregas(z, nome, fund):
+    """Data em que cada demonstração chegou à CVM (DT_RECEB da primeira versão), por CNPJ e data de referência."""
+    if nome not in z.namelist():
+        return
+    for L in FU.ler_csv(z.open(nome)):
+        k = re.sub(r"\D", "", L.get("CNPJ_CIA", ""))
+        ref, rec = (L.get("DT_REFER") or "")[:10], (L.get("DT_RECEB") or "")[:10]
+        if not k or not ref or not rec:
+            continue
+        r = fund.setdefault(k, {}).setdefault("receb", {})
+        if ref not in r or rec < r[ref]:
+            r[ref] = rec
+
+
 def balancos(est, fund):
     """Atualiza {cnpj: {"a": {ano: [...]}, "q": {aaaa-mm-dd: [...]}, "bp": {...}, "cap": [...]}} com DFP e ITR."""
     feitos = set(est.get("dfp_feitos", []))
@@ -669,6 +752,7 @@ def balancos(est, fund):
             if r is None:
                 continue
             z = zipfile.ZipFile(io.BytesIO(r.content))
+            entregas(z, f"dfp_cia_aberta_{ano}.csv", fund)
             dre, bpa, bpp = ler_dfs(z, "DRE", True), ler_dfs(z, "BPA", True), ler_dfs(z, "BPP", True)
             for k, porfim in dre.items():
                 for fim, c in porfim.items():
@@ -696,6 +780,7 @@ def balancos(est, fund):
             if r is None:
                 continue
             z = zipfile.ZipFile(io.BytesIO(r.content))
+            entregas(z, f"itr_cia_aberta_{ano}.csv", fund)
             dre, bpa, bpp = ler_dfs(z, "DRE", False), ler_dfs(z, "BPA", False), ler_dfs(z, "BPP", False)
             for k, porfim in dre.items():
                 for fim, c in porfim.items():
@@ -1158,6 +1243,10 @@ def principal():
     anos_fii = [str(y) for y in range(2016, ano + 1) if str(y) not in est.get("fii_feitos", []) or y >= ano - 1]
     fii_ant = {t: a.fii for t, a in A.items() if a.fii}
     fii_cvm(anos_fii, por_isin)
+    try:
+        fii_trimestral(por_isin)
+    except Exception as e:  # noqa: BLE001
+        DIAG["fii_trimestral"] = str(e)[:200]
     est["fii_feitos"] = sorted(set(est.get("fii_feitos", [])) | {y for y in anos_fii if int(y) < ano - 1})
     del fii_ant
 
@@ -1308,7 +1397,8 @@ def principal():
                 reg["cnpj"] = cn
             f = fund.get(cn) if cn else None
             if f:
-                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn}
+                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn,
+                               "receb": dict(sorted((f.get("receb") or {}).items())[-8:])}
                 l, lfim = ltm(f)
                 # valor de mercado: ações ON e PN em circulação × cotação da classe (ou da outra classe se não negociar)
                 cap = list(f.get("cap") or [None, info.get("on"), info.get("pn")])
@@ -1417,15 +1507,19 @@ def principal():
                  "liq", "dy", "mcap", "pl", "pvp", "roe", "ml", "dlebit", "evebit", "cot", "sharpe"],
         "setores": inv, "rows": rows,
         "fonte": "B3 (cotações, proventos, cadastro) e CVM (balanços, informe dos FIIs)"})
-    try:
-        import tecnica
-        log("análise técnica:", tecnica.aplicar(sai), "ativos")
-    except Exception as e:  # noqa: BLE001  (as colunas técnicas não podem derrubar o robô)
-        log("análise técnica falhou:", e)
     FU.gravar(os.path.join(sai, "cal.json"), {"d": CAL})
     FU.gravar(os.path.join(sai, "bench.json"), bench)
     FU.gravar(os.path.join(sai, "emp.json"), emp)
     FU.gravar(os.path.join(sai, "fund.json"), fund)
+    try:
+        import tecnica
+        log("análise técnica:", tecnica.aplicar(sai), "ativos")
+        import painel_mensal
+        P = painel_mensal.calcular(sai)
+        FU.gravar(os.path.join(sai, "painel.json"), P)
+        log("painel mensal para o teste de estratégias:", len(P["a"]), "ações")
+    except Exception as e:  # noqa: BLE001  (as colunas técnicas não podem derrubar o robô)
+        log("análise técnica ou painel mensal falhou:", e)
     est.update(geradoEm=dt.datetime.now().isoformat(timespec="seconds"), ativos=len(rows), pregoes=len(CAL),
                diag={k: (v[:20] if isinstance(v, list) else v) for k, v in DIAG.items()}, minutos=round((time.time() - INICIO) / 60, 1))
     FU.gravar(os.path.join(sai, "estado.json"), est)

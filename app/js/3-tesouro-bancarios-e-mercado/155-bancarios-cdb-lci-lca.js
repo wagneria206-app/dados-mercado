@@ -31,6 +31,7 @@ function bkCalc(){
   h+='</dl>';
   if(eq)h+='<p class="sub" style="margin-top:12px;font-size:.9rem">'+eq+'</p>';
   h+='<p class="sub" style="margin-top:8px;font-size:.88rem">'+(r.fgc?'Coberto pelo FGC até R$ 250 mil por CPF por conglomerado (somando todos os títulos do mesmo grupo).':'Este tipo de título não tem garantia do FGC: o risco é do emissor.')+' '+(r.liq?'Com liquidez diária: o resgate antecipado sai pelo valor na curva.':'Sem liquidez diária: o resgate antes do vencimento depende de recompra pelo emissor, que pode pagar menos que a curva.')+(p.idx==="IPCA"?' IPCA do mês anterior, com aniversário na data da aplicação e pro rata por dias úteis (padrão dos bancos emissores).':'')+(p.idx==="DI_PCT"||p.idx==="DI_SPREAD"?' CDI passado: série diária oficial do Banco Central; futuro: curva de juros da ANBIMA.':'')+'</p>';
+  {const em=clean(p.conglom).trim()||clean(p.issuer).trim();if(em){const sb=bkSelo(em);if(sb)h+='<div style="margin-top:10px">'+sb+'<small class="sub" style="display:block">Saúde do banco pelo IF.data do Banco Central; detalhes em Mercado › Crédito.</small></div>'}}
   out.innerHTML=h;
 }
 

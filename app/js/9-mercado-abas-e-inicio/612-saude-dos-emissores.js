@@ -2,7 +2,7 @@
 // Dados do robô scripts/emissores.py (ramo "emissores"). Colunas de cada balanço:
 // receita, ebitda, ebit, desp_fin, lucro, caixa, divida_cp, divida_lp, pl, ativo_circ, passivo_circ, fim
 const EM={d:null,err:null,load:null,q:"",abre:null,ord:"risco"};
-function emBoot(){if(EM.d||EM.load||EM.err)return;EM.load=fetch(DADOS_RAIZ+"emissores/emissores.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{EM.d=d;EM.load=null;if(activeMod==="cr")mkCalc()}).catch(e=>{EM.err=e;EM.load=null})}
+function emBoot(){if(EM.d||EM.load||EM.err)return;EM.load=fetch(DADOS_RAIZ+"emissores/emissores.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{EM.d=d;EM.load=null;if(activeMod==="cr")mkCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="pc"&&typeof ftRefaz==="function")ftRefaz()}).catch(e=>{EM.err=e;EM.load=null})}
 function emCalc(e){
   const A=Object.keys(e.a||{}).sort(),Q=Object.keys(e.q||{}).sort();if(!A.length&&!Q.length)return null;
   const ua=A.length?e.a[A[A.length-1]]:null;
@@ -45,3 +45,9 @@ function emHtml(){
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-emabre],[data-emord]");if(!x)return;if(x.dataset.emabre)EM.abre=EM.abre===x.dataset.emabre?null:x.dataset.emabre;if(x.dataset.emord)EM.ord=x.dataset.emord;mkCalc()});
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="emQ"){EM.q=e.target.value;clearTimeout(EM.tq);EM.tq=setTimeout(()=>{mkCalc();const i=$("emQ");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},350)}});
+function emSelo(nome){ // selo curto da saúde do emissor de debênture, para a carteira
+  if(!EM.d){emBoot();return ""}const k=bkNome(nome);if(k.length<4)return "";
+  const e=Object.values(EM.d.e).find(x=>{const n=bkNome(x.n);return n===k||(n.length>=6&&(n.includes(k)||k.includes(n)))});if(!e)return "";
+  const c=emCalc(e);if(!c)return "";
+  return '<span style="display:block;font-size:.8rem"><b style="color:'+EM_COR[c.nivel]+'">Emissor: '+EM_NV[c.nivel]+'</b> · dív. líq./EBITDA '+(c.lev!=null?fx(c.lev,1)+'x':'—')+(c.alerta.length?' · '+esc(c.alerta[0]):'')+'</span>';
+}
