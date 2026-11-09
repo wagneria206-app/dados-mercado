@@ -54,6 +54,12 @@ def get(url, timeout=90, tentativas=3, **kw):
             if r.status_code == 200:
                 return r
             ult = f"HTTP {r.status_code}"
+            if r.status_code == 304:
+                # o cache do Banco Central às vezes responde "não mudou" sem ter recebido pergunta condicional:
+                # pede de novo sem cache e com um parâmetro que muda a cada tentativa
+                hdr = {**hdr, "Cache-Control": "no-cache", "Pragma": "no-cache"}
+                url = re.sub(r"[?&]_=\d+", "", url)
+                url += ("&" if "?" in url else "?") + f"_={int(time.time() * 1000)}"
         except Exception as e:  # noqa: BLE001
             ult = repr(e)
         time.sleep(3 + 4 * t)
@@ -230,12 +236,21 @@ BLS = {"CUUR0000SA0": "cpi", "CUUR0000SA0L1E": "core", "CUSR0000SA0": "cpi_sa", 
        "LNS14000000": "desemp", "CES0500000003": "salario"}
 
 
-def bls():
+FRED_DE_BLS = {"CUUR0000SA0": "CPIAUCNS", "CUUR0000SA0L1E": "CPILFENS", "CUSR0000SA0": "CPIAUCSL", "CES0000000001": "PAYEMS",
+               "LNS14000000": "UNRATE", "CES0500000003": "CES0500000003"}
+
+
+def bls_api():
     out = {}
     for ini, fim in ((HOJE.year - 19, HOJE.year - 10), (HOJE.year - 9, HOJE.year)):
         r = requests.post("https://api.bls.gov/publicAPI/v2/timeseries/data/", timeout=90, headers={**NAV, "Content-Type": "application/json"},
                           data=json.dumps({"seriesid": list(BLS), "startyear": str(ini), "endyear": str(fim)}))
-        j = r.json()
+        try:
+            j = r.json()
+        except ValueError:
+            # a API às vezes responde uma página em vez de dados (limite diário por endereço, manutenção, pico no dia do payroll)
+            trecho = " ".join(r.text[:160].split())
+            raise RuntimeError(f"BLS respondeu HTTP {r.status_code} sem dados: {trecho}") from None
         if j.get("status") != "REQUEST_SUCCEEDED":
             raise RuntimeError(f"BLS: {j.get('status')} {j.get('message')}")
         for s in j["Results"]["series"]:
@@ -248,8 +263,35 @@ def bls():
                 except Exception:  # noqa: BLE001
                     pass
         time.sleep(2)
-    return {k: sorted([m, v] for m, v in d.items()) for k, d in out.items()} | {
-        "fonte": "U.S. Bureau of Labor Statistics (CPI-U, payroll e desemprego)"}
+    return out
+
+
+def bls_fred():
+    """As mesmas séries do BLS republicadas pelo Fed de St. Louis (FRED), em CSV."""
+    out = {}
+    for sid, k in BLS.items():
+        r = get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={FRED_DE_BLS[sid]}&cosd={HOJE.year - 19}-01-01", timeout=90, tentativas=2,
+                headers={"User-Agent": NAV["User-Agent"], "Accept": "text/csv,text/plain,*/*"})   # pedindo JSON o FRED não responde
+        for row in list(csv.reader(io.StringIO(r.text)))[1:]:
+            if len(row) >= 2 and row[1] not in ("", "."):
+                try:
+                    out.setdefault(k, {})[row[0][:7]] = float(row[1])
+                except ValueError:
+                    pass
+        if len(out.get(k, {})) < 100:
+            raise RuntimeError(f"FRED: série {FRED_DE_BLS[sid]} veio curta")
+    return out
+
+
+def bls():
+    fonte = "U.S. Bureau of Labor Statistics (CPI-U, payroll e desemprego)"
+    try:
+        out = bls_api()
+    except Exception as e:  # noqa: BLE001
+        log("us: API do BLS falhou (", str(e)[:200], "); usando as mesmas séries pelo FRED (Fed de St. Louis)")
+        out = bls_fred()
+        fonte += ", pela cópia do Fed de St. Louis (FRED)"
+    return {k: sorted([m, v] for m, v in d.items()) for k, d in out.items()} | {"fonte": fonte}
 
 
 def fed_sep():

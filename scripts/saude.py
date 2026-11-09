@@ -8,6 +8,7 @@ Guarda o histórico diário (60 dias) no ramo "saude", em saude.json, que o app 
 
 Uso: python scripts/saude.py SAIDA   (precisa de GITHUB_TOKEN e GITHUB_REPOSITORY e dos ramos de dados já buscados)
 """
+import calendar
 import datetime as dt
 import json
 import os
@@ -185,8 +186,11 @@ def conferencias():
     try:
         I = show("eua", "indices.json") or {}
         dmap = dict(zip(I["d"], I["s"]["spx"]))
-        dt_fim = idx["dt"]
-        dt_ini = (dt.date.fromisoformat(dt_fim) - dt.timedelta(days=30)).isoformat()
+        # mesma janela que o robô da Bolsa usa no "1 mês" do IVVB11: da data do ETF até o mesmo dia do mês anterior
+        dt_fim = linha["IVVB11"][C["data"]] if "data" in C else idx["dt"]
+        f0 = dt.date.fromisoformat(dt_fim)
+        a, m = (f0.year, f0.month - 1) if f0.month > 1 else (f0.year - 1, 12)
+        dt_ini = dt.date(a, m, min(f0.day, calendar.monthrange(a, m)[1])).isoformat()
         em = lambda D, d: D[max(k for k in D if k <= d and D[k])]  # noqa: E731
         usd = {c: v for c, v in zip(cal, bench.get("usd", [])) if v}
         spx_r = em(dmap, dt_fim) / em(dmap, dt_ini) - 1
@@ -315,6 +319,9 @@ def main(sai):
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     ruins = [f["nome"] for f in F if not f["ok"]]
     print(f"{len(R)} robôs, {len(F)} fontes; com problema agora: {ruins or 'nenhuma'}")
+    for f in F:   # o motivo fica no registro da execução, para a análise depois
+        if not f["ok"]:
+            print("  -", f["nome"], "→", f.get("erro") or f.get("detalhe") or "")
 
 
 if __name__ == "__main__":
