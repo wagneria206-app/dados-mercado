@@ -137,6 +137,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `474-valuation-qualidade-aluguel.js` (11 KB)
 - `475-ranking.js` — ranking (6 KB)
 - `477-panorama-dos-fiis.js` — Bolsa › FIIs: panorama dos fundos imobiliários, Fiagros e FI-Infra por segmento, descontos e prêmio sobre o Tesouro IPCA+ (6 KB)
+- `478-estrategias.js` (14 KB)
 - `480-eventos.js` — eventos (2 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF

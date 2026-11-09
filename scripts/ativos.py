@@ -1417,15 +1417,19 @@ def principal():
                  "liq", "dy", "mcap", "pl", "pvp", "roe", "ml", "dlebit", "evebit", "cot", "sharpe"],
         "setores": inv, "rows": rows,
         "fonte": "B3 (cotações, proventos, cadastro) e CVM (balanços, informe dos FIIs)"})
-    try:
-        import tecnica
-        log("análise técnica:", tecnica.aplicar(sai), "ativos")
-    except Exception as e:  # noqa: BLE001  (as colunas técnicas não podem derrubar o robô)
-        log("análise técnica falhou:", e)
     FU.gravar(os.path.join(sai, "cal.json"), {"d": CAL})
     FU.gravar(os.path.join(sai, "bench.json"), bench)
     FU.gravar(os.path.join(sai, "emp.json"), emp)
     FU.gravar(os.path.join(sai, "fund.json"), fund)
+    try:
+        import tecnica
+        log("análise técnica:", tecnica.aplicar(sai), "ativos")
+        import painel_mensal
+        P = painel_mensal.calcular(sai)
+        FU.gravar(os.path.join(sai, "painel.json"), P)
+        log("painel mensal para o teste de estratégias:", len(P["a"]), "ações")
+    except Exception as e:  # noqa: BLE001  (as colunas técnicas não podem derrubar o robô)
+        log("análise técnica ou painel mensal falhou:", e)
     est.update(geradoEm=dt.datetime.now().isoformat(timespec="seconds"), ativos=len(rows), pregoes=len(CAL),
                diag={k: (v[:20] if isinstance(v, list) else v) for k, v in DIAG.items()}, minutos=round((time.time() - INICIO) / 60, 1))
     FU.gravar(os.path.join(sai, "estado.json"), est)
