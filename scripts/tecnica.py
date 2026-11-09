@@ -14,7 +14,7 @@ import os
 import re
 import sys
 
-COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d", "r5"]
+COLS = ["mm50d", "mm200d", "ifr", "tend", "cruz", "max52d", "min52d", "r5", "mand", "vac"]
 JANELA = 320  # pregões usados (bastam para a média de 200 e o IFR estabilizar)
 
 
@@ -121,7 +121,12 @@ def aplicar(pasta):
             if j:
                 ind = indicadores(serie_desdobramentos(j))
                 n += 1 if ind else 0
-        rows.append(base + [r2(ind.get(c)) if c not in ("tend", "cruz") else ind.get(c) for c in COLS])
+                f = j.get("fii") or {}
+                if f.get("mand"):
+                    ind["mand"] = f["mand"].strip()[:40]     # mandato do FII na CVM (renda, títulos e valores mobiliários...)
+                if (f.get("tri") or {}).get("vac") is not None:
+                    ind["vac"] = f["tri"]["vac"]
+        rows.append(base + [ind.get(c) if c in ("tend", "cruz", "mand") else r2(ind.get(c)) for c in COLS])
     ordem = {r[0]: k for k, r in enumerate(idx["rows"])}
     rows.sort(key=lambda r: ordem[r[0]])
     idx["cols"], idx["rows"] = cols + COLS, rows
