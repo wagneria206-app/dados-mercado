@@ -100,6 +100,17 @@ def ym_add(a, n):
     return f"{y + m // 12}{m % 12 + 1:02d}"
 
 
+def outro_ramo(ramo, arquivo, timeout=(10, 120)):
+    """JSON publicado por outro robô. No servidor próprio (variável WF_DADOS = pasta exportada, como /srv/wf/www)
+    lê do disco; sem ela, como antes, do ramo de dados no GitHub."""
+    base = os.environ.get("WF_DADOS", "").strip()
+    if base:
+        with open(os.path.join(base, ramo, arquivo), encoding="utf-8") as f:
+            return json.load(f)
+    url = f"https://raw.githubusercontent.com/wagneria206-app/dados-mercado/{ramo}/{arquivo}"
+    return requests.get(url, headers=UA, timeout=timeout).json()
+
+
 def ler_json(p, padrao):
     try:
         with open(p, encoding="utf-8") as f:
@@ -758,7 +769,6 @@ def b3_indice(indice, ano):
 
 
 URL_ANB_IMA = "https://www.anbima.com.br/informacoes/ima/ima-sh-down.asp"
-URL_ANB_PUB = "https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/anbima_ima.json"
 ANB_IDX = {"IMA-B": "imab", "IMA-B 5": "imab5", "IMA-B 5+": "imab5p", "IRF-M": "irfm", "IMA-S": "imas", "IMA-GERAL": "imag"}
 ANB = None        # {data: {nome: número-índice}}; None = só ler a última publicação
 
@@ -831,7 +841,7 @@ def indices():
     b = {"d": {}, "m": {}, "fonte": "BCB (CDI, IPCA, dólar PTAX), B3 (Ibovespa, IFIX) e ANBIMA (IMA)"}
     if ANB is None:
         try:
-            ANB = requests.get(URL_ANB_PUB, headers=UA, timeout=(10, 60)).json()
+            ANB = outro_ramo("fundos", "anbima_ima.json", timeout=(10, 60))
         except Exception:  # noqa: BLE001
             ANB = {}
     if ANB:

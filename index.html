@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-AHXD3mUgdDRRdpWu8B9k98akCH5Pp0YG51LJMfzEPoU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hmJp1md1u1QqMViVO/sqFaLwv3yzp39zoEdowi//1E8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3671,7 +3671,9 @@ function onDoc(doc){
     if(Date.now()-at>25*60000)setStat("A última atualização não terminou. Toque em Atualizar dados agora para tentar de novo.","bad");
     else setStat("Atualizando dados desde "+fdt(doc.statusAt)+". Os números mudam sozinhos quando terminar.","run");
   }else if(doc.status==="error")setStat("A última atualização não conseguiu buscar os dados. Os dados de "+fdate(VAL)+" continuam valendo. Tente de novo mais tarde.","bad");
-  else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok");
+  else{const hj=Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()),atraso=du(VAL,hj);   // dias úteis desde o último dado
+    if(atraso>2)setStat("Atenção: os dados são de "+fdate(VAL)+" ("+atraso+" dias úteis atrás). Os robôs não atualizaram desde então; confira a Saúde das fontes.","bad");
+    else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok")}
   if(doc.status!=="running"&&at>requestedAt)btn.disabled=false;
 }
 btn.addEventListener("click",async()=>{btn.disabled=true;setStat("Lendo os dados do robô…","run");await roboLoad(null);btn.disabled=false
@@ -3780,7 +3782,8 @@ try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="o
 try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
 function fnSave(){const j=JSON.stringify(FN.cmp);try{if(j!==localStorage.getItem("fnCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("fnCmp",j);localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
 const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
-async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const FN_MEMO=new Map();
+function fnGet(p){if(/^f\//.test(p))return fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=FN_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>FN_MEMO.delete(p));FN_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const fnCnpjF=k=>k&&k.length===14&&/^\d+$/.test(k)?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
 function fnMoney(v){if(v==null||!isFinite(v))return "—";const a=Math.abs(v),s=v<0?"−":"";return a>=1e9?s+"R$ "+fx(a/1e9,2)+" bi":a>=1e6?s+"R$ "+fx(a/1e6,1)+" mi":a>=1e3?s+"R$ "+fx(a/1e3,0)+" mil":s+"R$ "+fx(a,0)}
@@ -4321,7 +4324,8 @@ try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
 function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
-async function atGet(p){const r=await fetch(atUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const AT_MEMO=new Map();   // o mesmo arquivo pedido por várias telas é baixado uma vez a cada 20 minutos
+function atGet(p){if(/^[ad]\//.test(p))return fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=AT_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>AT_MEMO.delete(p));AT_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const atNm=x=>x==null?x:String(x).replace(/\. (?=(INC|CORP|LTD|LIMITED|PLC|S\.?A|CO|N\.?V)\b)/g,", ").replace(/^Petróleo\. /,"Petróleo, ");
 const AT_FUNDO=new Set(["FII","Fiagro","FI-Infra"]);
 function atBoot(){
@@ -6145,13 +6149,13 @@ async function syncApi(metodo,corpo){
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
 function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()}}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
   // listas do comparador: vale a alteração mais recente (sem juntar, para que tirar um item também valha nos outros aparelhos)
   const lc=L.cmp||{},rc=R.cmp||{},cmp=(+rc.at||0)>(+lc.at||0)?rc:lc;
-  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp};
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp,diario:uni(L.diario,R.diario,x=>"d|"+x.id),pj:L.pj||R.pj||null};
 }
 function syncApply(D){
   const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
@@ -6163,10 +6167,13 @@ function syncApply(D){
   if(C&&(+C.at||0)>syncCmpAt()&&Array.isArray(C.f)&&Array.isArray(C.a)){const f=C.f.filter(x=>typeof x==="string").slice(0,25),a=C.a.filter(x=>typeof x==="string").slice(0,25);
     mudouCmp=JSON.stringify(f)!==JSON.stringify(FN.cmp)||JSON.stringify(a)!==JSON.stringify(AT.cmp);FN.cmp=f;AT.cmp=a;
     try{localStorage.setItem("fnCmp",JSON.stringify(f));localStorage.setItem("atCmp",JSON.stringify(a));localStorage.setItem("cmpAt",String(+C.at))}catch(e){}}
+  if(Array.isArray(D.diario)&&typeof DJ==='object'){DJ.L=D.diario;djSave()}
+  if(D.pj&&typeof PJ==='object'){Object.assign(PJ.c,D.pj);try{localStorage.setItem('pjCfg',JSON.stringify(PJ.c))}catch(e){}}
   fvRefresh();if(typeof activeMod!=="undefined"){if(activeMod==="sp")spCalc();else if(mudouCmp&&(activeMod==="fc"||activeMod==="ac"))fnCalc(activeMod)}
 }
+const SYNC_GITHUB=false;   // desligada: carteiras e alertas não vão mais para o GitHub (use a cópia criptografada em Ajustes)
 async function syncNow(forcar){
-  if(!SYNC.tok)return;if(SYNC.run)return SYNC.run;
+  if(!SYNC_GITHUB||!SYNC.tok)return;if(SYNC.run)return SYNC.run;
   SYNC.run=(async()=>{
     try{SYNC.st="sincronizando…";syncShow();
       for(let tent=0;tent<3;tent++){
@@ -6184,8 +6191,9 @@ async function syncNow(forcar){
   })().finally(()=>{SYNC.run=null});
   return SYNC.run;
 }
-function syncMark(){if(!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
+function syncMark(){if(!SYNC_GITHUB||!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
 function syncHtml(){
+  if(!SYNC_GITHUB)return '<div class="nota fvsync"><p class="sub">A sincronização pelo GitHub foi desligada: carteiras, favoritos e alertas não saem mais deste aparelho por esse caminho. Para levar os dados a outro aparelho, use <b>Ajustes › Segurança deste aparelho › Cópia em arquivo</b> (criptografada com senha) e restaure no outro.'+(SYNC.tok?'</p><div class="spbtns"><button type="button" class="btn sec" data-syncoff="1">Apagar o token do GitHub deste aparelho</button></div>':'</p>')+'</div>';
   let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
   if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
   else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
@@ -6275,7 +6283,7 @@ function segHtml(){
     else h+='<p class="sub">Guardado neste navegador sem senha. Com uma senha, o token fica criptografado e só é usado depois de desbloqueado; quem pegar o aparelho ou uma extensão do navegador não consegue lê-lo.</p><div class="segrow"><input id="segNova" type="password" autocomplete="new-password" placeholder="Nova senha (mín. 8 caracteres)"><button type="button" class="btn" data-segprot="1">Proteger com senha</button></div>';
     h+='<div class="segrow"><label for="segVal" class="sub">Validade do token</label><input id="segVal" type="date" value="'+esc(v)+'"><span class="sub">'+(d==null?'informe a data que aparece no GitHub':d<0?'<span class="neg">vencido</span>':d<=14?'<span class="neg">vence em '+d+' dias</span>':'vence em '+d+' dias')+'</span></div></div>'}
   // cópia criptografada
-  h+='<div class="segbl"><b>Cópia em arquivo</b><p class="sub">Favoritos, alertas e carteiras num arquivo criptografado com senha. Sem a senha ninguém consegue abrir.</p>';
+  h+='<div class="segbl"><b>Cópia em arquivo</b><p class="sub">Favoritos, alertas, carteiras, diário e planejamento num arquivo criptografado com senha. Sem a senha ninguém consegue abrir. É o jeito de levar seus dados para outro aparelho.</p>';
   h+=SEG.bkp?'<div class="segrow"><input id="segBkpS" type="password" autocomplete="new-password" placeholder="Senha do arquivo (mín. 8 caracteres)"><button type="button" class="btn" data-segbkpok="1">Baixar</button><button type="button" class="link" data-segbkp="0">Cancelar</button></div>'
     :'<div class="segrow"><button type="button" class="btn sec" data-segbkp="1">Baixar cópia criptografada</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
   if(SEG.rest)h+='<div class="segrow"><input id="segRestS" type="password" autocomplete="current-password" placeholder="Senha do arquivo"><button type="button" class="btn" data-segrestok="1">Abrir arquivo</button></div>';
@@ -6891,11 +6899,13 @@ function spAjRf(it,j){if(it.t!=="s"||spTd(it))return "";const p=spProd(it),cr=/^
   return '<div class="spaj"><select data-spprod="'+j+'" aria-label="Tipo de produto"><option value="">Produto?</option>'+Object.keys(SP_PROD).map(k=>'<option value="'+k+'"'+(p===k?' selected':'')+'>'+k+(SP_PROD[k]?' (FGC)':'')+'</option>').join("")+'</select>'
     +'<label class="spajl">Emissor<input data-spem="'+j+'" list="spEmL" maxlength="50" value="'+esc(it.em||"")+'" placeholder="'+esc(cr?spEmissor(Object.assign({},it,{em:""}))||"emissor":"banco ou conglomerado")+'" style="width:150px"></label>'
     +'<label class="spajl">Vencimento<input type="date" data-spvenc="'+j+'" value="'+esc(it.venc||"")+'"'+(vc?' title="ANBIMA: '+vc.d+'"':'')+'></label>'
+    +(SP_PROD[p]||!p?'<label class="spajl"><input type="checkbox" data-spliqd="'+j+'"'+(it.liqd?' checked':'')+'> Liquidez diária</label>':'')
     +(j===spC().itens.findIndex(x=>x.t==="s"&&!spTd(x))?'<datalist id="spEmL">'+ems.map(e=>'<option value="'+esc(e)+'">').join("")+'</datalist>':'')+'</div>'}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();let j;
   if((j=t.dataset.spprod)!=null){const it=c.itens[+j];if(!it)return;it.prod=t.value||undefined;spSave();spCalc();return}
   if((j=t.dataset.spem)!=null){const it=c.itens[+j];if(!it)return;it.em=t.value.trim()||undefined;spSave();spCalc();return}
-  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}});
+  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}
+  if((j=t.dataset.spliqd)!=null){const it=c.itens[+j];if(!it)return;it.liqd=t.checked||undefined;spSave();spCalc();return}});
 /* ---------- painel do assessor: todas as carteiras numa tela, com patrimônio, mês e ano contra o CDI e pendências
    Calculado sob demanda (cada carteira carrega as cotas dos seus itens); o resultado fica na memória até recalcular. */
 let SP_ASS=null;

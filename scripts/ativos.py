@@ -31,7 +31,6 @@ ANO0 = 2005
 INICIO = time.time()
 LIMITE = INICIO + float(os.environ.get("MINUTOS", "48")) * 60
 HOJE = dt.date.today()
-RAW_FUNDOS = "https://raw.githubusercontent.com/wagneria206-app/dados-mercado/fundos/"
 UA = FU.UA
 URL_COTAHIST = "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A{}.ZIP"
 B3 = "https://sistemaswebb3-listados.b3.com.br/"
@@ -473,8 +472,7 @@ ETF_INT = re.compile(r"s&p|\bsp ?500|nasdaq|\bndx|\beua\b|\busa?\b|\bus |global|
 def fundos_cvm():
     """Classe e categoria ANBIMA dos fundos na CVM (base do robô de fundos), por CNPJ e por nome."""
     try:
-        r = requests.get(RAW_FUNDOS + "idx.json", timeout=120)
-        j = r.json()
+        j = FU.outro_ramo("fundos", "idx.json")
         C = {c: i for i, c in enumerate(j["cols"])}
         cl, an = j.get("classes") or [], j.get("anbima") or []
         por_cnpj, por_nome = {}, {}
@@ -871,6 +869,11 @@ def ajustes(a):
                 if abs(m / alvo - 1) < 0.12:
                     out.append([a.i[j], 1 / alvo, "S*", alvo, CAL[a.i[j - 1]]])
                     break
+            else:
+                # salto de mais de 3 vezes (ou queda de mais de dois terços) num pregão, sem razão redonda: quase sempre
+                # grupamento ou desdobramento com fator quebrado não registrado; ajusta pela razão observada
+                if r > 3 or r < 1 / 3:
+                    out.append([a.i[j], r, "S?", 1 / r, CAL[a.i[j - 1]]])
     out.sort()
     return out
 

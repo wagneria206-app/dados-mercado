@@ -13,7 +13,8 @@ try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="o
 try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
 function fnSave(){const j=JSON.stringify(FN.cmp);try{if(j!==localStorage.getItem("fnCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("fnCmp",j);localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
 const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
-async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const FN_MEMO=new Map();
+function fnGet(p){if(/^f\//.test(p))return fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=FN_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>FN_MEMO.delete(p));FN_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const fnCnpjF=k=>k&&k.length===14&&/^\d+$/.test(k)?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
 function fnMoney(v){if(v==null||!isFinite(v))return "—";const a=Math.abs(v),s=v<0?"−":"";return a>=1e9?s+"R$ "+fx(a/1e9,2)+" bi":a>=1e6?s+"R$ "+fx(a/1e6,1)+" mi":a>=1e3?s+"R$ "+fx(a/1e3,0)+" mil":s+"R$ "+fx(a,0)}
