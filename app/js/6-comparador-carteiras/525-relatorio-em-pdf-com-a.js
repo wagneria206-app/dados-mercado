@@ -2,10 +2,10 @@
 const REL={cfg:{nome:"",resp:"",contato:"",rodape:"",logo:"",cor:"#12294A"},para:"",obs:"",kind:null};
 try{const c=JSON.parse(localStorage.getItem("relCfg")||"null");if(c&&typeof c==="object")Object.assign(REL.cfg,c)}catch(e){}
 function relSave(){try{localStorage.setItem("relCfg",JSON.stringify(REL.cfg))}catch(e){alertLite("Não deu para guardar o logo neste navegador (espaço insuficiente). Use uma imagem menor.")}}
-const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado",mes:"Relatório mensal do cliente"};
+const REL_T={fa:"Análise de fundo",aa:"Análise de ativo",fc:"Comparação de fundos",ac:"Comparação de ativos",sp:"Simulação de carteira",mk:"Relatório de mercado",mes:"Relatório mensal do cliente",sem:"Resumo da semana"};
 function relOpen(kind){
   REL.kind=kind;let d=document.querySelector(".reldlg");if(d)d.remove();
-  REL.box=relConteudo(kind);if(!REL.box){alertLite(kind==="mk"?"Carregando os dados de mercado. Tente de novo em alguns segundos.":"Abra a análise antes de gerar o relatório.");return}
+  REL.box=relConteudo(kind);if(!REL.box){alertLite(kind==="mk"||kind==="sem"?"Carregando os dados de mercado. Tente de novo em alguns segundos.":"Abra a análise antes de gerar o relatório.");return}
   d=document.createElement("div");d.className="reldlg";
   const c=REL.cfg,secs=relSecoes(REL.box),fora=relFora(kind);
   d.innerHTML='<div class="relbox" role="dialog" aria-modal="true" aria-labelledby="relT"><h3 id="relT">Relatório em PDF · '+REL_T[kind]+'</h3><p class="sub">Os dados do escritório ficam guardados só neste navegador. O relatório abre pronto para imprimir: escolha “Salvar como PDF”.</p>'
@@ -36,6 +36,7 @@ function relConteudo(kind){
   const box=document.createElement("div");
   if(kind==="mk"){if(!EU.S||!MC.d){euBoot();mcBoot();return null}const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
     try{h=P(painelHtml())+P(rsHtml())+P(fluxoHtml())+economiaHtml().map(P).join("")+mundoHtml().map(P).join("")}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
+  if(kind==="sem"){if(semCarrega().length)return null;const P=x=>x?'<section class="panel">'+x+'</section>':'';box.innerHTML=semanaTela().map(P).join("");return relClean(box)}
   if(kind==="mes"){const s=$("rmMes");if(!SP_POS||!SP_POS.X||SP_POS.X.erro||!s)return null;REL.mes=s.value;let h;try{h=rmHtml(SP_POS.c,SP_POS.X,REL.mes)}catch(e){console.error(e);return null}box.innerHTML=h;return relClean(box)}
   if(kind==="fa"||kind==="aa"){const b=$(kind==="fa"?"fnBody":"atBody");if(!b)return null;box.innerHTML=b.innerHTML}
   else if(kind==="sp"){const b=$("spRes");if(!b)return null;const tudo=typeof spResTudo==="function"?spResTudo():null;box.innerHTML=tudo||b.innerHTML;box.querySelectorAll("section[hidden],.spvazio").forEach(e=>e.remove());const cb=box.querySelector("#spCmpBox");if(cb&&!SP_CMP)cb.closest("section").remove()}
@@ -51,6 +52,7 @@ function relTitulo(kind){
   if(kind==="aa"&&AT.cur&&AT.files.get(AT.cur)){const A=AT.files.get(AT.cur);return [A.t+" · "+(A.nome||""),A.tipo+(A.setor?" · "+A.setor:"")]}
   if(kind==="sp"){const c=spC();return [c.nome,c.itens.length+" itens"]}
   if(kind==="mes"&&SP_POS){const c=SP_POS.c;return ["Relatório mensal · "+rmNome(REL.mes),(c.cli?"Cliente "+c.cli+" · ":"")+c.nome]}
+  if(kind==="sem")return ["Resumo da semana","Mercado brasileiro e internacional · "+new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})];
   if(kind==="mk")return ["Panorama do mercado","Brasil, EUA e mundo · "+new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})];
   const L=kind==="fc"?FN.cmp:AT.cmp;return [REL_T[kind],L.length+(kind==="fc"?" fundos":" ativos")];
 }

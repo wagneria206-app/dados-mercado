@@ -17,7 +17,7 @@ import subprocess
 import sys
 import tempfile
 
-RAMOS = ["site", "ativos", "fundos", "eua", "macro", "saude"]
+RAMOS = ["site", "ativos", "fundos", "eua", "macro", "saude", "insiders", "emissores"]
 POR_ATIVO = {"fundos", "ativos", "eua"}
 
 

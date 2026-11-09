@@ -223,6 +223,122 @@ def conferencias():
     return out
 
 
+def auditoria():
+    """Auditoria dos valores: cada número precisa estar numa faixa plausível e sem saltos sem explicação.
+    Pega dado corrompido na fonte (vírgula no lugar errado, unidade trocada, série deslocada), não só ausente."""
+    out = []
+
+    def add(id_, nome, problemas, detalhe_ok):
+        ok = not problemas
+        det = detalhe_ok if ok else "; ".join(problemas[:8]) + (f" (e mais {len(problemas) - 8})" if len(problemas) > 8 else "")
+        out.append({"id": id_, "grupo": "Auditoria dos valores", "nome": nome, "ok": ok, "em": AGORA.isoformat(timespec="seconds"),
+                    "erro": "" if ok else det, "detalhe": det})
+
+    def faixa(v, lo, hi):
+        return v is not None and lo <= float(v) <= hi
+
+    merc = show("site", "data/mercado.json") or {}
+    # 1) juros, câmbio e inflação do dia dentro de faixas plausíveis
+    try:
+        P = []
+        if not faixa(merc.get("selicOver"), 1, 40):
+            P.append(f"Selic {merc.get('selicOver')}%")
+        c = merc.get("cdiDaily") or {}
+        for d in sorted(c)[-30:]:
+            if not faixa(c[d], 0.003, 0.15):
+                P.append(f"CDI diário de {d}: {c[d]}%")
+        dol = (merc.get("dolar") or {})
+        v, va = float(dol.get("venda") or 0), float((dol.get("anterior") or {}).get("venda") or 0)
+        if not faixa(v, 2, 15):
+            P.append(f"dólar PTAX R$ {v}")
+        elif va and abs(v / va - 1) > 0.06:
+            P.append(f"dólar PTAX variou {(v / va - 1) * 100:+.1f}% em um dia")
+        for k, lo, hi in (("curvePre", 2, 40), ("curveIpca", -2, 20), ("inflacaoImplicita", -1, 20)):
+            for du_, tx in merc.get(k) or []:
+                if not faixa(tx, lo, hi):
+                    P.append(f"{k} em {du_} dias úteis: {tx}%")
+        add("a_juros", "Juros, CDI, dólar e curvas em faixas plausíveis", P, "Selic, CDI, PTAX e curvas pré, IPCA+ e implícita dentro das faixas")
+    except Exception as e:  # noqa: BLE001
+        add("a_juros", "Juros, CDI, dólar e curvas em faixas plausíveis", [f"não deu para conferir: {e}"], "")
+    # 2) Tesouro Direto: taxas e preços coerentes
+    try:
+        P = []
+        for r in (merc.get("td") or {}).get("ALL", []):
+            tipo, venc, tx, pu = r[0], r[1], r[2], r[3]
+            if tx is not None and not faixa(tx, -1, 30):
+                P.append(f"{tipo} {venc}: taxa {tx}%")
+            if pu is not None and not faixa(pu, 1, 1e6):
+                P.append(f"{tipo} {venc}: preço R$ {pu}")
+        add("a_td", "Tesouro Direto: taxas e preços", P, f"{len((merc.get('td') or {}).get('ALL', []))} títulos dentro das faixas")
+    except Exception as e:  # noqa: BLE001
+        add("a_td", "Tesouro Direto: taxas e preços", [f"não deu para conferir: {e}"], "")
+    # 3) DI futuro: taxas plausíveis e sem salto grande de um dia para o outro no mesmo vencimento
+    try:
+        di = (show("site", "data/di_futuro.json") or {}).get("dias") or {}
+        ks = sorted(di)
+        P = []
+        if ks:
+            u = {r[0]: r[3] for r in di[ks[-1]]}
+            a = {r[0]: r[3] for r in di[ks[-2]]} if len(ks) > 1 else {}
+            for cod, tx in u.items():
+                if tx is not None and not faixa(tx, 1, 40):
+                    P.append(f"DI {cod}: {tx}%")
+                elif tx is not None and a.get(cod) is not None and abs(tx - a[cod]) > 1.5:
+                    P.append(f"DI {cod}: {a[cod]}% → {tx}% em um pregão")
+        add("a_di", "DI futuro: taxas e variação do dia", P, f"{len(di.get(ks[-1], [])) if ks else 0} vencimentos de {ks[-1] if ks else '—'} sem salto acima de 1,5 ponto")
+    except Exception as e:  # noqa: BLE001
+        add("a_di", "DI futuro: taxas e variação do dia", [f"não deu para conferir: {e}"], "")
+    # 4) indicadores mensais da economia em faixas históricas
+    try:
+        br = ((show("macro", "macro.json") or {}).get("br")) or {}
+        P = []
+        for k, lo, hi, nome in (("ipca", -2, 4, "IPCA do mês"), ("desemp", 2, 25, "desemprego"), ("dbgg", 30, 130, "dívida bruta (% do PIB)"),
+                                ("inad", 0, 15, "inadimplência"), ("pib_aa", -15, 15, "PIB (variação anual)")):
+            for d, v in (br.get(k) or [])[-6:]:
+                if not faixa(v, lo, hi):
+                    P.append(f"{nome} de {d}: {v}")
+        add("a_macro", "Economia: IPCA, desemprego, dívida, crédito e PIB", P, "últimos 6 valores de cada série dentro das faixas históricas")
+    except Exception as e:  # noqa: BLE001
+        add("a_macro", "Economia: IPCA, desemprego, dívida, crédito e PIB", [f"não deu para conferir: {e}"], "")
+    # 5) Bolsa: variação do dia extrema em ativo líquido (sem desdobramento registrado) e P/VP absurdo em FII
+    try:
+        idx = show("ativos", "idx.json") or {}
+        C = {n: i for i, n in enumerate(idx.get("cols", []))}
+        P, n = [], 0
+        for r in idx.get("rows", []):
+            if r[C["tipo"]] == "Tesouro Direto" or (r[C["liq"]] or 0) < 1e6:
+                continue
+            n += 1
+            d1 = r[C["d1"]]
+            if d1 is not None and abs(d1) > 30:
+                P.append(f"{r[0]}: {d1:+.1f}% no dia")
+            if r[C["preco"]] is not None and not faixa(r[C["preco"]], 0.01, 1e6):
+                P.append(f"{r[0]}: preço {r[C['preco']]}")
+            if r[C["tipo"]] in ("FII", "Fiagro", "FI-Infra") and r[C["pvp"]] is not None and not faixa(r[C["pvp"]], 0.15, 4):
+                P.append(f"{r[0]}: P/VP {r[C['pvp']]}")
+            if r[C["tipo"]] in ("FII", "Fiagro", "FI-Infra") and r[C["dy"]] is not None and r[C["dy"]] > 40:   # ações podem ter dividendo extraordinário
+                P.append(f"{r[0]}: rendimento de {r[C['dy']]:.0f}% em 12 meses")
+        add("a_bolsa", "Bolsa: preços, variação do dia, P/VP e rendimento", P, f"{n} ativos com liquidez acima de R$ 1 milhão por dia conferidos")
+    except Exception as e:  # noqa: BLE001
+        add("a_bolsa", "Bolsa: preços, variação do dia, P/VP e rendimento", [f"não deu para conferir: {e}"], "")
+    # 6) Fundos: rentabilidade de 12 meses e patrimônio plausíveis nos fundos grandes
+    try:
+        idx = show("fundos", "idx.json") or {}
+        C = {n: i for i, n in enumerate(idx.get("cols", []))}
+        P, n = [], 0
+        for r in idx.get("rows", []):
+            if (r[C["pl"]] or 0) < 1e8:
+                continue
+            n += 1
+            r12 = r[C["r12"]]
+            if r12 is not None and not faixa(r12, -80, 300):
+                P.append(f"{r[1][:40]}: {r12:+.0f}% em 12 meses")
+        add("a_fundos", "Fundos: rentabilidade de 12 meses", P, f"{n} fundos com patrimônio acima de R$ 100 milhões conferidos")
+    except Exception as e:  # noqa: BLE001
+        add("a_fundos", "Fundos: rentabilidade de 12 meses", [f"não deu para conferir: {e}"], "")
+    return out
+
+
 def avisos(F, hist):
     """Abre um aviso no GitHub (que chega por e-mail e no app do GitHub) quando uma fonte passa 2 dias seguidos
     com problema, e fecha quando ela volta."""
@@ -296,7 +412,7 @@ def main(sai):
     os.makedirs(sai, exist_ok=True)
     velho = show("saude", "saude.json") or {}
     hist = velho.get("hist") or {}
-    F = fontes() + conferencias()
+    F = fontes() + conferencias() + auditoria()
     corte = (AGORA - dt.timedelta(days=DIAS_HIST)).date().isoformat()
     for f in F:
         h = hist.setdefault(f["id"], {})

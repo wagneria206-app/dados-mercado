@@ -131,7 +131,10 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `460-bolsa-acoes-units-fiis-fiagros.js` — Bolsa: ações, units, FIIs, Fiagros, ETFs e BDRs (B3 e CVM) (4 KB)
 - `465-casca-e-carga.js` — casca e carga (3 KB)
 - `470-pagina-do-ativo.js` — página do ativo (17 KB)
-- `475-ranking.js` — ranking (4 KB)
+- `472-analise-tecnica.js` — análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências (9 KB)
+- `473-insiders.js` — Insiders: compras e vendas de controladores, conselheiros e diretores (CVM, Resolução 44) (5 KB)
+- `475-ranking.js` — ranking (6 KB)
+- `477-panorama-dos-fiis.js` — Bolsa › FIIs: panorama dos fundos imobiliários, Fiagros e FI-Infra por segmento, descontos e prêmio sobre o Tesouro IPCA+ (6 KB)
 - `480-eventos.js` — eventos (2 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF
@@ -140,11 +143,12 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `490-janelas-moveis-na-pagina-do.js` — janelas móveis na página do fundo ou ativo (1 KB)
 - `495-fundos-similares-e-gross-up.js` — fundos similares e gross-up (página do fundo) (5 KB)
 - `500-gestoras-e-administradoras.js` — gestoras e administradoras (3 KB)
+- `502-fluxo-dos-fundos.js` — Fundos › Fluxo: captação líquida da indústria por categoria e por tipo ANBIMA (informes da CVM) (5 KB)
 - `505-s-p-500-em-reais.js` — S&P 500 em reais com dividendos (ETF IVVB11, que reinveste os dividendos) como índice de referência: a Cboe só publica o S&P 500 sem dividendos (1 KB)
 - `510-simulador-de-carteiras-fundos-ativos.js` — Simulador de carteiras: fundos, ativos da B3 e renda fixa (dados mensais) (34 KB)
 - `515-spcorhtml.js` (27 KB)
 - `520-spclasse.js` (7 KB)
-- `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (15 KB)
+- `525-relatorio-em-pdf-com-a.js` — Relatório em PDF com a identidade do escritório (16 KB)
 
 **`js/7-saude-favoritos-alertas/`** — Agenda, saúde das fontes, favoritos, alertas e sincronização
 
@@ -182,6 +186,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `575-eventos.js` — eventos (1 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
 - `585-economia-brasil.js` — Economia (Brasil) (12 KB)
+- `587-ano-a-ano-precificado.js` — Ano a ano: juros e inflação que o mercado precifica para cada ano × Focus (2 KB)
 - `590-eua-e-mundo.js` — EUA e mundo (12 KB)
 - `595-carteira-exposicoes-e-teste-de.js` — Carteira: exposições e teste de estresse (modelo de fatores com retornos mensais) (9 KB)
 - `600-bolsa-eua-comparar-formas-de.js` — Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil (7 KB)
@@ -194,6 +199,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `608-ofertas-publicas.js` (4 KB)
 - `609-agenda-do-mercado.js` (9 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
+- `611-resumo-da-semana.js` — Mercado › Semana: o que mudou nos últimos 5 pregões, leitura automática, destaques da Bolsa e agenda da próxima semana (com PDF) (9 KB)
+- `612-saude-dos-emissores.js` — Mercado › Crédito: saúde financeira dos emissores de debêntures (balanços na CVM) (7 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)

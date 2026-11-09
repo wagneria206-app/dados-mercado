@@ -10,7 +10,7 @@ document.addEventListener("click",e=>{
   if((x=g("data-atmore"))){AT.rk.n+=50;atRkTable();return}
   if((x=g("data-atrkcat"))){const [tp,st]=x.dataset.atrkcat.split("|");Object.assign(AT.rk,{tipo:tp,setor:st,txt:"",n:50,sort:"r12",dir:-1,liq:1e5});atSave();setMod("ar");return}
 });
-document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.atrk))return;const m={arTipo:"tipo",arSet:"setor",arLiq:"liq"}[t.id];AT.rk[m]=t.value;if(m==="tipo")AT.rk.setor="";AT.rk.n=50;atSave();if(m==="tipo")atRk();else atRkTable()});
+document.addEventListener("change",e=>{const t=e.target;if(!(t&&t.dataset&&t.dataset.atrk))return;const m={arTipo:"tipo",arSet:"setor",arLiq:"liq",arVis:"vis",arSin:"sin"}[t.id];AT.rk[m]=t.value;if(m==="tipo")AT.rk.setor="";if(m==="vis"&&t.value==="fund")AT.rk.sin="";AT.rk.n=50;atSave();if(m==="tipo"||m==="vis")atRk();else atRkTable()});
 let AT_QT=null;
 document.addEventListener("input",e=>{
   const t=e.target;if(!t||!AT.idx)return;

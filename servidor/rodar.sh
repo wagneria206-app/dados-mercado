@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Roda um robô no servidor, do mesmo jeito que rodava no GitHub, e publica o resultado para o app.
 #   rodar.sh <robô> [argumentos]
-#   robôs: ativos, eua, fundos, macro (pasta de entrada → pasta de saída), atualizar, rapido (dados do site),
+#   robôs: ativos, eua, fundos, macro, insiders, emissores (pasta de entrada → pasta de saída), atualizar, rapido (dados do site),
 #          saude (confere tudo), exportar (só republica)
 # Os dados ficam num repositório git local (um ramo por robô, como no GitHub). Depois de cada coleta bem-sucedida o
 # ramo é trocado de uma vez e exportado para a pasta que o servidor web entrega ao app.
@@ -36,12 +36,18 @@ exportar() { "$PY" "$CODIGO/servidor/exportar.py" "$DADOS" "$WWW" "$@"; }
 
 inicio=$(date +%s); st=0
 case "$ROBO" in
-  ativos|eua|fundos|macro)
+  ativos|eua|fundos|macro|insiders)
     ent=$(mktemp -d) sai=$(mktemp -d)
     entrada "$ROBO" "$ent"
     ( cd "$CODIGO" && "$PY" "scripts/$ROBO.py" "$ent" "$sai" "$@" ); st=$?
     if [ $st = 0 ] && [ -n "$(ls -A "$sai")" ]; then publicar "$ROBO" "$sai" && exportar "$ROBO"; fi
     rm -rf "$ent" "$sai" ;;
+  emissores)  # precisa do catálogo de debêntures do site
+    ent=$(mktemp -d) sai=$(mktemp -d) site=$(mktemp -d)
+    entrada emissores "$ent"; entrada site "$site"
+    ( cd "$CODIGO" && "$PY" scripts/emissores.py "$ent" "$sai" "$site/data" ); st=$?
+    if [ $st = 0 ] && [ -n "$(ls -A "$sai")" ]; then publicar emissores "$sai" && exportar emissores; fi
+    rm -rf "$ent" "$sai" "$site" ;;
   atualizar|rapido)
     mkdir -p "$TRAB/data"
     rsync -a --delete --exclude data --exclude .git "$CODIGO/" "$TRAB/"
