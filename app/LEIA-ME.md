@@ -200,6 +200,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `609-agenda-do-mercado.js` (9 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `611-resumo-da-semana.js` — Mercado › Semana: o que mudou nos últimos 5 pregões, leitura automática, destaques da Bolsa e agenda da próxima semana (com PDF) (9 KB)
+- `612-saude-dos-emissores.js` — Mercado › Crédito: saúde financeira dos emissores de debêntures (balanços na CVM) (7 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)
