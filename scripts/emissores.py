@@ -133,7 +133,7 @@ def linha(dre, bpa, bpp, dfc):
 
 
 def principal():
-    ent, sai, site = sys.argv[1], sys.argv[2], sys.argv[3]
+    sai, site = sys.argv[2], sys.argv[3]   # a entrada (sys.argv[1]) não é usada
     os.makedirs(sai, exist_ok=True)
     E = emissores(site)
     cad = cadastro()

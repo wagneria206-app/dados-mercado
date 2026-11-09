@@ -14,7 +14,6 @@ por trechos do nome, e os nomes encontrados ficam em estado.json para conferênc
 Uso: python scripts/bancos.py <entrada> <saída>
 """
 import datetime as dt
-import json
 import os
 import re
 import sys
@@ -85,7 +84,7 @@ def coluna(colunas, inclui, exclui):
 
 
 def principal():
-    ent, sai = sys.argv[1], sys.argv[2]
+    sai = sys.argv[2]   # a entrada (sys.argv[1]) não é usada: o robô baixa tudo de novo
     os.makedirs(sai, exist_ok=True)
     diag, datas, B = {}, [], {}
     for am in trimestres():
