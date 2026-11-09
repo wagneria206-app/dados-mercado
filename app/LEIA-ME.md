@@ -183,6 +183,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `575-eventos.js` — eventos (1 KB)
 - `580-economia-brasil-e-eua-e.js` — Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA (2 KB)
 - `585-economia-brasil.js` — Economia (Brasil) (12 KB)
+- `587-ano-a-ano-precificado.js` — Ano a ano: juros e inflação que o mercado precifica para cada ano × Focus (2 KB)
 - `590-eua-e-mundo.js` — EUA e mundo (12 KB)
 - `595-carteira-exposicoes-e-teste-de.js` — Carteira: exposições e teste de estresse (modelo de fatores com retornos mensais) (9 KB)
 - `600-bolsa-eua-comparar-formas-de.js` — Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil (7 KB)

@@ -22,7 +22,7 @@ function mcFocusHtml(F){
   if(pb)k.push(mcKp("PIB "+Y[0]+" (Focus)",fx(pb.u,2)+'%',mcSig(pb.d,2," p.p.")+' em 4 semanas'+(pb2?' · '+Y[1]+': '+fx(pb2.u,2)+'%':'')));
   const cb=mcFocusVar(mcFocusSer(F,"Câmbio",Y[0]));
   if(cb)k.push(mcKp("Dólar no fim de "+Y[0]+" (Focus)",'R$ '+fx(cb.u,2),FX_TOP&&FX_TOP.venda?'PTAX hoje R$ '+fx(+FX_TOP.venda,2):''));
-  h+='<div class="fnkpis">'+k.join("")+'</div>';
+  h+='<div class="fnkpis">'+k.join("")+'</div>'+mcAnoHtml(F);
   // Selic por reunião: Focus × DI
   const S=F.selic;if(S&&S.reunioes&&S.reunioes.length){
     let di=[];try{if(MK.di){const ks=Object.keys(MK.di.dias).sort();di=copomImpl(ks[ks.length-1])||[]}}catch(e){}
