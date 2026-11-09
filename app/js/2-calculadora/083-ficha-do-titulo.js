@@ -14,6 +14,16 @@ const FT_GAR={"quirografaria":["Sem garantia (quirografária)","em caso de falê
   "fidejussoria":["Garantia fidejussória (aval ou fiança)","outra empresa do grupo ou sócio garante o pagamento",""],
   "adicional":["Com garantia adicional","além da espécie, há garantias extras previstas na escritura","pos"]};
 function ftGar(g){const n=fnNorm(g||"");for(const k in FT_GAR)if(n.includes(k))return FT_GAR[k];return g?[g,"",""]:null}
+function ftSpark(pts){ // gráfico compacto para a coluna estreita da ficha (desenhado em 340 × 110, perto do tamanho real)
+  const W=340,H=110,PL=42,PR=8,PT=10,PB=22,ys=pts.map(p=>p[1]),lo=Math.min(...ys),hi=Math.max(...ys),pad=(hi-lo)*0.15||0.05,a=lo-pad,b=hi+pad,t0=pts[0][0],t1=pts[pts.length-1][0];
+  const X=t=>PL+(t-t0)/Math.max(1,t1-t0)*(W-PL-PR),Y=v=>PT+(b-v)/(b-a)*(H-PT-PB);
+  const d=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
+  const tx=(x,y,t,an)=>'<text x="'+x+'" y="'+y+'" text-anchor="'+(an||'start')+'" font-size="11" fill="var(--muted)">'+t+'</text>';
+  return '<svg role="img" aria-label="Histórico da taxa" viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:'+W+'px;height:auto;display:block">'
+    +'<line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+Y(hi)+'" y2="'+Y(hi)+'" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="'+PL+'" x2="'+(W-PR)+'" y1="'+Y(lo)+'" y2="'+Y(lo)+'" stroke="var(--line)" stroke-dasharray="2 4"/>'
+    +tx(PL-4,Y(hi)+4,fx(hi,2)+'%','end')+tx(PL-4,Y(lo)+4,fx(lo,2)+'%','end')+tx(PL,H-6,fdate(t0).slice(0,5))+tx(W-PR,H-6,fdate(t1).slice(0,5),'end')
+    +'<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="'+X(t1).toFixed(1)+'" cy="'+Y(pts[pts.length-1][1]).toFixed(1)+'" r="3" fill="var(--accent)"/></svg>';
+}
 function pcFicha(P,code){
   if(!P||P.type!=="DEB")return "";ftLoad();
   const f=P.ficha||{},it=[],row=(a,b)=>'<div class="row"><dt>'+a+'</dt><dd>'+b+'</dd></div>';
@@ -33,7 +43,7 @@ function pcFicha(P,code){
   // histórico da taxa ANBIMA
   let hist="";const L=FT.tx&&FT.tx[code];
   if(L&&L.length>1){const pts=L.map(x=>[Date.parse(x[0]+"T00:00:00Z"),+x[1]]),a=pts[pts.length-1],b=pts[0],d=a[1]-b[1];
-    hist='<div class="label" style="margin-top:10px">Taxa indicativa ANBIMA guardada pelo app</div>'+fnChart([{lab:"Taxa indicativa (%)",col:"var(--accent)",w:2,pts}],{fmt:"pct",h:150,aria:"Histórico da taxa"})
+    hist='<div class="label" style="margin-top:10px">Taxa indicativa ANBIMA guardada pelo app</div>'+ftSpark(pts)
       +'<p class="sub" style="font-size:.82rem">'+(Math.abs(d)<0.05?'Taxa estável':'A taxa '+(d>0?'subiu':'caiu')+' '+fx(Math.abs(d)*100,0)+' bps')+' desde '+fdate(b[0])+(d>0.5?': o mercado passou a cobrar mais para carregar este papel, o que pode indicar mais risco percebido.':d<-0.5?': o mercado passou a aceitar menos, sinal de risco percebido menor.':'.')+'</p>'}
   // emissor
   let emis="";
