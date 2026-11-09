@@ -89,7 +89,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 - `070-dados-cdi-runs-raw.js` (25 KB)
 - `075-cdi-runs-end.js` (14 KB)
-- `080-credito-privado-interface.js` — Crédito privado: interface (27 KB)
+- `080-credito-privado-interface.js` — Crédito privado: interface (28 KB)
+- `083-ficha-do-titulo.js` (6 KB)
 - `085-cenarios-de-juros.js` — Cenários de juros (17 KB)
 - `090-ir-iof-e-custodia.js` — IR, IOF e custódia (2 KB)
 - `095-vender-agora-x-manter-ate.js` — Vender agora x manter até o vencimento (2 KB)

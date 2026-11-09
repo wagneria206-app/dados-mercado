@@ -66,7 +66,11 @@ def emissores(site):
         nome = p.get("issuer") or p.get("name") or ""
         if "securitizadora" in sem_acento(nome):
             continue   # CRI/CRA via securitizadora: o risco é do devedor, não da securitizadora
-        E.setdefault(nome, []).append(cod)
+        cnpj = re.sub(r"\D", "", (p.get("ficha") or {}).get("cnpj", ""))
+        e = E.setdefault(nome, {"cods": [], "cnpj": ""})
+        e["cods"].append(cod)
+        if len(cnpj) == 14:
+            e["cnpj"] = cnpj      # o SND informa o CNPJ do emissor: dispensa a busca pelo nome
     return E
 
 
@@ -134,8 +138,9 @@ def principal():
     E = emissores(site)
     cad = cadastro()
     alvo, achou, falta = {}, {}, []
-    for nome, cods in E.items():
-        cnpj = cad.get(nome_chave(nome))
+    for nome, e in E.items():
+        cods = e["cods"]
+        cnpj = e["cnpj"] or cad.get(nome_chave(nome))
         if cnpj:
             achou.setdefault(cnpj, {"n": nome, "deb": []})["deb"] += cods
             alvo[cnpj] = True

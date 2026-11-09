@@ -1598,6 +1598,20 @@ def snd_catalogo():
             "tipo_amort": coluna(cab, "tipo de amortizacao"),
             "dia_ref": coluna(cab, "dia de referencia"),
             "incentivada": coluna(cab, "12.431") if coluna(cab, "12.431") is not None else coluna(cab, "incentivad"),
+            # ficha do título: garantia, cláusulas, quanto está em circulação e quem participa da emissão
+            "garantia": coluna(cab, "garantia"),
+            "classe": coluna(cab, "classe"),
+            "repactuacao": coluna(cab, "proxima repactuacao"),
+            "resgate_antecipado": coluna(cab, "resgate antecipado"),
+            "escritura_padrao": coluna(cab, "escritura padronizada"),
+            "qtd_emitida": coluna(cab, "quantidade emitida"),
+            "qtd_mercado": coluna(cab, "quantidade em mercado"),
+            "qtd_tesouraria": coluna(cab, "quantidade em tesouraria"),
+            "qtd_resgatada": coluna(cab, "quantidade resgatada"),
+            "agente_fiduciario": coluna(cab, "agente fiduciario"),
+            "coordenador": coluna(cab, "coordenador lider"),
+            "cnpj": coluna(cab, "cnpj"),
+            "art": coluna(cab, "artigo 14"),
         }
         c["indice"] = coluna(cab, "indice", evitar=("referencia", "criterio")) if coluna(cab, "indice", evitar=("referencia", "criterio")) is not None else c["indice"]
         for L in linhas:
@@ -1686,6 +1700,16 @@ def snd_catalogo():
             "agendaParcial": not tem_passado or not any(d < HOJE.isoformat() for d, _, _ in agenda.get(cod, [])),
             "updatedAt": AGORA.isoformat(timespec="seconds"), "notes": "",
         }
+        ficha = {
+            "garantia": x.get("garantia", "").strip(), "classe": x.get("classe", "").strip(),
+            "repactuacao": data_dmy(x.get("repactuacao", "")), "resgateAntecipado": norm(x.get("resgate_antecipado", "")).startswith("s"),
+            "escrituraPadrao": norm(x.get("escritura_padrao", "")).startswith("s"),
+            "qtdEmitida": num(x.get("qtd_emitida")), "qtdMercado": num(x.get("qtd_mercado")),
+            "qtdTesouraria": num(x.get("qtd_tesouraria")), "qtdResgatada": num(x.get("qtd_resgatada")),
+            "agenteFiduciario": x.get("agente_fiduciario", "").strip(), "coordenador": x.get("coordenador", "").strip(),
+            "cnpj": re.sub(r"\D", "", x.get("cnpj", "")),
+        }
+        papel["ficha"] = {k: v for k, v in ficha.items() if v not in ("", None, "-")}
         if num(x.get("vna")):
             papel["vnaAtual"] = num(x.get("vna"))
             papel["vnaData"] = data_dmy(x.get("vna_data", "")) or x.get("vna_data", "")
@@ -1712,6 +1736,46 @@ def snd_catalogo():
     com_anbima = sum(1 for p in catalogo.values() if "anbima" in p)
     return {"papeis": len(catalogo), "com_agenda": com_agenda, "com_taxa_anbima": com_anbima,
             "incompletos": sem_formula, "caracteristicas_lidas": len(carac), "ativos_na_agenda": len(agenda)}
+
+
+URL_SND_NEG = ("https://www.debentures.com.br/exploreosnd/consultaadados/mercadosecundario/precosdenegociacao_e.asp"
+               "?op_exc=False&emissor=&isin=&ativo=&dt_ini={ini}&dt_fim={fim}")
+
+
+@fonte("snd_negocios")
+def snd_negocios():
+    """Liquidez no secundário: negócios de cada debênture nos últimos 90 dias (SND, preços de negociação).
+    Debênture sem negócio há meses tem preço só de modelo; a liquidez real pesa tanto quanto o spread."""
+    ini, fim = HOJE - dt.timedelta(days=90), HOJE
+    url = URL_SND_NEG.format(ini=ini.strftime("%d/%m/%Y"), fim=fim.strftime("%d/%m/%Y"))
+    r = baixar(url, timeout=400)
+    diag("snd_negocios", url, r)
+    cab, linhas = tabela_tab(texto(r))
+    c = {"data": coluna(cab, "data"), "ativo": coluna(cab, "ativo", evitar=("situacao",)) if coluna(cab, "codigo do ativo") is None else coluna(cab, "codigo do ativo"),
+         "qtd": coluna(cab, "quantidade"), "neg": coluna(cab, "numero de negocios") if coluna(cab, "numero de negocios") is not None else coluna(cab, "negocios"),
+         "pu_med": coluna(cab, "pu medio") if coluna(cab, "pu medio") is not None else coluna(cab, "medio"),
+         "pct_curva": coluna(cab, "% pu da curva") if coluna(cab, "% pu da curva") is not None else coluna(cab, "curva")}
+    gravar_json("diag/snd_negocios_colunas.json", {"cabecalho": cab, "usadas": c})
+    if c["ativo"] is None or c["data"] is None:
+        raise RuntimeError("SND negócios: colunas de ativo ou data não encontradas")
+    P = {}
+    for L in linhas:
+        cod = pega(L, c["ativo"]).upper()
+        d = data_dmy(pega(L, c["data"]))
+        if not re.fullmatch(r"[A-Z0-9]{4,12}", cod) or not d:
+            continue
+        q, n = num(pega(L, c["qtd"])) or 0, num(pega(L, c["neg"])) or 1
+        x = P.setdefault(cod, {"neg": 0, "qtd": 0.0, "dias": set(), "ult": "", "pu": None, "curva": None})
+        x["neg"] += int(n)
+        x["qtd"] += q
+        x["dias"].add(d)
+        if d >= x["ult"]:
+            x["ult"], x["pu"], x["curva"] = d, num(pega(L, c["pu_med"])), num(pega(L, c["pct_curva"]))
+    out = {cod: [x["neg"], round(x["qtd"]), len(x["dias"]), x["ult"], x["pu"], x["curva"]] for cod, x in P.items()}
+    gravar_json("debentures_negocios.json", {"geradoEm": AGORA.isoformat(timespec="seconds"), "de": ini.isoformat(), "ate": fim.isoformat(),
+                                             "cols": ["negocios", "quantidade", "dias_com_negocio", "ultimo", "pu_medio_ultimo", "pct_pu_curva_ultimo"],
+                                             "p": out, "fonte": "SND (debentures.com.br): preços de negociação no mercado secundário"})
+    return {"papeis_negociados": len(out)}
 
 
 # ---------------------------------------------------------------- CVM: informes mensais de CRI e CRA
@@ -2679,6 +2743,7 @@ def main():
     anbima_projecoes()
     anbima_ima()
     snd_catalogo()
+    snd_negocios()
     anbima_cri_cra()
     cvm_cri_cra()
     cvm_ofertas()

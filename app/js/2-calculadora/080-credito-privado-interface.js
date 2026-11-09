@@ -97,6 +97,7 @@ function pcInfo(P,code){
   h+='<div class="row"><dt>Pagamentos a receber</dt><dd>'+fut.length+'</dd></div>';
   if(P.anbima&&isFinite(P.anbima.rate))h+='<div class="row"><dt>Taxa indicativa ANBIMA ('+fdate(parseDate(P.anbima.refDate))+')</dt><dd>'+F.txt(P.anbima.rate)+(chk===true?' <span class="tag">preço conferido</span>':chk==="adj"?' <span class="tag est">saldo ajustado ao preço oficial</span>':chk===false?' <span class="tag est">preço não confere</span>':'')+'</dd></div>'+(chk==="adj"?'<div class="row"><dt>Preço oficial (PU ANBIMA)</dt><dd>R$ '+fx(P.anbima.pu,6)+'</dd></div><p class="warn" style="font-size:.84rem;margin:6px 0">A agenda publicada no SND não fecha com o preço oficial (diferença de '+fx(Math.abs((PADJ_BIG.get(P.code)?1/PADJ_BIG.get(P.code)-1:0)*100),1)+'%), em geral porque amortizações antigas não aparecem. O app usa o preço oficial da ANBIMA e ajusta o saldo devedor na mesma proporção. Os pagamentos já recebidos e o valor na data da compra não puderam ser conferidos: use o preço pago da nota.</p>':'');
   h+='</dl>';
+  try{h+=pcFicha(P,code)}catch(e){console.error(e)}
   if(P.notes)h+='<p class="sub" style="font-size:.85rem;margin-top:8px">'+P.notes+'</p>';
   h+='<p class="sub" style="font-size:.8rem;margin-top:6px">Fontes: '+(P.sources||[]).join("; ")+'</p>';
   box.innerHTML=h;

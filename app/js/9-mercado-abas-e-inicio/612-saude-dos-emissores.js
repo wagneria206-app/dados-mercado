@@ -2,7 +2,7 @@
 // Dados do robô scripts/emissores.py (ramo "emissores"). Colunas de cada balanço:
 // receita, ebitda, ebit, desp_fin, lucro, caixa, divida_cp, divida_lp, pl, ativo_circ, passivo_circ, fim
 const EM={d:null,err:null,load:null,q:"",abre:null,ord:"risco"};
-function emBoot(){if(EM.d||EM.load||EM.err)return;EM.load=fetch(DADOS_RAIZ+"emissores/emissores.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{EM.d=d;EM.load=null;if(activeMod==="cr")mkCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun()}).catch(e=>{EM.err=e;EM.load=null})}
+function emBoot(){if(EM.d||EM.load||EM.err)return;EM.load=fetch(DADOS_RAIZ+"emissores/emissores.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{EM.d=d;EM.load=null;if(activeMod==="cr")mkCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="pc"&&typeof ftRefaz==="function")ftRefaz()}).catch(e=>{EM.err=e;EM.load=null})}
 function emCalc(e){
   const A=Object.keys(e.a||{}).sort(),Q=Object.keys(e.q||{}).sort();if(!A.length&&!Q.length)return null;
   const ua=A.length?e.a[A[A.length-1]]:null;
