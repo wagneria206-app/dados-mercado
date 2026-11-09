@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-YdhwNnkN9rjnMc46aO2UB2SG3o1oLWzwdOJB9Zmlcz8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-CFbx5F36b87LwlPG/0PkVU9oYKzCaDsvo2i/XBRI4c0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -4439,6 +4439,7 @@ function atFundHtml(A){
   const i=A.ind||{},f=A.fund||{};let h='<section class="panel"><h3>Indicadores fundamentalistas</h3>';
   const it=[];const add=(a,b,c)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+(c?' <small>'+c+'</small>':'')+'</dt><dd>'+b+'</dd></div>')};
   const n1=(v,d)=>v==null?"—":fx(v,d==null?2:d);
+  {const rc=f.receb||{},ks=Object.keys(rc).sort(),r=AT.C.res!=null?atRow(A.t):null,px=r?r[AT.C.res]:null;if(px)add("Próximo resultado",fdate(Date.parse(px+"T00:00:00Z")),"data prevista pelo ano anterior");else if(ks.length)add("Último resultado entregue",fdate(Date.parse(rc[ks[ks.length-1]]+"T00:00:00Z")),"referente a "+fdate(Date.parse(ks[ks.length-1]+"T00:00:00Z")))}
   add("P/L",n1(i.pl_r,1),"preço ÷ lucro por ação");add("P/VP",n1(i.pvp),"preço ÷ valor patrimonial");add("EV/EBIT",n1(i.ev_ebit,1));add("Dividend yield",fnPctT(A.met&&A.met.dy),"12 meses");
   add("ROE",fnPctT(i.roe,1),"lucro ÷ patrimônio");add("Margem líquida",fnPctT(i.ml,1));add("Margem EBIT",fnPctT(i.me,1));add("Dívida líquida ÷ EBIT",n1(i.dl_ebit));
   add("LPA",i.lpa!=null?"R$ "+fx(i.lpa,2):"—");add("VPA",i.vpa!=null?"R$ "+fx(i.vpa,2):"—");add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
@@ -8137,10 +8138,14 @@ function agmEventos(dias){
   (IB||[]).forEach(x=>{const ipca=/^IPCA\b|IPCA-15|IPCA - 15|Índice Nacional de Preços ao Consumidor Amplo/i.test(x.tit),tema=/IPCA|INPC|IPP|Preços/i.test(x.tit)?"inflacao":/PNAD|Desocupa/i.test(x.tit)?"emprego":"atividade";
     add(x.t,{hora:x.h,tit:"IBGE: "+x.tit,pais:"BR",tema,imp:ipca||/PIB|Contas Nacionais/i.test(x.tit)?2:1,fonte:"IBGE"});
     if(ipca)add(x.t,{hora:"17h30",tit:"ANBIMA: nova projeção do IPCA",det:"para o mês corrente e o seguinte",pais:"BR",tema:"inflacao",imp:1,fonte:"ANBIMA"})});
+  // resultados das empresas: data prevista pela entrega do mesmo trimestre no ano anterior (CVM)
+  if(typeof AT==="object"&&AT.idx&&AT.C.res!=null){const C=AT.C;AT.idx.rows.forEach(r=>{const d=r[C.res];if(!d||!(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")||(r[C.liq]||0)<2e7)return;
+    add(agmT(d),{tit:"Resultado: "+r[0]+" · "+nomeCx(r[1]).slice(0,30),det:"data prevista (mesmo trimestre do ano passado + 1 ano); depois do fechamento, em geral",pais:"BR",tema:"resultados",imp:(r[C.liq]||0)>=2e8?2:1,fonte:"CVM",tk:r[0]})})}
+  else if(typeof AT==="object"&&!AT.idx&&!AT.err&&!AT.load){const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="agm"||activeMod==="sem")mkCalc()})}
   const hr=h=>{const m=/(\d+)h(\d*)/.exec(h||"");return m?(+m[1])*60+(+m[2]||0):9999};
   E.sort((a,b)=>a.t-b.t||hr(a.hora)-hr(b.hora));
   return {E,ibge:IB}}
-const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado"};
+const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados"};
 function agmGrupo(t,t0){const dif=Math.round((t-t0)/DAY);if(dif===0)return ["d0","Hoje"];if(dif===1)return ["d1","Amanhã"];
   const dw=(new Date(t0).getUTCDay()+6)%7,seg=t0-dw*DAY,s=Math.floor((t-seg)/(7*DAY));if(s===0)return ["s0","Esta semana"];if(s===1)return ["s1","Próxima semana"];
   const x=new Date(t);return ["m"+x.getUTCFullYear()+x.getUTCMonth(),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}

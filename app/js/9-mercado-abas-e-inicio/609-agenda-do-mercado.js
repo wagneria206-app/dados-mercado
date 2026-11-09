@@ -25,10 +25,14 @@ function agmEventos(dias){
   (IB||[]).forEach(x=>{const ipca=/^IPCA\b|IPCA-15|IPCA - 15|Índice Nacional de Preços ao Consumidor Amplo/i.test(x.tit),tema=/IPCA|INPC|IPP|Preços/i.test(x.tit)?"inflacao":/PNAD|Desocupa/i.test(x.tit)?"emprego":"atividade";
     add(x.t,{hora:x.h,tit:"IBGE: "+x.tit,pais:"BR",tema,imp:ipca||/PIB|Contas Nacionais/i.test(x.tit)?2:1,fonte:"IBGE"});
     if(ipca)add(x.t,{hora:"17h30",tit:"ANBIMA: nova projeção do IPCA",det:"para o mês corrente e o seguinte",pais:"BR",tema:"inflacao",imp:1,fonte:"ANBIMA"})});
+  // resultados das empresas: data prevista pela entrega do mesmo trimestre no ano anterior (CVM)
+  if(typeof AT==="object"&&AT.idx&&AT.C.res!=null){const C=AT.C;AT.idx.rows.forEach(r=>{const d=r[C.res];if(!d||!(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")||(r[C.liq]||0)<2e7)return;
+    add(agmT(d),{tit:"Resultado: "+r[0]+" · "+nomeCx(r[1]).slice(0,30),det:"data prevista (mesmo trimestre do ano passado + 1 ano); depois do fechamento, em geral",pais:"BR",tema:"resultados",imp:(r[C.liq]||0)>=2e8?2:1,fonte:"CVM",tk:r[0]})})}
+  else if(typeof AT==="object"&&!AT.idx&&!AT.err&&!AT.load){const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="agm"||activeMod==="sem")mkCalc()})}
   const hr=h=>{const m=/(\d+)h(\d*)/.exec(h||"");return m?(+m[1])*60+(+m[2]||0):9999};
   E.sort((a,b)=>a.t-b.t||hr(a.hora)-hr(b.hora));
   return {E,ibge:IB}}
-const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado"};
+const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados"};
 function agmGrupo(t,t0){const dif=Math.round((t-t0)/DAY);if(dif===0)return ["d0","Hoje"];if(dif===1)return ["d1","Amanhã"];
   const dw=(new Date(t0).getUTCDay()+6)%7,seg=t0-dw*DAY,s=Math.floor((t-seg)/(7*DAY));if(s===0)return ["s0","Esta semana"];if(s===1)return ["s1","Próxima semana"];
   const x=new Date(t);return ["m"+x.getUTCFullYear()+x.getUTCMonth(),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}

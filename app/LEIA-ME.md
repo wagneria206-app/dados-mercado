@@ -202,7 +202,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
 - `608-ofertas-publicas.js` (4 KB)
-- `609-agenda-do-mercado.js` (9 KB)
+- `609-agenda-do-mercado.js` (10 KB)
 - `610-dolar-futuro-b3-e-dolar.js` — Dólar futuro (B3) e dólar justo (17 KB)
 - `611-resumo-da-semana.js` — Mercado › Semana: o que mudou nos últimos 5 pregões, leitura automática, destaques da Bolsa e agenda da próxima semana (com PDF) (10 KB)
 - `612-saude-dos-emissores.js` — Mercado › Crédito: saúde financeira dos emissores de debêntures (balanços na CVM) (8 KB)

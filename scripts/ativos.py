@@ -723,6 +723,20 @@ def capital(z):
     return out
 
 
+def entregas(z, nome, fund):
+    """Data em que cada demonstração chegou à CVM (DT_RECEB da primeira versão), por CNPJ e data de referência."""
+    if nome not in z.namelist():
+        return
+    for L in FU.ler_csv(z.open(nome)):
+        k = re.sub(r"\D", "", L.get("CNPJ_CIA", ""))
+        ref, rec = (L.get("DT_REFER") or "")[:10], (L.get("DT_RECEB") or "")[:10]
+        if not k or not ref or not rec:
+            continue
+        r = fund.setdefault(k, {}).setdefault("receb", {})
+        if ref not in r or rec < r[ref]:
+            r[ref] = rec
+
+
 def balancos(est, fund):
     """Atualiza {cnpj: {"a": {ano: [...]}, "q": {aaaa-mm-dd: [...]}, "bp": {...}, "cap": [...]}} com DFP e ITR."""
     feitos = set(est.get("dfp_feitos", []))
@@ -738,6 +752,7 @@ def balancos(est, fund):
             if r is None:
                 continue
             z = zipfile.ZipFile(io.BytesIO(r.content))
+            entregas(z, f"dfp_cia_aberta_{ano}.csv", fund)
             dre, bpa, bpp = ler_dfs(z, "DRE", True), ler_dfs(z, "BPA", True), ler_dfs(z, "BPP", True)
             for k, porfim in dre.items():
                 for fim, c in porfim.items():
@@ -765,6 +780,7 @@ def balancos(est, fund):
             if r is None:
                 continue
             z = zipfile.ZipFile(io.BytesIO(r.content))
+            entregas(z, f"itr_cia_aberta_{ano}.csv", fund)
             dre, bpa, bpp = ler_dfs(z, "DRE", False), ler_dfs(z, "BPA", False), ler_dfs(z, "BPP", False)
             for k, porfim in dre.items():
                 for fim, c in porfim.items():
@@ -1381,7 +1397,8 @@ def principal():
                 reg["cnpj"] = cn
             f = fund.get(cn) if cn else None
             if f:
-                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn}
+                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn,
+                               "receb": dict(sorted((f.get("receb") or {}).items())[-8:])}
                 l, lfim = ltm(f)
                 # valor de mercado: ações ON e PN em circulação × cotação da classe (ou da outra classe se não negociar)
                 cap = list(f.get("cap") or [None, info.get("on"), info.get("pn")])

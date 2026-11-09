@@ -71,6 +71,7 @@ function atFundHtml(A){
   const i=A.ind||{},f=A.fund||{};let h='<section class="panel"><h3>Indicadores fundamentalistas</h3>';
   const it=[];const add=(a,b,c)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+(c?' <small>'+c+'</small>':'')+'</dt><dd>'+b+'</dd></div>')};
   const n1=(v,d)=>v==null?"—":fx(v,d==null?2:d);
+  {const rc=f.receb||{},ks=Object.keys(rc).sort(),r=AT.C.res!=null?atRow(A.t):null,px=r?r[AT.C.res]:null;if(px)add("Próximo resultado",fdate(Date.parse(px+"T00:00:00Z")),"data prevista pelo ano anterior");else if(ks.length)add("Último resultado entregue",fdate(Date.parse(rc[ks[ks.length-1]]+"T00:00:00Z")),"referente a "+fdate(Date.parse(ks[ks.length-1]+"T00:00:00Z")))}
   add("P/L",n1(i.pl_r,1),"preço ÷ lucro por ação");add("P/VP",n1(i.pvp),"preço ÷ valor patrimonial");add("EV/EBIT",n1(i.ev_ebit,1));add("Dividend yield",fnPctT(A.met&&A.met.dy),"12 meses");
   add("ROE",fnPctT(i.roe,1),"lucro ÷ patrimônio");add("Margem líquida",fnPctT(i.ml,1));add("Margem EBIT",fnPctT(i.me,1));add("Dívida líquida ÷ EBIT",n1(i.dl_ebit));
   add("LPA",i.lpa!=null?"R$ "+fx(i.lpa,2):"—");add("VPA",i.vpa!=null?"R$ "+fx(i.vpa,2):"—");add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
