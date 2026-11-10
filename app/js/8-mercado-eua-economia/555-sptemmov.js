@@ -24,6 +24,7 @@ function spXirr(cf){ // cf: [[data,valor]] (aplicação negativa, resgate e valo
   let lo=-0.99,hi=10,flo=f(lo),fhi=f(hi);if(!isFinite(flo)||!isFinite(fhi)||flo*fhi>0)return null;
   for(let i=0;i<200;i++){const m=(lo+hi)/2,fm=f(m);if(Math.abs(fm)<1e-7)return m;if(flo*fm<0){hi=m}else{lo=m;flo=fm}}return (lo+hi)/2;
 }
+const SP_IOF=[96,93,90,86,83,80,76,73,70,66,63,60,56,53,50,46,43,40,36,33,30,26,23,20,16,13,10,6,3];   // IOF regressivo sobre o rendimento, do 1º ao 29º dia
 function spAliq(reg,dias){if(reg==="lp"||reg==="rf")return dias<=180?0.225:dias<=360?0.2:dias<=720?0.175:0.15;if(reg==="cp")return dias<=180?0.225:0.2;if(reg==="acoes")return 0.15;if(reg==="fii")return 0.2;return 0}
 function spPosCalc(c,its,Ds){
   const L=FN.L,cdiS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.cdi&&L.d.cdi[i])a.push([d,L.d.cdi[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.cdi||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.cdi[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
@@ -43,7 +44,7 @@ function spPosCalc(c,its,Ds){
     const A=p.x.t==="a"&&AT.files.get(p.x.k),pr=A&&A.I?(d=>{let r=null;for(let j=0;j<A.I.length;j++){const dd=AT.cal[A.I[j]];if(dd<=d)r=A.R[j];else break}return r}):null;
     p.ir=0;p.lotes.forEach(l=>{const dias=(Date.parse(dv)-Date.parse(l.d))/DAY,vl=l.q*p.lvF;let g=vl-l.custo;
       if(p.D.reg==="fii"&&pr){const a=pr(l.d),b=pr(dv);g=a&&b?Math.max(0,l.custo*(b/a-1)):Math.max(0,g)}
-      if(g>0)p.ir+=g*spAliq(p.D.reg,dias)});
+      if(g>0){let gi=g;if(dias<30&&(p.D.reg==='rf'||p.D.reg==='lp'||p.D.reg==='cp')){const iof=g*(SP_IOF[Math.max(0,Math.floor(dias)-1)]||0)/100;p.ir+=iof;gi=g-iof}p.ir+=gi*spAliq(p.D.reg,dias)}});
     p.liq=p.v-p.ir;p.cfF=p.cf.concat(p.v>0?[[dv,p.v]]:[]);p.tir=spXirr(p.cfF);
     p.ret=p.lvF&&p.mv.length?(p.lvF/spAt(p.S,p.mv[0].d)[1]-1)*100:null;
     const c0=spAt(cdiS,p.mv[0].d),c1=spAt(cdiS,dv);p.cdi=c0&&c1?(c1[1]/c0[1]-1)*100:null;

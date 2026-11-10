@@ -6,7 +6,8 @@ try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
 function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
-async function atGet(p){const r=await fetch(atUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const AT_MEMO=new Map();   // o mesmo arquivo pedido por várias telas é baixado uma vez a cada 20 minutos
+function atGet(p){if(/^[ad]\//.test(p))return fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=AT_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>AT_MEMO.delete(p));AT_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const atNm=x=>x==null?x:String(x).replace(/\. (?=(INC|CORP|LTD|LIMITED|PLC|S\.?A|CO|N\.?V)\b)/g,", ").replace(/^Petróleo\. /,"Petróleo, ");
 const AT_FUNDO=new Set(["FII","Fiagro","FI-Infra"]);
 function atBoot(){

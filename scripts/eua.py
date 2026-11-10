@@ -564,7 +564,8 @@ def main(ent, sai):
         log("cotações falharam; uso as anteriores", len(scr))
     gravar(os.path.join(sai, "cot.json"), scr)
     # 3) BDRs da B3 e ligação com a SEC
-    at = get(f"https://raw.githubusercontent.com/{REPO}/ativos/idx.json").json()
+    base = os.environ.get("WF_DADOS", "").strip()   # servidor próprio: dados dos outros robôs no disco
+    at = json.load(open(os.path.join(base, "ativos", "idx.json"), encoding="utf-8")) if base else get(f"https://raw.githubusercontent.com/{REPO}/ativos/idx.json").json()
     C = {n: i for i, n in enumerate(at["cols"])}
     bdrs = [(r[0], r[1]) for r in at["rows"] if r[C["tipo"]] == "BDR"]
     sec_ua()

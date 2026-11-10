@@ -79,8 +79,10 @@ function spAjRf(it,j){if(it.t!=="s"||spTd(it))return "";const p=spProd(it),cr=/^
   return '<div class="spaj"><select data-spprod="'+j+'" aria-label="Tipo de produto"><option value="">Produto?</option>'+Object.keys(SP_PROD).map(k=>'<option value="'+k+'"'+(p===k?' selected':'')+'>'+k+(SP_PROD[k]?' (FGC)':'')+'</option>').join("")+'</select>'
     +'<label class="spajl">Emissor<input data-spem="'+j+'" list="spEmL" maxlength="50" value="'+esc(it.em||"")+'" placeholder="'+esc(cr?spEmissor(Object.assign({},it,{em:""}))||"emissor":"banco ou conglomerado")+'" style="width:150px"></label>'
     +'<label class="spajl">Vencimento<input type="date" data-spvenc="'+j+'" value="'+esc(it.venc||"")+'"'+(vc?' title="ANBIMA: '+vc.d+'"':'')+'></label>'
+    +(SP_PROD[p]||!p?'<label class="spajl"><input type="checkbox" data-spliqd="'+j+'"'+(it.liqd?' checked':'')+'> Liquidez diária</label>':'')
     +(j===spC().itens.findIndex(x=>x.t==="s"&&!spTd(x))?'<datalist id="spEmL">'+ems.map(e=>'<option value="'+esc(e)+'">').join("")+'</datalist>':'')+'</div>'}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();let j;
   if((j=t.dataset.spprod)!=null){const it=c.itens[+j];if(!it)return;it.prod=t.value||undefined;spSave();spCalc();return}
   if((j=t.dataset.spem)!=null){const it=c.itens[+j];if(!it)return;it.em=t.value.trim()||undefined;spSave();spCalc();return}
-  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}});
+  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}
+  if((j=t.dataset.spliqd)!=null){const it=c.itens[+j];if(!it)return;it.liqd=t.checked||undefined;spSave();spCalc();return}});

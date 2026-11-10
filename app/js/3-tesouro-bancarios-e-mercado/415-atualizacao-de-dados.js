@@ -12,7 +12,9 @@ function onDoc(doc){
     if(Date.now()-at>25*60000)setStat("A última atualização não terminou. Toque em Atualizar dados agora para tentar de novo.","bad");
     else setStat("Atualizando dados desde "+fdt(doc.statusAt)+". Os números mudam sozinhos quando terminar.","run");
   }else if(doc.status==="error")setStat("A última atualização não conseguiu buscar os dados. Os dados de "+fdate(VAL)+" continuam valendo. Tente de novo mais tarde.","bad");
-  else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok");
+  else{const hj=Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()),atraso=du(VAL,hj);   // dias úteis desde o último dado
+    if(atraso>2)setStat("Atenção: os dados são de "+fdate(VAL)+" ("+atraso+" dias úteis atrás). Os robôs não atualizaram desde então; confira a Saúde das fontes.","bad");
+    else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok")}
   if(doc.status!=="running"&&at>requestedAt)btn.disabled=false;
 }
 btn.addEventListener("click",async()=>{btn.disabled=true;setStat("Lendo os dados do robô…","run");await roboLoad(null);btn.disabled=false

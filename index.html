@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-AHXD3mUgdDRRdpWu8B9k98akCH5Pp0YG51LJMfzEPoU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-iYGXjho0WMOTftPwvFY9Jwbs++Imlg0R66pFSBLR1uw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -889,6 +889,12 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
 .tecler{margin:4px 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}
+.rdl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rdb{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit;color:var(--ink)}
+.rdb:hover{background:var(--sunk)}
+.rdn{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rdt{font-weight:600;line-height:1.35}
+.rdb small{color:var(--muted);font-size:.84rem}
 /* Favoritos, alertas e documentos */
 /* favoritos,alertas e documentos */
 .fvhd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
@@ -1450,6 +1456,7 @@ html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTra
     <span class="rstat" id="rstat">Dados embutidos de 15/10/2026.</span>
   </header>
   <nav class="areas" role="tablist" aria-label="Áreas do aplicativo">
+    <button type="button" role="tab" data-area="rad" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/><circle cx="12" cy="12" r="1.2"/></svg><span>Radar</span></button>
     <button type="button" role="tab" data-area="mkt" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 15l4.5-5 3.5 3.5L20 6"/><path d="M15 6h5v5"/></svg><span>Mercado</span></button>
     <button type="button" role="tab" data-area="fnd" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Fundos</span></button>
     <button type="button" role="tab" data-area="bolsa" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M6 4v16M6 8h-2v8h2M12 6v14M12 9h-2v6h2M18 3v15M18 7h-2v7h2"/></svg><span>Bolsa</span></button>
@@ -1462,7 +1469,7 @@ html:has(meta[name="wf-senha"][content^="v1:"]):not(.wf-livre) body>*:not(#wfTra
   <dialog id="ajustes" class="ajdlg" aria-label="Ajustes"></dialog>
   <button type="button" id="apresSai" class="apressai">Sair da apresentação</button>
 
-  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="sem" aria-selected="false">Semana</button><button type="button" role="tab" data-mod="agm" aria-selected="false">Agenda</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Tesouro Direto</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ff" aria-selected="false">Fluxo</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="af" aria-selected="false">FIIs</button><button type="button" role="tab" data-mod="ab" aria-selected="false">Estratégias</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button><button type="button" role="tab" data-mod="pj" aria-selected="false">Planejamento</button><button type="button" role="tab" data-mod="dj" aria-selected="false">Diário de decisões</button></div>
+  <div class="tabs" role="tablist" aria-label="Tipo de título"><button type="button" role="tab" data-mod="pub" aria-selected="true">Tesouro Direto</button><button type="button" role="tab" data-mod="pc" aria-selected="false">Crédito privado</button><button type="button" role="tab" data-mod="bank" aria-selected="false">Bancários (CDB, LCI, LCA)</button><button type="button" role="tab" data-mod="fund" aria-selected="false">Fundos e previdência</button><button type="button" role="tab" data-mod="sc" aria-selected="false">Cenários de juros</button><button type="button" role="tab" data-mod="sim" aria-selected="false">Equivalência e escada</button><button type="button" role="tab" data-mod="rd" aria-selected="false">Radar</button><button type="button" role="tab" data-mod="rs" aria-selected="false">Resumo</button><button type="button" role="tab" data-mod="sem" aria-selected="false">Semana</button><button type="button" role="tab" data-mod="agm" aria-selected="false">Agenda</button><button type="button" role="tab" data-mod="ec" aria-selected="false">Economia</button><button type="button" role="tab" data-mod="mu" aria-selected="false">EUA e mundo</button><button type="button" role="tab" data-mod="fv" aria-selected="false">Favoritos e alertas</button><button type="button" role="tab" data-mod="ju" aria-selected="false">Juros</button><button type="button" role="tab" data-mod="tx" aria-selected="false">Taxas do Tesouro</button><button type="button" role="tab" data-mod="cr" aria-selected="false">Mercado de crédito</button><button type="button" role="tab" data-mod="in" aria-selected="false">Inflação</button><button type="button" role="tab" data-mod="ix" aria-selected="false">Índices</button><button type="button" role="tab" data-mod="fx" aria-selected="false">Dólar</button><button type="button" role="tab" data-mod="fa" aria-selected="false">Análise de fundo</button><button type="button" role="tab" data-mod="fr" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="fc" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="ff" aria-selected="false">Fluxo</button><button type="button" role="tab" data-mod="fg" aria-selected="false">Gestoras</button><button type="button" role="tab" data-mod="aa" aria-selected="false">Análise de ativo</button><button type="button" role="tab" data-mod="ar" aria-selected="false">Ranking</button><button type="button" role="tab" data-mod="af" aria-selected="false">FIIs</button><button type="button" role="tab" data-mod="ab" aria-selected="false">Estratégias</button><button type="button" role="tab" data-mod="ac" aria-selected="false">Comparar</button><button type="button" role="tab" data-mod="au" aria-selected="false">EUA</button><button type="button" role="tab" data-mod="ag" aria-selected="false">Agenda de proventos</button><button type="button" role="tab" data-mod="sp" aria-selected="false">Carteira de investimentos</button><button type="button" role="tab" data-mod="pj" aria-selected="false">Planejamento</button><button type="button" role="tab" data-mod="dj" aria-selected="false">Diário de decisões</button></div>
 
   <div class="grid" id="modPub">
     <section class="panel" aria-label="Dados da compra">
@@ -2635,8 +2642,8 @@ async function pcFetch(){
   if(!code){setStat("Digite o código do papel.","bad");return}
   return pcRoboFetch(code);
 }
-const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",agm:"mkt",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ab:"bolsa",pj:"simu",dj:"simu",ac:"bolsa",au:"bolsa",fv:"mkt",ec:"mkt",mu:"mkt"},AREA_T={calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
-const MKM=new Set(["rs","sem","agm","fv","ec","mu","ju","cr","in","ix"]);
+const AREA_OF={pub:"calc",pc:"calc",bank:"calc",fund:"calc",sc:"simu",sim:"simu",tx:"mkt",mk:"mkt",fx:"mkt",rs:"mkt",rd:"rad",agm:"rad",sem:"mkt",ju:"mkt",cr:"mkt",in:"mkt",ix:"mkt",cart:"cart",fa:"fnd",fr:"fnd",fc:"fnd",fg:"fnd",ff:"fnd",sp:"simu",ag:"bolsa",aa:"bolsa",ar:"bolsa",af:"bolsa",ab:"bolsa",pj:"simu",dj:"simu",ac:"bolsa",au:"bolsa",fv:"rad",ec:"mkt",mu:"mkt"},AREA_T={rad:"Radar",calc:"Calcular título",simu:"Carteiras e Simulações",mkt:"Mercado",cart:"Carteira",fnd:"Fundos",bolsa:"Bolsa"},AREA_LAST={rad:"rd",calc:"pub",simu:"sc",mkt:"rs",cart:"cart",fnd:"fa",bolsa:"aa"};
+const MKM=new Set(["rd","rs","sem","agm","fv","ec","mu","ju","cr","in","ix"]);
 function setMod(m){
   if(m==="mk")m="rs";activeMod=m;try{fonteAviso(m)}catch(e){}if(MKM.has(m)||m==="tx")setTimeout(()=>mkLoad(),0);if((m==="pc"||m==="sc")&&!PC_RATES_ON&&typeof roboLoad==="function"&&document.documentElement.classList.contains("pages")){PC_RATES_ON=true;setTimeout(()=>roboLoad(null),0)}const ar=AREA_OF[m]||"calc";AREA_LAST[ar]=m;const W=document.querySelector(".wrap");if(W)W.dataset.area=ar;
   document.querySelectorAll(".areas button").forEach(b=>b.setAttribute("aria-selected",b.dataset.area===ar?"true":"false"));
@@ -3414,12 +3421,13 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rs")h=rsResumoHtml(P);
+  try{if(activeMod==="rd")h=rdTela().map(P).join("");
+  else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
-  else if(activeMod==="cr")h=P(crBuscaHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
+  else if(activeMod==="cr")h=P(crBuscaHtml())+P(ccHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+agmAtalho("A data do próximo IPCA e do IPCA-15 e as novas projeções da ANBIMA estão na aba");
   else if(activeMod==="ix")h=P(imaHtml());
   else if(activeMod==="agm")h=agmTela().map(P).join("");
@@ -3671,7 +3679,9 @@ function onDoc(doc){
     if(Date.now()-at>25*60000)setStat("A última atualização não terminou. Toque em Atualizar dados agora para tentar de novo.","bad");
     else setStat("Atualizando dados desde "+fdt(doc.statusAt)+". Os números mudam sozinhos quando terminar.","run");
   }else if(doc.status==="error")setStat("A última atualização não conseguiu buscar os dados. Os dados de "+fdate(VAL)+" continuam valendo. Tente de novo mais tarde.","bad");
-  else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok");
+  else{const hj=Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()),atraso=du(VAL,hj);   // dias úteis desde o último dado
+    if(atraso>2)setStat("Atenção: os dados são de "+fdate(VAL)+" ("+atraso+" dias úteis atrás). Os robôs não atualizaram desde então; confira a Saúde das fontes.","bad");
+    else setStat("Dados de "+fdate(VAL)+", atualizados em "+fdt(doc.updatedAt||doc.statusAt)+"."+checkLine(),CHK.bad.length?"bad":"ok")}
   if(doc.status!=="running"&&at>requestedAt)btn.disabled=false;
 }
 btn.addEventListener("click",async()=>{btn.disabled=true;setStat("Lendo os dados do robô…","run");await roboLoad(null);btn.disabled=false
@@ -3780,7 +3790,8 @@ try{const r=JSON.parse(localStorage.getItem("fnRk")||"null");if(r&&typeof r==="o
 try{const b=JSON.parse(localStorage.getItem("fnBm")||"null");if(b&&typeof b==="object")Object.assign(FN.bm,b)}catch(e){}
 function fnSave(){const j=JSON.stringify(FN.cmp);try{if(j!==localStorage.getItem("fnCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("fnCmp",j);localStorage.setItem("fnRk",JSON.stringify(FN.rk));localStorage.setItem("fnBm",JSON.stringify(FN.bm))}catch(e){}}
 const fnUrl=p=>(window.FN_BASE||FN_URL)+p;
-async function fnGet(p){const r=await fetch(fnUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const FN_MEMO=new Map();
+function fnGet(p){if(/^f\//.test(p))return fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=FN_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(fnUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>FN_MEMO.delete(p));FN_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const fnNorm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const fnCnpjF=k=>k&&k.length===14&&/^\d+$/.test(k)?k.slice(0,2)+"."+k.slice(2,5)+"."+k.slice(5,8)+"/"+k.slice(8,12)+"-"+k.slice(12):k||"";
 function fnMoney(v){if(v==null||!isFinite(v))return "—";const a=Math.abs(v),s=v<0?"−":"";return a>=1e9?s+"R$ "+fx(a/1e9,2)+" bi":a>=1e6?s+"R$ "+fx(a/1e6,1)+" mi":a>=1e3?s+"R$ "+fx(a/1e3,0)+" mil":s+"R$ "+fx(a,0)}
@@ -4050,7 +4061,7 @@ function fnHead(F){
   const u=F.M.get(F.MK[F.MK.length-1])||{},nm=F.n||F.fan||fnCnpjF(F.c),inCmp=FN.cmp.includes(F.c);
   let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(nm)+'</h3><div class="fnsub">'+fnCnpjF(F.c)+(F.fan&&F.fan!==F.n?' · '+esc(F.fan):'')+'</div>';
   h+='<div class="fntags">'+[F.tipo,FN.idx.classes[r?r[C.classe]:-1],F.anb].filter(Boolean).map(x=>'<span class="fntag strong">'+esc(x)+'</span>').join("")+fnTags(r,F).map(x=>'<span class="fntag">'+esc(x)+'</span>').join("")+'</div></div>';
-  h+='<div class="fnacts">'+favBtn("f:"+F.c,nm)+'<button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button><button type="button" class="btn sec" data-rel="fa">Relatório PDF</button></div></div>';
+  h+='<div class="fnacts">'+favBtn("f:"+F.c,nm)+acBtns("f",F.c,nm)+'<button type="button" class="btn sec" data-fncmp="'+F.c+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-fncalc="'+F.c+'">Calcular aplicação</button><button type="button" class="btn sec" data-rel="fa">Relatório PDF</button></div></div>';
   if(r&&r[C.flags]&64)h+='<p class="warn" style="font-size:.86rem;margin-top:8px">A cota deste fundo teve saltos nos últimos anos (reinício de cota, amortização ou erro no informe à CVM). As rentabilidades e os indicadores de risco que atravessam esses saltos foram omitidos do ranking e podem não ser comparáveis.</p>';
   if(F.pai)h+='<p class="sub" style="margin-top:6px">Esta é uma subclasse, com cota própria. <button type="button" class="link" data-fnopen="'+F.pai+'">Ver a classe '+fnCnpjF(F.pai)+'</button></p>';
   const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
@@ -4321,7 +4332,8 @@ try{const c=JSON.parse(localStorage.getItem("atCmp")||"[]");if(Array.isArray(c))
 try{const r=JSON.parse(localStorage.getItem("atRk")||"null");if(r&&typeof r==="object")Object.assign(AT.rk,r,{n:50})}catch(e){}
 function atSave(){const j=JSON.stringify(AT.cmp);try{if(j!==localStorage.getItem("atCmp")){localStorage.setItem("cmpAt",String(Date.now()));if(typeof syncMark==="function")setTimeout(syncMark,0)}localStorage.setItem("atCmp",j);localStorage.setItem("atRk",JSON.stringify(AT.rk))}catch(e){}}
 const atUrl=p=>(window.AT_BASE||AT_URL)+p;
-async function atGet(p){const r=await fetch(atUrl(p),{cache:"no-cache"});if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()}
+const AT_MEMO=new Map();   // o mesmo arquivo pedido por várias telas é baixado uma vez a cada 20 minutos
+function atGet(p){if(/^[ad]\//.test(p))return fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});const m=AT_MEMO.get(p);if(m&&Date.now()-m.t<20*60000)return m.p;const pr=fetch(atUrl(p),{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});pr.catch(()=>AT_MEMO.delete(p));AT_MEMO.set(p,{t:Date.now(),p:pr});return pr}
 const atNm=x=>x==null?x:String(x).replace(/\. (?=(INC|CORP|LTD|LIMITED|PLC|S\.?A|CO|N\.?V)\b)/g,", ").replace(/^Petróleo\. /,"Petróleo, ");
 const AT_FUNDO=new Set(["FII","Fiagro","FI-Infra"]);
 function atBoot(){
@@ -4384,7 +4396,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atSinaisHtml(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){
@@ -4401,7 +4413,7 @@ function atHead(A){
   const r=atRow(A.t),C=AT.C,l=fnLast(A),m=A.met||{},ind=A.ind||{},fi=A.fii,inCmp=AT.cmp.includes(A.t),isF=AT_FUNDO.has(A.tipo);
   let h='<section class="panel fnhead"><div class="fnh1"><div><h3>'+esc(A.t)+' · '+esc(A.nome||"")+'</h3><div class="fnsub">'+esc([A.setor,A.sub].filter(Boolean).join(" / "))+'</div>';
   h+='<div class="fntags"><span class="fntag strong">'+esc(A.tipo)+'</span>'+(A.meta&&A.meta.esp?'<span class="fntag">'+esc(A.meta.esp)+'</span>':'')+(fi&&fi.mand?'<span class="fntag">'+esc(fi.mand)+'</span>':'')+(fi&&fi.gest?'<span class="fntag">Gestão '+esc(fi.gest.toLowerCase())+'</span>':'')+'</div></div>';
-  h+='<div class="fnacts">'+favBtn("a:"+A.t,A.t+" · "+(A.nome||""))+'<button type="button" class="btn sec" data-atcmp="'+A.t+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button><button type="button" class="btn sec" data-rel="aa">Relatório PDF</button></div></div>';
+  h+='<div class="fnacts">'+favBtn("a:"+A.t,A.t+" · "+(A.nome||""))+'<button type="button" class="btn sec" data-atcmp="'+A.t+'">'+(inCmp?"✓ No comparador":"+ Comparar")+'</button>'+acBtns("a",A.t,A.t+" · "+(A.nome||""))+'<button type="button" class="btn sec" data-rel="aa">Relatório PDF</button></div></div>';
   const kp=(a,b,c)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(c?'<small>'+c+'</small>':'')+'</div>';
   const px=l?A.R[A.R.length-1]:null;
   let k=kp("Cotação","R$ "+(px!=null?fx(px,2):"—"),(l?fdate(l.t):"")+(m.d1!=null?' · '+fnPctT(m.d1)+' no dia':''))+kp("12 meses (com proventos)",fnPct(m.r12),m.ra!=null?"no ano "+fnPctT(m.ra):"");
@@ -4495,6 +4507,31 @@ function atSrcHtml(A){const tp=A&&A.tipo||"",td=tp==="Tesouro Direto",bdr=tp==="
     :'B3 (cotações históricas, proventos, desdobramentos, cadastro, Ibovespa e IFIX), '+(AT_FUNDO.has(tp)?'CVM (informe mensal dos fundos)':bdr?'SEC (balanços e documentos da empresa nos EUA), Nasdaq (cotação em Nova York), Cboe (S&P 500)':'CVM (demonstrações financeiras e composição do capital)')+' e Banco Central (CDI, IPCA e dólar)';
   return '<p class="sub" style="font-size:.78rem;margin:4px 4px 16px">Fontes: '+f+'. Rentabilidade passada não garante rentabilidade futura. Cotações até '+(AT.idx.dt?fdate(Date.parse(AT.idx.dt+"T00:00:00Z")):"—")+'.</p>'}
 
+/* ---------- Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação */
+function acBtns(t,k,n){ // t: "a" ativo da B3, "f" fundo
+  const d=esc(JSON.stringify({t,k,n:String(n||k).slice(0,90)}));
+  return '<button type="button" class="btn sec" data-acart=\''+d+'\'>+ Carteira</button>'+(t==="a"?'<button type="button" class="btn sec" data-adiario="'+esc(k)+'">Anotar no diário</button>':'');
+}
+function acNaCarteira(t,k){const L=[];(SP.carts||[]).forEach((c,i)=>{if((c.itens||[]).some(x=>x.t===t&&x.k===k))L.push(c.nome||("Carteira "+(i+1)))});return L}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-acart],[data-adiario]");if(!x)return;
+  if(x.dataset.acart){const it=JSON.parse(x.dataset.acart),c=SP.carts[SP.cur];if(!c){alertLite("Crie uma carteira em Carteiras e Simulações primeiro.");return}
+    if(c.itens.some(y=>y.t===it.t&&y.k===it.k)){alertLite(it.k+" já está em "+(c.nome||"a carteira atual")+".");return}
+    if(c.itens.length>=CMP_MAX){alertLite("A carteira aceita até "+CMP_MAX+" itens.");return}
+    const n=c.itens.length+1;c.itens.forEach(y=>y.w=Math.round(+y.w*(n-1)/n*10)/10);it.w=Math.round((100-c.itens.reduce((a,y)=>a+(+y.w||0),0))*10)/10;c.itens.push(it);
+    if(typeof SP_CMP!=="undefined")SP_CMP=null;spSave();alertLite(it.k+" incluído em "+(c.nome||"a carteira atual")+" com peso de "+fx(it.w,1)+"%. Ajuste os pesos em Carteiras e Simulações.");return}
+  if(x.dataset.adiario){const k=x.dataset.adiario;setMod("dj");setTimeout(()=>{const i=$("djK");if(i){i.value=k;const t=$("djT");if(t)t.focus()}},80)}});
+function atSinaisHtml(A){ // uma linha por tipo de sinal, no topo da página da ação
+  if(!(A.tipo==="Ação"||A.tipo==="Unit"))return "";const L=[],r=atRow(A.t),C=AT.C;
+  const T=tecCalc(A);if(T)L.push(["Técnica",(T.tend===1?'<span class="pos">tendência de alta</span>':T.tend===-1?'<span class="neg">tendência de baixa</span>':'sem tendência')+(T.IFR!=null?' · IFR '+fx(T.IFR,0)+(T.IFR>=70?' (sobrecomprado)':T.IFR<=30?' (sobrevendido)':''):''),"tecnica"]);
+  try{const V=vqSerie(A);if(V&&A.ind&&A.ind.pl_r>0){const plv=V.pl.map(x=>x[1]).filter(v=>v>0&&v<100),rk=vqRank(plv,A.ind.pl_r);if(rk!=null)L.push(["Valuation","P/L "+fx(A.ind.pl_r,1)+(rk<=25?' · <span class="pos">barato para a própria história</span>':rk>=75?' · <span class="neg">caro para a própria história</span>':' · na faixa normal da própria história')])}}catch(e){}
+  if(A.met&&A.met.dy)L.push(["Proventos",fx(A.met.dy,1)+"% em 12 meses"]);
+  if(typeof INS==="object"&&INS.d&&A.cnpj&&INS.d.cias[A.cnpj]){const s=insSaldo(INS.d.cias[A.cnpj],3,["ctl","cons","dir","out"]);if(s.cp||s.vd)L.push(["Insiders (3 meses)",(s.s>=0?'<span class="pos">compraram</span> ':'<span class="neg">venderam</span> ')+fnMoney(Math.abs(s.s))+' líquidos'])}
+  if(typeof AL==="object"&&AL.d&&AL.d.t[A.t]&&A.ind&&A.ind.acoes){const H=AL.d.t[A.t],u=H[H.length-1];L.push(["Aluguel",fx(u[1]/A.ind.acoes*100,2)+"% das ações alugadas"])}
+  if(r&&C.res!=null&&r[C.res])L.push(["Resultado","previsto para "+fdate(Date.parse(r[C.res]+"T00:00:00Z"))]);
+  const em=acNaCarteira("a",A.t);if(em.length)L.push(["Nas suas carteiras",esc(em.join(", "))]);
+  if(L.length<2)return "";
+  return '<section class="panel"><div class="label">Sinais em uma olhada</div><div class="tablewrap" style="max-height:none"><table class="ctab"><tbody>'+L.map(x=>'<tr><th style="text-align:left;width:34%">'+x[0]+'</th><td style="text-align:left">'+x[1]+'</td></tr>').join("")+'</tbody></table></div></section>';
+}
 /* ---------- análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências */
 // Mesmas contas do robô (scripts/tecnica.py), que grava as colunas técnicas no índice para o ranking.
 // Cotação de fechamento ajustada só por desdobramentos e grupamentos (sem proventos), como nos gráficos técnicos.
@@ -4688,7 +4725,7 @@ function atValHtml(A){
   if(prov>0)ref.push(["Preço-teto por dividendos (Bazin, 6%)",prov/0.06,"proventos de 12 meses ÷ 6%: até esse preço o rendimento fica em pelo menos 6% ao ano"]);
   if(i.lpa>0&&i.vpa>0)ref.push(["Preço justo de Graham",Math.sqrt(22.5*i.lpa*i.vpa),"√(22,5 × lucro por ação × valor patrimonial por ação)"]);
   if(ref.length)h+='<div class="label" style="margin-top:10px">Preços de referência</div><div class="tablewrap" style="max-height:none"><table class="ctab"><tbody>'
-    +ref.map(([n,v,d])=>'<tr><td style="text-align:left">'+n+'<small style="display:block;color:var(--muted)">'+d+'</small></td><td>R$ '+fx(v,2)+'</td><td><span class="'+(v>p?'pos':'neg')+'">'+pct((v/p-1)*100)+'</span></td></tr>').join("")+'</tbody></table></div>';
+    +ref.map(([n,v,d])=>'<tr><td style="text-align:left">'+n+' <span class="tag est" title="aproximação: veja a nota no fim do bloco">estimado</span><small style="display:block;color:var(--muted)">'+d+'</small></td><td>R$ '+fx(v,2)+'</td><td><span class="'+(v>p?'pos':'neg')+'">'+pct((v/p-1)*100)+'</span></td></tr>').join("")+'</tbody></table></div>';
   // qualidade
   const ult=ys.slice(-6),roe=ult.map(y=>f[y][3]>0?f[y][2]/f[y][3]*100:null),ml=ult.map(y=>f[y][0]?f[y][2]/f[y][0]*100:null);
   const cagr=(k)=>{if(ys.length<6)return null;const m=(i,j)=>(f[ys[ys.length-i]][k]+f[ys[ys.length-j]][k])/2,a=m(6,5),b=m(2,1);return a>0&&b>0?(Math.pow(b/a,1/4)-1)*100:null};  // média de 2 anos no início e no fim, para um ano fraco não distorcer
@@ -6145,13 +6182,13 @@ async function syncApi(metodo,corpo){
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
 function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()}}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
   // listas do comparador: vale a alteração mais recente (sem juntar, para que tirar um item também valha nos outros aparelhos)
   const lc=L.cmp||{},rc=R.cmp||{},cmp=(+rc.at||0)>(+lc.at||0)?rc:lc;
-  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp};
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp,diario:uni(L.diario,R.diario,x=>"d|"+x.id),pj:L.pj||R.pj||null};
 }
 function syncApply(D){
   const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
@@ -6163,10 +6200,13 @@ function syncApply(D){
   if(C&&(+C.at||0)>syncCmpAt()&&Array.isArray(C.f)&&Array.isArray(C.a)){const f=C.f.filter(x=>typeof x==="string").slice(0,25),a=C.a.filter(x=>typeof x==="string").slice(0,25);
     mudouCmp=JSON.stringify(f)!==JSON.stringify(FN.cmp)||JSON.stringify(a)!==JSON.stringify(AT.cmp);FN.cmp=f;AT.cmp=a;
     try{localStorage.setItem("fnCmp",JSON.stringify(f));localStorage.setItem("atCmp",JSON.stringify(a));localStorage.setItem("cmpAt",String(+C.at))}catch(e){}}
+  if(Array.isArray(D.diario)&&typeof DJ==='object'){DJ.L=D.diario;djSave()}
+  if(D.pj&&typeof PJ==='object'){Object.assign(PJ.c,D.pj);try{localStorage.setItem('pjCfg',JSON.stringify(PJ.c))}catch(e){}}
   fvRefresh();if(typeof activeMod!=="undefined"){if(activeMod==="sp")spCalc();else if(mudouCmp&&(activeMod==="fc"||activeMod==="ac"))fnCalc(activeMod)}
 }
+const SYNC_GITHUB=false;   // desligada: carteiras e alertas não vão mais para o GitHub (use a cópia criptografada em Ajustes)
 async function syncNow(forcar){
-  if(!SYNC.tok)return;if(SYNC.run)return SYNC.run;
+  if(!SYNC_GITHUB||!SYNC.tok)return;if(SYNC.run)return SYNC.run;
   SYNC.run=(async()=>{
     try{SYNC.st="sincronizando…";syncShow();
       for(let tent=0;tent<3;tent++){
@@ -6184,8 +6224,9 @@ async function syncNow(forcar){
   })().finally(()=>{SYNC.run=null});
   return SYNC.run;
 }
-function syncMark(){if(!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
+function syncMark(){if(!SYNC_GITHUB||!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
 function syncHtml(){
+  if(!SYNC_GITHUB)return '<div class="nota fvsync"><p class="sub">A sincronização pelo GitHub foi desligada: carteiras, favoritos e alertas não saem mais deste aparelho por esse caminho. Para levar os dados a outro aparelho, use <b>Ajustes › Segurança deste aparelho › Cópia em arquivo</b> (criptografada com senha) e restaure no outro.'+(SYNC.tok?'</p><div class="spbtns"><button type="button" class="btn sec" data-syncoff="1">Apagar o token do GitHub deste aparelho</button></div>':'</p>')+'</div>';
   let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
   if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
   else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
@@ -6275,7 +6316,7 @@ function segHtml(){
     else h+='<p class="sub">Guardado neste navegador sem senha. Com uma senha, o token fica criptografado e só é usado depois de desbloqueado; quem pegar o aparelho ou uma extensão do navegador não consegue lê-lo.</p><div class="segrow"><input id="segNova" type="password" autocomplete="new-password" placeholder="Nova senha (mín. 8 caracteres)"><button type="button" class="btn" data-segprot="1">Proteger com senha</button></div>';
     h+='<div class="segrow"><label for="segVal" class="sub">Validade do token</label><input id="segVal" type="date" value="'+esc(v)+'"><span class="sub">'+(d==null?'informe a data que aparece no GitHub':d<0?'<span class="neg">vencido</span>':d<=14?'<span class="neg">vence em '+d+' dias</span>':'vence em '+d+' dias')+'</span></div></div>'}
   // cópia criptografada
-  h+='<div class="segbl"><b>Cópia em arquivo</b><p class="sub">Favoritos, alertas e carteiras num arquivo criptografado com senha. Sem a senha ninguém consegue abrir.</p>';
+  h+='<div class="segbl"><b>Cópia em arquivo</b><p class="sub">Favoritos, alertas, carteiras, diário e planejamento num arquivo criptografado com senha. Sem a senha ninguém consegue abrir. É o jeito de levar seus dados para outro aparelho.</p>';
   h+=SEG.bkp?'<div class="segrow"><input id="segBkpS" type="password" autocomplete="new-password" placeholder="Senha do arquivo (mín. 8 caracteres)"><button type="button" class="btn" data-segbkpok="1">Baixar</button><button type="button" class="link" data-segbkp="0">Cancelar</button></div>'
     :'<div class="segrow"><button type="button" class="btn sec" data-segbkp="1">Baixar cópia criptografada</button><label class="link" for="bkpIn" style="cursor:pointer">Restaurar de um arquivo</label><input id="bkpIn" type="file" accept=".json,application/json" hidden></div>';
   if(SEG.rest)h+='<div class="segrow"><input id="segRestS" type="password" autocomplete="current-password" placeholder="Senha do arquivo"><button type="button" class="btn" data-segrestok="1">Abrir arquivo</button></div>';
@@ -6428,6 +6469,7 @@ function spXirr(cf){ // cf: [[data,valor]] (aplicação negativa, resgate e valo
   let lo=-0.99,hi=10,flo=f(lo),fhi=f(hi);if(!isFinite(flo)||!isFinite(fhi)||flo*fhi>0)return null;
   for(let i=0;i<200;i++){const m=(lo+hi)/2,fm=f(m);if(Math.abs(fm)<1e-7)return m;if(flo*fm<0){hi=m}else{lo=m;flo=fm}}return (lo+hi)/2;
 }
+const SP_IOF=[96,93,90,86,83,80,76,73,70,66,63,60,56,53,50,46,43,40,36,33,30,26,23,20,16,13,10,6,3];   // IOF regressivo sobre o rendimento, do 1º ao 29º dia
 function spAliq(reg,dias){if(reg==="lp"||reg==="rf")return dias<=180?0.225:dias<=360?0.2:dias<=720?0.175:0.15;if(reg==="cp")return dias<=180?0.225:0.2;if(reg==="acoes")return 0.15;if(reg==="fii")return 0.2;return 0}
 function spPosCalc(c,its,Ds){
   const L=FN.L,cdiS=(()=>{const a=[];FN.cal.forEach((d,i)=>{if(L.d.cdi&&L.d.cdi[i])a.push([d,L.d.cdi[i]])});const d0=a.length?a[0][0]:"9999",m=Object.keys(L.m.cdi||{}).map(Number).map(k=>[new Date(fnMt(k)).toISOString().slice(0,10),L.m.cdi[k]]).filter(x=>x[0]<d0);return m.concat(a)})();
@@ -6447,7 +6489,7 @@ function spPosCalc(c,its,Ds){
     const A=p.x.t==="a"&&AT.files.get(p.x.k),pr=A&&A.I?(d=>{let r=null;for(let j=0;j<A.I.length;j++){const dd=AT.cal[A.I[j]];if(dd<=d)r=A.R[j];else break}return r}):null;
     p.ir=0;p.lotes.forEach(l=>{const dias=(Date.parse(dv)-Date.parse(l.d))/DAY,vl=l.q*p.lvF;let g=vl-l.custo;
       if(p.D.reg==="fii"&&pr){const a=pr(l.d),b=pr(dv);g=a&&b?Math.max(0,l.custo*(b/a-1)):Math.max(0,g)}
-      if(g>0)p.ir+=g*spAliq(p.D.reg,dias)});
+      if(g>0){let gi=g;if(dias<30&&(p.D.reg==='rf'||p.D.reg==='lp'||p.D.reg==='cp')){const iof=g*(SP_IOF[Math.max(0,Math.floor(dias)-1)]||0)/100;p.ir+=iof;gi=g-iof}p.ir+=gi*spAliq(p.D.reg,dias)}});
     p.liq=p.v-p.ir;p.cfF=p.cf.concat(p.v>0?[[dv,p.v]]:[]);p.tir=spXirr(p.cfF);
     p.ret=p.lvF&&p.mv.length?(p.lvF/spAt(p.S,p.mv[0].d)[1]-1)*100:null;
     const c0=spAt(cdiS,p.mv[0].d),c1=spAt(cdiS,dv);p.cdi=c0&&c1?(c1[1]/c0[1]-1)*100:null;
@@ -6744,7 +6786,7 @@ try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="o
 try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
 function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
 const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
-function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
 function euBoot(){
   if(EU.S||EU.load)return EU.load;EU.err=null;
   const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);
@@ -6891,11 +6933,13 @@ function spAjRf(it,j){if(it.t!=="s"||spTd(it))return "";const p=spProd(it),cr=/^
   return '<div class="spaj"><select data-spprod="'+j+'" aria-label="Tipo de produto"><option value="">Produto?</option>'+Object.keys(SP_PROD).map(k=>'<option value="'+k+'"'+(p===k?' selected':'')+'>'+k+(SP_PROD[k]?' (FGC)':'')+'</option>').join("")+'</select>'
     +'<label class="spajl">Emissor<input data-spem="'+j+'" list="spEmL" maxlength="50" value="'+esc(it.em||"")+'" placeholder="'+esc(cr?spEmissor(Object.assign({},it,{em:""}))||"emissor":"banco ou conglomerado")+'" style="width:150px"></label>'
     +'<label class="spajl">Vencimento<input type="date" data-spvenc="'+j+'" value="'+esc(it.venc||"")+'"'+(vc?' title="ANBIMA: '+vc.d+'"':'')+'></label>'
+    +(SP_PROD[p]||!p?'<label class="spajl"><input type="checkbox" data-spliqd="'+j+'"'+(it.liqd?' checked':'')+'> Liquidez diária</label>':'')
     +(j===spC().itens.findIndex(x=>x.t==="s"&&!spTd(x))?'<datalist id="spEmL">'+ems.map(e=>'<option value="'+esc(e)+'">').join("")+'</datalist>':'')+'</div>'}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||activeMod!=="sp")return;const c=spC();let j;
   if((j=t.dataset.spprod)!=null){const it=c.itens[+j];if(!it)return;it.prod=t.value||undefined;spSave();spCalc();return}
   if((j=t.dataset.spem)!=null){const it=c.itens[+j];if(!it)return;it.em=t.value.trim()||undefined;spSave();spCalc();return}
-  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}});
+  if((j=t.dataset.spvenc)!=null){const it=c.itens[+j];if(!it)return;it.venc=t.value||undefined;spSave();spCalc();return}
+  if((j=t.dataset.spliqd)!=null){const it=c.itens[+j];if(!it)return;it.liqd=t.checked||undefined;spSave();spCalc();return}});
 /* ---------- painel do assessor: todas as carteiras numa tela, com patrimônio, mês e ano contra o CDI e pendências
    Calculado sob demanda (cada carteira carrega as cotas dos seus itens); o resultado fica na memória até recalcular. */
 let SP_ASS=null;
@@ -7493,7 +7537,7 @@ function spIrHtml(c,it){
   const tot={v:0,ir:0,come:0};L.forEach(x=>{tot.v+=x.p.v;tot.ir+=x.p.ir;tot.come+=x.come});
   const perdaAc=L.filter(x=>x.reg==="acoes"&&x.p.x.t==="a"&&x.g<0).reduce((a,x)=>a-x.g,0),perdaFii=L.filter(x=>x.reg==="fii"&&x.g<0).reduce((a,x)=>a-x.g,0);
   const ganhoAc=L.filter(x=>x.reg==="acoes"&&x.p.x.t==="a"&&x.g>0);
-  h+='<div class="fnkpis">'+tecKp("IR se vendesse tudo hoje",brl(tot.ir),tot.v>0?fx(tot.ir/tot.v*100,2)+'% do patrimônio':'')
+  h+='<div class="fnkpis">'+tecKp("IR se vendesse tudo hoje <span class=\"tag est\" title=\"aproximação: veja a nota no fim do bloco\">estimado</span>",brl(tot.ir),tot.v>0?fx(tot.ir/tot.v*100,2)+'% do patrimônio':'')
     +tecKp("Próximo come-cotas",tot.come>0?brl(tot.come):'R$ 0',cc.prox?'estimado para '+fdate(cc.prox):'')
     +(perdaAc||perdaFii?tecKp("Prejuízo que pode compensar",brl(perdaAc+perdaFii),(perdaAc?'ações '+brl(perdaAc):'')+(perdaAc&&perdaFii?' · ':'')+(perdaFii?'FIIs '+brl(perdaFii):'')):'')+'</div>';
   h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left" class="c-ph">Tributação</th><th>Valor</th><th>Ganho</th><th>IR se vender hoje</th><th class="c-ph">Come-cotas</th></tr></thead><tbody>'
@@ -7503,7 +7547,8 @@ function spIrHtml(c,it){
   if(perdaAc)dic.push('Há '+brl(perdaAc)+' de prejuízo em ações. Vender e recomprar realiza o prejuízo, que pode abater lucros futuros em ações (o prejuízo não vence). O mesmo vale para FIIs, mas só contra lucro de FIIs.');
   if(tot.come>0)dic.push('O come-cotas antecipa o IR dos fundos em maio e novembro (15% nos de longo prazo, 20% nos de curto). Ele reduz a quantidade de cotas; o valor fica abatido do IR no resgate.');
   if(dic.length)h+='<ul class="tecler" style="margin-top:10px">'+dic.map(d=>'<li>'+d+'</li>').join("")+'</ul>';
-  return h+'<p class="sub" style="font-size:.8rem">Estimativa por lote de aplicação, com a tabela regressiva (22,5% a 15%) na renda fixa e nos fundos de longo prazo, 15% em ações e 20% no ganho de capital de FIIs; isentos: LCI, LCA, CRI, CRA, debêntures incentivadas e rendimentos de FIIs. IOF dos primeiros 30 dias e regras de previdência (tabela progressiva ou regressiva escolhida no plano) não entram. Confirme com o informe de rendimentos.</p></section>';
+  h+=spVendaHtml(X);
+  return h+'<p class="sub" style="font-size:.8rem">Estimativa por lote de aplicação, com a tabela regressiva (22,5% a 15%) na renda fixa e nos fundos de longo prazo, 15% em ações e 20% no ganho de capital de FIIs; isentos: LCI, LCA, CRI, CRA, debêntures incentivadas e rendimentos de FIIs. IOF regressivo dos primeiros 30 dias incluído; regras de previdência (tabela progressiva ou regressiva escolhida no plano) não entram. Confirme com o informe de rendimentos.</p></section>';
 }
 function spLiqDias(x,v){ // dias para virar dinheiro na conta, aproximado
   if(spTd(x))return 1;
@@ -7521,7 +7566,7 @@ function spLiqHtml(c,it){
   it.forEach((x,i)=>{const v=w[i]*(tot||1);if(!(v>0))return;const d=spLiqDias(x,v);L.push({x,v,d});F.forEach((f,k)=>{if(d<=f[0])S[k]+=w[i]})});
   const lt=L.filter(x=>x.d>90).sort((a,b)=>b.v-a.v);
   let h='<section class="panel" data-reltit="Liquidez da carteira"><h3>Liquidez da carteira</h3><p class="sub">Quanto da carteira vira dinheiro na conta em cada prazo, pelo prazo de resgate dos fundos, pela liquidez diária das ações e pelo vencimento ou negociação no secundário da renda fixa.</p>'
-    +'<div class="fnkpis">'+F.map((f,k)=>tecKp("Em até "+f[1],fx(S[k]*100,0)+'%',real&&tot?brl(S[k]*tot):'')).join("")+'</div>';
+    +'<div class="fnkpis">'+F.map((f,k)=>tecKp("Em até "+f[1]+(k===0?' <span class="tag est" title="aproximação: veja a nota no fim do bloco">estimado</span>':''),fx(S[k]*100,0)+'%',real&&tot?brl(S[k]*tot):'')).join("")+'</div>';
   if(lt.length)h+='<div class="label" style="margin-top:8px">Itens que levam mais de 90 dias</div><div class="tablewrap" style="max-height:none"><table class="ctab"><tbody>'
     +lt.slice(0,10).map(x=>'<tr><td style="text-align:left" class="tw">'+esc(spItemNome(x.x)).slice(0,50)+'</td><td>'+(x.d>=9999?'só no vencimento':'cerca de '+fx(x.d,0)+' dias')+'</td><td>'+fx(x.v/(tot||1)*100,1)+'%</td></tr>').join("")+'</tbody></table></div>';
   return h+'<p class="sub" style="font-size:.8rem">Aproximação: fundos pelo prazo de cotização e pagamento do resgate na CVM; ações vendendo até 20% do volume médio diário; Tesouro em 1 dia; CDB, LCI e LCA só no vencimento (marque "liquidez diária" no item quando houver); debêntures, CRI e CRA pelo número de dias com negócios no secundário.</p></section>';
@@ -7536,7 +7581,7 @@ function spJurosHtml(c,it){
   const lin=k=>{const g=G[k],d=g.d/g.v,perda=g.d*0.01;return '<tr><td style="text-align:left">'+(k==="pre"?"Prefixados":"Atrelados ao IPCA (juro real)")+'</td><td>'+fx(g.v/(tot||1)*100,1)+'%</td><td>'+fx(d,1)+' anos</td><td><span class="neg">−'+(real&&tot?brl(perda):fx(perda/(tot||1)*100,2)+'% da carteira')+'</span></td><td><span class="pos">+'+(real&&tot?brl(perda):fx(perda/(tot||1)*100,2)+'%')+'</span></td></tr>'};
   const tp=it2.reduce((a,k)=>a+G[k].d*0.01,0);
   return '<section class="panel" data-reltit="Sensibilidade a juros"><h3>Sensibilidade a juros</h3><p class="sub">Quanto o valor de mercado dos títulos prefixados e de inflação muda se as taxas subirem ou caírem 1 ponto percentual (marcação a mercado). Quem leva até o vencimento recebe a taxa contratada; a variação importa para quem vende antes.</p>'
-    +'<div class="fnkpis">'+tecKp("Se os juros subirem 1 ponto",'<span class="neg">−'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','perda na marcação a mercado')+tecKp("Se caírem 1 ponto",'<span class="pos">+'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','ganho na marcação a mercado')+'</div>'
+    +'<div class="fnkpis">'+tecKp("Se os juros subirem 1 ponto <span class=\"tag est\" title=\"aproximação: veja a nota no fim do bloco\">estimado</span>",'<span class="neg">−'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','perda na marcação a mercado')+tecKp("Se caírem 1 ponto",'<span class="pos">+'+(real&&tot?brl(tp):fx(tp/(tot||1)*100,2)+'%')+'</span>','ganho na marcação a mercado')+'</div>'
     +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Grupo</th><th>Peso</th><th>Duração média</th><th>Juros +1 ponto</th><th>Juros −1 ponto</th></tr></thead><tbody>'+it2.map(lin).join("")+'</tbody></table></div>'
     +'<p class="sub" style="font-size:.8rem">Duração modificada aproximada pelo prazo até o vencimento (títulos com cupom: cerca de 65% do prazo). Pós-fixados (CDI, Selic) quase não oscilam com a curva. Fundos de renda fixa e multimercados ficam no teste de estresse (subaba Risco), que usa a sensibilidade histórica de cada fundo.</p></section>';
 }
@@ -7552,6 +7597,23 @@ function spGrupoHtml(c,it){ // exposição somada por grupo econômico: conglome
   return '<section class="panel" data-reltit="Crédito: grupos econômicos"><h3>Crédito: exposição por grupo econômico</h3><p class="sub">Soma do que a carteira tem no mesmo grupo: títulos bancários do mesmo conglomerado, debêntures e ações da mesma empresa (raiz do CNPJ). Concentração alta num só grupo amplia o estrago se ele tiver problemas.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Grupo</th><th>Peso</th>'+(real&&tot?'<th>Valor</th>':'')+'<th style="text-align:left">Itens</th></tr></thead><tbody>'
     +L.slice(0,15).map(g=>'<tr><td style="text-align:left">'+esc(g.nm)+'</td><td><span class="'+(g.v>0.15?'neg':'')+'">'+fx(g.v*100,1)+'%</span></td>'+(real&&tot?'<td>'+brl(g.v*tot)+'</td>':'')+'<td style="text-align:left"><small>'+g.itens.map(esc).join("; ").slice(0,160)+'</small></td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Bancos agrupados pelo conglomerado prudencial do Banco Central (IF.data); empresas pela raiz do CNPJ. Acima de 15% num só grupo aparece em vermelho. Fundos não entram (a exposição deles está no raio-X).</p></section>';
 }
+
+/* venda com menos imposto: para levantar um valor, vende primeiro os lotes que pagam menos IR por real vendido */
+const SPV={v:""};
+function spVendaHtml(X){
+  let h='<div class="label" style="margin-top:12px">Preciso resgatar: venda com menos imposto</div><div class="fnfilt"><div class="field"><label for="spVenda">Valor que precisa (R$)</label><input id="spVenda" data-spvenda="1" inputmode="decimal" value="'+esc(SPV.v)+'" placeholder="ex.: 50.000"></div></div>';
+  const alvo=num(String(SPV.v||""));if(!alvo||alvo<=0)return h+'<p class="sub" style="font-size:.82rem">O app escolhe os lotes que pagam menos IR por real vendido, entre os itens que viram dinheiro em até 5 dias.</p>';
+  const dv=X.dv,L=[];
+  X.P.forEach(p=>{if(spLiqDias(p.x,p.v)>5)return;p.lotes.forEach(l=>{const dias=(Date.parse(dv)-Date.parse(l.d))/DAY,val=l.q*p.lvF;if(!(val>0))return;const g=val-l.custo,ir=g>0?g*spAliq(p.D.reg,dias):0;L.push({p,val,ir,g,taxa:ir/val,d:l.d})})});
+  L.sort((a,b)=>a.taxa-b.taxa||a.val-b.val);let falta=alvo,ir=0;const usa=[];
+  for(const l of L){if(falta<=0)break;const v=Math.min(falta,l.val),f=v/l.val;usa.push(Object.assign({},l,{v,irv:l.ir*f}));ir+=l.ir*f;falta-=v}
+  const pior=L.slice().sort((a,b)=>b.taxa-a.taxa);let f2=alvo,ir2=0;for(const l of pior){if(f2<=0)break;const v=Math.min(f2,l.val);ir2+=l.ir*v/l.val;f2-=v}
+  h+=falta>0?'<p class="warn">Os itens que viram dinheiro em até 5 dias somam menos que '+brl(alvo)+'; faltam '+brl(falta)+'.</p>':'';
+  h+='<div class="fnkpis">'+tecKp("IR com esta ordem",brl(ir),fx(ir/Math.max(1,alvo-Math.max(0,falta))*100,2)+'% do valor')+tecKp("IR vendendo na pior ordem",brl(ir2),'economia de '+brl(ir2-ir))+'</div>';
+  const G=new Map();usa.forEach(u=>{const k=u.p.x,g=G.get(k)||{x:k,v:0,ir:0};g.v+=u.v;g.ir+=u.irv;G.set(k,g)});
+  return h+'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Vender</th><th>Valor</th><th>IR</th></tr></thead><tbody>'+[...G.values()].map(g=>'<tr><td style="text-align:left">'+esc(spItemNome(g.x)).slice(0,46)+'</td><td>'+brl(g.v)+'</td><td>'+brl(g.ir)+'</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">Primeiro os lotes com prejuízo ou isentos, depois os de menor alíquota e menor ganho. Vendas de ações até R$ 20 mil no mês são isentas e não entram nesta conta; confira também a política de alocação antes de vender.</p>';
+}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.spvenda)return;SPV.v=t.value;if(typeof spRun==="function")spRun()});
 /* ---------- eventos */
 document.addEventListener("click",e=>{const g=a=>e.target.closest&&e.target.closest("["+a+"]");let x;
   if((x=g("data-euper"))){EU.per=x.dataset.euper;euSave();if(activeMod==="au"){$("euPainel").innerHTML=painelHtml("eua")}else if(activeMod==="rs"&&typeof mkCalc==="function")mkCalc();return}
@@ -7637,13 +7699,48 @@ function pjTela(){
   h+='<div class="label">Patrimônio ao longo do tempo (R$ mil, em valores de hoje)</div>'+fnChart([ser(.5,"Mediana",FN_COLS[0],2.2),ser(.1,"Cenário ruim (10%)",FN_COLS[1],1.5,"5 4"),ser(.9,"Cenário bom (90%)",FN_COLS[2],1.5,"5 4")],{fmt:"num",aria:"Planejamento"});
   h+='<p class="sub" style="font-size:.8rem">Simulação de Monte Carlo com retornos mensais aleatórios (distribuição lognormal) para o perfil escolhido, em termos reais. Não considera IR, taxas, INSS ou outras rendas. Serve para comparar caminhos (aportar mais, adiar a aposentadoria, mudar o perfil), não como promessa de resultado.</p>';
   b.innerHTML=h;
+  if(!$("pvBox"))b.insertAdjacentHTML("afterend",pvHtml());
 }
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.pj)return;const k=t.dataset.pj;PJ.c[k]=k==="perfil"?t.value:(num(t.value)||0);try{localStorage.setItem("pjCfg",JSON.stringify(PJ.c))}catch(x){}pjTela()});
+
+/* ----- Previdência: PGBL × VGBL e tabela regressiva × progressiva ----- */
+const PV={c:{renda:180000,completa:"s",aporte:21600,anos:20,ret:4,aliq:27.5,aliqSaida:15}};
+try{const c=JSON.parse(localStorage.getItem("pvCfg")||"null");if(c)Object.assign(PV.c,c)}catch(e){}
+function pvRegressiva(anos){return anos<=2?35:anos<=4?30:anos<=6?25:anos<=8?20:anos<=10?15:10}
+function pvSim(c){
+  // aportes anuais iguais, retorno real constante; no PGBL a restituição do IR (até 12% da renda) volta para o plano no ano seguinte
+  const r=c.ret/100,ded=c.completa==="s"?Math.min(c.aporte,c.renda*0.12):0,rest=ded*c.aliq/100;
+  let pg=0,vg=0,vgApl=0,lotesP=[],lotesV=[];
+  for(let a=0;a<c.anos;a++){pg=pg*(1+r)+c.aporte+(a>0?rest:0);vg=vg*(1+r)+c.aporte;lotesP.push({a,v:c.aporte+(a>0?rest:0)});lotesV.push({a,v:c.aporte})}
+  // regressiva: cada aporte tem a alíquota do seu próprio prazo
+  const cresc=a=>Math.pow(1+r,c.anos-a-1);
+  const pgReg=lotesP.reduce((s,l)=>{const bruto=l.v*cresc(l.a);return s+bruto*(1-pvRegressiva(c.anos-l.a)/100)},0);
+  const vgReg=lotesV.reduce((s,l)=>{const bruto=l.v*cresc(l.a),ganho=bruto-l.v;return s+bruto-ganho*pvRegressiva(c.anos-l.a)/100},0);
+  const pgPro=pg*(1-c.aliqSaida/100),vgPro=vg-(vg-c.aporte*c.anos)*c.aliqSaida/100;
+  return {ded,rest,pg,vg,pgReg,vgReg,pgPro,vgPro};
+}
+function pvHtml(){
+  const c=PV.c,S=pvSim(c),inp=(id,l,v,h)=>'<div class="field"><label for="'+id+'">'+l+'</label><input id="'+id+'" data-pv="'+id.slice(2)+'" inputmode="decimal" value="'+v+'">'+(h?'<small class="sub">'+h+'</small>':'')+'</div>';
+  const best=[["PGBL, tabela regressiva",S.pgReg],["PGBL, tabela progressiva",S.pgPro],["VGBL, tabela regressiva",S.vgReg],["VGBL, tabela progressiva",S.vgPro]].sort((a,b)=>b[1]-a[1]);
+  let h='<section class="panel" id="pvBox"><h3>Previdência: PGBL ou VGBL?</h3><p class="sub">Compara o valor líquido no resgate. PGBL: o aporte até 12% da renda bruta tributável sai da base do IR (só para quem faz a declaração completa), e no resgate o IR incide sobre tudo. VGBL: sem dedução, o IR incide só sobre o rendimento. A restituição do PGBL é reaplicada no plano.</p><div class="fnfilt" style="margin-top:8px">'
+    +inp("pvrenda","Renda bruta tributável por ano (R$)",fx(c.renda,0))+'<div class="field"><label for="pvcompleta">Declaração do IR</label><select id="pvcompleta" data-pv="completa"><option value="s"'+(c.completa==="s"?' selected':'')+'>Completa</option><option value="n"'+(c.completa!=="s"?' selected':'')+'>Simplificada ou isento</option></select></div>'
+    +inp("pvaporte","Aporte por ano (R$)",fx(c.aporte,0))+inp("pvanos","Anos até o resgate",c.anos)+inp("pvret","Retorno acima da inflação (% ao ano)",fx(c.ret,1))
+    +inp("pvaliq","Sua alíquota de IR hoje (%)",fx(c.aliq,1),"a faixa mais alta em que sua renda cai")+inp("pvaliqSaida","Alíquota efetiva na aposentadoria (%)",fx(c.aliqSaida,1),"para a tabela progressiva; com renda baixa no resgate ela fica pequena")+'</div>';
+  h+='<div class="fnkpis">'+tecKp("Melhor caminho",best[0][0],'líquido de '+brl(best[0][1]))+tecKp("Aporte dedutível no PGBL",brl(S.ded)+'/ano',c.completa==="s"?'restitui '+brl(S.rest)+' por ano':'sem dedução na declaração simplificada')+tecKp("Diferença para o segundo",brl(best[0][1]-best[1][1]),best[1][0])+'</div>';
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Plano e tabela</th><th>Valor líquido no resgate</th><th>Contra o melhor</th></tr></thead><tbody>'+best.map(x=>'<tr><td style="text-align:left">'+x[0]+'</td><td>'+brl(x[1])+'</td><td>'+(x[1]===best[0][1]?'—':'<span class="neg">−'+brl(best[0][1]-x[1])+'</span>')+'</td></tr>').join("")+'</tbody></table></div>';
+  const dic=[];if(c.completa==="s"&&c.aporte>S.ded)dic.push('O aporte acima de '+brl(S.ded)+' por ano (12% da renda) não é dedutível: essa parte rende mais num VGBL.');
+  if(c.completa!=="s")dic.push('Na declaração simplificada o PGBL não dá dedução e ainda tributa o valor inteiro no resgate: VGBL costuma ser melhor.');
+  if(/progressiva/.test(best[0][0]))dic.push('Na regressiva, os aportes dos últimos anos ainda pagam de 15% a 35% no resgate; com alíquota efetiva de '+fx(c.aliqSaida,1)+'% na aposentadoria, a progressiva sai melhor. Se a renda na aposentadoria for maior, refaça com a alíquota esperada.');
+  else if(c.anos>=10)dic.push('Com '+c.anos+' anos, a tabela regressiva chega a 10% para os aportes mais antigos e vence a progressiva com a alíquota informada.');
+  if(dic.length)h+='<ul class="tecler">'+dic.map(x=>'<li>'+x+'</li>').join("")+'</ul>';
+  return h+'<p class="sub" style="font-size:.8rem">Valores em reais de hoje, sem taxas de administração e carregamento. Tabela regressiva: 35% até 2 anos, caindo 5 pontos a cada 2 anos até 10% depois de 10 anos, contada aporte a aporte. A escolha da tabela é feita na contratação ou até o primeiro resgate, conforme as regras do plano: confirme com a seguradora.</p></section>';
+}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.pv)return;const k=t.dataset.pv;PV.c[k]=k==="completa"?t.value:(num(t.value)||0);try{localStorage.setItem("pvCfg",JSON.stringify(PV.c))}catch(x){}const b=$("pvBox");if(b)b.outerHTML=pvHtml()});
 /* ===== Economia (Brasil) e EUA e mundo: Focus, IBGE, Banco Central, Tesouro, BLS, Fed e EIA ===== */
 const MC_URL=DADOS_RAIZ+"macro/";
 const MC={d:null,load:null,err:null};
 function mcBoot(){if(MC.d||MC.load)return;MC.load=fetch(MC_URL+"macro.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{MC.d=j;MC.load=null;mcRefresh()}).catch(e=>{MC.err=e;MC.load=null;mcRefresh()})}
-function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs"||activeMod==="sem")&&typeof mkCalc==="function")mkCalc()}
+function mcRefresh(){if(typeof activeMod!=="undefined"&&(activeMod==="ec"||activeMod==="mu"||activeMod==="agm"||activeMod==="rs"||activeMod==="sem"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc()}
 /* datas: "2026-09" (mês), "202609" (mês do IBGE), "202602" com trimestre (PIB) */
 const mcTm=s=>{s=String(s);return s.length===7?Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,15):Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,15)};
 const mcTq=s=>{s=String(s);return Date.UTC(+s.slice(0,4),(+s.slice(4,6)-1)*3+1,15)};
@@ -8229,10 +8326,15 @@ function agmEventos(dias){
   if(typeof AT==="object"&&AT.idx&&AT.C.res!=null){const C=AT.C;AT.idx.rows.forEach(r=>{const d=r[C.res];if(!d||!(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")||(r[C.liq]||0)<2e7)return;
     add(agmT(d),{tit:"Resultado: "+r[0]+" · "+nomeCx(r[1]).slice(0,30),det:"data prevista (mesmo trimestre do ano passado + 1 ano); depois do fechamento, em geral",pais:"BR",tema:"resultados",imp:(r[C.liq]||0)>=2e8?2:1,fonte:"CVM",tk:r[0]})})}
   else if(typeof AT==="object"&&!AT.idx&&!AT.err&&!AT.load){const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="agm"||activeMod==="sem")mkCalc()})}
+  // proventos dos ativos das carteiras e dos favoritos (agenda de proventos da B3): data-com e pagamento
+  if(typeof AG==="object"&&AG.dados&&AG.dados.rows&&typeof rdAtivos==="function"){const A=rdAtivos(),g=AG.dados,ix=k=>g.cols.indexOf(k);
+    g.rows.forEach(r=>{const t=r[ix("t")];if(!A.has(t))return;const v=r[ix("valor")],y=r[ix("yield")],det="R$ "+fx(v,4)+" por cota/ação"+(y!=null?" ("+fx(y,2)+"%)":"")+(A.get(t).includes("c")?" · está numa carteira":" · favorito");
+      if(r[ix("datacom")])add(agmT(r[ix("datacom")]),{tit:"Data-com: "+t+" ("+(r[ix("prov")]||"provento")+")",det:"último dia para ter direito · "+det,pais:"BR",tema:"proventos",imp:1,fonte:"B3"});
+      if(r[ix("pagamento")])add(agmT(r[ix("pagamento")]),{tit:"Pagamento: "+t,det,pais:"BR",tema:"proventos",imp:1,fonte:"B3"})})}
   const hr=h=>{const m=/(\d+)h(\d*)/.exec(h||"");return m?(+m[1])*60+(+m[2]||0):9999};
   E.sort((a,b)=>a.t-b.t||hr(a.hora)-hr(b.hora));
   return {E,ibge:IB}}
-const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados"};
+const AGM_TEMAS={juros:"Juros",inflacao:"Inflação",atividade:"Atividade",emprego:"Emprego",mercado:"Mercado",resultados:"Resultados",proventos:"Proventos"};
 function agmGrupo(t,t0){const dif=Math.round((t-t0)/DAY);if(dif===0)return ["d0","Hoje"];if(dif===1)return ["d1","Amanhã"];
   const dw=(new Date(t0).getUTCDay()+6)%7,seg=t0-dw*DAY,s=Math.floor((t-seg)/(7*DAY));if(s===0)return ["s0","Esta semana"];if(s===1)return ["s1","Próxima semana"];
   const x=new Date(t);return ["m"+x.getUTCFullYear()+x.getUTCMonth(),RM_MES[x.getUTCMonth()].replace(/^./,c=>c.toUpperCase())+" de "+x.getUTCFullYear()]}
@@ -8550,6 +8652,92 @@ function bkHtml(){
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-bkabre],[data-bkord]");if(!x)return;if(x.dataset.bkabre)BK.abre=BK.abre===x.dataset.bkabre?null:x.dataset.bkabre;if(x.dataset.bkord)BK.ord=x.dataset.bkord;mkCalc()});
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="bkQ"){BK.q=e.target.value;clearTimeout(BK.tq);BK.tq=setTimeout(()=>{mkCalc();const i=$("bkQ");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},350)}});
+/* ---------- Radar: o que mudou e merece atenção, em ordem de urgência.
+   Não cria análise nova: junta os sinais que o app já calcula (carteiras, favoritos, mercado e qualidade dos dados).
+   Níveis: 1 Agir (a carteira pede decisão) · 2 Atenção (mudou algo relevante) · 3 Oportunidade (para estudar). */
+const RD={f:"todos",vistos:{}};
+try{RD.vistos=JSON.parse(localStorage.getItem("rdVistos")||"{}")||{}}catch(e){}
+function rdCarrega(){ // pede o que falta; cada carga chama o Radar de novo quando chega
+  const falta=[];
+  if(!AT.idx&&!AT.err){falta.push("Bolsa");const p=atBoot();if(p&&p.then)p.then(()=>{if(activeMod==="rd")mkCalc()})}
+  if(!FN.idx&&!FN.err&&typeof fnBoot==="function"){falta.push("fundos");const p=fnBoot();if(p&&p.then)p.then(()=>{if(activeMod==="rd")mkCalc()})}
+  if(!EU.S)euBoot();if(!MC.d)mcBoot();if(!MK.loaded)mkLoad();if(!CURV)curvasLoad();
+  if(typeof bkBoot==="function")bkBoot();if(typeof emBoot==="function")emBoot();if(typeof insBoot==="function")insBoot();if(typeof alBoot==="function")alBoot();if(typeof sdLoad==="function")sdLoad();
+  if(typeof AG==="object"&&!AG.dados&&!AG.load&&!AG.err)AG.load=atGet("agenda.json").then(j=>{AG.dados=j;AG.load=null;if(activeMod==="rd")mkCalc()}).catch(e=>{AG.err=e;AG.load=null});
+  return falta;
+}
+function rdAtivos(){ // códigos da B3 nas carteiras e nos favoritos
+  const S=new Map();
+  (SP.carts||[]).forEach(c=>(c.itens||[]).forEach(x=>{if(x.t==="a"&&x.k&&!/^TD-/.test(x.k))S.set(x.k,(S.get(x.k)||"")+"c")}));
+  (FV.l||[]).forEach(f=>{if(f.k&&f.k[0]==="a")S.set(f.k.slice(2),(S.get(f.k.slice(2))||"")+"f")});
+  return S;
+}
+function rdZ(P,dias){ // variação do último dia contra o desvio dos últimos "dias" dias
+  if(!P||P.length<dias+2)return null;const r=[];for(let i=P.length-dias;i<P.length;i++)r.push(P[i][1]/P[i-1][1]-1);
+  const u=r.pop(),mu=r.reduce((a,b)=>a+b,0)/r.length,sd=Math.sqrt(r.reduce((a,b)=>a+(b-mu)**2,0)/(r.length-1));return sd?{z:(u-mu)/sd,u:u*100,t:P[P.length-1][0]}:null;
+}
+function rdSinais(){
+  const L=[],add=(nv,alvo,tit,det,go,chave)=>L.push({nv,alvo,tit,det,go:go||"",chave:chave||tit});
+  const hj=Date.parse(agmHoje()+"T00:00:00Z");
+  // 1) carteiras
+  (SP.carts||[]).forEach((c,ci)=>{const it=c.itens||[];if(!it.length)return;const nm=c.nome||("Carteira "+(ci+1)),go='data-rdcart="'+ci+'"';
+    let C=null;try{C=spCredito(c,it)}catch(e){}
+    if(C){C.L.forEach(g=>{
+      if(g.acima>0)add(1,"carteira",nm+": "+brl(g.acima)+" acima do FGC em "+g.em,"o FGC cobre até R$ 250 mil por instituição; o excedente corre o risco do banco",go);
+      if(g.cred>0&&g.pc>SP_EMIS_LIM)add(2,"carteira",nm+": "+fx(g.pc,1)+"% num só emissor ("+g.em+")","concentração acima de "+SP_EMIS_LIM+"% em crédito privado",go);
+      if(g.fgc>0&&typeof bkAcha==="function"&&BK.d){const b=bkAcha(g.em);if(b){const k=bkSaudeCalc(b);if(k.nivel===3)add(1,"carteira",nm+": banco "+nomeCx(g.em)+" está frágil",k.al.slice(0,2).join(", ")||"indicadores do Banco Central",go)}}
+      if(g.cred>0&&typeof EM==="object"&&EM.d){const k=bkNome(g.em),e=Object.values(EM.d.e).find(x=>{const n=bkNome(x.n);return n===k||(n.length>=6&&(n.includes(k)||k.includes(n)))});if(e){const q=emCalc(e);if(q&&q.nivel===3)add(1,"carteira",nm+": emissor "+nomeCx(g.em)+" está frágil",q.alerta.slice(0,2).join(", "),go)}}})}
+    it.forEach(x=>{const vc=spVenc(x);if(vc&&vc.d){const d=(Date.parse(vc.d+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=15)add(1,"carteira",nm+": "+spItemNome(x).slice(0,40)+" vence em "+fdate(Date.parse(vc.d+"T00:00:00Z")),"decidir onde reaplicar o dinheiro",go)}});
+    const temFundoTrib=it.some(x=>x.t==="f");
+    if(temFundoTrib){const cc=spComeCotas(agmHoje()),d=(cc.prox-hj)/DAY;if(d>=0&&d<=20)add(2,"carteira",nm+": come-cotas em "+fdate(cc.prox),"os fundos de renda fixa e multimercado antecipam o IR nessa data",go,"come"+ci)}});
+  // 2) ativos das carteiras e dos favoritos
+  const A=rdAtivos();
+  if(AT.idx&&A.size){const C=AT.C;
+    A.forEach((orig,t)=>{const r=atRow(t);if(!r)return;const alvo=orig.includes("c")?"carteira":"favoritos",go='data-atopen="'+t+'"';
+      if(C.cruz!=null&&r[C.cruz]===1)add(2,alvo,t+": média de 50 dias cruzou para cima a de 200","cruzamento de alta nos últimos 20 pregões",go);
+      if(C.cruz!=null&&r[C.cruz]===-1)add(2,alvo,t+": média de 50 dias cruzou para baixo a de 200","cruzamento de baixa nos últimos 20 pregões",go);
+      if(C.ifr!=null&&r[C.ifr]!=null&&(r[C.ifr]>=75||r[C.ifr]<=25))add(2,alvo,t+": IFR em "+fx(r[C.ifr],0),r[C.ifr]>=75?"sobrecomprado: subiu forte em pouco tempo":"sobrevendido: caiu forte em pouco tempo",go);
+      if(C.max52d!=null&&r[C.max52d]!=null&&r[C.max52d]>-1)add(2,alvo,t+": na máxima de 52 semanas","R$ "+fx(r[C.preco],2),go);
+      if(C.min52d!=null&&r[C.min52d]!=null&&r[C.min52d]<1)add(2,alvo,t+": na mínima de 52 semanas","R$ "+fx(r[C.preco],2),go);
+      if(C.d1!=null&&r[C.d1]!=null&&Math.abs(r[C.d1])>=5)add(2,alvo,t+": "+(r[C.d1]>0?"+":"")+fx(r[C.d1],1)+"% no dia","variação forte no último pregão",go);
+      if(C.res!=null&&r[C.res]){const d=(Date.parse(r[C.res]+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=7)add(2,alvo,t+": resultado previsto para "+fdate(Date.parse(r[C.res]+"T00:00:00Z")),"data estimada pela entrega do mesmo trimestre no ano passado",go)}
+      if(typeof AL==="object"&&AL.d){const H=AL.d.t[t];if(H&&H.length>22){const u=H[H.length-1][1],a=H[H.length-22][1];if(a&&u/a>1.2)add(2,alvo,t+": aluguel de ações subiu "+fx((u/a-1)*100,0)+"% em um mês","mais investidores apostando na queda",go)}}
+      if(typeof INS==="object"&&INS.d&&INS.emp){const e=INS.emp[t.slice(0,4)],ci=e&&e.cnpj&&INS.d.cias[e.cnpj];if(ci){const s=insSaldo(ci,2,["ctl","cons","dir","out"]);if(Math.abs(s.s)>=1e6)add(2,alvo,t+": insiders "+(s.s>0?"compraram":"venderam")+" "+fnMoney(Math.abs(s.s))+" (saldo)","controladores, conselheiros e diretores nos 2 meses mais recentes",go)}}
+    });
+    if(typeof AG==="object"&&AG.dados&&AG.dados.rows){const ag=AG.dados,ix=k=>ag.cols.indexOf(k);ag.rows.forEach(r=>{const t=r[ix("t")];if(!A.has(t))return;const dc=r[ix("datacom")];const d=(Date.parse(dc+"T00:00:00Z")-hj)/DAY;if(d>=0&&d<=7)add(2,A.get(t).includes("c")?"carteira":"favoritos",t+": data-com de provento em "+fdate(Date.parse(dc+"T00:00:00Z")),"R$ "+fx(r[ix("valor")],4)+" por ação"+(r[ix("yield")]!=null?" ("+fx(r[ix("yield")],2)+"%)":""),'data-atopen="'+t+'"',"prov"+t+dc)})}
+  }
+  // 3) alertas dos favoritos que estão valendo agora
+  (FV.a||[]).forEach(a=>{const I=fvInfo(a.k),t=fvTest(a,I);if(t&&t.ok)add(1,"favoritos",(I.n||a.k)+": "+fvAlLong(a).charAt(0).toLowerCase()+fvAlLong(a).slice(1),"agora "+fvFv(a,t.x),a.k[0]==="a"?'data-atopen="'+a.k.slice(2)+'"':'data-mkgo="fv"',"al"+a.id)});
+  // 4) mercado: movimentos fora do normal, Focus, oportunidades
+  if(EU.S){[["ibov","Ibovespa"],["usd","Dólar"],["spx","S&P 500"]].forEach(([k,n])=>{const z=rdZ(EU.S[k],250);if(z&&Math.abs(z.z)>=2)add(2,"mercado",n+": "+(z.u>0?"+":"")+fx(z.u,2)+"% em "+fdate(z.t),"movimento "+fx(Math.abs(z.z),1)+" vezes maior que o normal do último ano",'data-mkgo="sem"')})}
+  if(MK.di){const ks=Object.keys(MK.di.dias).sort();if(ks.length>40){const y=+ks[ks.length-1].slice(2,4)+2,c="F"+String(y).padStart(2,"0"),S=ks.map(k=>{const x=(MK.di.dias[k]||[]).find(r=>r[0]===c);return x&&x[3]!=null?+x[3]:null});const d=[];for(let i=1;i<S.length;i++)if(S[i]!=null&&S[i-1]!=null)d.push(S[i]-S[i-1]);if(d.length>30){const u=d[d.length-1],r=d.slice(-61,-1),mu=r.reduce((a,b)=>a+b,0)/r.length,sd=Math.sqrt(r.reduce((a,b)=>a+(b-mu)**2,0)/(r.length-1));if(sd&&Math.abs((u-mu)/sd)>=2)add(2,"mercado","Juros futuros: DI de janeiro de "+(2000+y)+" "+(u>0?"subiu":"caiu")+" "+fx(Math.abs(u)*100,0)+" bps no último pregão","movimento fora do normal dos últimos 60 pregões",'data-mkgo="ju"')}}}
+  if(MC.d&&MC.d.focus){const y=new Date().getUTCFullYear();[["IPCA",y,"IPCA de "+y],["Selic",y+1,"Selic no fim de "+(y+1)]].forEach(([i,a,n])=>{const f=semFocus(i,a);if(f&&Math.abs(f.d)>=0.1)add(2,"mercado","Focus: "+n+" "+(f.d>0?"subiu":"caiu")+" para "+fx(f.v,2)+"%",(f.d>0?"+":"")+fx(f.d,2)+" p.p. na última pesquisa",'data-mkgo="ec"',"focus"+i)})}
+  try{oppData().filter(o=>isFinite(o.pctl)&&o.pctl>=95&&o.n>=500&&o.fam!=="selic").sort((a,b)=>b.pctl-a.pctl).slice(0,3).forEach(o=>add(3,"mercado",o.name+" a "+(o.fam==="ipca"?"IPCA + ":"")+fx(o.buy,2)+"%","taxa maior que em "+fx(o.pctl,0)+"% dos dias da história do título",'data-mkgo="tx"',"td"+o.k))}catch(e){}
+  if(AT.idx&&AT.C.pvp!=null){const C=AT.C,F=AT.idx.rows.filter(r=>r[C.tipo]==="FII"&&(r[C.liq]||0)>=2e6&&r[C.pvp]>0&&r[C.pvp]<=0.85&&r[C.dy]>=12&&r[C.dy]<30).sort((a,b)=>a[C.pvp]-b[C.pvp]).slice(0,3);F.forEach(r=>add(3,"mercado",r[0]+": FII com P/VP "+fx(r[C.pvp],2)+" e rendimento de "+fx(r[C.dy],1)+"%","desconto sobre o patrimônio com bom rendimento; confira vacância e inadimplência",'data-atopen="'+r[0]+'"'))}
+  // 5) qualidade dos dados
+  try{const at=du(VAL,hj);if(at>2)add(2,"app","Dados de "+fdate(VAL)+": "+at+" dias úteis sem atualização","os robôs não rodaram desde então",'data-mkgo="rs"',"dados")}catch(e){}
+  if(typeof SD==="object"&&SD.d&&SD.d.fontes){const ruins=SD.d.fontes.filter(f=>!f.ok);if(ruins.length)add(2,"app",ruins.length+(ruins.length>1?" fontes com problema":" fonte com problema")+" ou valor suspeito",ruins.slice(0,3).map(f=>f.nome).join("; "),'data-rdsaude="1"',"saude")}
+  return L;
+}
+function rdTela(){
+  const falta=rdCarrega(),L=rdSinais(),NV=["","Agir","Atenção","Oportunidade"],COR=["","var(--loss)","var(--warn)","var(--accent)"],ALV={carteira:"Carteiras",favoritos:"Favoritos",mercado:"Mercado",app:"Dados"};
+  const V=L.filter(x=>RD.f==="todos"||x.alvo===RD.f).sort((a,b)=>a.nv-b.nv||["carteira","favoritos","mercado","app"].indexOf(a.alvo)-["carteira","favoritos","mercado","app"].indexOf(b.alvo));
+  const novo=x=>!RD.vistos[x.chave];
+  let h='<h3>Radar</h3><p class="sub">O que mudou e merece atenção nas suas carteiras, nos seus favoritos e no mercado, do mais urgente ao que é só para estudar. Toque num item para abrir o detalhe.</p>'
+    +(falta.length?'<p class="sub">Carregando: '+falta.join(", ")+'…</p>':'')
+    +'<div class="fnkpis">'+[1,2,3].map(n=>tecKp(NV[n],'<span style="color:'+COR[n]+'">'+L.filter(x=>x.nv===n).length+'</span>',n===1?'pede decisão':n===2?'mudou algo relevante':'para estudar')).join("")+tecKp("Novos desde a última visita",String(L.filter(novo).length),'')+'</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px">'+fnSeg("rdf",[["todos","Tudo"],["carteira","Carteiras"],["favoritos","Favoritos"],["mercado","Mercado"],["app","Dados"]],RD.f)+'</div>';
+  if(!V.length)h+='<p class="sub">Nada pedindo atenção agora'+(RD.f!=="todos"?' neste filtro':'')+'. O Radar olha as carteiras e os favoritos: monte uma carteira em Carteiras e Simulações e favorite ativos e fundos para acompanhá-los aqui.</p>';
+  else h+='<ul class="rdl">'+V.map(x=>'<li class="rdi" style="--c:'+COR[x.nv]+'"><button type="button" class="rdb" '+x.go+'><span class="rdn">'+NV[x.nv]+' · '+ALV[x.alvo]+(novo(x)?' <b class="tag">novo</b>':'')+'</span><b class="rdt">'+esc(x.tit)+'</b>'+(x.det?'<small>'+esc(x.det)+'</small>':'')+'</button></li>').join("")+'</ul>';
+  h+='<p class="sub" style="font-size:.8rem;margin-top:8px">Os sinais vêm das telas do app: crédito e FGC das carteiras, saúde dos bancos e emissores, análise técnica, insiders, aluguel, calendário de resultados e proventos, alertas dos favoritos, juros futuros, Focus, Tesouro e FIIs. Fica tudo neste aparelho.</p>';
+  // marca como visto depois de mostrar
+  setTimeout(()=>{L.forEach(x=>RD.vistos[x.chave]=Date.now());const lim=Date.now()-30*DAY;Object.keys(RD.vistos).forEach(k=>{if(RD.vistos[k]<lim)delete RD.vistos[k]});try{localStorage.setItem("rdVistos",JSON.stringify(RD.vistos))}catch(e){}},3000);
+  return [h];
+}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-rdf],[data-rdcart],[data-rdsaude]");if(!x)return;
+  if(x.dataset.rdf){RD.f=x.dataset.rdf;mkCalc();return}
+  if(x.dataset.rdcart!=null){SP.cur=+x.dataset.rdcart;try{localStorage.setItem("spCur",String(SP.cur))}catch(y){}if(typeof SP_CMP!=="undefined")SP_CMP=null;setMod("sp");return}
+  if(x.dataset.rdsaude){const b=$("btSaude");if(b)b.click()}});
 /* ---------- Dólar: PTAX do Banco Central ---------- */
 let FX=null,FX_LOADING=false,FX_PER="1y",FX_MA=false,FXF=null,FXJ=null,FX_F1=false;
 try{FX_PER=localStorage.getItem("fxPer")||"1y";FX_MA=localStorage.getItem("fxMa")==="1";FX_F1=localStorage.getItem("fxF1")==="1"}catch(e){}
@@ -8639,15 +8827,53 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 applyData(DATA0);
 buildOptions();applyFam();renderMkt();
 pcBind();pcList();
-let m0="rs";try{m0=inicioMod()||localStorage.getItem("mod2")||"rs"}catch(e){}
+let m0="rd";try{m0=inicioMod()||localStorage.getItem("mod2")||"rd"}catch(e){}
 scBind();
 extBind();
 txBind();
 if(m0!=="pub"){try{calc()}catch(e){}}
-setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem"].includes(m0)?m0:"rs");
+setMod(["pub","pc","bank","fund","sc","sim","tx","mk","fx","rs","ec","mu","ju","cr","in","ix","fa","fr","fc","fg","ff","aa","ar","af","ab","pj","dj","ac","au","ag","sp","agm","sem","rd"].includes(m0)?m0:"rd");
 setStat("Dados de "+fdate(VAL)+"."+checkLine(),CHK.bad.length?"bad":"ok");
 
 
+/* ---------- Mercado de crédito: curva de crédito (spread mediano por rating e prazo) e valor relativo entre papéis
+   do mesmo emissor. Spread: taxa indicativa ANBIMA menos a NTN-B (IPCA+) do mesmo vencimento, ou o próprio "DI +".
+   Rating: a pior nota em escala nacional que os fundos informam à CVM para o emissor (CDA). */
+const CC={ind:"ipca",inc:"nao",por:"setor"};
+function ccSetor(x){const e=RT.emp||{},r=String(x.cod||"").slice(0,4).toUpperCase();let o=e[r];if(!o&&RT.en&&(x.emissor||x.nome)){const c=RT.en.get(rtNome(x.emissor||x.nome));o=c&&e[c]}return o&&o.setor||"Sem setor"}
+const CC_FX=[["AAA",1,1],["AA",2,4],["A",5,7],["BBB",8,10],["Abaixo de BBB",11,99]],CC_PZ=[["até 2 anos",0,2],["2 a 4",2,4],["4 a 7",4,7],["mais de 7",7,99]];
+function ccFaixa(v){if(v==null)return "Sem rating";const f=CC_FX.find(x=>v>=x[1]&&v<=x[2]);return f?f[0]:"Sem rating"}
+function ccMed(a){const v=a.slice().sort((x,y)=>x-y);if(!v.length)return null;const m=v.length>>1;return v.length%2?v[m]:(v[m-1]+v[m])/2}
+function ccHtml(){return '<div id="ccBox">'+ccIn()+'</div>'}
+function ccEspera(){setTimeout(()=>{const b=$("ccBox");if(b&&(CRB.L||CRB.err)&&RT.r)b.innerHTML=ccIn();else if(b)ccEspera()},700)}
+function ccIn(){
+  if(CRB.err)return '<h3>Curva de crédito</h3><p class="sub">Não foi possível carregar as taxas.</p>';if(!CRB.L){crbCarrega();ccEspera();return '<h3>Curva de crédito</h3><p class="sub">Carregando as taxas das debêntures…</p>'}
+  if(!RT.r){rtLoad();ccEspera();return '<h3>Curva de crédito</h3><p class="sub">Carregando os ratings…</p>'}
+  const rf=CC.ind==="ipca"?"ipca":"cdimais";
+  const L=CRB.L.filter(x=>x.tipo==="Debênture"&&x.rf===rf&&x.sp!=null&&x.dur!=null&&x.dur>0.2&&(CC.inc==="todas"||(CC.inc==="sim")===!!x.isento)).map(x=>{const a=rtAg(null,x.emissor||x.nome);return Object.assign({},x,{nota:a?a.pior:null,fx:ccFaixa(a?a.pior:null),ntxt:a?((a.L.find(o=>o.v===a.pior)||{}).nota||""):"",st:ccSetor(x)})});
+  if(L.length<10)return '<h3>Curva de crédito</h3><p class="sub">Poucas debêntures com taxa e prazo para montar a curva.</p>';
+  const gk=x=>CC.por==="setor"?x.st:x.fx,cel=(f,p)=>L.filter(x=>gk(x)===f&&x.dur>=p[1]&&x.dur<p[2]).map(x=>x.sp),fmt=v=>v==null?'—':fx(v,2);
+  let h='<h3>Curva de crédito</h3><p class="sub">Quanto as debêntures pagam acima da referência, por '+(CC.por==="setor"?"setor":"rating")+' e por prazo: a mediana mostra o preço do risco em cada faixa. Um papel muito acima da mediana do seu grupo paga mais pelo mesmo risco aparente, ou carrega um risco que a nota ainda não mostra.</p>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:8px 16px;margin:8px 0">'+fnSeg("ccind",[["ipca","IPCA + (sobre a NTN-B)"],["di","DI +"]],CC.ind)+fnSeg("ccpor",[["setor","Por setor"],["rating","Por rating"]],CC.por)+fnSeg("ccinc",[["nao","Comuns"],["sim","Incentivadas (isentas)"],["todas","Todas"]],CC.inc)+'</div>';
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">'+(CC.por==="setor"?"Setor do emissor":"Rating")+'</th>'+CC_PZ.map(p=>'<th>'+p[0]+'</th>').join("")+'<th>Papéis</th></tr></thead><tbody>'
+    +(CC.por==="setor"?[...new Set(L.map(x=>x.st))].sort((a,b)=>(a==="Sem setor")-(b==="Sem setor")||L.filter(x=>x.st===b).length-L.filter(x=>x.st===a).length):CC_FX.map(f=>f[0]).concat(["Sem rating"])).map(f=>{const n=L.filter(x=>gk(x)===f).length;if(!n)return "";return '<tr><td style="text-align:left">'+f+'</td>'+CC_PZ.map(p=>{const a=cel(f,p);return '<td>'+fmt(ccMed(a))+(a.length?' <small>('+a.length+')</small>':'')+'</td>'}).join("")+'<td>'+n+'</td></tr>'}).join("")
+    +'</tbody></table></div><p class="sub" style="font-size:.8rem">Spread mediano em pontos percentuais ao ano (entre parênteses, quantos papéis). '+(CC.por==="rating"?'Rating: pior nota em escala nacional informada pelos fundos à CVM; cobre '+fx(L.filter(x=>x.fx!=="Sem rating").length/L.length*100,0)+'% destes papéis. ':'Setor da companhia aberta na B3 pela raiz do código do papel. ')+'Taxas indicativas da ANBIMA de '+(CRB.ref?fdate(Date.parse(CRB.ref+"T00:00:00Z")):"—")+'.</p>';
+  // acima da curva: spread bem maior que a mediana do grupo (rating × prazo)
+  const grp=x=>{const p=CC_PZ.find(q=>x.dur>=q[1]&&x.dur<q[2]);return gk(x)+"|"+(p?p[0]:"")};const G=new Map();L.forEach(x=>{const k=grp(x);(G.get(k)||G.set(k,[]).get(k)).push(x.sp)});
+  const acima=L.map(x=>{const a=G.get(grp(x));return a.length>=4?Object.assign(x,{dif:x.sp-ccMed(a)}):null}).filter(x=>x&&!/^Sem /.test(gk(x))&&x.dif>=0.75).sort((a,b)=>b.dif-a.dif).slice(0,10);
+  if(acima.length)h+='<div class="label" style="margin-top:12px">Pagando bem acima do seu grupo</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Debênture</th><th>'+(CC.por==="setor"?"Setor":"Rating")+'</th><th>Prazo médio</th><th>Spread</th><th>Acima da mediana</th></tr></thead><tbody>'
+    +acima.map(x=>'<tr><td style="text-align:left"><button type="button" class="link" data-crcalc="'+esc(x.cod)+'">'+esc(x.cod)+'</button><small style="display:block;color:var(--muted)">'+esc(x.nome).slice(0,40)+'</small></td><td><small>'+esc(CC.por==="setor"?x.st:x.ntxt)+'</small></td><td>'+fx(x.dur,1)+' anos</td><td>'+fx(x.sp,2)+'</td><td><b>+'+fx(x.dif,2)+'</b></td></tr>').join("")+'</tbody></table></div>';
+  // valor relativo: papéis do mesmo emissor e prazo parecido com spreads diferentes
+  const E=new Map();L.forEach(x=>{const k=String(x.cod||"").slice(0,4).toUpperCase();(E.get(k)||E.set(k,[]).get(k)).push(x)});
+  const pares=[];E.forEach(a=>{for(let i=0;i<a.length;i++)for(let j=0;j<a.length;j++){const x=a[i],y=a[j];if(x!==y&&Math.abs(x.dur-y.dur)<=1.5&&x.sp-y.sp>=0.4)pares.push({x,y,d:x.sp-y.sp})}});
+  pares.sort((a,b)=>b.d-a.d);
+  if(pares.length)h+='<div class="label" style="margin-top:12px">Valor relativo: mesmo emissor, prazo parecido, spreads diferentes</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Paga mais</th><th style="text-align:left">Paga menos</th><th>Diferença</th></tr></thead><tbody>'
+    +pares.slice(0,10).map(p=>'<tr><td style="text-align:left"><button type="button" class="link" data-crcalc="'+esc(p.x.cod)+'">'+esc(p.x.cod)+'</button> <small>'+fx(p.x.sp,2)+' · '+fx(p.x.dur,1)+' anos</small></td><td style="text-align:left"><button type="button" class="link" data-crcalc="'+esc(p.y.cod)+'">'+esc(p.y.cod)+'</button> <small>'+fx(p.y.sp,2)+' · '+fx(p.y.dur,1)+' anos</small></td><td><b>'+fx(p.d,2)+' p.p.</b></td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem">O mesmo emissor com o mesmo prazo deveria pagar parecido. A diferença pode vir de garantia, liquidez, cláusulas ou incentivo fiscal: confira a ficha do título antes de concluir. Toque no código para abrir a calculadora.</p>';
+  return h;
+}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-ccind],[data-ccinc],[data-ccpor],[data-crcalc]");if(!x)return;
+  if(x.dataset.ccind){CC.ind=x.dataset.ccind;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}if(x.dataset.ccpor){CC.por=x.dataset.ccpor;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}if(x.dataset.ccinc){CC.inc=x.dataset.ccinc;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}
+  if(x.dataset.crcalc){const c=x.dataset.crcalc;setMod("pc");setTimeout(()=>{const i=$("pcCode");if(i){i.value=c;const b=$("pcFetch");if(b)b.click()}},80)}});
 /* ---------- tour de boas-vindas: aparece na primeira abertura em cada aparelho (e pode ser revisto em Ajustes)
    Destaca cada parte do app com um balão curto. Não aparece em navegadores automatizados (testes). */
 const TOUR=[
@@ -8799,7 +9025,7 @@ function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
 function inicioMod(){const v=lsGet("inicio","ultima");return v&&v!=="ultima"&&AREA_OF[v]?v:null}
 
 /* ---------- busca única */
-const BZ_PAL={rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
+const BZ_PAL={rd:"radar sinais atencao agir oportunidades o que mudou hoje alertas carteira favoritos",sem:"semana resumo semanal placar destaques pdf",af:"fiis fundos imobiliarios papel tijolo vacancia p/vp rendimento fiagro",ab:"estrategias filtro combinado backtest teste historico dividendos valor momento formula magica setores forca relativa",ff:"fluxo captacao resgate industria fundos categorias",pj:"planejamento aposentadoria monte carlo meta renda aporte",dj:"diario decisoes tese anotacoes",rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
   fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
   ix:"indices ima ima-b irf-m ima-s anbima renda fixa",fx:"dolar ptax cambio cupom cambial moeda",fa:"fundo analise cnpj",fr:"ranking fundos melhores",fc:"comparar fundos",fg:"gestoras administradoras",aa:"acao acoes fii etf bdr ativo analise",
   ar:"ranking acoes fiis dividendos etf etfs renda fixa cripto internacional categoria",ac:"comparar acoes ativos",au:"bolsa americana eua sec balancos",ag:"agenda proventos dividendos jcp rendimentos",sc:"cenarios juros estresse simulacao",sim:"equivalencia lci lca cdb escada vencimentos",

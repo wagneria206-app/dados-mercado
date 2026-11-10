@@ -367,3 +367,9 @@ tr.opphl td{background:color-mix(in srgb,var(--accent) 10%,transparent);transiti
 
 .fnsrch,.panel:has(.fnqbox){overflow:visible!important;position:relative;z-index:6}
 .tecler{margin:4px 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:4px;line-height:1.45}
+.rdl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rdb{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit;color:var(--ink)}
+.rdb:hover{background:var(--sunk)}
+.rdn{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rdt{font-weight:600;line-height:1.35}
+.rdb small{color:var(--muted);font-size:.84rem}

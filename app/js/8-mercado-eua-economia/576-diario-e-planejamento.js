@@ -73,5 +73,40 @@ function pjTela(){
   h+='<div class="label">Patrimônio ao longo do tempo (R$ mil, em valores de hoje)</div>'+fnChart([ser(.5,"Mediana",FN_COLS[0],2.2),ser(.1,"Cenário ruim (10%)",FN_COLS[1],1.5,"5 4"),ser(.9,"Cenário bom (90%)",FN_COLS[2],1.5,"5 4")],{fmt:"num",aria:"Planejamento"});
   h+='<p class="sub" style="font-size:.8rem">Simulação de Monte Carlo com retornos mensais aleatórios (distribuição lognormal) para o perfil escolhido, em termos reais. Não considera IR, taxas, INSS ou outras rendas. Serve para comparar caminhos (aportar mais, adiar a aposentadoria, mudar o perfil), não como promessa de resultado.</p>';
   b.innerHTML=h;
+  if(!$("pvBox"))b.insertAdjacentHTML("afterend",pvHtml());
 }
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.pj)return;const k=t.dataset.pj;PJ.c[k]=k==="perfil"?t.value:(num(t.value)||0);try{localStorage.setItem("pjCfg",JSON.stringify(PJ.c))}catch(x){}pjTela()});
+
+/* ----- Previdência: PGBL × VGBL e tabela regressiva × progressiva ----- */
+const PV={c:{renda:180000,completa:"s",aporte:21600,anos:20,ret:4,aliq:27.5,aliqSaida:15}};
+try{const c=JSON.parse(localStorage.getItem("pvCfg")||"null");if(c)Object.assign(PV.c,c)}catch(e){}
+function pvRegressiva(anos){return anos<=2?35:anos<=4?30:anos<=6?25:anos<=8?20:anos<=10?15:10}
+function pvSim(c){
+  // aportes anuais iguais, retorno real constante; no PGBL a restituição do IR (até 12% da renda) volta para o plano no ano seguinte
+  const r=c.ret/100,ded=c.completa==="s"?Math.min(c.aporte,c.renda*0.12):0,rest=ded*c.aliq/100;
+  let pg=0,vg=0,vgApl=0,lotesP=[],lotesV=[];
+  for(let a=0;a<c.anos;a++){pg=pg*(1+r)+c.aporte+(a>0?rest:0);vg=vg*(1+r)+c.aporte;lotesP.push({a,v:c.aporte+(a>0?rest:0)});lotesV.push({a,v:c.aporte})}
+  // regressiva: cada aporte tem a alíquota do seu próprio prazo
+  const cresc=a=>Math.pow(1+r,c.anos-a-1);
+  const pgReg=lotesP.reduce((s,l)=>{const bruto=l.v*cresc(l.a);return s+bruto*(1-pvRegressiva(c.anos-l.a)/100)},0);
+  const vgReg=lotesV.reduce((s,l)=>{const bruto=l.v*cresc(l.a),ganho=bruto-l.v;return s+bruto-ganho*pvRegressiva(c.anos-l.a)/100},0);
+  const pgPro=pg*(1-c.aliqSaida/100),vgPro=vg-(vg-c.aporte*c.anos)*c.aliqSaida/100;
+  return {ded,rest,pg,vg,pgReg,vgReg,pgPro,vgPro};
+}
+function pvHtml(){
+  const c=PV.c,S=pvSim(c),inp=(id,l,v,h)=>'<div class="field"><label for="'+id+'">'+l+'</label><input id="'+id+'" data-pv="'+id.slice(2)+'" inputmode="decimal" value="'+v+'">'+(h?'<small class="sub">'+h+'</small>':'')+'</div>';
+  const best=[["PGBL, tabela regressiva",S.pgReg],["PGBL, tabela progressiva",S.pgPro],["VGBL, tabela regressiva",S.vgReg],["VGBL, tabela progressiva",S.vgPro]].sort((a,b)=>b[1]-a[1]);
+  let h='<section class="panel" id="pvBox"><h3>Previdência: PGBL ou VGBL?</h3><p class="sub">Compara o valor líquido no resgate. PGBL: o aporte até 12% da renda bruta tributável sai da base do IR (só para quem faz a declaração completa), e no resgate o IR incide sobre tudo. VGBL: sem dedução, o IR incide só sobre o rendimento. A restituição do PGBL é reaplicada no plano.</p><div class="fnfilt" style="margin-top:8px">'
+    +inp("pvrenda","Renda bruta tributável por ano (R$)",fx(c.renda,0))+'<div class="field"><label for="pvcompleta">Declaração do IR</label><select id="pvcompleta" data-pv="completa"><option value="s"'+(c.completa==="s"?' selected':'')+'>Completa</option><option value="n"'+(c.completa!=="s"?' selected':'')+'>Simplificada ou isento</option></select></div>'
+    +inp("pvaporte","Aporte por ano (R$)",fx(c.aporte,0))+inp("pvanos","Anos até o resgate",c.anos)+inp("pvret","Retorno acima da inflação (% ao ano)",fx(c.ret,1))
+    +inp("pvaliq","Sua alíquota de IR hoje (%)",fx(c.aliq,1),"a faixa mais alta em que sua renda cai")+inp("pvaliqSaida","Alíquota efetiva na aposentadoria (%)",fx(c.aliqSaida,1),"para a tabela progressiva; com renda baixa no resgate ela fica pequena")+'</div>';
+  h+='<div class="fnkpis">'+tecKp("Melhor caminho",best[0][0],'líquido de '+brl(best[0][1]))+tecKp("Aporte dedutível no PGBL",brl(S.ded)+'/ano',c.completa==="s"?'restitui '+brl(S.rest)+' por ano':'sem dedução na declaração simplificada')+tecKp("Diferença para o segundo",brl(best[0][1]-best[1][1]),best[1][0])+'</div>';
+  h+='<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Plano e tabela</th><th>Valor líquido no resgate</th><th>Contra o melhor</th></tr></thead><tbody>'+best.map(x=>'<tr><td style="text-align:left">'+x[0]+'</td><td>'+brl(x[1])+'</td><td>'+(x[1]===best[0][1]?'—':'<span class="neg">−'+brl(best[0][1]-x[1])+'</span>')+'</td></tr>').join("")+'</tbody></table></div>';
+  const dic=[];if(c.completa==="s"&&c.aporte>S.ded)dic.push('O aporte acima de '+brl(S.ded)+' por ano (12% da renda) não é dedutível: essa parte rende mais num VGBL.');
+  if(c.completa!=="s")dic.push('Na declaração simplificada o PGBL não dá dedução e ainda tributa o valor inteiro no resgate: VGBL costuma ser melhor.');
+  if(/progressiva/.test(best[0][0]))dic.push('Na regressiva, os aportes dos últimos anos ainda pagam de 15% a 35% no resgate; com alíquota efetiva de '+fx(c.aliqSaida,1)+'% na aposentadoria, a progressiva sai melhor. Se a renda na aposentadoria for maior, refaça com a alíquota esperada.');
+  else if(c.anos>=10)dic.push('Com '+c.anos+' anos, a tabela regressiva chega a 10% para os aportes mais antigos e vence a progressiva com a alíquota informada.');
+  if(dic.length)h+='<ul class="tecler">'+dic.map(x=>'<li>'+x+'</li>').join("")+'</ul>';
+  return h+'<p class="sub" style="font-size:.8rem">Valores em reais de hoje, sem taxas de administração e carregamento. Tabela regressiva: 35% até 2 anos, caindo 5 pontos a cada 2 anos até 10% depois de 10 anos, contada aporte a aporte. A escolha da tabela é feita na contratação ou até o primeiro resgate, conforme as regras do plano: confirme com a seguradora.</p></section>';
+}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.pv)return;const k=t.dataset.pv;PV.c[k]=k==="completa"?t.value:(num(t.value)||0);try{localStorage.setItem("pvCfg",JSON.stringify(PV.c))}catch(x){}const b=$("pvBox");if(b)b.outerHTML=pvHtml()});

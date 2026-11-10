@@ -11,7 +11,9 @@ CODIGO=$WF/codigo            # cópia do código (repositório no GitLab)
 DADOS=$WF/dados.git          # ramos de dados
 TRAB=$WF/trabalho            # pasta de trabalho do robô do site (scripts + data/)
 WWW=$WF/www                  # o que o servidor web entrega (https://dados.wfinvestimentos.com.br/)
+export WF_DADOS="$WWW"       # os robôs leem os dados uns dos outros daqui, não do GitHub
 LOGS=$WF/logs
+export WF_LOGS="$LOGS"       # o robô de saúde conta as execuções por aqui (no GitHub era pela API)
 PY=$WF/venv/bin/python
 ROBO=${1:?informe o robô}; shift || true
 mkdir -p "$LOGS" "$WWW"
@@ -56,9 +58,10 @@ case "$ROBO" in
     else ( cd "$TRAB" && "$PY" scripts/atualizar.py "$@" ); st=$?; fi
     # o site é publicado mesmo com falha de alguma fonte (como no GitHub): o robô guarda o último dado bom de cada uma
     pub=$(mktemp -d); mkdir -p "$pub/data"; cp -a "$TRAB/data/." "$pub/data/"
+    rm -f "$pub/data/fundos_catalogo.json"   # memória do robô (15 MB), o app não lê: fica só no ramo de estado
     publicar site "$pub"; rm -rf "$pub"
     est=$(mktemp -d); mkdir -p "$est/data"
-    for p in termos cri_cra_cronogramas.json papeis_cadastrados.json curvas_hist.json fundos_hist; do [ -e "$TRAB/data/$p" ] && cp -a "$TRAB/data/$p" "$est/data/"; done
+    for p in termos cri_cra_cronogramas.json papeis_cadastrados.json curvas_hist.json fundos_hist fundos_catalogo.json; do [ -e "$TRAB/data/$p" ] && cp -a "$TRAB/data/$p" "$est/data/"; done
     publicar estado "$est"; rm -rf "$est"
     exportar site ;;
   saude)
@@ -70,4 +73,5 @@ case "$ROBO" in
   *) echo "robô desconhecido: $ROBO"; exit 2 ;;
 esac
 echo "$(date '+%F %T') $ROBO terminou com código $st em $(( $(date +%s) - inicio )) s"
+printf '%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$ROBO" "$st" "$(( $(date +%s) - inicio ))" >> "$LOGS/execucoes.tsv"
 exit $st

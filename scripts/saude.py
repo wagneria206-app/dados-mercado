@@ -280,6 +280,10 @@ def auditoria():
         if ks:
             u = {r[0]: r[3] for r in di[ks[-1]]}
             a = {r[0]: r[3] for r in di[ks[-2]]} if len(ks) > 1 else {}
+            jan = sorted((c, t) for c, t in u.items() if c.startswith("F") and t is not None)
+            iguais = len(jan) - len({t for _, t in jan})
+            if iguais >= 2:
+                P.append(f"{iguais + 1} vencimentos de janeiro com a mesma taxa: provável erro de leitura da B3")
             for cod, tx in u.items():
                 if tx is not None and not faixa(tx, 1, 40):
                     P.append(f"DI {cod}: {tx}%")
@@ -365,7 +369,45 @@ def avisos(F, hist):
             requests.patch(f"{base}/{n}", headers=h, timeout=60, json={"state": "closed"})
 
 
+NOMES_SERVIDOR = {"atualizar": "Mercado (taxas, curvas, dólar, inflação, crédito)", "rapido": "Tesouro Direto e mercado ao longo do dia",
+                  "ativos": "Bolsa (B3 e CVM)", "fundos": "Fundos (CVM)", "eua": "Bolsa americana", "macro": "Economia",
+                  "insiders": "Insiders (CVM)", "bancos": "Bancos (IF.data)", "emissores": "Emissores de debêntures (CVM)",
+                  "aluguel": "Aluguel de ações (B3)", "opcoes": "Opções (B3)", "saude": "Saúde das fontes"}
+
+
+def execucoes_servidor(pasta):
+    """Execuções no servidor próprio: uma linha por execução em execucoes.tsv (data UTC, robô, código de saída, segundos)."""
+    p = os.path.join(pasta, "execucoes.tsv")
+    if not os.path.exists(p):
+        return []
+    desde = (AGORA - dt.timedelta(days=35)).isoformat()
+    por = {}
+    with open(p, encoding="utf-8") as f:
+        for L in f:
+            x = L.rstrip("\n").split("\t")
+            if len(x) < 3 or x[0] < desde[:19]:
+                continue
+            por.setdefault(x[1], []).append((x[0], x[2] == "0"))
+    out = []
+    for robo, L in sorted(por.items()):
+        L.sort(reverse=True)
+        dias = {}
+        for em, ok in L:
+            d = (dt.datetime.fromisoformat(em.replace("Z", "+00:00")) - dt.timedelta(hours=3)).date().isoformat()
+            a = dias.setdefault(d, [0, 0])
+            a[0 if ok else 1] += 1
+        u_ok = next((em for em, ok in L if ok), None)
+        u_fa = next((em for em, ok in L if not ok), None)
+        out.append({"id": robo, "nome": NOMES_SERVIDOR.get(robo, robo), "n": len(L), "ok": sum(1 for _, ok in L if ok),
+                    "ultimo": {"em": L[0][0], "ok": L[0][1], "url": ""}, "ultimo_ok": u_ok,
+                    "ultima_falha": {"em": u_fa, "url": ""} if u_fa else None,
+                    "dias": {d: ("ok" if a[1] == 0 else "falha" if a[0] == 0 else "parcial") for d, a in dias.items()}})
+    return out
+
+
 def execucoes():
+    if os.environ.get("WF_LOGS"):
+        return execucoes_servidor(os.environ["WF_LOGS"])
     if not TOKEN:
         return []
     h = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json"}

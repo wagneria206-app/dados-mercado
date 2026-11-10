@@ -6,7 +6,7 @@ try{const r=JSON.parse(localStorage.getItem("euRk")||"null");if(r&&typeof r==="o
 try{const p=localStorage.getItem("euPer");if(p)EU.per=p}catch(e){}
 function euSave(){try{localStorage.setItem("euRk",JSON.stringify(EU.rk));localStorage.setItem("euPer",EU.per)}catch(e){}}
 const euGet=p=>fetch(EU_URL+p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status+" em "+p);return r.json()});
-function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
+function euRefresh(){if(typeof activeMod==="undefined")return;if((activeMod==="rs"||activeMod==="ju"||activeMod==="mu"||activeMod==="sem"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc();else if(activeMod==="au")euCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="aa"&&typeof atAa==="function"&&$("euEmp"))euEmpFill()}
 function euBoot(){
   if(EU.S||EU.load)return EU.load;EU.err=null;
   const b3=(typeof AT==="object"&&AT.B&&AT.cal)?Promise.resolve([{d:AT.cal},AT.B]):Promise.all([fetch(AT_URL+"cal.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(AT_URL+"bench.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null)]);

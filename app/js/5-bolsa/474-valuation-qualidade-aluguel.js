@@ -42,7 +42,7 @@ function atValHtml(A){
   if(prov>0)ref.push(["Preço-teto por dividendos (Bazin, 6%)",prov/0.06,"proventos de 12 meses ÷ 6%: até esse preço o rendimento fica em pelo menos 6% ao ano"]);
   if(i.lpa>0&&i.vpa>0)ref.push(["Preço justo de Graham",Math.sqrt(22.5*i.lpa*i.vpa),"√(22,5 × lucro por ação × valor patrimonial por ação)"]);
   if(ref.length)h+='<div class="label" style="margin-top:10px">Preços de referência</div><div class="tablewrap" style="max-height:none"><table class="ctab"><tbody>'
-    +ref.map(([n,v,d])=>'<tr><td style="text-align:left">'+n+'<small style="display:block;color:var(--muted)">'+d+'</small></td><td>R$ '+fx(v,2)+'</td><td><span class="'+(v>p?'pos':'neg')+'">'+pct((v/p-1)*100)+'</span></td></tr>').join("")+'</tbody></table></div>';
+    +ref.map(([n,v,d])=>'<tr><td style="text-align:left">'+n+' <span class="tag est" title="aproximação: veja a nota no fim do bloco">estimado</span><small style="display:block;color:var(--muted)">'+d+'</small></td><td>R$ '+fx(v,2)+'</td><td><span class="'+(v>p?'pos':'neg')+'">'+pct((v/p-1)*100)+'</span></td></tr>').join("")+'</tbody></table></div>';
   // qualidade
   const ult=ys.slice(-6),roe=ult.map(y=>f[y][3]>0?f[y][2]/f[y][3]*100:null),ml=ult.map(y=>f[y][0]?f[y][2]/f[y][0]*100:null);
   const cagr=(k)=>{if(ys.length<6)return null;const m=(i,j)=>(f[ys[ys.length-i]][k]+f[ys[ys.length-j]][k])/2,a=m(6,5),b=m(2,1);return a>0&&b>0?(Math.pow(b/a,1/4)-1)*100:null};  // média de 2 anos no início e no fim, para um ano fraco não distorcer

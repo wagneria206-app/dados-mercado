@@ -150,13 +150,13 @@ async function syncApi(metodo,corpo){
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
 function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()}}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
   // listas do comparador: vale a alteração mais recente (sem juntar, para que tirar um item também valha nos outros aparelhos)
   const lc=L.cmp||{},rc=R.cmp||{},cmp=(+rc.at||0)>(+lc.at||0)?rc:lc;
-  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp};
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp,diario:uni(L.diario,R.diario,x=>"d|"+x.id),pj:L.pj||R.pj||null};
 }
 function syncApply(D){
   const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
@@ -168,10 +168,13 @@ function syncApply(D){
   if(C&&(+C.at||0)>syncCmpAt()&&Array.isArray(C.f)&&Array.isArray(C.a)){const f=C.f.filter(x=>typeof x==="string").slice(0,25),a=C.a.filter(x=>typeof x==="string").slice(0,25);
     mudouCmp=JSON.stringify(f)!==JSON.stringify(FN.cmp)||JSON.stringify(a)!==JSON.stringify(AT.cmp);FN.cmp=f;AT.cmp=a;
     try{localStorage.setItem("fnCmp",JSON.stringify(f));localStorage.setItem("atCmp",JSON.stringify(a));localStorage.setItem("cmpAt",String(+C.at))}catch(e){}}
+  if(Array.isArray(D.diario)&&typeof DJ==='object'){DJ.L=D.diario;djSave()}
+  if(D.pj&&typeof PJ==='object'){Object.assign(PJ.c,D.pj);try{localStorage.setItem('pjCfg',JSON.stringify(PJ.c))}catch(e){}}
   fvRefresh();if(typeof activeMod!=="undefined"){if(activeMod==="sp")spCalc();else if(mudouCmp&&(activeMod==="fc"||activeMod==="ac"))fnCalc(activeMod)}
 }
+const SYNC_GITHUB=false;   // desligada: carteiras e alertas não vão mais para o GitHub (use a cópia criptografada em Ajustes)
 async function syncNow(forcar){
-  if(!SYNC.tok)return;if(SYNC.run)return SYNC.run;
+  if(!SYNC_GITHUB||!SYNC.tok)return;if(SYNC.run)return SYNC.run;
   SYNC.run=(async()=>{
     try{SYNC.st="sincronizando…";syncShow();
       for(let tent=0;tent<3;tent++){
@@ -189,8 +192,9 @@ async function syncNow(forcar){
   })().finally(()=>{SYNC.run=null});
   return SYNC.run;
 }
-function syncMark(){if(!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
+function syncMark(){if(!SYNC_GITHUB||!SYNC.tok)return;SYNC.dirty=true;syncLs();clearTimeout(SYNC.t);SYNC.t=setTimeout(()=>syncNow(),1500)}
 function syncHtml(){
+  if(!SYNC_GITHUB)return '<div class="nota fvsync"><p class="sub">A sincronização pelo GitHub foi desligada: carteiras, favoritos e alertas não saem mais deste aparelho por esse caminho. Para levar os dados a outro aparelho, use <b>Ajustes › Segurança deste aparelho › Cópia em arquivo</b> (criptografada com senha) e restaure no outro.'+(SYNC.tok?'</p><div class="spbtns"><button type="button" class="btn sec" data-syncoff="1">Apagar o token do GitHub deste aparelho</button></div>':'</p>')+'</div>';
   let h='<details class="nota fvsync"'+(SYNC.tok||SYNC.err?' open':'')+'><summary>Sincronizar com o GitHub '+(SYNC.tok?'<span class="fnq fnq1">conectado</span>':'')+'</summary><div class="fvsyncbox">';
   if(SYNC.tok)h+='<p class="sub">Conectado ao repositório privado <b>'+SYNC_REPO+'</b>. <span id="syncSt">'+esc(SYNC.err?'':SYNC.st)+'</span></p>'+(SYNC.err?'<p class="warn">Não deu para sincronizar: '+esc(SYNC.err)+'.</p>':'')+'<div class="spbtns"><button type="button" class="btn sec" data-syncnow="1">Sincronizar agora</button><button type="button" class="btn sec" data-syncoff="1">Desconectar este aparelho</button></div>';
   else h+='<p class="sub">Cole o token de acesso do GitHub (começa com <code>github_pat_</code>), criado só para o repositório privado <b>'+SYNC_REPO+'</b> com <i>Contents: Read and write</i>. Ele fica guardado só neste aparelho; faça isso uma vez em cada aparelho.</p><div class="fnfilt"><div class="field"><label for="syncTok">Token</label><input id="syncTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div><div class="field" style="align-self:end"><button type="button" class="btn" data-syncon="1">Conectar</button></div></div>'+(SYNC.err?'<p class="warn">'+esc(SYNC.err)+'</p>':'');
