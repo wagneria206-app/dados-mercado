@@ -211,6 +211,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `613-saude-dos-bancos.js` (8 KB)
 - `614-radar.js` (12 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
+- `616-curva-de-credito.js` (7 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)
 - `620-pcrebase.js` (2 KB)

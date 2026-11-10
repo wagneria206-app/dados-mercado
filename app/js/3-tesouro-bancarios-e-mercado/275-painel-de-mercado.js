@@ -45,7 +45,7 @@ function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
   else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
-  else if(activeMod==="cr")h=P(crBuscaHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
+  else if(activeMod==="cr")h=P(crBuscaHtml())+P(ccHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+agmAtalho("A data do próximo IPCA e do IPCA-15 e as novas projeções da ANBIMA estão na aba");
   else if(activeMod==="ix")h=P(imaHtml());
   else if(activeMod==="agm")h=agmTela().map(P).join("");
