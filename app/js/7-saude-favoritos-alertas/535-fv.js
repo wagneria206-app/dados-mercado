@@ -150,13 +150,13 @@ async function syncApi(metodo,corpo){
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
 function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null,ops:typeof OPS==='object'?OPS.L:[]}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};
   // listas do comparador: vale a alteração mais recente (sem juntar, para que tirar um item também valha nos outros aparelhos)
   const lc=L.cmp||{},rc=R.cmp||{},cmp=(+rc.at||0)>(+lc.at||0)?rc:lc;
-  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp,diario:uni(L.diario,R.diario,x=>"d|"+x.id),pj:L.pj||R.pj||null};
+  return {favs:uni(L.favs,R.favs,x=>"f|"+x.k),alertas:uni(L.alertas,R.alertas,x=>"a|"+x.id),carts:uni(L.carts,R.carts,x=>"c|"+x.id),del,cmp,diario:uni(L.diario,R.diario,x=>"d|"+x.id),pj:L.pj||R.pj||null,ops:uni(L.ops,R.ops,x=>"o|"+x.id)};
 }
 function syncApply(D){
   const ult=new Map(FV.a.map(a=>[a.id,a.ult]));
@@ -168,7 +168,7 @@ function syncApply(D){
   if(C&&(+C.at||0)>syncCmpAt()&&Array.isArray(C.f)&&Array.isArray(C.a)){const f=C.f.filter(x=>typeof x==="string").slice(0,25),a=C.a.filter(x=>typeof x==="string").slice(0,25);
     mudouCmp=JSON.stringify(f)!==JSON.stringify(FN.cmp)||JSON.stringify(a)!==JSON.stringify(AT.cmp);FN.cmp=f;AT.cmp=a;
     try{localStorage.setItem("fnCmp",JSON.stringify(f));localStorage.setItem("atCmp",JSON.stringify(a));localStorage.setItem("cmpAt",String(+C.at))}catch(e){}}
-  if(Array.isArray(D.diario)&&typeof DJ==='object'){DJ.L=D.diario;djSave()}
+  if(Array.isArray(D.diario)&&typeof DJ==='object'){DJ.L=D.diario;djSave()}if(Array.isArray(D.ops)&&typeof OPS==='object'){OPS.L=D.ops;opSave()}
   if(D.pj&&typeof PJ==='object'){Object.assign(PJ.c,D.pj);try{localStorage.setItem('pjCfg',JSON.stringify(PJ.c))}catch(e){}}
   fvRefresh();if(typeof activeMod!=="undefined"){if(activeMod==="sp")spCalc();else if(mudouCmp&&(activeMod==="fc"||activeMod==="ac"))fnCalc(activeMod)}
 }

@@ -104,7 +104,9 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `145-historico-de-taxas-tesouro-direto.js` — Histórico de taxas (Tesouro Direto, dia a dia) (13 KB)
 - `150-renda-fixa-bancaria-cdb-rdb.js` — Renda fixa bancária (CDB, RDB, LCI, LCA, LC, LCD, LIG, LF) (4 KB)
 - `155-bancarios-cdb-lci-lca.js` — aba ---------- (5 KB)
+- `156-teto-do-fgc.js` (6 KB)
 - `220-14-equivalencia-lci-lca-cdb.js` — 14. equivalência LCI/LCA × CDB (3 KB)
+- `221-conversor-entre-indexadores.js` (7 KB)
 - `225-12-escada-de-vencimentos.js` — 12. escada de vencimentos (12 KB)
 - `260-projecao-de-inflacao-implicita-anbima.js` — Projeção de inflação: implícita (ANBIMA) ou média dos últimos 12 meses (1 KB)
 - `275-painel-de-mercado.js` — Painel de mercado (8 KB)
@@ -141,6 +143,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `478-estrategias.js` (14 KB)
 - `479-opcoes-e-setores.js` — Opções (volatilidade implícita e puts ÷ calls, robô scripts/opcoes.py) e mapa setorial com força relativa (5 KB)
 - `480-eventos.js` — eventos (2 KB)
+- `481-operacoes-com-opcoes.js` (18 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF
 

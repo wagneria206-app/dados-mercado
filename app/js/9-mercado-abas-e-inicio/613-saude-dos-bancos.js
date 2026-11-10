@@ -2,7 +2,7 @@
    Dados do robô scripts/bancos.py (ramo "bancos"). Usado na aba Crédito e na carteira (ao lado do FGC de cada instituição). */
 const BK={d:null,err:null,load:null,q:"",abre:null,ord:"risco",nm:null};
 function bkBoot(){if(BK.d||BK.load||BK.err)return;BK.load=fetch(DADOS_RAIZ+"bancos/bancos.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{BK.d=d;BK.load=null;BK.nm=null;bkRefaz()}).catch(e=>{BK.err=e;BK.load=null})}
-function bkRefaz(){if(typeof activeMod==="undefined")return;if(activeMod==="cr"&&typeof mkCalc==="function")mkCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="bank"&&typeof bkCalc==="function")bkCalc()}
+function bkRefaz(){if(typeof activeMod==="undefined")return;if(activeMod==="cr"&&typeof mkCalc==="function")mkCalc();else if(activeMod==="sp"&&typeof spRun==="function")spRun();else if(activeMod==="bank"&&typeof bkCalc==="function"){bkCalc();if(typeof fgCalc==="function")fgCalc()}}
 const bkNome=s=>(typeof rtNome==="function"?rtNome(s):fnNorm(s||"")).replace(/\b(banco|bco|conglomerado|prudencial|multiplo|financeira|credito|financiamento|investimento|investimentos|s a)\b/g," ").replace(/\s+/g," ").trim();
 function bkSaudeCalc(b){
   const ds=Object.keys(b.h).sort(),u=b.h[ds[ds.length-1]],a=ds.length>1?b.h[ds[ds.length-2]]:null;

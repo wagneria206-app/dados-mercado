@@ -14,7 +14,7 @@ const PD={AAA:0.0001,AA:0.0005,A:0.0015,BBB:0.005,BB:0.02,B:0.06,CCC:0.25,D:1,NR
 let DEBEV={};
 /* liga os formulários das abas Bancários, Fundos e previdência, Equivalência e escada, Cenários e Mercado */
 function extBind(){
-  bkBind();fdBind();simBind();
+  bkBind();fgBind();fdBind();simBind();
   $("scVal").addEventListener("change",scCalc);
   $("mkOut").addEventListener("click",mkClick);
 }
