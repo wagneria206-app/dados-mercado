@@ -5,14 +5,21 @@ const AL={d:null,err:null,load:null};
 function alBoot(){if(AL.d||AL.load||AL.err)return;AL.load=fetch(DADOS_RAIZ+"aluguel/aluguel.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{AL.d=d;AL.load=null;if(activeMod==="aa"&&typeof atAa==="function")atAa();else if(activeMod==="sem")mkCalc()}).catch(e=>{AL.err=e;AL.load=null})}
 function vqPct(arr,p){const v=arr.filter(x=>isFinite(x)).sort((a,b)=>a-b);if(!v.length)return null;const i=(v.length-1)*p,lo=Math.floor(i),hi=Math.ceil(i);return v[lo]+(v[hi]-v[lo])*(i-lo)}
 function vqRank(arr,x){const v=arr.filter(y=>isFinite(y));if(!v.length||!isFinite(x))return null;return v.filter(y=>y<=x).length/v.length*100}
+/* ações em circulação numa data: a quantidade do fim do exercício (composição do capital na DFP), corrigida pelos
+   desdobramentos e grupamentos ocorridos até a data; sem esse dado, null (o P/L usa a quantidade atual) */
+function vqAcoesEm(A,ano,fim,t){const H=A.fund&&A.fund.caph,now=A.ind&&A.ind.acoes;let q=H&&H[ano];if(!q||!now)return null;
+  const r=now/q;if(r>500&&r<2000)q*=1000;   // composição do capital informada em milhares
+  const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));let ft=1,fh=1;
+  spl.forEach(e=>{const te=AT.T[e[0]];if(te>fim&&te<=t)ft/=e[1];if(te>fim)fh/=e[1]});
+  const hoje=q*fh/now;return hoje>0.33&&hoje<3?q*ft:null}   // incoerente com a quantidade atual: descarta
 function vqSerie(A){ // P/L e P/VP mensais nos últimos 10 anos, com o último balanço anual publicado em cada mês
   const f=A.fund&&A.fund.a,acoes=A.ind&&A.ind.acoes;if(!f||!acoes)return null;
-  const anos=Object.keys(f).sort().map(y=>({fim:Date.parse(f[y][7]+"T00:00:00Z"),ll:f[y][2],pl:f[y][3]})).filter(x=>isFinite(x.fim));
+  const anos=Object.keys(f).sort().map(y=>({ano:String(f[y][7]).slice(0,4),fim:Date.parse(f[y][7]+"T00:00:00Z"),ll:f[y][2],pl:f[y][3]})).filter(x=>isFinite(x.fim));let nh=0;
   const S=tecSerie(A),pl=[],pvp=[],t0=Date.now()-10*365.25*DAY;let ult=-1;
   for(let k=0;k<S.t.length;k++){const t=S.t[k];if(t<t0)continue;const d=new Date(t),nx=k+1<S.t.length?new Date(S.t[k+1]):null;if(nx&&nx.getUTCMonth()===d.getUTCMonth())continue;
-    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const mc=S.c[k]*acoes;
+    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const qt=vqAcoesEm(A,b.ano,b.fim,t),mc=qt?A.R[k]*qt:S.c[k]*acoes;if(qt)nh++;
     if(b.ll>0)pl.push([t,mc/b.ll]);if(b.pl>0)pvp.push([t,mc/b.pl]);ult=k}
-  return pl.length>=12?{pl,pvp}:null;
+  return pl.length>=12?{pl,pvp,hist:nh>=pl.length/2}:null;
 }
 function vqFscore(f){ // F-score de Piotroski simplificado: 6 dos 9 critérios (os balanços do app não trazem fluxo de caixa operacional, liquidez corrente nem margem bruta)
   const ys=Object.keys(f).sort();if(ys.length<2)return null;const a=f[ys[ys.length-1]],b=f[ys[ys.length-2]];
@@ -60,7 +67,7 @@ function atValHtml(A){
     +'<tr><td style="text-align:left">Margem líquida</td>'+ml.map(v=>'<td>'+pct(v)+'</td>').join("")+'</tr>'
     +'<tr><td style="text-align:left">Dívida líquida ÷ patrimônio</td>'+ult.map(y=>{const x=f[y];return '<td>'+(x[3]>0?fx(((x[6]||0)-(x[5]||0))/x[3],2):'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
   if(F)h+='<p class="sub" style="font-size:.8rem">F-score ('+F.ano+' contra o ano anterior): '+F.C.map(c=>(c[1]?'✓ ':'✗ ')+c[0].toLowerCase()).join(" · ")+'. Versão com 6 dos 9 critérios de Piotroski.</p>';
-  h+='<p class="sub" style="font-size:.8rem">Balanços anuais entregues à CVM (DFP), consolidados. Preços ajustados por desdobramentos; quantidade de ações atual (recompras e emissões passadas não são refeitas). Preços de referência são pontos de partida, não preço-alvo.</p></section>';
+  h+='<p class="sub" style="font-size:.8rem">Balanços anuais entregues à CVM (DFP), consolidados. '+(V&&V.hist?'Valor de mercado de cada mês com a quantidade de ações daquela época (composição do capital na DFP, corrigida por desdobramentos).':'Preços ajustados por desdobramentos; quantidade de ações atual (recompras e emissões passadas não são refeitas).')+' Preços de referência são pontos de partida, não preço-alvo.</p></section>';
   return h+atAlugHtml(A);
 }
 function atAlugHtml(A){

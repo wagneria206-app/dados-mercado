@@ -135,7 +135,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `471-barra-de-acoes-e-sinais.js` — Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação (4 KB)
 - `472-analise-tecnica.js` — análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências (9 KB)
 - `473-insiders.js` — Insiders: compras e vendas de controladores, conselheiros e diretores (CVM, Resolução 44) (5 KB)
-- `474-valuation-qualidade-aluguel.js` (11 KB)
+- `474-valuation-qualidade-aluguel.js` (12 KB)
 - `475-ranking.js` — ranking (6 KB)
 - `477-panorama-dos-fiis.js` — Bolsa › FIIs: panorama dos fundos imobiliários, Fiagros e FI-Infra por segmento, descontos e prêmio sobre o Tesouro IPCA+ (8 KB)
 - `478-estrategias.js` (14 KB)
@@ -195,7 +195,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `585-economia-brasil.js` — Economia (Brasil) (12 KB)
 - `587-ano-a-ano-precificado.js` — Ano a ano: juros e inflação que o mercado precifica para cada ano × Focus (2 KB)
 - `590-eua-e-mundo.js` — EUA e mundo (12 KB)
-- `595-carteira-exposicoes-e-teste-de.js` — Carteira: exposições e teste de estresse (modelo de fatores com retornos mensais) (9 KB)
+- `595-carteira-exposicoes-e-teste-de.js` — Carteira: exposições e teste de estresse (modelo de fatores com retornos mensais) (12 KB)
 - `600-bolsa-eua-comparar-formas-de.js` — Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil (7 KB)
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização

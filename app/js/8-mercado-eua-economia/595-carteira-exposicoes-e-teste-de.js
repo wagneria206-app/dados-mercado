@@ -40,6 +40,22 @@ function stCenarios(){
 }
 /* efeito do choque: Bolsa e juros somam; dólar e S&P 500 compõem (multiplicam), como num ativo no exterior convertido em reais */
 function stImp(b,f,base){return (1+base+b[0]*f[0]+b[2]*f[2]+b[3]*f[3])*(1+b[1]*f[1])*(1+b[4]*f[4])-1}
+/* exposição cambial pela composição: o que está no exterior, em fundo cambial ou em empresa com receita ligada ao dólar,
+   ao lado da sensibilidade medida (dólar +10% → quanto o item move a carteira) */
+const ST_EXPORT=/minerais metalicos|mineracao|siderurgia|papel e celulose|celulose|carnes|acucar|agricultura|agropecuaria|petroleo|material aeronautico|madeira|quimicos|calcados|maquinas e equip/;
+function stCambioTipo(x){const cl=spCl(x);if(cl==="intl")return [1,"No exterior (BDR, ETF ou fundo)"];if(cl==="ouro")return [1,"Dólar, ouro ou commodities"];
+  if(x.t==="a"&&cl==="acoes"){if(typeof RT!=="object"||!RT.emp){if(typeof rtLoad==="function")rtLoad();return [0,""]}const e=RT.emp[String(x.k).slice(0,4)];
+    if(e&&ST_EXPORT.test(fnNorm((e.sub||"")+" "+(e.sseg||""))))return [2,"Receita ligada ao dólar ("+esc(e.sseg||e.sub)+")"]}
+  return [0,""]}
+function stCambioHtml(it,B,pesos,tot){
+  const L=it.map((x,i)=>{const t=stCambioTipo(x),w=pesos[i]/tot,b=B[i]?B[i].b[1]:null;return {n:spItemNome(x),w,t,c:b==null?null:w*b*10}}).filter(o=>o.t[0]||(o.c!=null&&Math.abs(o.c)>=0.05));
+  if(!L.length)return "";const dir=L.filter(o=>o.t[0]===1).reduce((a,o)=>a+o.w,0),ind=L.filter(o=>o.t[0]===2).reduce((a,o)=>a+o.w,0);
+  L.sort((a,b)=>Math.abs(b.c||0)-Math.abs(a.c||0)||b.w-a.w);
+  return '<details style="margin-top:10px"><summary>Exposição ao dólar: de onde vem</summary><p class="sub" style="margin:6px 0">Pela composição: <b>'+fx(dir*100,0)+'%</b> da carteira está no exterior ou em dólar, ouro e commodities'+(ind?' e <b>'+fx(ind*100,0)+'%</b> em empresas brasileiras com receita ligada ao dólar (exportadoras e commodities)':'')+'. Pela sensibilidade medida, a coluna mostra quanto cada item move a carteira se o dólar subir 10%.</p>'
+    +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Item</th><th>Peso</th><th style="text-align:left">Ligação com o dólar</th><th>Dólar +10%</th></tr></thead><tbody>'
+    +L.slice(0,12).map(o=>'<tr><td style="text-align:left">'+esc(String(o.n).slice(0,44))+'</td><td>'+fx(o.w*100,0)+'%</td><td style="text-align:left"><small>'+(o.t[1]||'medida pelo histórico')+'</small></td><td>'+(o.c==null?'<small>histórico curto</small>':mcSig(o.c,1))+'</td></tr>').join("")
+    +'</tbody></table></div><p class="sub" style="font-size:.8rem">Empresas exportadoras se classificam pelo segmento na B3 (mineração, siderurgia, celulose, carnes, petróleo, aviação e outros). A ligação pela composição não garante o movimento: a coluna da direita é o que o histórico de 5 anos mostra.</p></details>';
+}
 function spStressHtml(c,it,R){
   if(!R||!R.D||!FN.L)return "";if(typeof EU==="object"&&!EU.S&&!EU.load&&!EU.err)euBoot();const pesos=it.map(x=>+x.w||0),tot=pesos.reduce((a,b)=>a+b,0);if(!tot)return "";
   const B=R.D.map(d=>stBeta(d.m)),S=stCenarios(),pat=R.pts&&R.pts.length?R.pts[R.pts.length-1].v:(+c.valor||0);
@@ -50,7 +66,7 @@ function spStressHtml(c,it,R){
   const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
   const maior=it.map((x,i)=>[spItemNome(x),pesos[i]/tot*100]).sort((a,b)=>b[1]-a[1]);
   let h='<section class="panel" data-reltit="Exposições e teste de estresse"><h3>Exposições e teste de estresse</h3><p class="sub">Quanto a carteira tende a ganhar ou perder em choques de mercado. Cada item é medido pela forma como reagiu, mês a mês nos últimos 5 anos, ao Ibovespa, ao dólar, ao S&P 500 e aos juros (IMA-B e IRF-M); a carteira soma os itens pelos pesos.</p>';
-  h+='<div class="fnkpis">'+kp("Sensibilidade à Bolsa",fx(ex[0],2),'beta: Ibovespa +10% → carteira '+mcSig(ex[0]*10,1))+kp("Exposição ao dólar",fx(ex[1]*100,0)+'%','dólar +10% → carteira '+mcSig(ex[1]*10,1))+kp("Sensibilidade aos juros",fx(durEq,1)+' anos','duração equivalente: juros +1 p.p. → '+mcSig(-durEq,1))+kp("Maior item",fx(maior[0][1],0)+'%',esc(String(maior[0][0]).slice(0,40)))+kp("Sensibilidade à Bolsa americana",fx(ex[4],2),'S&P 500 +10% (em dólar) → carteira '+mcSig(ex[4]*10,1))+(cob<0.995?kp("Itens medidos",fx(cob*100,0)+'% da carteira','os demais têm menos de 2 anos de histórico'):'')+'</div>';
+  h+='<div class="fnkpis">'+kp("Sensibilidade à Bolsa",fx(ex[0],2),'beta: Ibovespa +10% → carteira '+mcSig(ex[0]*10,1))+kp("Exposição ao dólar",fx(ex[1]*100,0)+'%','dólar +10% → carteira '+mcSig(ex[1]*10,1))+kp("Sensibilidade aos juros",fx(durEq,1)+' anos','duração equivalente: juros +1 p.p. → '+mcSig(-durEq,1))+kp("Maior item",fx(maior[0][1],0)+'%',esc(String(maior[0][0]).slice(0,40)))+kp("Sensibilidade à Bolsa americana",fx(ex[4],2),'S&P 500 +10% (em dólar) → carteira '+mcSig(ex[4]*10,1))+(cob<0.995?kp("Itens medidos",fx(cob*100,0)+'% da carteira','os demais têm menos de 2 anos de histórico'):'')+'</div>'+stCambioHtml(it,B,pesos,tot);
   // cenários
   const real=(d,k0,k1)=>{const a=d.m.get(k0),b=d.m.get(k1);return a&&b?b/a-1:null};
   const linhas=S.map((s,si)=>{let imp=0,est=false;const cont=it.map((x,i)=>{const w=pesos[i]/tot;let r=null;
