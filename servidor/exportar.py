@@ -4,11 +4,15 @@ Uso:
   python exportar.py <repo de dados> <pasta de saída> [ramo ...]
   python exportar.py --pacote <repo> <pasta> <index.html> <meta>   # pacote do app para a Cloudflare (app + dados)
 
+No pacote, os dados vão compactados (.json.gz, etiqueta <meta name="wf-gz" content="1">): o app descompacta no
+navegador, e o pacote cai para cerca de um terço do tamanho. Arquivos que o app não lê ficam de fora.
+
 A pasta de saída tem a mesma organização dos ramos (site/data/…, fundos/idx.json, …). Os arquivos de cada fundo,
 ativo e empresa americana são agrupados em pacotes (<ramo>/pk/<dir>-<chave>.json), com a mesma chave que o app
 usa (app/js/1-nucleo/001-onde-ficam-os-dados.js). A troca é atômica: cada ramo é montado numa pasta nova e só
 então substitui a anterior, para o app nunca ler um ramo pela metade.
 """
+import gzip
 import json
 import os
 import re
@@ -70,6 +74,23 @@ def exportar_ramo(repo, ramo, destino):
     return n
 
 
+FORA_DO_PACOTE = ("site/data/fundos_catalogo.json", "site/data/td_intradiario.json", "ativos/etf_b3.json", "eua/sec_tickers.json", "site/data/diag/")
+
+
+def compactar(pasta):
+    """Troca cada .json da pasta por .json.gz e tira o que o app não lê."""
+    for r, _, fs in os.walk(pasta):
+        for f in fs:
+            p = os.path.join(r, f)
+            rel = os.path.relpath(p, pasta).replace(os.sep, "/")
+            if rel.startswith(FORA_DO_PACOTE):
+                os.remove(p)
+            elif f.endswith(".json"):
+                with open(p, "rb") as i, gzip.GzipFile(p + ".gz", "wb", compresslevel=9, mtime=0) as o:
+                    shutil.copyfileobj(i, o)
+                os.remove(p)
+
+
 def main():
     a = sys.argv[1:]
     if a and a[0] == "--pacote":
@@ -78,13 +99,14 @@ def main():
         os.makedirs(os.path.join(saida, "dados"))
         html = open(index, encoding="utf-8").read()
         assert '<meta name="wf-dados" content="github">' in html
-        open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html.replace('<meta name="wf-dados" content="github">', f'<meta name="wf-dados" content="{meta}">'))
+        open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html.replace('<meta name="wf-dados" content="github">', f'<meta name="wf-dados" content="{meta}"><meta name="wf-gz" content="1">'))
         raiz = os.path.dirname(os.path.abspath(index))
         for f in ["manifest.webmanifest", "sw.js", "icone-192.png", "icone-512.png"]:
             shutil.copy(os.path.join(raiz, f), saida)
         for r in RAMOS:
             if existe(repo, r):
                 print(r, exportar_ramo(repo, r, os.path.join(saida, "dados")), "arquivos")
+        compactar(os.path.join(saida, "dados"))
         return
     repo, saida, *ramos = a
     os.makedirs(saida, exist_ok=True)
