@@ -8,8 +8,9 @@ usa o que um investidor sabia em cada data, sem olhar o futuro.
 Lê o idx.json, cal.json, bench.json e as cotações (a/<código>.json ou pk/a-<letra>.json) já gravados pelo robô de
 ativos e grava painel.json na mesma pasta. Não acessa a internet.
 
-Aproximação conhecida: o valor de mercado usa a quantidade de ações atual com preços ajustados por desdobramentos
-(recompras e emissões antigas não são refeitas).
+Valor de mercado: cotação × ações em circulação no fim do último exercício publicado (composição do capital na DFP,
+fund.caph), corrigidas pelos desdobramentos até a data. Sem esse dado (ou se ele não bate com a quantidade atual), usa a
+quantidade atual com preços ajustados por desdobramentos.
 
 Uso: python scripts/painel_mensal.py <pasta do ramo ativos>
 """
@@ -112,6 +113,23 @@ def calcular(pasta):
         fund = ((j.get("fund") or {}).get("a")) or {}
         anos = sorted((v[7], v[2], v[3]) for v in fund.values() if v and v[7])
         acoes = (j.get("ind") or {}).get("acoes")
+        caph = (j.get("fund") or {}).get("caph") or {}
+        spl = [(cal[e[0]] if e[0] < len(cal) else "9999", e[1]) for e in adj if str(e[2]).startswith("S")]
+
+        def acoes_em(fim, dref):
+            """Ações em circulação em dref: as do fim do exercício, corrigidas pelos desdobramentos até dref."""
+            q = caph.get(fim[:4])
+            if not q or not acoes:
+                return None
+            if 500 < acoes / q < 2000:          # composição do capital informada em milhares
+                q *= 1000
+            ft = fh = 1.0
+            for d, f in spl:
+                if d > fim:
+                    fh /= f
+                    if d <= dref:
+                        ft /= f
+            return q * ft if 0.33 < q * fh / acoes < 3 else None
         ret, liq, dy, pl, pvp, roe = [], [], [], [], [], []
         ant = None
         for m in meses:
@@ -139,9 +157,10 @@ def calcular(pasta):
                 y, mm = int(fim[:4]), int(fim[5:7]) + 4      # disponível a partir do 1º dia do 4º mês depois do fim do exercício
                 y, mm = y + (mm - 1) // 12, (mm - 1) % 12 + 1
                 if f"{y:04d}-{mm:02d}-01" <= dref:
-                    bal = (ll, plq)
+                    bal = (ll, plq, fim)
             if bal and acoes:
-                mc = S[p] * acoes
+                qt = acoes_em(bal[2], dref)
+                mc = R[p] * qt if qt else S[p] * acoes
                 pl.append(r2(mc / bal[0], 1) if bal[0] and bal[0] > 0 else None)
                 pvp.append(r2(mc / bal[1]) if bal[1] and bal[1] > 0 else None)
                 roe.append(r2(bal[0] / bal[1] * 100, 1) if bal[1] and bal[1] > 0 and bal[0] is not None else None)

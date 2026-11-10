@@ -740,7 +740,7 @@ def balancos(est, fund):
     feitos = set(est.get("dfp_feitos", []))
     anos = list(range(HOJE.year - 10, HOJE.year))
     for ano in anos:
-        chave = f"dfp{ano}"
+        chave = f"dfp{ano}c"      # "c": a partir daqui também guarda a quantidade de ações de cada ano (caph)
         if chave in feitos and ano < HOJE.year - 1:
             continue
         if time.time() > LIMITE - 300:
@@ -763,6 +763,8 @@ def balancos(est, fund):
                 f = fund.setdefault(k, {})
                 if not f.get("cap") or v[0] > f["cap"][0]:
                     f["cap"] = list(v)
+                if v[0] and (v[1] or v[2]):   # ações em circulação no fim de cada exercício (sem as de tesouraria)
+                    f.setdefault("caph", {})[v[0][:4]] = (v[1] or 0) + (v[2] or 0)
             feitos.add(chave)
             log("DFP", ano, "ok")
         except Exception as e:  # noqa: BLE001
@@ -1400,7 +1402,7 @@ def principal():
                 reg["cnpj"] = cn
             f = fund.get(cn) if cn else None
             if f:
-                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "cnpj": cn,
+                reg["fund"] = {"a": f.get("a"), "bp": f.get("bp"), "cap": f.get("cap"), "caph": f.get("caph"), "cnpj": cn,
                                "receb": dict(sorted((f.get("receb") or {}).items())[-8:])}
                 l, lfim = ltm(f)
                 # valor de mercado: ações ON e PN em circulação × cotação da classe (ou da outra classe se não negociar)
