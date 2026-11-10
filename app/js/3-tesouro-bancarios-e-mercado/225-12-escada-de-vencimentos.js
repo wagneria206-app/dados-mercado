@@ -84,12 +84,12 @@ function ladderChartY(YR,y0,y1){
 function txLastBuy(kind,d){const n=TX_KIND.indexOf(kind);if(n<0)return null;const s=txIndex().get(n+"|"+txMatFromKind(kind,d));if(!s||!s.t.length)return null;const i=s.t.length-1;return VAL-s.t[i]<=10*DAY?s.c[i]:null}
 
 
-function simCalc(){eqCalc();ladderCalc()}
+function simCalc(){cvCalc();eqCalc();ladderCalc()}
 function simBind(){
   ["eqIdx","eqDir"].forEach(id=>$(id).addEventListener("change",eqCalc));["eqRate","eqMat"].forEach(id=>$(id).addEventListener("input",eqCalc));
   ["ldType","ldMode","ldY0","ldY1"].forEach(id=>$(id).addEventListener("change",ladderCalc));$("ldAmt").addEventListener("input",()=>{clearTimeout(simBind.t);simBind.t=setTimeout(ladderCalc,250)});
   const y=new Date(VAL).getUTCFullYear();[$("ldY0"),$("ldY1")].forEach((s,i)=>{for(let k=y;k<=y+60;k++){const o=document.createElement("option");o.value=k;o.textContent=k;s.appendChild(o)}s.value=i?y+10:y+1});
-  $("eqMat").value=isoD(addMonths(VAL,24));
+  $("eqMat").value=isoD(addMonths(VAL,24));cvBind();
 }
 
 
