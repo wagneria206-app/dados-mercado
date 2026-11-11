@@ -150,7 +150,7 @@ async function syncApi(metodo,corpo){
 }
 function syncCarts(){try{return SP.carts.map(c=>{if(!c.id)c.id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);return c})}catch(e){return []}}
 function syncCmpAt(){try{return +localStorage.getItem("cmpAt")||0}catch(e){return 0}}
-function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null,ops:typeof OPS==='object'?OPS.L:[]}}
+function syncLocal(){return {favs:FV.l,alertas:FV.a.map(a=>({id:a.id,k:a.k,c:a.c,v:a.v})),carts:syncCarts(),del:SYNC.del,cmp:{f:FN.cmp.slice(),a:AT.cmp.slice(),at:syncCmpAt()},diario:typeof DJ==='object'?DJ.L:[],pj:typeof PJ==='object'?PJ.c:null,ops:typeof OPS==='object'?OPS.L:[],cbLog:(()=>{try{return JSON.parse(localStorage.getItem('cbLog')||'[]')}catch(e){return []}})()}}
 function syncMerge(L,R){ // une as duas versões; o que foi apagado em qualquer aparelho continua apagado
   const del=Object.assign({},R.del||{},L.del||{}),vivo=k=>!del[k];
   const uni=(a,b,key)=>{const m=new Map();(b||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});(a||[]).forEach(x=>{if(x&&vivo(key(x)))m.set(key(x),x)});return [...m.values()]};

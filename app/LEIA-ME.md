@@ -165,7 +165,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `530-agenda-de-proventos-situacao-das.js` — Agenda de proventos, situação das bases, app instalável e importação de posição (13 KB)
 - `533-saude-das-fontes.js` — Mercado › Resumo: saúde das fontes (robô "Saúde das fontes", ramo saude) (6 KB)
 - `534-saude-no-cabecalho.js` — saúde das fontes no cabeçalho: um ícone com a cor da situação (verde, amarelo, vermelho) que abre o painel completo (2 KB)
-- `535-fv.js` (25 KB)
+- `535-fv.js` (26 KB)
 - `536-alertas-de-economia.js` (4 KB)
 - `538-seguranca-deste-aparelho.js` (9 KB)
 - `540-risco.js` (3 KB)
@@ -205,14 +205,17 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
+- `592-fatos-e-trimestres.js` (7 KB)
+- `593-veredito-do-comparador.js` (3 KB)
+- `594-placar-dos-sinais.js` (4 KB)
 - `596-diversificacao-e-simulador.js` (13 KB)
 - `597-parecer-wf.js` (8 KB)
 - `598-pergunte-ao-wf.js` (10 KB)
 - `599-parecer-do-titulo.js` (5 KB)
 - `601-mercado-fora-do-padrao.js` (5 KB)
-- `602-cerebro.js` (26 KB)
+- `602-cerebro.js` (28 KB)
 - `603-cerebro-fundos-credito-carteira.js` (10 KB)
-- `604-consultor-da-carteira.js` (16 KB)
+- `604-consultor-da-carteira.js` (17 KB)
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)

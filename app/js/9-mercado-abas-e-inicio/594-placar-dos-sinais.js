@@ -1,0 +1,23 @@
+/* ---------- Placar dos sinais: os sinais do cérebro funcionaram no passado? Para cada mês desde 2012, recalcula o
+   percentil do prêmio só com os dados disponíveis ATÉ aquele mês (sem olhar o futuro) e mede o que a classe rendeu nos
+   12 meses seguintes contra o CDI. Compara com os meses sem sinal. Também guarda no aparelho cada leitura do mapa
+   tático ("cbLog"), para conferir os acertos daqui para a frente. */
+function cbPlacar(){
+  const S=cbSeries();if(!S)return null;const {M,cmv,ey,ip,us,B}=S,i0=M.indexOf("201001");if(i0<0)return null;
+  const cdi12=i=>{let f=1;for(let j=i+1;j<=i+12;j++){const x=B.cdi[M[j]];if(x==null)return null;f*=1+x/100}return f-1},fw=(o,i)=>o[M[i]]&&o[M[i+12]]?o[M[i+12]]/o[M[i]]-1:null;
+  const DEF=[["IPCA+ com juro real alto","ipca",k=>cmv("real5",k),80,1,"imab","IMA-B"],["Prefixado com inflação implícita alta","pre",k=>{const a=cmv("pre5",k),b=cmv("real5",k);return a!=null&&b!=null?((1+a/100)/(1+b/100)-1)*100:null},80,1,"irfm","IRF-M"],
+    ["Bolsa barata contra os juros","acoes",k=>ey[k]!=null&&cmv("real5",k)!=null?ey[k]-cmv("real5",k):null,70,1,"ibov","Ibovespa"],["Bolsa cara contra os juros","acoes",k=>ey[k]!=null&&cmv("real5",k)!=null?ey[k]-cmv("real5",k):null,30,-1,"ibov","Ibovespa"],
+    ["Dólar barato em termos reais","usd",k=>{const u=B.usd[k],c=us[k],i=ip[k];return u&&c&&i?u*c/i:null},20,-1,"usd","Dólar"]];
+  return DEF.map(([nome,cls,f,lim,dir,ik,inm])=>{const V=M.map(f),com=[],sem=[];
+    for(let i=i0+24;i<M.length-12;i++){const v=V[i];if(v==null)continue;const h=V.slice(i0,i).filter(x=>x!=null);if(h.length<24)continue;const p=h.filter(x=>x<v).length/h.length*100,r=fw(B[ik],i),c=cdi12(i);if(r==null||c==null)continue;
+      const ex=(ik==="usd"?r:(1+r)/(1+c)-1)*100;((dir>0?p>=lim:p<=lim)?com:sem).push(ex)}
+    const st=a=>a.length?{n:a.length,m:a.reduce((s,x)=>s+x,0)/a.length,ac:a.filter(x=>x>0).length/a.length*100}:null,espera=cls==="acoes"&&dir<0?-1:1;
+    return {nome,inm,com:st(com),sem:st(sem),espera,usd:ik==="usd"}}).filter(x=>x.com&&x.com.n>=6&&x.sem)}
+function cbLogGrava(Mp){try{const d=cdDataRef(),L=JSON.parse(localStorage.getItem("cbLog")||"[]");if(L.length&&L[L.length-1].d===d)return L;L.push({d,r:Mp.reg?Mp.reg.hj.s:null,t:Object.fromEntries(Mp.C.map(c=>[c.k,c.t]))});while(L.length>800)L.shift();localStorage.setItem("cbLog",JSON.stringify(L));return L}catch(e){return []}}
+function cbPlacarHtml(Mp){
+  let P=null;try{P=cbPlacar()}catch(e){console.error(e)}const L=Mp?cbLogGrava(Mp):[];if(!P||!P.length)return "";
+  let h='<h3>Placar: os sinais funcionaram?</h3><p class="sub">Cada sinal de prêmio do mapa tático, testado mês a mês desde 2012 usando só o que se sabia na época. Mostra o que a classe rendeu nos 12 meses seguintes, acima do CDI, com o sinal e sem ele.</p><div class="tablewrap" style="max-height:none"><table class="ctab" data-ordok="1"><thead><tr><th style="text-align:left">Sinal</th><th>Vezes</th><th>Com o sinal<br><small>12 meses seguintes</small></th><th>Deu certo em</th><th>Sem o sinal</th><th style="text-align:left">Leitura</th></tr></thead><tbody>'
+    +P.map(x=>{const dif=(x.com.m-x.sem.m)*x.espera,ac=x.espera>0?x.com.ac:100-x.com.ac,ok=dif>2&&ac>=55,ruim=dif<-2||ac<45;return '<tr><td style="text-align:left"><b>'+x.nome+'</b><small style="display:block;color:var(--muted)">'+x.inm+(x.usd?', variação em 12 meses':' menos o CDI')+'</small></td><td>'+x.com.n+'</td><td><b>'+mcSig(x.com.m,1)+'</b></td><td>'+fx(ac,0)+'%</td><td>'+mcSig(x.sem.m,1)+'<small style="display:block;color:var(--muted)">'+x.sem.n+' meses</small></td><td style="text-align:left"><small><b style="color:'+(ok?'var(--gain)':ruim?'var(--loss)':'var(--warn)')+'">'+(ok?'funcionou':ruim?'não funcionou':'inconclusivo')+'</b>'+(x.espera<0?' (esperado: render menos)':'')+'</small></td></tr>'}).join("")+'</tbody></table></div>'
+    +'<p class="sub" style="font-size:.8rem;margin-top:6px">"Deu certo": a classe rendeu mais que o CDI nos 12 meses seguintes (no sinal de Bolsa cara, menos; no dólar, subiu). Os meses se sobrepõem (janelas de 12 meses), então o número de episódios independentes é bem menor que o de meses: leia como indício, não como prova. São só '+(new Date(VAL).getUTCFullYear()-2012)+' anos de história, com poucos ciclos de juros.'
+    +(L.length?' Leituras do mapa tático guardadas neste aparelho: '+L.length+' desde '+fdate(Date.parse(L[0].d+"T00:00:00Z"))+'; com o tempo, este quadro passa a conferir também os acertos reais do app.':'')+'</p>';
+  return h}

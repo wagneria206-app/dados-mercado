@@ -29,6 +29,7 @@ function cmpHtml(K,st){
   const Fs=K.list.map(k=>K.files.get(k)).filter(Boolean),col=j=>CMP_COLS[j%CMP_COLS.length];
   let h='<div class="cmphead"><span class="sub">'+Fs.length+' de '+CMP_MAX+'</span><button type="button" class="link" data-cmpclear="'+K.kind+'">Limpar tudo</button><button type="button" class="link" data-cmpcsv="'+K.kind+'">Baixar tabela (CSV)</button><button type="button" class="link" data-rel="'+(K.kind==="f"?"fc":"ac")+'">Relatório PDF</button><button type="button" class="link" data-cmp2sp="'+K.kind+'">Criar carteira/proposta com estes itens</button></div>';
   h+='<div class="fnchips">'+Fs.map((F,j)=>'<span class="fnchip"><i style="background:'+col(j)+'"></i><button type="button" class="link" data-'+K.open+'="'+K.key(F)+'">'+esc(K.name(F).slice(0,46))+'</button><button type="button" class="fnx" data-cmprm="'+K.kind+'|'+K.key(F)+'" aria-label="Remover">×</button></span>').join("")+'</div>';
+  h+=cmpVeredito(K);
   h+=fnSeg("cmpper",FN_PER.filter(x=>x[0]!=="mes").concat([["custom","Datas livres"]]),st.per);
   if(st.per==="custom")h+='<div class="cmpdates"><label>De <input type="date" data-cmpini="'+K.kind+'" value="'+esc(st.ini)+'"></label><label>até <input type="date" data-cmpfim="'+K.kind+'" value="'+esc(st.fim)+'"></label></div>';
   h+='<div class="cvsel cmpopt"><label><input type="checkbox" data-cmpsame="'+K.kind+'"'+(st.same?' checked':'')+'>Mesmo início para todos</label></div>'+fnBmSel();
