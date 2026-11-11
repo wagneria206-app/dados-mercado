@@ -6,7 +6,7 @@ function atAa(){
   if(!AT.files.has(t)){b.innerHTML='<section class="panel"><p class="sub">Carregando '+esc(t)+'…</p></section>';
     atFile(t).then(()=>{if(AT.cur===t&&activeMod==="aa")atAa()}).catch(e=>{if(AT.cur===t)b.innerHTML='<section class="panel"><p class="warn">Não encontrei '+esc(t)+' entre os ativos negociados na B3 nos últimos 30 pregões ('+esc(e.message)+').</p></section>'});return}
   const A=AT.files.get(t);
-  try{b.innerHTML=fnUse(AT,()=>atHead(A)+atSinaisHtml(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
+  try{b.innerHTML=fnUse(AT,()=>atHead(A)+prAcaoHtml(A)+atSinaisHtml(A)+atPriceHtml(A)+atTecHtml(A)+atOpcHtml(A)+fnPerfHtml(A)+fnWinHtml(A)+atProvHtml(A)+atInsHtml(A)+euEmpHtml(A)+atDocsHtml(A)+(A.fund||A.ind?atFundHtml(A):"")+atValHtml(A)+(A.fii?atFiiHtml(A):"")+fnMonHtml(A)+fnRiskHtml(A)+fnJanHtml(A)+atPeerHtml(A)+atLiqHtml(A)+atSrcHtml(A));docsFill()}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function atHome(){

@@ -39,7 +39,7 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="vw")h=cbHtml().map(P).join("");else if(activeMod==="rd"){const tm=tmHtml(true),bf=cbRadarHtml();h=(bf?P(bf):"")+(tm?P(tm):"")+rdTela().map(P).join("")+P(fpHtml())}
+  try{if(activeMod==="vw")h=cbHtml().map(P).join("");else if(activeMod==="rd"){const tm=tmHtml(true),bf=cbRadarHtml(),cd=cdRadarHtml();h=(bf?P(bf):"")+(cd?P(cd):"")+(tm?P(tm):"")+rdTela().map(P).join("")+P(fpHtml())}
   else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
