@@ -1,0 +1,41 @@
+/* ---------- Parecer WF: pontos fortes, pontos de atenção e uma leitura em uma frase para cada ação e cada fundo,
+   escritos por regras a partir das notas, dos múltiplos, da técnica e da comparação com o setor ou a categoria. */
+function prAcao(t){
+  if(!AT.idx)return null;const r=atRow(t),C=AT.C,N=cbNota(),n=N&&N.get(t);if(!r||!n)return null;const F=[],X=[],v=k=>r[C[k]];
+  const set=AT.idx.rows.filter(q=>q[C.setor]===r[C.setor]&&(q[C.tipo]==="Ação"||q[C.tipo]==="Unit")&&(q[C.liq]||0)>=2e6),med=k=>{const a=set.map(q=>q[C[k]]).filter(x=>x!=null&&isFinite(x)&&(k!=="pl"||x>0)).sort((x,y)=>x-y);return a.length>=4?a[a.length>>1]:null},sn=esc(AT.idx.setores[r[C.setor]]||"setor");
+  const pl=v("pl"),mpl=med("pl");if(pl>0&&mpl){if(pl<mpl*0.75)F.push('P/L de '+fx(pl,1)+', abaixo da mediana do setor ('+fx(mpl,1)+')');else if(pl>mpl*1.4)X.push('P/L de '+fx(pl,1)+', bem acima da mediana do setor ('+fx(mpl,1)+')')}else if(pl!=null&&pl<=0)X.push('prejuízo nos últimos 12 meses');
+  if(v("pvp")>0&&v("pvp")<1)F.push('negocia abaixo do valor patrimonial (P/VP '+fx(v("pvp"),2)+')');
+  const roe=v("roe");if(roe!=null){if(roe>=18)F.push('retorno sobre o patrimônio alto ('+fx(roe,0)+'%)');else if(roe<6)X.push('retorno sobre o patrimônio baixo ('+fx(roe,0)+'%)')}
+  const dl=v("dlebit");if(dl!=null){if(dl>3.5)X.push('dívida alta: '+fx(dl,1)+' vezes o lucro operacional');else if(dl<1)F.push(dl<0?'caixa maior que a dívida':'dívida baixa ('+fx(dl,1)+' vez o lucro operacional)')}
+  const dy=v("dy");if(dy>=7)F.push('proventos de '+fx(dy,1)+'% em 12 meses');
+  const r12=v("r12"),mm=v("mm200d"),td=v("tend");if(td===1)F.push('tendência de alta (acima das médias de 50 e 200 dias)');else if(td===-1)X.push('tendência de baixa (abaixo das médias de 50 e 200 dias)');
+  if(r12!=null&&r12<-25)X.push('queda de '+fx(-r12,0)+'% em 12 meses');else if(r12!=null&&r12>40)F.push('alta de '+fx(r12,0)+'% em 12 meses');
+  const ifr=v("ifr");if(ifr!=null){if(ifr>=75)X.push('IFR em '+fx(ifr,0)+': esticada no curto prazo');else if(ifr<=25)F.push('IFR em '+fx(ifr,0)+': muito vendida no curto prazo')}
+  const vol=v("v12");if(vol!=null&&vol>55)X.push('oscila muito ('+fx(vol,0)+'% ao ano)');else if(vol!=null&&vol<22)F.push('oscila pouco ('+fx(vol,0)+'% ao ano)');
+  if((v("liq")||0)<5e6)X.push('liquidez baixa: '+fnMoney(v("liq"))+' por dia');
+  try{if(typeof INS==="object"&&INS.d){const A=AT.files.get(t),cn=A&&A.cnpj;if(cn&&INS.d.cias[cn]){const s=insSaldo(INS.d.cias[cn],3,["ctl","cons","dir","out"]);if(s.s>0&&s.cp)F.push('administradores e controladores compraram ações nos últimos 3 meses');else if(s.s<0&&s.vd)X.push('administradores e controladores venderam ações nos últimos 3 meses')}}}catch(e){}
+  const P=n.P,barato=P.valor!=null&&P.valor>=65,bom=P.qual!=null&&P.qual>=65,sobe=P.mom!=null&&P.mom>=60,cai=P.mom!=null&&P.mom<=30,caro=P.valor!=null&&P.valor<=30,ruim=P.qual!=null&&P.qual<=30;
+  const ver=barato&&bom&&sobe?'Reúne preço, qualidade e momento: perfil raro, dos mais completos do mercado hoje.':barato&&bom&&cai?'Empresa boa e barata, mas o mercado ainda vende: quem compra precisa de paciência e de tese.':barato&&bom?'Empresa de qualidade negociando barato em relação ao setor.':barato&&ruim?'Barata por um motivo: os fundamentos são fracos. Risco de "armadilha de valor".':caro&&bom?'Empresa de qualidade, mas o preço já reconhece isso: pouco espaço para erro.':caro&&ruim?'Cara e com fundamentos fracos: combinação desfavorável.':sobe&&!bom?'Sobe mais pelo momento que pelos fundamentos: acompanhe de perto.':n.nota>=65?'Conjunto acima da média do mercado.':n.nota<=35?'Conjunto abaixo da média do mercado em quase todos os pilares.':'Perfil mediano: sem destaque claro, nem para o bem, nem para o mal.';
+  return {t,n,F:F.slice(0,5),X:X.slice(0,5),ver,sn}}
+function prAcaoHtml(A){if(!(A.tipo==="Ação"||A.tipo==="Unit"))return "";let p=null;try{p=prAcao(A.t)}catch(e){}if(!p)return "";
+  const li=(L,c,s)=>L.length?L.map(x=>'<li style="margin:3px 0"><b style="color:'+c+'">'+s+'</b> '+x.charAt(0).toUpperCase()+x.slice(1)+'</li>').join(""):'';
+  return '<section class="panel"><div class="label">Parecer WF</div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:1.9rem;line-height:1;color:'+cbNotaCor(p.n.nota)+'">'+p.n.nota+'<small style="font-size:.9rem;color:var(--muted)">/100</small></b><p style="margin:0;flex:1;min-width:220px"><b>'+p.ver+'</b></p></div>'
+    +'<p class="sub" style="margin:0 0 6px">'+CB_PIL.map(([k,l])=>l+' <b style="color:'+(p.n.P[k]==null?'var(--muted)':cbNotaCor(p.n.P[k]))+'">'+(p.n.P[k]==null?'—':fx(p.n.P[k],0))+'</b>').join(' · ')+'</p>'
+    +((p.F.length||p.X.length)?'<ul style="margin:0;padding-left:4px;list-style:none;line-height:1.45">'+li(p.F,"var(--gain)","+")+li(p.X,"var(--loss)","−")+'</ul>':'')
+    +'<p class="sub" style="font-size:.8rem;margin:8px 0 0">Escrito por regras a partir dos dados da B3 e da CVM: notas contra todas as ações líquidas (valor e qualidade contra o setor de '+p.sn+'). Não é recomendação de compra ou venda. <button type="button" class="link" data-mkgo="vw">Como a nota é calculada</button></p></section>'}
+function prFundo(c){
+  if(typeof FN!=="object"||!FN.idx)return null;const N=cbFnNota(),n=N&&N.get(c),r=fnRow(c),C=FN.C,I=FN.idx;if(!n||!r)return null;const F=[],X=[],cdi=I.cdi12;
+  const pc=r[C.r12]!=null&&cdi>0?r[C.r12]/cdi*100:null;if(pc!=null){if(pc>=110)F.push('rendeu '+fx(pc,0)+'% do CDI em 12 meses');else if(pc<85)X.push('rendeu '+fx(pc,0)+'% do CDI em 12 meses')}
+  if(n.P.ret!=null){if(n.P.ret>=75)F.push('retorno entre os 25% melhores da categoria');else if(n.P.ret<=25)X.push('retorno entre os 25% piores da categoria')}
+  if(n.P.rr!=null){if(n.P.rr>=75)F.push('entrega bem pelo risco que corre (Sharpe e quedas)');else if(n.P.rr<=25)X.push('retorno fraco para o risco que corre')}
+  const cap=r[C.pl]>0&&r[C.capt12]!=null?r[C.capt12]/r[C.pl]*100:null;if(cap!=null){if(cap<=-30)X.push('resgates fortes: saíram '+fx(-cap,0)+'% do patrimônio em 12 meses');else if(cap>=30)F.push('captação forte: entraram '+fx(cap,0)+'% do patrimônio em 12 meses')}
+  if(n.P.custo!=null&&r[C.tadm]!=null){if(n.P.custo<=20)X.push('taxa de administração de '+fx(r[C.tadm],2)+'%, entre as mais altas da categoria');else if(n.P.custo>=80)F.push('taxa de administração de '+fx(r[C.tadm],2)+'%, entre as mais baixas da categoria')}
+  if(r[C.dd36]!=null&&r[C.dd36]<-20)X.push('já caiu '+fx(-r[C.dd36],0)+'% do topo nos últimos 3 anos');if((r[C.cotistas]||0)<100)X.push('poucos cotistas ('+(r[C.cotistas]||0)+')');
+  const ver=n.nota>=75?'Entre os melhores da categoria no conjunto retorno, risco, captação e custo.':n.nota>=55?'Acima da média da categoria.':n.nota>=40?'Na média da categoria: há opções melhores com o mesmo perfil.':'Abaixo da média da categoria: vale comparar com os substitutos.';
+  return {n,F:F.slice(0,4),X:X.slice(0,4),ver,cat:I.anbima[n.a]}}
+function prFundoHtml(c){let p=null;try{p=prFundo(c)}catch(e){}if(!p)return "";
+  const li=(L,cc,s)=>L.map(x=>'<li style="margin:3px 0"><b style="color:'+cc+'">'+s+'</b> '+x.charAt(0).toUpperCase()+x.slice(1)+'</li>').join("");
+  return '<section class="panel"><div class="label">Parecer WF</div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:1.9rem;line-height:1;color:'+cbNotaCor(p.n.nota)+'">'+p.n.nota+'<small style="font-size:.9rem;color:var(--muted)">/100</small></b><p style="margin:0;flex:1;min-width:220px"><b>'+p.ver+'</b> <span class="sub">Contra '+p.n.np+' fundos de '+esc(p.cat)+'.</span></p></div>'
+    +'<p class="sub" style="margin:0 0 6px">'+CBF_PIL.map(([k,l])=>l+' <b style="color:'+(p.n.P[k]==null?'var(--muted)':cbNotaCor(p.n.P[k]))+'">'+(p.n.P[k]==null?'—':fx(p.n.P[k],0))+'</b>').join(' · ')+'</p>'
+    +((p.F.length||p.X.length)?'<ul style="margin:0;padding-left:4px;list-style:none;line-height:1.45">'+li(p.F,"var(--gain)","+")+li(p.X,"var(--loss)","−")+'</ul>':'')
+    +'<p class="sub" style="font-size:.8rem;margin:8px 0 0">Escrito por regras a partir dos dados da CVM. Retorno em 12 e 36 meses, Sharpe e queda máxima, captação líquida e taxa, sempre contra a mesma categoria ANBIMA (fundos abertos ao público, com mais de R$ 10 milhões e 20 cotistas). Retorno passado não garante retorno futuro.</p></section>'}
