@@ -50,7 +50,8 @@ function pcFicha(P,code){
   let emis="";
   if(f.cnpj&&typeof EM!=="undefined"&&EM.d&&EM.d.e[f.cnpj]){const c=emCalc(EM.d.e[f.cnpj]);if(c)emis='<div class="label" style="margin-top:10px">Saúde financeira do emissor</div><p style="margin:4px 0"><b style="color:'+EM_COR[c.nivel]+'">'+EM_NV[c.nivel]+'</b> · dívida líquida/EBITDA '+(c.lev!=null?fx(c.lev,1)+'x':'—')+' · cobertura de juros '+(c.cob!=null?fx(c.cob,1)+'x':'—')+' · liquidez corrente '+(c.liq!=null?fx(c.liq,2):'—')+(c.alerta.length?'<br><small class="warn">'+esc(c.alerta.join(", "))+'</small>':'')+'</p><p class="sub" style="font-size:.8rem">Balanço de '+(c.base?fdate(Date.parse(c.base+"T00:00:00Z")):'—')+' na CVM. Histórico completo em Mercado › Crédito.</p>'}
   else if(f.cnpj)emis='<p class="sub" style="font-size:.82rem;margin-top:8px">Emissor: CNPJ '+f.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,"$1.$2.$3/$4-$5")+(typeof EM!=="undefined"&&EM.d?' · sem balanço na CVM (empresa fechada ou ainda não coletada).':'.')+'</p>';
-  if(!it.length&&!liq&&!hist&&!emis)return "";
-  return '<div class="label" style="margin-top:12px">Ficha do título</div><dl class="pcdl">'+it.join("")+liq+'</dl>'+hist+emis
+  let par="";try{par=prTitulo(P,code)}catch(e){}
+  if(!it.length&&!liq&&!hist&&!emis)return par;
+  return par+'<div class="label" style="margin-top:12px">Ficha do título</div><dl class="pcdl">'+it.join("")+liq+'</dl>'+hist+emis
     +(it.length?'<p class="sub" style="font-size:.78rem">Características: SND (debentures.com.br). Para cláusulas de vencimento antecipado (covenants), consulte a escritura no site da CVM ou do agente fiduciário.</p>':'');
 }

@@ -15,9 +15,10 @@ function cdCalc(c,it,R){
   const pos=it.map((x,i)=>({x,w:w[i]})).filter(o=>o.w>0.001);if(!pos.length)return null;
   // 1) diversificação
   {const hhi=pos.reduce((a,o)=>a+o.w*o.w,0),nef=1/hhi,mx=pos.slice().sort((a,b)=>b.w-a.w)[0],cls=new Set(pos.map(o=>spCl(o.x))).size;
-    const arr=o=>!(spTd(o.x)||spCl(o.x)==="pos");const mxr=pos.filter(arr).sort((a,b)=>b.w-a.w)[0];
+    const arr=o=>!(spTd(o.x)||spCl(o.x)==="pos"),emp=new Map();pos.filter(arr).forEach(o=>{const ac=o.x.t==="a"&&/^[A-Z]{4}\d/.test(o.x.k)&&spCl(o.x)==="acoes",k=ac?"e:"+o.x.k.slice(0,4):"i:"+o.x.k,g=emp.get(k)||{x:o.x,w:0,n:0,ks:[]};g.w+=o.w;g.n++;g.ks.push(o.x.k);emp.set(k,g)});const mxr=[...emp.values()].sort((a,b)=>b.w-a.w)[0];
+    try{if(AT.idx){const C=AT.C,S=new Map();let rv=0;const ac=pos.filter(o=>o.x.t==="a"&&spCl(o.x)==="acoes");ac.forEach(o=>{const r=atRow(o.x.k);if(!r)return;const k=AT.idx.setores[r[C.setor]]||"";S.set(k,(S.get(k)||0)+o.w);rv+=o.w});const t=[...S.entries()].sort((a,b)=>b[1]-a[1])[0];if(t&&rv>=0.2&&t[1]/rv>0.5&&ac.length>=2)add(2,'Diversificar os setores das ações',fx(t[1]/rv*100,0)+'% das ações estão em '+esc(t[0])+' ('+fx(t[1]*100,0)+'% da carteira): um choque no setor atinge quase toda a renda variável')}}catch(e){}
     P.div=Math.round(Math.min(100,nef/8*100)*0.5+(mxr&&mxr.w>0.2?Math.max(0,100-(mxr.w*100-20)*4):100)*0.3+Math.min(100,cls/4*100)*0.2);
-    if(mxr&&mxr.w>0.25)add(mxr.w>0.4?1:2,'Reduzir a concentração em '+nm(mxr.x),'pesa '+fx(mxr.w*100,0)+'% da carteira; acima de 25% num único item de risco, um problema nele vira um problema da carteira');
+    if(mxr&&mxr.w>0.25)add(mxr.w>0.4?1:2,'Reduzir a concentração em '+(mxr.n>1?esc(mxr.ks.join(' e '))+' (mesma empresa)':nm(mxr.x)),'pesa '+fx(mxr.w*100,0)+'% da carteira; acima de 25% num único item de risco, um problema nele vira um problema da carteira');
     if(cls<3&&pos.length>=3)add(2,'Diversificar entre classes','a carteira está em só '+cls+' classe'+(cls>1?'s':'')+' de ativo');
     P._nef=nef}
   // 2) risco × perfil

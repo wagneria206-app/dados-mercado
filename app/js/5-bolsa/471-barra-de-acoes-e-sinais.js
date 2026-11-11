@@ -1,7 +1,7 @@
 /* ---------- Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação */
 function acBtns(t,k,n){ // t: "a" ativo da B3, "f" fundo
   const d=esc(JSON.stringify({t,k,n:String(n||k).slice(0,90)}));
-  return '<button type="button" class="btn sec" data-acart=\''+d+'\'>+ Carteira</button>'+(t==="a"?'<button type="button" class="btn sec" data-adiario="'+esc(k)+'">Anotar no diário</button>':'');
+  return '<button type="button" class="btn sec" data-acart=\''+d+'\'>+ Carteira</button><button type="button" class="btn sec" data-wsim=\''+d+'\'>E se eu incluir?</button>'+(t==="a"?'<button type="button" class="btn sec" data-adiario="'+esc(k)+'">Anotar no diário</button>':'');
 }
 function acNaCarteira(t,k){const L=[];(SP.carts||[]).forEach((c,i)=>{if((c.itens||[]).some(x=>x.t===t&&x.k===k))L.push(c.nome||("Carteira "+(i+1)))});return L}
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-acart],[data-adiario]");if(!x)return;

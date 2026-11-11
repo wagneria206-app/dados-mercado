@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-hm4BGZRcOf9b9FccnTijN3Yd6U71VbcqN2s3WSYaJ2Y='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-s/VcJWjV8I+o1qKv0+NB8QqG9tDmmaWfQZJ1DRotwnY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -2761,8 +2761,9 @@ function pcFicha(P,code){
   let emis="";
   if(f.cnpj&&typeof EM!=="undefined"&&EM.d&&EM.d.e[f.cnpj]){const c=emCalc(EM.d.e[f.cnpj]);if(c)emis='<div class="label" style="margin-top:10px">Saúde financeira do emissor</div><p style="margin:4px 0"><b style="color:'+EM_COR[c.nivel]+'">'+EM_NV[c.nivel]+'</b> · dívida líquida/EBITDA '+(c.lev!=null?fx(c.lev,1)+'x':'—')+' · cobertura de juros '+(c.cob!=null?fx(c.cob,1)+'x':'—')+' · liquidez corrente '+(c.liq!=null?fx(c.liq,2):'—')+(c.alerta.length?'<br><small class="warn">'+esc(c.alerta.join(", "))+'</small>':'')+'</p><p class="sub" style="font-size:.8rem">Balanço de '+(c.base?fdate(Date.parse(c.base+"T00:00:00Z")):'—')+' na CVM. Histórico completo em Mercado › Crédito.</p>'}
   else if(f.cnpj)emis='<p class="sub" style="font-size:.82rem;margin-top:8px">Emissor: CNPJ '+f.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,"$1.$2.$3/$4-$5")+(typeof EM!=="undefined"&&EM.d?' · sem balanço na CVM (empresa fechada ou ainda não coletada).':'.')+'</p>';
-  if(!it.length&&!liq&&!hist&&!emis)return "";
-  return '<div class="label" style="margin-top:12px">Ficha do título</div><dl class="pcdl">'+it.join("")+liq+'</dl>'+hist+emis
+  let par="";try{par=prTitulo(P,code)}catch(e){}
+  if(!it.length&&!liq&&!hist&&!emis)return par;
+  return par+'<div class="label" style="margin-top:12px">Ficha do título</div><dl class="pcdl">'+it.join("")+liq+'</dl>'+hist+emis
     +(it.length?'<p class="sub" style="font-size:.78rem">Características: SND (debentures.com.br). Para cláusulas de vencimento antecipado (covenants), consulte a escritura no site da CVM ou do agente fiduciário.</p>':'');
 }
 /* ================= Cenários de juros ================= */
@@ -4664,7 +4665,7 @@ function atSrcHtml(A){const tp=A&&A.tipo||"",td=tp==="Tesouro Direto",bdr=tp==="
 /* ---------- Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação */
 function acBtns(t,k,n){ // t: "a" ativo da B3, "f" fundo
   const d=esc(JSON.stringify({t,k,n:String(n||k).slice(0,90)}));
-  return '<button type="button" class="btn sec" data-acart=\''+d+'\'>+ Carteira</button>'+(t==="a"?'<button type="button" class="btn sec" data-adiario="'+esc(k)+'">Anotar no diário</button>':'');
+  return '<button type="button" class="btn sec" data-acart=\''+d+'\'>+ Carteira</button><button type="button" class="btn sec" data-wsim=\''+d+'\'>E se eu incluir?</button>'+(t==="a"?'<button type="button" class="btn sec" data-adiario="'+esc(k)+'">Anotar no diário</button>':'');
 }
 function acNaCarteira(t,k){const L=[];(SP.carts||[]).forEach((c,i)=>{if((c.itens||[]).some(x=>x.t===t&&x.k===k))L.push(c.nome||("Carteira "+(i+1)))});return L}
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-acart],[data-adiario]");if(!x)return;
@@ -5811,7 +5812,7 @@ function spResHtml(c,it,R){
   const kp=(a,b,cc)=>'<div class="fnkp"><span>'+a+'</span><b>'+b+'</b>'+(cc?'<small>'+cc+'</small>':'')+'</div>';
   if(!R.pos)SP_POS=null;
   const pos=R.pos?spPosHtml(c,R.pos.its,R.pos.Ds):R.ef?spEfHtml(c,it,R.ef,st):'';   // a posição real vem antes: o painel usa os valores dela
-  let h=spT("geral",()=>spDiagHtml(c,it,R)+spPainelHtml(c,it,R)+spSuitHtml(c,it,R))+spT("rebal",()=>spPolHtml(c,it)+spBoletaHtml(c,it)+spAntHtml(c,it))+spT("credito",()=>spCreditoHtml(c,it,R)+spGrupoHtml(c,it)+spMtmHtml(c,it))+spT("ir",()=>spIrHtml(c,it)+spLiqHtml(c,it)+spJurosHtml(c,it))+spT("risco",()=>rxHtml(c,it)+spRiscoHtml(c,it,R))+spT("desemp",()=>spBmAtribHtml(c,it,R))+spT("oport",()=>spSubsHtml(c,it))+pos+'<section class="panel" id="spPanel" data-reltit="Resumo da carteira (histórico)"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
+  let h=spT("geral",()=>spDiagHtml(c,it,R)+spPainelHtml(c,it,R)+spSuitHtml(c,it,R))+spT("rebal",()=>spPolHtml(c,it)+spBoletaHtml(c,it)+spAntHtml(c,it))+spT("credito",()=>spCreditoHtml(c,it,R)+spGrupoHtml(c,it)+spMtmHtml(c,it))+spT("ir",()=>spIrHtml(c,it)+spLiqHtml(c,it)+spJurosHtml(c,it))+spT("risco",()=>rxHtml(c,it)+spDivHtml(c,it,R)+spRiscoHtml(c,it,R))+spT("desemp",()=>spBmAtribHtml(c,it,R))+spT("oport",()=>spSubsHtml(c,it))+pos+'<section class="panel" id="spPanel" data-reltit="Resumo da carteira (histórico)"><div class="fnh1"><div><h3>'+esc(c.nome)+'</h3><div class="fnsub">De '+lbl(R.k0)+' a '+lbl(R.last)+' ('+st.meses+' meses, base '+(R.diaria?'diária':'mensal')+') · '+SP_REB.find(x=>x[0]===String(c.reb))[1].toLowerCase()+'</div></div><div class="fnacts"><button type="button" class="btn sec" data-relsp="1">Relatório PDF</button><button type="button" class="btn sec" data-spcsv="1">Baixar CSV</button></div></div>';
   const nst=R.ir?{tot:(last.nidx-1)*100}:null;
   h+='<div class="fnkpis">'+kp("Patrimônio final",brl(last.v),(R.ir?"líquido de IR "+brl(last.liq):"investido "+brl(last.inv)))+kp("Retorno no período",fnPct(st.tot),(st.pcdi!=null?fx(st.pcdi,0)+"% do CDI":"")+(R.ir?" · líquido de IR "+fnPctT(nst.tot):""))+kp("Retorno ao ano",fnPctT(st.ann),"volatilidade "+fx(st.vol,2)+"%")+kp("Sharpe",st.sharpe!=null?fx(st.sharpe,2):"—","meses acima do CDI "+(st.acima!=null?fx(st.acima,0)+"%":"—"))+kp("Perda máxima",fnPct(st.dd),"pior mês "+fnPctT(st.worst))+'</div>';
   const S=[{lab:c.nome,col:FN_COLS[0],w:2.4,pts:fnThin(R.pts,800).map(p=>[p.t,(p.idx-1)*100])}],bms=[];
@@ -8337,6 +8338,66 @@ function spStressHtml(c,it,R){
   return h;
 }
 
+/* ---------- Carteira: diversificação completa (setor, estratégia, indexador, prazo, emissor, securitizadora),
+   correlação com leitura (pares redundantes, ganho de diversificação) e o simulador "e se eu incluir?", que mostra
+   como a nota do Consultor WF e as concentrações mudam antes de alocar. */
+function dvGrupo(L){const m=new Map();L.forEach(([k,v])=>{if(k&&v>0)m.set(k,(m.get(k)||0)+v)});const a=[...m.entries()].sort((x,y)=>y[1]-x[1]),t=a.reduce((s,x)=>s+x[1],0);return {a,t,n:L.filter(x=>x[0]&&x[1]>0).length,nef:t>0?1/a.reduce((s,x)=>s+(x[1]/t)*(x[1]/t),0):0}}
+function dvBloco(tit,G,lim,nota,base){
+  if(!G.a.length)return "";const top=G.a[0],pt=top[1]/G.t*100,al=lim!=null&&pt>lim&&G.n>=2&&G.t>=0.05;
+  return '<div style="margin:12px 0 0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline"><b>'+tit+'</b><span class="sub" style="font-size:.82rem">'+fx(G.t*100,0)+'% da carteira · '+G.a.length+' grupo'+(G.a.length>1?'s':'')+' · equivale a '+fx(G.nef,1)+' de pesos iguais</span></div>'
+    +G.a.slice(0,7).map(([k,v])=>{const p=v/G.t*100;return '<div style="display:grid;grid-template-columns:minmax(110px,38%) 1fr 92px;gap:8px;align-items:center;margin:4px 0;font-size:.88rem"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(k)+'</span><span style="height:8px;border-radius:99px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:'+p.toFixed(1)+'%;background:'+(lim!=null&&p>lim?'var(--warn)':'var(--accent)')+'"></i></span><span style="text-align:right">'+fx(p,0)+'% <small style="color:var(--muted)">('+fx(v*100,1)+'%)</small></span></div>'}).join("")
+    +(G.a.length>7?'<p class="sub" style="font-size:.8rem;margin:2px 0 0">e mais '+(G.a.length-7)+'.</p>':'')
+    +(al?'<p style="margin:4px 0 0;font-size:.88rem"><b style="color:var(--warn)">Concentrado:</b> '+esc(top[0])+' responde por '+fx(pt,0)+'% '+base+(nota?'. '+nota:'')+'.</p>':'')+'</div>'}
+function dvCor(a,b){const xs=[],ys=[];a.forEach((v,j)=>{if(isFinite(v)&&isFinite(b[j])){xs.push(v);ys.push(b[j])}});if(xs.length<12)return null;const mx=xs.reduce((s,x)=>s+x,0)/xs.length,my=ys.reduce((s,x)=>s+x,0)/ys.length;let sxy=0,sxx=0,syy=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)**2;syy+=(ys[j]-my)**2}return sxx&&syy?sxy/Math.sqrt(sxx*syy):null}
+function spDivHtml(c,it,R){
+  if(!it||it.length<2)return "";const {w}=spPesos(c,it),P=it.map((x,i)=>({x,w:w[i],i})).filter(o=>o.w>0.001);if(P.length<2)return "";
+  if(!AT.idx&&!AT.err)atBoot();if(typeof spCredLoad==="function"&&it.some(x=>/^cr:/.test(x.k||"")))spCredLoad();if(typeof rtCvm==="function")rtCvm();
+  const C=AT.C,setor=o=>{if(o.x.t!=="a"||!AT.idx||spTd(o.x)||!/^[A-Z]{4}\d/.test(o.x.k))return null;const r=atRow(o.x.k);if(!r)return null;const tp=r[C.tipo];return tp==="FII"||tp==="Fiagro"?"Fundos imobiliários e Fiagros":tp==="ETF"?"ETFs":tp==="BDR"?"BDRs (exterior)":AT.idx.setores[r[C.setor]]||"Sem setor"};
+  const estr=o=>{if(o.x.t!=="f"||typeof FN!=="object"||!FN.idx)return null;const r=fnRow(o.x.k);if(!r)return "Fundo sem cadastro";const a=FN.idx.anbima[r[FN.C.anbima]];return a||FN.idx.classes[r[FN.C.classe]]||"Sem categoria"};
+  const ehRf=o=>!!(spTd(o.x)||spProd(o.x)||/^cr:/.test(o.x.k||"")||(o.x.t==="s"&&["pos","pre","infl","cred"].includes(spCl(o.x))));
+  const idx=o=>{if(!ehRf(o))return null;const td=spTd(o.x);if(td)return td.kind==="LFT"?"Pós-fixado (Selic/CDI)":/LTN|NTNF/.test(td.kind)?"Prefixado":"IPCA +";const cr=spCr(o.x),rf=(cr&&cr.rf)||o.x.rf;if(rf)return rf==="ipca"?"IPCA +":rf==="pre"?"Prefixado":"Pós-fixado (Selic/CDI)";const cl=spCl(o.x);return cl==="pre"?"Prefixado":cl==="infl"?"IPCA +":cl==="pos"?"Pós-fixado (Selic/CDI)":"Indexador não identificado"};
+  const hoje=Date.parse(spHoje()+"T00:00:00Z"),prazo=o=>{if(!ehRf(o))return null;const v=spVenc(o.x);if(!v)return "Sem vencimento informado";const a=(Date.parse(v.d+"T00:00:00Z")-hoje)/DAY/365.25;return a<1?"Até 1 ano":a<3?"De 1 a 3 anos":a<5?"De 3 a 5 anos":a<10?"De 5 a 10 anos":"Mais de 10 anos"};
+  const emis=o=>{if(spTd(o.x))return "Tesouro Nacional";if(!ehRf(o))return null;return spEmissor(o.x)||"Emissor não informado"};
+  const sec=o=>{if(!/^cr:/.test(o.x.k||"")||!RT.cvm)return null;const p=RT.cvm[o.x.k.slice(3)];return p&&p.securitizadora?String(p.securitizadora).replace(/\s+(S\.?A\.?|LTDA\.?)$/i,""):null};
+  const G=f=>dvGrupo(P.map(o=>[f(o),o.w])),cls=dvGrupo(P.map(o=>[SP_CL[spCl(o.x)]||spCl(o.x),o.w]));
+  let h='<section class="panel" data-reltit="Diversificação"><h3>Diversificação</h3><p class="sub">De quantas formas diferentes a carteira está dividida. Em cada quadro, a barra mostra a fatia dentro do grupo e, entre parênteses, a fatia da carteira toda. "Equivale a N de pesos iguais" resume a concentração: 10 posições em que uma pesa metade valem por cerca de 3.</p>';
+  h+=dvBloco("Por classe de ativo",cls,60,"","da carteira")+dvBloco("Renda variável por setor",G(setor),40,"Um choque no setor atinge a maior parte da renda variável","da renda variável")+dvBloco("Fundos por estratégia",G(estr),60,"Fundos da mesma categoria tendem a subir e cair juntos","dos fundos")
+    +dvBloco("Renda fixa por indexador",G(idx),70,"A renda fixa fica dependente de um só cenário de juros ou inflação","da renda fixa")+dvBloco("Renda fixa por prazo",G(prazo),60,"Vencimentos concentrados dificultam reinvestir e atender a resgates","da renda fixa")
+    +dvBloco("Renda fixa por emissor",G(emis),null,"","")+dvBloco("CRI e CRA por securitizadora",G(sec),50,"A securitizadora administra o patrimônio separado de cada emissão: concentração nela é risco operacional","dos certificados");
+  // correlação com leitura
+  const ret=R&&R.irets;if(ret){const pares=[];let sw=0,sc=0;for(let a=0;a<P.length;a++)for(let b=a+1;b<P.length;b++){const cc=dvCor(ret[P[a].i]||[],ret[P[b].i]||[]);if(cc==null)continue;const ww=P[a].w*P[b].w;sw+=ww;sc+=cc*ww;pares.push({a:P[a],b:P[b],c:cc})}
+    if(pares.length){const med=sc/sw,red=pares.filter(p=>p.c>=0.85&&spCl(p.a.x)!=="pos"&&spCl(p.b.x)!=="pos").sort((x,y)=>y.c-x.c),prot=pares.filter(p=>p.c<=-0.2).sort((x,y)=>x.c-y.c);
+      const sd=a=>{const v=(a||[]).filter(isFinite);if(v.length<12)return null;const m=v.reduce((s,x)=>s+x,0)/v.length;return Math.sqrt(v.reduce((s,x)=>s+(x-m)*(x-m),0)/(v.length-1))},vi=P.map(o=>[o.w,sd(ret[o.i])]).filter(x=>x[1]!=null),sp=(()=>{const n=Math.max(...P.map(o=>(ret[o.i]||[]).length)),S=[];for(let j=0;j<n;j++){let a=0,b=0;P.forEach(o=>{const v=(ret[o.i]||[])[j];if(isFinite(v)){a+=o.w*v;b+=o.w}});S.push(b>0.5?a/b:NaN)}return sd(S)})(),ws=vi.reduce((s,x)=>s+x[0],0);
+      const ganho=sp>0&&vi.length?vi.reduce((s,x)=>s+x[0]*x[1],0)/ws/sp:null,nm=o=>esc(String(spItemNome(o.x)).slice(0,34));
+      h+='<div style="margin:16px 0 0"><b>Correlação: os itens andam juntos?</b><div class="fnkpis" style="margin-top:6px">'+tecKp("Correlação média",fx(med,2),med>=0.6?'alta: a diversificação é mais aparente que real':med<=0.25?'baixa: os itens se compensam bem':'moderada')
+        +(ganho?(ganho>=1?tecKp("Ganho de diversificação",fx((1-1/ganho)*100,0)+'%','a carteira oscila '+fx((1-1/ganho)*100,0)+'% menos que a média dos seus itens'):''):'')+tecKp("Pares redundantes",red.length+'',red.length?'correlação de 0,85 ou mais':'nenhum par anda quase igual')+tecKp("Pares que se protegem",prot.length+'',prot.length?'correlação negativa':'nenhum par com correlação negativa')+'</div>';
+      if(red.length)h+='<p style="margin:8px 0 0"><b style="color:var(--warn)">Redundância:</b> '+red.slice(0,5).map(p=>nm(p.a)+' e '+nm(p.b)+' ('+fx(p.c,2)+')').join('; ')+'. Na prática são o mesmo risco contado duas vezes: manter os dois não diversifica.</p>';
+      if(prot.length)h+='<p style="margin:6px 0 0"><b class="pos">Proteção:</b> '+prot.slice(0,4).map(p=>nm(p.a)+' e '+nm(p.b)+' ('+fx(p.c,2)+')').join('; ')+'. Quando um cai, o outro tende a subir.</p>';
+      h+='<p class="sub" style="font-size:.8rem;margin:6px 0 0">Correlação dos retornos '+(R.diaria?'diários':'mensais')+' no período da simulação, ponderada pelos pesos. A matriz completa está no quadro de comparação dos itens. Sobreposição dentro dos fundos (mesmos papéis em fundos diferentes): veja o Raio-X, logo acima.</p></div>'}}
+  return h+'</section>'}
+/* ---- simulador: e se eu incluir este item? */
+function wsItem(d){try{return typeof d==="string"?JSON.parse(d):d}catch(e){return null}}
+function wsSimHtml(item,pct){
+  const c=SP.carts&&SP.carts[SP.cur];if(!c||!(c.itens||[]).some(x=>(+x.w||0)>0))return '<p class="sub">Monte uma carteira em Carteiras e Simulações para simular a inclusão.</p>';
+  const it0=c.itens.filter(x=>(+x.w||0)>0);if(it0.some(x=>x.t===item.t&&x.k===item.k))return '<p class="sub">Este item já está na carteira <b>'+esc(c.nome||"atual")+'</b>.</p>';
+  const antes=SP_POS;let A=null,B=null,cls0=null,cls1=null;
+  try{SP_POS=null;const f=(100-pct)/100,it1=it0.map(x=>Object.assign({},x,{w:(+x.w||0)*f,mov:null})).concat([Object.assign({},item,{w:pct})]),c0=Object.assign({},c,{itens:it0.map(x=>Object.assign({},x,{mov:null}))}),c1=Object.assign({},c,{itens:it1});
+    A=cdCalc(c0,c0.itens,null);B=cdCalc(c1,it1,null);const cl=(cc,L)=>{const {w}=spPesos(cc,L),m=new Map();L.forEach((x,i)=>{const k=SP_CL[spCl(x)]||spCl(x);m.set(k,(m.get(k)||0)+w[i])});return m};cls0=cl(c0,c0.itens);cls1=cl(c1,it1)}catch(e){console.error(e)}finally{SP_POS=antes}
+  if(!A||!B||A.nota==null||B.nota==null)return '<p class="sub">Não deu para simular agora: os dados de mercado ainda estão carregando.</p>';
+  const d=B.nota-A.nota,sg=v=>(v>0?'+':v<0?'−':'')+Math.abs(v),k=SP_CL[spCl(item)]||spCl(item),novos=B.A.filter(a=>!A.A.some(b=>b.tit===a.tit)),saem=A.A.filter(a=>!B.A.some(b=>b.tit===a.tit));
+  let h='<p style="margin:0 0 6px">Com <b>'+fx(pct,0)+'%</b> em <b>'+esc(String(item.n||item.k).slice(0,50))+'</b>, reduzindo os demais na mesma proporção, a nota da carteira <b>'+esc(c.nome||"atual")+'</b> vai de <b>'+A.nota+'</b> para <b style="color:'+(d>0?'var(--gain)':d<0?'var(--loss)':'var(--ink)')+'">'+B.nota+'</b> ('+(d===0?'sem mudança':sg(d)+' ponto'+(Math.abs(d)>1?'s':''))+').</p>'
+    +'<div class="tablewrap" style="max-height:none"><table class="ctab" data-ordok="1"><thead><tr><th style="text-align:left">Pilar</th><th>Hoje</th><th>Com o item</th><th>Mudança</th></tr></thead><tbody>'
+    +CD_PIL.filter(([p])=>p!=="risco").map(([p,n])=>{const a=A.P[p],b=B.P[p];return '<tr><td style="text-align:left">'+n+'</td><td>'+(a==null?'—':a)+'</td><td>'+(b==null?'—':b)+'</td><td class="'+(a!=null&&b!=null&&b>a?'pos':a!=null&&b!=null&&b<a?'neg':'')+'">'+(a==null||b==null||a===b?'—':sg(b-a))+'</td></tr>'}).join("")
+    +'<tr><td style="text-align:left">Peso de '+esc(k)+'</td><td>'+fx((cls0.get(k)||0)*100,1)+'%</td><td>'+fx((cls1.get(k)||0)*100,1)+'%</td><td>'+(v=>(v>=0?'+':'−')+fx(Math.abs(v),1))(((cls1.get(k)||0)-(cls0.get(k)||0))*100)+' p.p.</td></tr></tbody></table></div>';
+  if(novos.length)h+='<p style="margin:8px 0 0"><b class="neg">Passa a pedir atenção:</b> '+novos.slice(0,3).map(a=>a.tit).join('; ')+'.</p>';
+  if(saem.length)h+='<p style="margin:6px 0 0"><b class="pos">Deixa de ser problema:</b> '+saem.slice(0,3).map(a=>a.tit).join('; ')+'.</p>';
+  return h+'<p class="sub" style="font-size:.8rem;margin:8px 0 0">Simulação sem o pilar de risco (volatilidade), que depende do histórico completo: inclua o item na carteira para ver o efeito no risco, na correlação e no teste de estresse. Nada é gravado até você incluir.</p>'}
+function wsAbre(item,ancora){let b=$("wsBox");if(b)b.remove();if(!item)return;const pct=5;
+  b=document.createElement("section");b.id="wsBox";b.className="panel";b.dataset.item=JSON.stringify(item);
+  b.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><span class="label">E se eu incluir na carteira?</span><span style="display:flex;gap:6px;align-items:center;font-size:.9rem">Peso <select id="wsPct">'+[2,5,10,15,20].map(v=>'<option value="'+v+'"'+(v===pct?' selected':'')+'>'+v+'%</option>').join("")+'</select><button type="button" class="link" data-wsfecha="1">fechar</button></span></div><div id="wsOut" style="margin-top:8px">'+wsSimHtml(item,pct)+'</div>';
+  const p=ancora&&ancora.closest("section.panel,section,.panel");if(p&&p.parentNode)p.parentNode.insertBefore(b,p.nextSibling);else (ancora&&ancora.parentNode||document.body).appendChild(b);try{b.scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-wsim],[data-wsfecha]");if(!x)return;if(x.dataset.wsfecha){const b=$("wsBox");if(b)b.remove();return}cbCarrega();wsAbre(wsItem(x.dataset.wsim),x)});
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="wsPct"){const b=$("wsBox"),o=$("wsOut");if(b&&o)o.innerHTML=wsSimHtml(wsItem(b.dataset.item),+e.target.value)}});
 /* ---------- Parecer WF: pontos fortes, pontos de atenção e uma leitura em uma frase para cada ação e cada fundo,
    escritos por regras a partir das notas, dos múltiplos, da técnica e da comparação com o setor ou a categoria. */
 function prAcao(t){
@@ -8431,6 +8492,27 @@ function pgRun(q){PG.q=q;let R=null;try{R=cbPronto()?pgResp(q):["Ainda estou car
   const o=$("pgOut");if(o)o.innerHTML=PG.h;const i=$("pgQ");if(i&&i.value!==q)i.value=q}
 document.addEventListener("submit",e=>{if(e.target&&e.target.id==="pgForm"){e.preventDefault();const q=$("pgQ").value.trim();if(q)pgRun(q)}});
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-pgex]");if(x)pgRun(x.dataset.pgex)});
+/* ---------- Parecer WF do título (debêntures): junta, numa leitura só, o que a ficha mostra espalhado: quanto o papel
+   paga contra os pares, garantia, rating, saúde do emissor, liquidez no secundário, tendência da taxa e prazo. */
+function prTitulo(P,code){
+  if(!P||P.type!=="DEB")return "";code=String(code||"").toUpperCase();if(!CRB.L){crbCarrega();return ""}
+  const L=cbCredNota(),d=L&&L.find(o=>o.cod===code);if(!d)return "";const f=P.ficha||{},F=[],X=[],N=[];
+  if(d.dif!=null){if(d.est)X.push('paga '+fx(d.dif,1)+' p.p. acima de papéis parecidos: o mercado cobra como risco alto de calote');else if(d.dif>=0.3)F.push('paga '+fx(d.dif,2)+' p.p. acima de papéis parecidos'+(d.dif>1.5?' (prêmio alto: entenda o motivo antes)':''));else if(d.dif<=-0.3)X.push('paga '+fx(-d.dif,2)+' p.p. abaixo de papéis parecidos');else N.push('paga em linha com papéis parecidos')}
+  const g=ftGar(f.garantia);if(g){if(g[2]==="pos")F.push(g[0].toLowerCase()+': '+g[1]);else if(g[2]==="neg")X.push(g[0].toLowerCase()+': '+g[1]);else N.push(g[0].toLowerCase())}else N.push('garantia não informada na ficha do SND');
+  if(d.nt!=null){if(d.nt<=4)F.push('rating '+esc(d.ntxt)+' em escala nacional (grau alto)');else if(d.nt>=11)X.push('rating '+esc(d.ntxt)+', abaixo do grau de investimento');else N.push('rating '+esc(d.ntxt))}else N.push('sem rating nas carteiras dos fundos (CVM)');
+  let saude=null;try{if(f.cnpj&&typeof EM!=="undefined"&&EM.d&&EM.d.e[f.cnpj]){const c=emCalc(EM.d.e[f.cnpj]);if(c){saude=c;if(c.nivel===1)F.push('emissor com balanço saudável'+(c.lev!=null?' (dívida líquida de '+fx(c.lev,1)+' vezes o EBITDA)':''));else if(c.nivel===3)X.push('emissor com balanço frágil'+(c.alerta.length?': '+esc(c.alerta[0]):''));else N.push('balanço do emissor em nível de atenção')}}}catch(e){}
+  if(!saude)N.push('balanço do emissor ainda não coletado');
+  if(FT.neg){const n=FT.neg.p[code];if(n&&n[2]>=20)F.push('negocia com frequência no secundário ('+fx(n[0],0)+' negócios em 90 dias)');else if(n&&n[2]>=5)N.push('liquidez moderada no secundário');else X.push((n?'pouca liquidez':'nenhum negócio em 90 dias')+': sair antes do vencimento pode exigir desconto')}
+  const H=FT.tx&&FT.tx[code];if(H&&H.length>=5){const dt=H[H.length-1][1]-H[0][1];if(dt>=0.5)X.push('a taxa subiu '+fx(dt,2)+' p.p. desde '+fdate(Date.parse(H[0][0]+"T00:00:00Z"))+': o risco percebido aumentou');else if(dt<=-0.5)F.push('a taxa caiu '+fx(-dt,2)+' p.p. desde '+fdate(Date.parse(H[0][0]+"T00:00:00Z"))+': o risco percebido diminuiu')}
+  if(d.isento)F.push('incentivada: isenta de IR para pessoa física');if(d.dur>7)X.push('prazo médio longo ('+fx(d.dur,1)+' anos): o preço oscila muito com os juros');
+  if(/sim|permit|total|parcial/i.test(String(f.resgateAntecipado||""))&&!/n[aã]o/i.test(String(f.resgateAntecipado||"")))N.push('o emissor pode resgatar antes do vencimento');
+  const nf=F.length,nx=X.length,ver=d.est?'Papel em estresse: só para quem conhece a fundo a situação do emissor.':nx===0&&nf>=3?'Conjunto favorável: paga bem pelo risco e não há ponto de atenção nos dados disponíveis.':nf>nx+1?'Mais pontos a favor do que contra.':nx>nf+1?'Mais pontos de atenção do que a favor: o prêmio precisa compensar.':'Equilibrado: a decisão depende do peso que você dá a cada ponto.';
+  const falta=N.filter(x=>/não informada|sem rating|ainda não coletado/.test(x)).length,li=(A,c,s)=>A.map(x=>'<li style="margin:3px 0"><b style="color:'+c+'">'+s+'</b> '+x.charAt(0).toUpperCase()+x.slice(1)+'</li>').join("");
+  const item=esc(JSON.stringify({t:"s",k:"cr:"+code,rf:d.rf,x:d.tx,isento:d.isento?1:0,n:(code+" · "+String(d.nome||"").slice(0,40)),tipo:"Debênture"}));
+  return '<div class="label" style="margin-top:12px">Parecer WF do título</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:1.7rem;line-height:1;color:'+cbNotaCor(d.est?0:d.nota)+'">'+(d.est?'estresse':d.nota+'<small style="font-size:.85rem;color:var(--muted)">/100</small>')+'</b><p style="margin:0;flex:1;min-width:200px"><b>'+ver+'</b></p></div>'
+    +'<ul style="margin:0;padding-left:4px;list-style:none;line-height:1.45">'+li(F,"var(--gain)","+")+li(X,"var(--loss)","−")+li(N,"var(--muted)","•")+'</ul>'
+    +(falta?'<p class="sub" style="font-size:.82rem;margin:6px 0 0"><b>Informação incompleta:</b> '+falta+' de 3 dados do emissor (garantia, rating, balanço) não estão disponíveis. O parecer se apoia mais no preço do que nos fundamentos.</p>':'')
+    +'<p style="margin:8px 0 0"><button type="button" class="btn sec" data-wsim=\''+item+'\'>E se eu incluir na carteira?</button></p>'}
 /* ===== Bolsa › EUA: comparar formas de investir no S&P 500 a partir do Brasil ===== */
 const EX={v:100000,anos:10,ret:9,dy:1.3,cam:0,spread:0.5,iof:1.1,iofv:0.38,terL:0.23,terD:0.03,ir:15,ret_us:30};
 try{const s=JSON.parse(localStorage.getItem("exPar")||"null");if(s&&typeof s==="object")Object.assign(EX,s)}catch(e){}
@@ -8703,9 +8785,10 @@ function cdCalc(c,it,R){
   const pos=it.map((x,i)=>({x,w:w[i]})).filter(o=>o.w>0.001);if(!pos.length)return null;
   // 1) diversificação
   {const hhi=pos.reduce((a,o)=>a+o.w*o.w,0),nef=1/hhi,mx=pos.slice().sort((a,b)=>b.w-a.w)[0],cls=new Set(pos.map(o=>spCl(o.x))).size;
-    const arr=o=>!(spTd(o.x)||spCl(o.x)==="pos");const mxr=pos.filter(arr).sort((a,b)=>b.w-a.w)[0];
+    const arr=o=>!(spTd(o.x)||spCl(o.x)==="pos"),emp=new Map();pos.filter(arr).forEach(o=>{const ac=o.x.t==="a"&&/^[A-Z]{4}\d/.test(o.x.k)&&spCl(o.x)==="acoes",k=ac?"e:"+o.x.k.slice(0,4):"i:"+o.x.k,g=emp.get(k)||{x:o.x,w:0,n:0,ks:[]};g.w+=o.w;g.n++;g.ks.push(o.x.k);emp.set(k,g)});const mxr=[...emp.values()].sort((a,b)=>b.w-a.w)[0];
+    try{if(AT.idx){const C=AT.C,S=new Map();let rv=0;const ac=pos.filter(o=>o.x.t==="a"&&spCl(o.x)==="acoes");ac.forEach(o=>{const r=atRow(o.x.k);if(!r)return;const k=AT.idx.setores[r[C.setor]]||"";S.set(k,(S.get(k)||0)+o.w);rv+=o.w});const t=[...S.entries()].sort((a,b)=>b[1]-a[1])[0];if(t&&rv>=0.2&&t[1]/rv>0.5&&ac.length>=2)add(2,'Diversificar os setores das ações',fx(t[1]/rv*100,0)+'% das ações estão em '+esc(t[0])+' ('+fx(t[1]*100,0)+'% da carteira): um choque no setor atinge quase toda a renda variável')}}catch(e){}
     P.div=Math.round(Math.min(100,nef/8*100)*0.5+(mxr&&mxr.w>0.2?Math.max(0,100-(mxr.w*100-20)*4):100)*0.3+Math.min(100,cls/4*100)*0.2);
-    if(mxr&&mxr.w>0.25)add(mxr.w>0.4?1:2,'Reduzir a concentração em '+nm(mxr.x),'pesa '+fx(mxr.w*100,0)+'% da carteira; acima de 25% num único item de risco, um problema nele vira um problema da carteira');
+    if(mxr&&mxr.w>0.25)add(mxr.w>0.4?1:2,'Reduzir a concentração em '+(mxr.n>1?esc(mxr.ks.join(' e '))+' (mesma empresa)':nm(mxr.x)),'pesa '+fx(mxr.w*100,0)+'% da carteira; acima de 25% num único item de risco, um problema nele vira um problema da carteira');
     if(cls<3&&pos.length>=3)add(2,'Diversificar entre classes','a carteira está em só '+cls+' classe'+(cls>1?'s':'')+' de ativo');
     P._nef=nef}
   // 2) risco × perfil
