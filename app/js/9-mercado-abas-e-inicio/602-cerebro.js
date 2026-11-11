@@ -113,6 +113,7 @@ function cbBriefing(Pr,Mp,X){
 function cbHtml(){
   cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
   const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),Br=cbBriefing(Pr,Mp,X),out=[];
+  out.push(pgHtml());
   out.push('<h3>Briefing</h3><p class="sub">O que os dados de todas as áreas dizem hoje, em poucas linhas.</p><ul style="margin:6px 0 0;padding-left:18px;line-height:1.55">'+Br.map(x=>'<li style="margin:4px 0">'+x+'</li>').join("")+'</ul>');
   out.push('<h3>Mapa tático de alocação</h3><p class="sub">Para cada classe, os sinais que hoje pedem mais ou menos peso que o normal da política da carteira. Dois sinais na mesma direção mudam a leitura; um só, não.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th><th>Leitura</th><th style="text-align:left">Por quê</th></tr></thead><tbody>'
     +Mp.C.map(c=>'<tr><td style="text-align:left"><b>'+c.n+'</b></td><td><b style="color:'+(c.t>0?'var(--gain)':c.t<0?'var(--loss)':'var(--muted)')+'">'+(c.t>0?'acima do peso':c.t<0?'abaixo do peso':'neutro')+'</b><small style="display:block;color:var(--muted)">'+(c.s.length?c.s.length+' sinal'+(c.s.length>1?'is':''):'sem sinal')+'</small></td><td style="text-align:left"><small>'+(c.s.length?c.s.map(x=>(x[0]>0?'▲ ':'▼ ')+x[1]).join('<br>'):'nenhum sinal forte nos dados de hoje')+'</small></td></tr>').join("")+'</tbody></table></div>'
