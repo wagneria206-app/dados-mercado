@@ -116,6 +116,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `395-extrato-curva-x-mercado.js` — extrato: curva x mercado e calibragem pelo PU do banco ---------- (3 KB)
 - `415-atualizacao-de-dados.js` — atualização de dados (2 KB)
 - `420-curvas-de-juros-ettj-anbima.js` — Curvas de juros (ETTJ ANBIMA): atual, 1 dia, 1 semana, 1 mês e 1 ano atrás (11 KB)
+- `421-carrego-e-rolagem.js` (5 KB)
 
 **`js/4-fundos/`** — Fundos (CVM)
 
@@ -144,6 +145,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `479-opcoes-e-setores.js` — Opções (volatilidade implícita e puts ÷ calls, robô scripts/opcoes.py) e mapa setorial com força relativa (5 KB)
 - `480-eventos.js` — eventos (2 KB)
 - `481-operacoes-com-opcoes.js` (18 KB)
+- `482-fatores-da-bolsa.js` (6 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF
 
@@ -203,6 +205,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
+- `601-mercado-fora-do-padrao.js` (5 KB)
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
@@ -215,6 +218,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `614-radar.js` (12 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `616-curva-de-credito.js` (7 KB)
+- `617-termometro-de-mercado.js` (9 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)
 - `620-pcrebase.js` (2 KB)

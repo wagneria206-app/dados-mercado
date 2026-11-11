@@ -39,12 +39,12 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rd")h=rdTela().map(P).join("");
+  try{if(activeMod==="rd"){const tm=tmHtml(true);h=(tm?P(tm):"")+rdTela().map(P).join("")+P(fpHtml())}
   else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
-  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
+  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(crCarryHtml())+P(titHtml())+euaLinhaHtml();
   else if(activeMod==="cr")h=P(crBuscaHtml())+P(ccHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+P(inAnoHtml())+agmAtalho("A data do próximo IPCA e do IPCA-15 e as novas projeções da ANBIMA estão na aba");
   else if(activeMod==="ix")h=P(imaHtml());

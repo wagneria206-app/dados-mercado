@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-/4AbKS6+ws3r8L4MFokQw6vAHWC3xjZPIfjs/obpARo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-PvP5xWBqk/R9eNZqOrlzTZy904MD1nfPBtcKjDNYwrE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3546,12 +3546,12 @@ function inflHtml(){
 
 function oppRender(){const o=$("txOpp");if(o)o.innerHTML=oppHtml()}
 function mkCalc(){const o=$("mkOut");if(!o)return;const P=x=>x?'<section class="panel">'+x+'</section>':'';let h="";
-  try{if(activeMod==="rd")h=rdTela().map(P).join("");
+  try{if(activeMod==="rd"){const tm=tmHtml(true);h=(tm?P(tm):"")+rdTela().map(P).join("")+P(fpHtml())}
   else if(activeMod==="rs")h=rsResumoHtml(P);
   else if(activeMod==="fv")h=favHtml();
   else if(activeMod==="ec")h=economiaHtml().map(P).join("");
   else if(activeMod==="mu")h=mundoHtml().map(P).join("");
-  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(titHtml())+euaLinhaHtml();
+  else if(activeMod==="ju")h=P(diHtml())+P(curvHtml())+P(crCarryHtml())+P(titHtml())+euaLinhaHtml();
   else if(activeMod==="cr")h=P(crBuscaHtml())+P(ccHtml())+P(ofertasHtml())+P(crHtml())+P(debHtml())+P(emHtml())+P(bkHtml());
   else if(activeMod==="in")h=P(ipcaHtml())+P(inflHtml())+P(inAnoHtml())+agmAtalho("A data do próximo IPCA e do IPCA-15 e as novas projeções da ANBIMA estão na aba");
   else if(activeMod==="ix")h=P(imaHtml());
@@ -3900,6 +3900,34 @@ document.addEventListener("mousemove",e=>{const box=e.target.closest&&e.target.c
 
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="piMode")mkClick({target:{id:"piSave",closest:()=>null}})});
 let FX_TOP=null;
+/* ---------- Juros: carrego e rolagem por vencimento e "IPCA+ ou prefixado?".
+   Carrego e rolagem: quanto um título sem cupom de prazo T rende em 12 meses se a curva da ANBIMA ficar parada
+   (= taxa a termo entre T−1 e T), contra o título de 1 ano; o colchão é quanto a taxa pode subir em 12 meses antes
+   de o vencimento longo render menos que o de 1 ano (excesso ÷ duration modificada no fim do período).
+   IPCA+ ou prefixado: inflação implícita até cada vencimento contra a média do Focus para o mesmo prazo e contra a meta. */
+const CR_PZ=[1,2,3,4,5,6,7,8,10],CR_PZR=[1,2,3,5,7,10,15,20];
+function crRoll(b,PZ){const y=t=>t<=0?0:nssY(b,t)/100,y1=y(1);
+  return PZ.map(T=>{const yT=y(T),ret=T<=1?yT:Math.pow(1+yT,T)/Math.pow(1+y(T-1),T-1)-1,ex=ret-y1,D=T<=1?0:(T-1)/(1+y(T-1));return {T,yT,ret,ex,D,col:D?ex/D*100:null}})}
+function crFocusMedio(T,y0){ // inflação média esperada pelo Focus para os próximos T anos (último ano do Focus repetido depois)
+  const F=MC.d&&MC.d.focus;if(!F||!F.anuais||!F.anuais.IPCA)return null;const A=F.anuais.IPCA,ks=Object.keys(A).sort(),val=y=>{const k=A[y]?y:ks.filter(x=>x<=y).pop()||ks[ks.length-1];const s=A[k];return s&&s.length?+s[s.length-1][1]:null};
+  const hoje=new Date(Date.UTC(y0[0],y0[1],y0[2])),f0=1-(hoje.getUTCMonth()+hoje.getUTCDate()/31)/12;let f=1,rest=T,y=y0[0],frac=f0;
+  while(rest>1e-9){const w=Math.min(frac,rest),v=val(String(y));if(v==null)return null;f*=Math.pow(1+v/100,w);rest-=w;y++;frac=1}
+  return (Math.pow(f,1/T)-1)*100}
+function crCarryHtml(){
+  let W=null;try{W=curvWins()}catch(e){}const w=W&&W[0];if(!w||!w.b||!w.b.pre||!w.b.ipca)return "";
+  const P=crRoll(w.b.pre,CR_PZ),R=crRoll(w.b.ipca,CR_PZR),d=w.date.split("-").map(Number),y0=[d[0],d[1]-1,d[2]];
+  const best=L=>L.filter(x=>x.T>=2&&x.col!=null).sort((a,b)=>b.col-a.col)[0];const bp=best(P),br=best(R);
+  const tab=(L,tit,real)=>'<div class="label" style="margin-top:10px">'+tit+'</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Prazo</th><th>Taxa hoje</th><th>Rende em 12 meses<br><small>curva parada</small></th><th>Acima do título de 1 ano</th><th>Colchão</th></tr></thead><tbody>'
+    +L.map(x=>{const bb=x===(real?br:bp);return '<tr'+(bb?' style="font-weight:700"':'')+'><td style="text-align:left">'+x.T+(x.T===1?' ano':' anos')+' <small>('+(y0[0]+x.T)+')</small>'+(bb?' ★':'')+'</td><td>'+(real?'IPCA + ':'')+fx(x.yT*100,2)+'%</td><td>'+(real?'IPCA + ':'')+fx(x.ret*100,2)+'%</td><td class="'+(x.ex>=0?'pos':'neg')+'">'+(x.T===1?'—':mcSig(x.ex*100,2))+'</td><td>'+(x.col==null?'—':fx(x.col,2)+' p.p.')+'</td></tr>'}).join("")+'</tbody></table></div>';
+  let h='<h3>Onde a curva paga melhor: carrego e rolagem</h3><p class="sub">Quanto cada prazo rende nos próximos 12 meses se as taxas não mudarem: além da taxa, o título "desce" a curva e ganha com isso. O <b>colchão</b> é quanto a taxa pode subir em 12 meses antes de o prazo longo render menos que um título de 1 ano. Mais colchão = mais proteção pelo mesmo risco.</p>';
+  if(bp)h+='<p style="margin:6px 0">Melhor relação hoje: <b>prefixado de '+bp.T+' anos</b> (colchão de '+fx(bp.col,2)+' p.p.)'+(br?' e <b>IPCA+ de '+br.T+' anos</b> (colchão de '+fx(br.col,2)+' p.p.)':'')+'.</p>';
+  h+=tab(P,"Prefixados (Tesouro Prefixado, LTN)",false)+tab(R,"Juro real (Tesouro IPCA+, NTN-B)",true);
+  // IPCA+ ou prefixado
+  const L=CR_PZ.filter(T=>T>=1).map(T=>{const pr=nssY(w.b.pre,T),re=nssY(w.b.ipca,T),im=((1+pr/100)/(1+re/100)-1)*100,fo=crFocusMedio(T,y0);return {T,pr,re,im,fo}});
+  h+='<div class="label" style="margin-top:14px">IPCA+ ou prefixado?</div><p class="sub" style="margin:2px 0 6px">A inflação implícita é o IPCA médio que faz os dois empatarem. Se a inflação vier abaixo dela, o prefixado ganha; acima, o IPCA+ ganha.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Prazo</th><th>Prefixado</th><th>IPCA +</th><th>Inflação implícita</th><th>Focus, média do prazo</th><th>Se o IPCA vier como o Focus</th></tr></thead><tbody>'
+    +L.map(x=>'<tr><td style="text-align:left">'+x.T+(x.T===1?' ano':' anos')+'</td><td>'+fx(x.pr,2)+'%</td><td>'+fx(x.re,2)+'%</td><td><b>'+fx(x.im,2)+'%</b></td><td>'+(x.fo==null?'—':fx(x.fo,2)+'%')+'</td><td>'+(x.fo==null?'—':x.im>x.fo+0.05?'prefixado ganha '+fx(x.im-x.fo,2)+' p.p. ao ano':x.im<x.fo-0.05?'IPCA+ ganha '+fx(x.fo-x.im,2)+' p.p. ao ano':'empate')+'</td></tr>').join("")+'</tbody></table></div>';
+  const lo=L.filter(x=>x.T>=3);if(lo.length){const m=lo.reduce((a,x)=>a+x.im,0)/lo.length;h+='<p style="margin:8px 0 0">Nos prazos de 3 anos ou mais, a inflação implícita média é de <b>'+fx(m,2)+'%</b>, '+(m>4.5?'acima do teto da meta (4,5%): o mercado cobra um prêmio alto pelo risco de inflação, o que favorece o <b>prefixado</b> para quem acredita na convergência do IPCA, e o <b>IPCA+</b> para quem quer proteção':m>3?'entre a meta (3%) e o teto (4,5%)':'perto da meta de 3%: a proteção do <b>IPCA+</b> está barata')+'.</p>'}
+  return h+'<p class="sub" style="font-size:.8rem">Curvas de juros prefixados e reais da ANBIMA de '+fdate(Date.parse(w.date+"T00:00:00Z"))+' (taxas zero-cupom; títulos com cupom semestral têm duration menor). Focus: medianas do Banco Central para o IPCA de cada ano; depois do último ano publicado, repete-se o último valor. Prazo em anos úteis (252 dias). A inflação implícita inclui um prêmio pelo risco de inflação, por isso tende a ficar um pouco acima da expectativa pura.</p>'}
 /* ===== Fundos: análise, ranking e comparador com os dados oficiais da CVM ===== */
 const FN_URL=DADOS_RAIZ+"fundos/";
 const FNM=new Set(["fa","fr","fc","fg","ff","af","ab","op","pj","dj","aa","ar","ac","au","ag","sp"]);
@@ -4998,11 +5026,12 @@ const BT_EST={
 function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela()})}
 function btTela(){
   const o=$("fnOut");if(!o)return;
-  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
+  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel" id="ftBox"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
   {const st=$("btSet");if(st){const x=AT.idx?setoresHtml():"";st.innerHTML=x||'<p class="sub">Carregando os setores…</p>'}}
   if(!AT.idx){$("btFR").innerHTML='<p class="sub">Carregando a base de ativos…</p>';if(!AT.err)atBoot();}
   else btFiltro();
   btTeste();
+  {const f=$("ftBox");if(f)f.innerHTML=ftHtml()}
 }
 function btIn(id,lab,v,ph){return '<div class="field"><label for="'+id+'">'+lab+'</label><input id="'+id+'" data-bt="'+id+'" inputmode="decimal" value="'+esc(v)+'" placeholder="'+esc(ph||"")+'" autocomplete="off"></div>'}
 function btSel(id,lab,opts,v){return '<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-bt="'+id+'">'+opts.map(([a,b])=>'<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>'}
@@ -5261,6 +5290,41 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
   if(x.dataset.oplimpa){OPS.f=opNovo();FN.view=null;opTela();return}
   if(x.dataset.opedita){const y=OPS.L.find(o=>o.id===x.dataset.opedita);if(y){OPS.f=JSON.parse(JSON.stringify(y));FN.view=null;opTela();try{$("opForm").scrollIntoView({behavior:"smooth"})}catch(e){}}return}
   if(x.dataset.opapaga){if(x.dataset.conf!=="1"){x.dataset.conf="1";x.textContent="confirmar?";return}OPS.L=OPS.L.filter(o=>o.id!==x.dataset.opapaga);opSave();FN.view=null;opTela()}});
+/* ---------- Estratégias: fatores da Bolsa. Todo mês, desde 2007, as ações líquidas são ordenadas por cinco critérios
+   clássicos e o quinto mais bem colocado forma uma carteira de pesos iguais para o mês seguinte (painel.json, sem olhar o
+   futuro: o balanço só entra depois de publicado). Mostra o que tem funcionado e quem se encaixa hoje em cada estilo. */
+const FT_DEF=[
+  ["valor","Valor","lucro alto para o preço (menor P/L positivo)",(a,m)=>{const p=a.pl[m];return p>0&&p<60?1/p:null}],
+  ["div","Dividendos","maior rendimento em proventos nos últimos 12 meses",(a,m)=>{const d=a.dy[m];return d>0&&d<40?d:null}],
+  ["qual","Qualidade","maior retorno sobre o patrimônio (ROE)",(a,m)=>{const r=a.roe[m];return r>0&&r<100?r:null}],
+  ["mom","Momento","maior alta em 12 meses, sem o último mês",(a,m)=>{let f=1,n=0;for(let k=m-11;k<m;k++){const x=a.ret[k];if(x!=null){f*=1+x/100;n++}}return n>=10?f:null}],
+  ["bvol","Baixa volatilidade","menor oscilação mensal em 12 meses",(a,m)=>{const v=[];for(let k=m-11;k<=m;k++){const x=a.ret[k];if(x!=null)v.push(x)}if(v.length<10)return null;const mu=v.reduce((s,x)=>s+x,0)/v.length;return -Math.sqrt(v.reduce((s,x)=>s+(x-mu)*(x-mu),0)/(v.length-1))}]];
+const FTR={r:null};
+function ftCalc(pn){
+  const M=pn.meses,A=Object.entries(pn.a),m0=M.indexOf("2007-01"),out={},sel={};FT_DEF.forEach(([k])=>{out[k]=[]});out.uni=[];out.ibov=[];
+  for(let m=Math.max(m0,12);m<M.length-1;m++){
+    const U=A.filter(([t,a])=>(a.liq[m]||0)>=2e6&&a.ret[m]!=null);if(U.length<40)continue;
+    const nx=a=>a.ret[m+1];out.ibov.push([M[m+1],pn.ibov[m+1]]);{const v=U.map(([t,a])=>nx(a)).filter(x=>x!=null);out.uni.push([M[m+1],v.reduce((s,x)=>s+x,0)/v.length])}
+    FT_DEF.forEach(([k,,,f])=>{const sc=U.map(([t,a])=>({t,a,s:f(a,m)})).filter(x=>x.s!=null).sort((x,y)=>y.s-x.s),q=sc.slice(0,Math.max(5,Math.round(sc.length/5)));
+      const v=q.map(x=>nx(x.a)).filter(x=>x!=null);out[k].push([M[m+1],v.length?v.reduce((s,x)=>s+x,0)/v.length:0])})}
+  const ml=M.length-1;FT_DEF.forEach(([k,,,f])=>{sel[k]=A.filter(([t,a])=>(a.liq[ml]||0)>=5e6&&a.ret[ml]!=null).map(([t,a])=>({t,n:a.n,s:f(a,ml)})).filter(x=>x.s!=null).sort((x,y)=>y.s-x.s).slice(0,8)});
+  return {out,sel,ate:M[ml]}}
+function ftAcum(L,n){const v=n?L.slice(-n):L;let f=1;v.forEach(p=>{f*=1+(p[1]||0)/100});return (f-1)*100}
+function ftHtml(){
+  if(!BT.pn){if(typeof btBoot==="function")btBoot();return '<h3>Fatores da Bolsa</h3><p class="sub">Carregando o histórico mensal das ações…</p>'}
+  if(!FTR.r||FTR.r.pn!==BT.pn)FTR.r={pn:BT.pn,x:ftCalc(BT.pn)};const {out,sel,ate}=FTR.r.x;if(!out.ibov.length)return "";
+  const an=L=>{const y=L.length/12;return y?(Math.pow(1+ftAcum(L)/100,1/y)-1)*100:null},rows=FT_DEF.map(([k,n,d])=>({k,n,d,a12:ftAcum(out[k],12),a36:ftAcum(out[k],36),aa:an(out[k])}));
+  const ib12=ftAcum(out.ibov,12),ib36=ftAcum(out.ibov,36),ibA=an(out.ibov),top=rows.slice().sort((a,b)=>b.a12-a.a12);
+  let h='<h3>Fatores da Bolsa: o que tem funcionado</h3><p class="sub">Todo mês, o quinto das ações líquidas mais bem colocado em cada critério vira uma carteira de pesos iguais no mês seguinte. Mostra que estilo de ação o mercado tem premiado.</p>'
+    +'<p style="margin:6px 0">Nos últimos 12 meses, o estilo que mais rendeu foi <b>'+top[0].n+'</b> ('+mcSig(top[0].a12,1)+', contra '+mcSig(ib12,1)+' do Ibovespa); o que menos rendeu foi <b>'+top[top.length-1].n+'</b> ('+mcSig(top[top.length-1].a12,1)+').</p>'
+    +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Fator</th><th>12 meses</th><th>36 meses</th><th>Ao ano desde '+out.ibov[0][0].slice(0,4)+'</th></tr></thead><tbody>'
+    +rows.map(r=>'<tr><td style="text-align:left"><b>'+r.n+'</b><small style="display:block;color:var(--muted)">'+r.d+'</small></td><td class="'+(r.a12>=ib12?'pos':'neg')+'">'+mcSig(r.a12,1)+'</td><td class="'+(r.a36>=ib36?'pos':'neg')+'">'+mcSig(r.a36,1)+'</td><td>'+fx(r.aa,1)+'%</td></tr>').join("")
+    +'<tr><td style="text-align:left">Ibovespa</td><td>'+mcSig(ib12,1)+'</td><td>'+mcSig(ib36,1)+'</td><td>'+fx(ibA,1)+'%</td></tr><tr><td style="text-align:left">Média das ações líquidas</td><td>'+mcSig(ftAcum(out.uni,12),1)+'</td><td>'+mcSig(ftAcum(out.uni,36),1)+'</td><td>'+fx(an(out.uni),1)+'%</td></tr></tbody></table></div>';
+  const ser=(L,lab,col)=>{let f=100;return {lab,col,w:lab==="Ibovespa"?2.4:1.6,pts:L.slice(-120).map(p=>{f*=1+(p[1]||0)/100;return [Date.UTC(+p[0].slice(0,4),+p[0].slice(5,7)-1,28),f]})}};
+  h+='<div class="label" style="margin-top:12px">R$ 100 aplicados em cada estilo, nos últimos 10 anos</div>'+fnChart(FT_DEF.map(([k,n],i)=>ser(out[k],n,FN_COLS[i%FN_COLS.length])).concat([ser(out.ibov,"Ibovespa","var(--ink)")]),{fmt:"num",h:240,aria:"Desempenho acumulado de cada fator"});
+  h+='<div class="label" style="margin-top:12px">Quem mais se encaixa hoje</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr>'+FT_DEF.map(([,n])=>'<th>'+n+'</th>').join("")+'</tr></thead><tbody>';
+  for(let i=0;i<8;i++)h+='<tr>'+FT_DEF.map(([k])=>{const x=sel[k][i];return '<td>'+(x?'<button type="button" class="link" data-atopen="'+x.t+'">'+x.t+'</button>':'')+'</td>'}).join("")+'</tr>';
+  return h+'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:8px">Ações e units com liquidez média acima de R$ 2 milhões por dia em cada mês (R$ 5 milhões na lista de hoje). Retorno total com proventos, sem custos nem impostos; carteiras refeitas todo mês. Dados até '+ate.slice(5)+'/'+ate.slice(0,4)+'. P/L, dividendos e ROE do último balanço anual já publicado na época. Desempenho passado não garante o futuro: fatores passam anos sem funcionar.</p>'}
 /* ===== Comparador (fundos e ativos, até 25), janelas móveis, similares, gross-up, gestoras ===== */
 const CMP_MAX=25;
 const CMP_COLS=["#2563eb","#16a34a","#dc2626","#9333ea","#f59e0b","#0891b2","#db2777","#65a30d","#4f46e5","#ea580c","#0d9488","#be123c","#854d0e","#0284c7","#7c3aed","#4d7c0f","#e879f9","#1e3a8a","#14b8a6","#64748b","#facc15","#831843","#22d3ee","#a3a3a3","#b91c1c"];
@@ -8310,6 +8374,31 @@ document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dat
 
 {const m=/fundo=([0-9A-Za-z]{14,16})/.exec(location.hash||"");if(m){FN.cur=m[1];try{localStorage.setItem("mod2","fa")}catch(e){}}const a=/ativo=([A-Za-z0-9-]{4,16})/.exec(location.hash||"");if(a){AT.cur=a[1].toUpperCase();try{localStorage.setItem("mod2","aa")}catch(e){}}}
 
+/* ---------- Radar: mercado fora do padrão. Varre todas as ações e units líquidas da B3 (não só carteira e favoritos):
+   amplitude (quantas estão acima das médias e nas máximas ou mínimas de 52 semanas), movimentos da semana fora do
+   normal para a própria volatilidade e ações descoladas do seu setor. Usa as colunas técnicas do idx.json (tecnica.py). */
+const FP_LIQ=5e6;
+function fpBase(){if(!AT.idx)return null;const C=AT.C,R=AT.idx.rows;if(C.r5==null||C.mm200d==null)return null;
+  return R.filter(r=>(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")&&(r[C.liq]||0)>=FP_LIQ&&r[C.r5]!=null)}
+function fpHtml(){
+  if(!AT.idx){if(!AT.err)atBoot();return ""}const L=fpBase();if(!L||L.length<30)return "";const C=AT.C,I=AT.idx,pct=f=>L.filter(f).length/L.length*100;
+  const a200=pct(r=>r[C.mm200d]>0),a50=pct(r=>r[C.mm50d]>0),mx=L.filter(r=>r[C.max52d]!=null&&r[C.max52d]>=-1),mn=L.filter(r=>r[C.min52d]!=null&&r[C.min52d]<=1);
+  const lei=a200>=60?['ampla e saudável','var(--gain)']:a200<=40?['fraca: a maioria das ações está em queda','var(--loss)']:['dividida','var(--warn)'];
+  // movimento da semana contra a volatilidade da própria ação (desvio semanal = vol anual ÷ √52)
+  const z=r=>{const v=r[C.v12];return v>0?r[C.r5]/(v/Math.sqrt(52)):null};
+  const setr=new Map();L.forEach(r=>{const s=r[C.setor];(setr.get(s)||setr.set(s,[]).get(s)).push(r[C.r5])});const medS=s=>{const a=(setr.get(s)||[]).slice().sort((x,y)=>x-y);return a.length>=4?a[a.length>>1]:null};
+  const fora=L.map(r=>({r,z:z(r)})).filter(x=>x.z!=null&&Math.abs(x.z)>=2.5).sort((a,b)=>Math.abs(b.z)-Math.abs(a.z)).slice(0,10);
+  const desc=L.map(r=>{const m=medS(r[C.setor]),v=r[C.v12];return m==null||!(v>0)?null:{r,d:r[C.r5]-m,z:(r[C.r5]-m)/(v/Math.sqrt(52))}}).filter(x=>x&&Math.abs(x.z)>=2).sort((a,b)=>Math.abs(b.z)-Math.abs(a.z)).slice(0,8);
+  const lk=r=>'<button type="button" class="link" data-atopen="'+r[0]+'">'+r[0]+'</button>',st=r=>esc(I.setores[r[C.setor]]||"");
+  let h='<h3>Mercado fora do padrão</h3><p class="sub">Varredura das '+L.length+' ações e units com liquidez acima de R$ 5 milhões por dia, com os pregões até '+fdate(AT.T[AT.T.length-1])+'.</p>'
+    +'<div class="fnkpis">'+tecKp("Acima da média de 200 dias",fx(a200,0)+'%','amplitude <b style="color:'+lei[1]+'">'+lei[0]+'</b>')+tecKp("Acima da média de 50 dias",fx(a50,0)+'%',a50>a200+10?'o curto prazo melhora antes do longo':a50<a200-10?'o curto prazo piora antes do longo':'')
+    +tecKp("Na máxima de 52 semanas",mx.length+'',mx.length?mx.slice(0,4).map(r=>r[0]).join(', '):'')+tecKp("Na mínima de 52 semanas",mn.length+'',mn.length?mn.slice(0,4).map(r=>r[0]).join(', '):'')+'</div>';
+  if(fora.length)h+='<div class="label" style="margin-top:10px">Semana fora do normal para a própria ação</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ação</th><th style="text-align:left">Setor</th><th>Semana</th><th>Vezes o desvio normal</th><th>Setor na semana</th></tr></thead><tbody>'
+    +fora.map(x=>'<tr><td style="text-align:left">'+lk(x.r)+'</td><td style="text-align:left"><small>'+st(x.r)+'</small></td><td class="'+(x.r[C.r5]>=0?'pos':'neg')+'">'+mcSig(x.r[C.r5],1)+'</td><td>'+fx(Math.abs(x.z),1)+'×</td><td>'+(medS(x.r[C.setor])==null?'—':mcSig(medS(x.r[C.setor]),1))+'</td></tr>').join("")+'</tbody></table></div>';
+  if(desc.length)h+='<div class="label" style="margin-top:10px">Descolados do setor na semana</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Ação</th><th style="text-align:left">Setor</th><th>Ação</th><th>Mediana do setor</th><th>Diferença</th></tr></thead><tbody>'
+    +desc.map(x=>'<tr><td style="text-align:left">'+lk(x.r)+'</td><td style="text-align:left"><small>'+st(x.r)+'</small></td><td>'+mcSig(x.r[C.r5],1)+'</td><td>'+mcSig(medS(x.r[C.setor]),1)+'</td><td class="'+(x.d>=0?'pos':'neg')+'"><b>'+mcSig(x.d,1)+'</b></td></tr>').join("")+'</tbody></table></div>';
+  if(!fora.length&&!desc.length)h+='<p style="margin:8px 0 0">Nenhuma ação líquida fugiu do próprio padrão nesta semana.</p>';
+  return h+'<p class="sub" style="font-size:.8rem;margin-top:8px">Semana = últimos 5 pregões, sem proventos. "Vezes o desvio normal" compara a variação com a volatilidade de 12 meses da ação na escala de uma semana: acima de 2,5× acontece em menos de 2% das semanas numa distribuição normal. Descolados: diferença para a mediana do setor de pelo menos 2 desvios. Movimento fora do padrão costuma ter notícia por trás: confira fatos relevantes e a página da ação.</p>'}
 /* ---------- Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices ---------- */
 const MK={di:null,inf:null,ima:null,cred:null,tit:null,deb:null,loaded:0,loading:false};
 async function mkLoad(force){if(MK.loading||(!force&&MK.loaded&&Date.now()-MK.loaded<25*60000))return;MK.loading=true;
@@ -9143,6 +9232,60 @@ function ccIn(){
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-ccind],[data-ccinc],[data-ccpor],[data-crcalc]");if(!x)return;
   if(x.dataset.ccind){CC.ind=x.dataset.ccind;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}if(x.dataset.ccpor){CC.por=x.dataset.ccpor;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}if(x.dataset.ccinc){CC.inc=x.dataset.ccinc;const b=$("ccBox");if(b)b.innerHTML=ccIn();return}
   if(x.dataset.crcalc){const c=x.dataset.crcalc;setMod("pc");setTimeout(()=>{const i=$("pcCode");if(i){i.value=c;const b=$("pcFetch");if(b)b.click()}},80)}});
+/* ---------- Termômetro de mercado: seis sinais objetivos, lidos no fim de cada mês, somam um placar de -6 a +6.
+   Placar ≥ +2: apetite a risco; ≤ -2: defensivo; entre eles: neutro. O histórico desde 2010 mostra quanto cada classe
+   de ativo rendeu no mês SEGUINTE a cada leitura (média e frequência acima do CDI). É estatística do passado, não previsão.
+   Dados: índices mensais (B3, ANBIMA, Banco Central) do robô de ativos, juros de 5 anos e dólar global (macro.json) e
+   fluxo de estrangeiros em ações (balanço de pagamentos do Banco Central). */
+const TM={b:null,fl:null,err:null,load:null};
+function tmBoot(){if(TM.load||(TM.b&&TM.fl))return;TM.load=Promise.all([atGet("bench.json"),roboGet("fluxo_estrangeiro.json").catch(()=>null)]).then(([b,f])=>{TM.b=b;TM.fl=f||{mensal:{}};TM.load=null;tmRefaz()}).catch(e=>{TM.err=e;TM.load=null;tmRefaz()})}
+function tmRefaz(){if(typeof activeMod!=="undefined"&&(activeMod==="rs"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc()}
+const TM_REG=[[2,"Apetite a risco","var(--gain)"],[-1,"Neutro","var(--warn)"],[-99,"Defensivo","var(--loss)"]];
+function tmReg(s){return s>=2?TM_REG[0]:s<=-2?TM_REG[2]:TM_REG[1]}
+function tmBase(){ // séries mensais alinhadas (AAAAMM), com o mês corrente parcial no fim
+  if(!TM.b||!MC.d)return null;const m=TM.b.m||{},M=Object.keys(m.ibov||{}).sort(),ult=(o,f)=>{const r={};o.forEach(p=>{r[f(p[0])]=p[1]});return r};
+  const cm=MC.d.cm||{},pre5={};(cm.d||[]).forEach((d,i)=>{const v=(cm.pre5||[])[i];if(v!=null)pre5[d.slice(0,4)+d.slice(5,7)]=v});
+  const dxy=MC.d.dxy?ult(MC.d.dxy.s,d=>d.slice(0,4)+d.slice(5,7)):{},fl={};Object.entries((TM.fl.mensal||{}).acoes||{}).forEach(([k,v])=>{fl[k.replace("-","")]=v});
+  const lm=M[M.length-1],ul=o=>{const ks=Object.keys(o).sort();if(o[lm]==null&&ks.length)o[lm]=o[ks[ks.length-1]]};ul(pre5);ul(dxy); // mês corrente: último valor disponível
+  return {M,ibov:m.ibov,usd:m.usd,cdi:m.cdi,imab:m.imab,irfm:m.irfm,ifix:m.ifix||{},pre5,dxy,fl}}
+const tmSg=(v,d)=>(v>=0?'+':'−')+fx(Math.abs(v),d==null?1:d)+'%';
+function tmSinais(B,i){const M=B.M,k=M[i],ag=j=>M[i-j],S=[];
+  const v=(o,j)=>o[ag(j)],ch=(o,j)=>v(o,0)!=null&&v(o,j)?v(o,0)/v(o,j)-1:null;
+  {const L=[];for(let j=0;j<10;j++)if(v(B.ibov,j)!=null)L.push(v(B.ibov,j));if(L.length===10){const md=L.reduce((a,b)=>a+b,0)/10,x=v(B.ibov,0)>md;S.push(["Tendência da Bolsa",x?1:-1,'Ibovespa '+(x?'acima':'abaixo')+' da média de 10 meses ('+tmSg((v(B.ibov,0)/md-1)*100)+')'])}}
+  {const c=ch(B.usd,3);if(c!=null)S.push(["Dólar (3 meses)",c<-0.02?1:c>0.02?-1:0,tmSg(c*100)+' contra o real'])}
+  {const a=v(B.pre5,0),b=v(B.pre5,3);if(a!=null&&b!=null){const d=a-b;S.push(["Juros de 5 anos (3 meses)",d<-0.5?1:d>0.5?-1:0,(d>=0?'+':'−')+fx(Math.abs(d),2)+' p.p., a '+fx(a,2)+'%'])}}
+  {let s=0,n=0;for(let j=1;j<=3;j++){const x=B.fl[ag(j)];if(x!=null){s+=x;n++}}if(n)S.push(["Estrangeiros em ações (3 meses)",s>0?1:-1,(s>=0?'entrada':'saída')+' de US$ '+fx(Math.abs(s)/1000,1)+' bi'])}
+  {const c=ch(B.dxy,3);if(c!=null)S.push(["Dólar no mundo (DXY, 3 meses)",c<-0.02?1:c>0.02?-1:0,tmSg(c*100)])}
+  {const r=ch(B.ibov,6);let f=1;for(let j=0;j<6;j++){const x=v(B.cdi,j);if(x!=null)f*=1+x/100}if(r!=null)S.push(["Bolsa contra o CDI (6 meses)",r>f-1?1:-1,'Ibovespa '+tmSg(r*100)+' × CDI '+fx((f-1)*100,1)+'%'])}
+  return {k,S,s:S.reduce((a,x)=>a+x[1],0),n:S.length}}
+function tmHist(B){ // regime no fim de cada mês completo e o retorno do mês seguinte
+  const M=B.M,R=[],at=(o,a,b)=>o[a]&&o[b]?(o[b]/o[a]-1)*100:null;
+  for(let i=10;i<M.length-2;i++){const x=tmSinais(B,i);if(x.n<6)continue;const a=M[i],b=M[i+1];
+    R.push({k:a,s:x.s,r:{ibov:at(B.ibov,a,b),ifix:at(B.ifix,a,b),imab:at(B.imab,a,b),irfm:at(B.irfm,a,b),usd:at(B.usd,a,b),cdi:B.cdi[b]}})}
+  return R}
+function tmHtml(curto){
+  if(!MC.d){mcBoot();return '<h3>Termômetro de mercado</h3><p class="sub">Carregando…</p>'}
+  if(!TM.b){tmBoot();return TM.err?'':'<h3>Termômetro de mercado</h3><p class="sub">Carregando…</p>'}
+  const B=tmBase();if(!B||B.M.length<20)return "";const H=tmHist(B),hoje=tmSinais(B,B.M.length-1),rg=tmReg(hoje.s);
+  let h='<h3>Termômetro de mercado</h3><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:4px 0 6px"><b style="font-size:1.5rem;color:'+rg[2]+'">'+rg[1]+'</b><span class="sub">placar '+(hoje.s>0?'+':'')+hoje.s+' de '+hoje.n+' sinais · leitura de '+['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+hoje.k.slice(4)]+'/'+hoje.k.slice(0,4)+'</span></div>';
+  if(curto)return h+'<p class="sub" style="margin:0">'+hoje.S.map(x=>(x[1]>0?'▲ ':x[1]<0?'▼ ':'• ')+x[0]).join(' · ')+'. <button type="button" class="link" data-tmver="1">Ver o termômetro</button></p>';
+  h+='<p class="sub">Seis sinais objetivos sobre Bolsa, dólar, juros e fluxo estrangeiro. Cada um soma +1 (favorece ativos de risco), −1 (pede defesa) ou 0. Placar de +2 para cima: apetite a risco; de −2 para baixo: defensivo.</p>'
+    +'<div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Sinal</th><th style="text-align:left">Leitura</th><th>Placar</th></tr></thead><tbody>'
+    +hoje.S.map(x=>'<tr><td style="text-align:left">'+x[0]+'</td><td style="text-align:left">'+x[2]+'</td><td class="'+(x[1]>0?'pos':x[1]<0?'neg':'')+'"><b>'+(x[1]>0?'+1':x[1]<0?'−1':'0')+'</b></td></tr>').join("")+'</tbody></table></div>';
+  // histórico: retorno médio no mês seguinte por regime
+  const cls=[["ibov","Ibovespa"],["ifix","IFIX (FIIs)"],["imab","IMA-B (IPCA+)"],["irfm","IRF-M (prefixados)"],["usd","Dólar"]];
+  const G=TM_REG.map(r=>({r,L:H.filter(x=>tmReg(x.s)===r)}));
+  h+='<div class="label" style="margin-top:12px">No mês seguinte a cada leitura, desde '+H[0].k.slice(0,4)+'</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th>'+G.map(g=>'<th style="color:'+g.r[2]+'">'+g.r[1]+' <small>('+g.L.length+' meses)</small></th>').join("")+'</tr></thead><tbody>'
+    +cls.map(([k,n])=>'<tr><td style="text-align:left">'+n+'</td>'+G.map(g=>{const v=g.L.filter(x=>x.r[k]!=null);if(v.length<6)return '<td>—</td>';const md=v.reduce((a,x)=>a+x.r[k],0)/v.length,ac=v.filter(x=>x.r[k]>(x.r.cdi||0)).length/v.length*100;return '<td><b class="'+(md>=0?'pos':'neg')+'">'+mcSig(md,2)+'</b><small style="display:block;color:var(--muted)">acima do CDI em '+fx(ac,0)+'% dos meses</small></td>'}).join("")+'</tr>').join("")
+    +'<tr><td style="text-align:left">CDI</td>'+G.map(g=>{const v=g.L.filter(x=>x.r.cdi!=null);return '<td>'+(v.length?fx(v.reduce((a,x)=>a+x.r.cdi,0)/v.length,2)+'%':'—')+'</td>'}).join("")+'</tr></tbody></table></div>';
+  {const med=(L,k)=>{const v=L.filter(x=>x.r[k]!=null);return v.length>=6?{m:v.reduce((a,x)=>a+x.r[k],0)/v.length,ac:v.filter(x=>x.r[k]>(x.r.cdi||0)).length/v.length*100,cnt:v.length}:null};
+    const g=G.find(x=>x.r===rg),ord=cls.map(([k,n])=>Object.assign({n},med(g.L,k)||{m:null})).filter(x=>x.m!=null).sort((a,b)=>b.m-a.m);
+    if(ord.length)h+='<p style="margin:10px 0 0">Nos <b>'+g.L.length+' meses</b> com leitura <b>'+rg[1].toLowerCase()+'</b> desde '+H[0].k.slice(0,4)+', quem mais rendeu no mês seguinte foi <b>'+ord[0].n+'</b> (média de '+mcSig(ord[0].m,2)+', acima do CDI em '+fx(ord[0].ac,0)+'% das vezes) e quem menos rendeu foi <b>'+ord[ord.length-1].n+'</b> ('+mcSig(ord[ord.length-1].m,2)+').</p>';
+    const a=med(G[0].L,"ibov"),d=med(G[2].L,"ibov");if(a&&d&&d.m>a.m)h+='<p class="sub" style="margin:6px 0 0">Repare: a Bolsa costuma render <b>mais</b> depois de leituras defensivas ('+mcSig(d.m,2)+' ao mês) do que depois de leituras de apetite ('+mcSig(a.m,2)+'). Quando o pessimismo já está nos preços, a recuperação tende a vir antes de os sinais melhorarem. O termômetro descreve o momento; não diz para sair da Bolsa.</p>'}
+  h+=fnChart([{lab:"Placar",col:FN_COLS[0],w:1.6,pts:H.map(x=>[Date.UTC(+x.k.slice(0,4),+x.k.slice(4)-1,28),x.s]).concat([[Date.UTC(+hoje.k.slice(0,4),+hoje.k.slice(4)-1,28),hoje.s]])}],{fmt:"int",h:150,bars:1,zero:1,noLegend:1,aria:"Placar do termômetro mês a mês"});
+  h+='<p class="sub" style="font-size:.8rem">Retorno médio de um mês, depois de cada leitura no fim do mês; o mês corrente entra na leitura de hoje, mas não no histórico. Sinais: Ibovespa contra a média de 10 meses; variação de 3 meses do dólar e do DXY (±2%); dos juros prefixados de 5 anos (±0,5 ponto); fluxo de estrangeiros em ações nos 3 meses anteriores; Ibovespa contra o CDI em 6 meses. Fontes: B3, ANBIMA, Banco Central e Federal Reserve. Estatística do passado, não previsão: use como contexto, nunca como sinal isolado de compra ou venda.</p>';
+  return h}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-tmver]");if(!x)return;setMod("rs");setTimeout(()=>{const p=[...document.querySelectorAll("h3")].find(h=>/Termômetro/.test(h.textContent));if(p)p.scrollIntoView({behavior:"smooth"})},300)});
 /* ---------- tour de boas-vindas: aparece na primeira abertura em cada aparelho (e pode ser revisto em Ajustes)
    Destaca cada parte do app com um balão curto. Não aparece em navegadores automatizados (testes). */
 const TOUR=[
@@ -9283,7 +9426,7 @@ temaAplica();
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",temaAplica)}catch(e){}
 
 /* blocos da tela Mercado › Resumo: o usuário escolhe quais aparecem e em que ordem */
-function rsBlocosDef(){return {painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda: hoje e próximos dias",agmCurtoHtml],ideias:["Ideias da semana (Tesouro, crédito e fundos)",ideiasHtml]}}
+function rsBlocosDef(){return {termo:["Termômetro de mercado",()=>tmHtml()],painel:["Painel de índices (Bolsas, dólar e juros)",painelHtml],resumo:["Resumo do mercado (juros, Copom e inflação)",rsHtml],fluxo:["Capital estrangeiro e risco-país",fluxoHtml],agenda:["Agenda: hoje e próximos dias",agmCurtoHtml],ideias:["Ideias da semana (Tesouro, crédito e fundos)",ideiasHtml]}}
 function rsBlocos(){const D=rsBlocosDef(),ids=Object.keys(D);let L=[];try{L=JSON.parse(lsGet("rsBlocos","[]"))}catch(e){}
   L=L.filter(x=>Array.isArray(x)&&D[x[0]]);ids.forEach(id=>{if(!L.some(x=>x[0]===id))L.push([id,true])});return L}
 function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
@@ -9294,8 +9437,8 @@ function rsResumoHtml(P){const D=rsBlocosDef(),L=rsBlocos().filter(x=>x[1]);
 function inicioMod(){const v=lsGet("inicio","ultima");return v&&v!=="ultima"&&AREA_OF[v]?v:null}
 
 /* ---------- busca única */
-const BZ_PAL={op:"opcoes venda coberta call put lancamento cobertura strike premio exercicio operacao combinada",rd:"radar sinais atencao agir oportunidades o que mudou hoje alertas carteira favoritos",sem:"semana resumo semanal placar destaques pdf",af:"fiis fundos imobiliarios papel tijolo vacancia p/vp rendimento fiagro",ab:"estrategias filtro combinado backtest teste historico dividendos valor momento formula magica setores forca relativa",ff:"fluxo captacao resgate industria fundos categorias",pj:"planejamento aposentadoria monte carlo meta renda aporte",dj:"diario decisoes tese anotacoes",rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
-  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
+const BZ_PAL={op:"opcoes venda coberta call put lancamento cobertura strike premio exercicio operacao combinada",rd:"radar sinais atencao agir oportunidades o que mudou hoje alertas carteira favoritos mercado fora do padrao amplitude maximas minimas descolados",sem:"semana resumo semanal placar destaques pdf",af:"fiis fundos imobiliarios papel tijolo vacancia p/vp rendimento fiagro",ab:"estrategias filtro combinado backtest teste historico dividendos valor momento formula magica setores forca relativa fatores valor dividendos qualidade momento baixa volatilidade",ff:"fluxo captacao resgate industria fundos categorias",pj:"planejamento aposentadoria monte carlo meta renda aporte",dj:"diario decisoes tese anotacoes",rs:"resumo painel ibovespa ifix s&p 500 dow jones nasdaq vix indices bolsa hoje termometro de mercado regime apetite a risco defensivo",agm:"agenda calendario divulgacoes datas copom ata fed fomc ibge ipca ipca-15 pib payroll cpi focus vencimentos b3 proventos semana",ec:"economia focus expectativas pib atividade desemprego fiscal divida credito selic copom",mu:"eua mundo fed fomc treasury treasuries juros dos eua fed funds sofr tips payroll inflacao americana petroleo brent dolar global dxy exterior",
+  fv:"favoritos alertas",ju:"juros di futuro copom selic curva ettj prefixado juro real ntn-b carrego rolagem colchao inflacao implicita ipca+ ou prefixado",tx:"tesouro direto taxas historico titulos publicos",cr:"credito privado debentures cri cra spread",in:"inflacao ipca ipca-15 igp-m implicita",
   ix:"indices ima ima-b irf-m ima-s anbima renda fixa",fx:"dolar ptax cambio cupom cambial moeda",fa:"fundo analise cnpj",fr:"ranking fundos melhores",fc:"comparar fundos",fg:"gestoras administradoras",aa:"acao acoes fii etf bdr ativo analise",
   ar:"ranking acoes fiis dividendos etf etfs renda fixa cripto internacional categoria",ac:"comparar acoes ativos",au:"bolsa americana eua sec balancos",ag:"agenda proventos dividendos jcp rendimentos",sc:"cenarios juros estresse simulacao",sim:"equivalencia lci lca cdb escada vencimentos conversor de taxas indexador ipca cdi prefixado liquido isento",
   sp:"carteira simulador fronteira eficiente alocacao",pub:"calcular tesouro titulo marcacao a mercado agio desagio",pc:"calcular credito privado debenture cri cra",bank:"cdb lci lca rdb bancarios fgc teto garantia 250 mil aporte maximo conglomerado",fund:"fundos previdencia pgbl vgbl come-cotas"};
