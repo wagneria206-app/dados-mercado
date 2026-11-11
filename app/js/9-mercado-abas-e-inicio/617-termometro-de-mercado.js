@@ -5,7 +5,7 @@
    fluxo de estrangeiros em ações (balanço de pagamentos do Banco Central). */
 const TM={b:null,fl:null,err:null,load:null};
 function tmBoot(){if(TM.load||(TM.b&&TM.fl))return;TM.load=Promise.all([atGet("bench.json"),roboGet("fluxo_estrangeiro.json").catch(()=>null)]).then(([b,f])=>{TM.b=b;TM.fl=f||{mensal:{}};TM.load=null;tmRefaz()}).catch(e=>{TM.err=e;TM.load=null;tmRefaz()})}
-function tmRefaz(){if(typeof activeMod!=="undefined"&&(activeMod==="rs"||activeMod==="rd")&&typeof mkCalc==="function")mkCalc()}
+function tmRefaz(){if(typeof activeMod!=="undefined"&&(activeMod==="rs"||activeMod==="rd"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()}
 const TM_REG=[[2,"Apetite a risco","var(--gain)"],[-1,"Neutro","var(--warn)"],[-99,"Defensivo","var(--loss)"]];
 function tmReg(s){return s>=2?TM_REG[0]:s<=-2?TM_REG[2]:TM_REG[1]}
 function tmBase(){ // séries mensais alinhadas (AAAAMM), com o mês corrente parcial no fim
