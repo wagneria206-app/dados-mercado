@@ -371,7 +371,7 @@ def avisos(F, hist):
 
 NOMES_SERVIDOR = {"atualizar": "Mercado (taxas, curvas, dólar, inflação, crédito)", "rapido": "Tesouro Direto e mercado ao longo do dia",
                   "ativos": "Bolsa (B3 e CVM)", "fundos": "Fundos (CVM)", "eua": "Bolsa americana", "macro": "Economia",
-                  "insiders": "Insiders (CVM)", "bancos": "Bancos (IF.data)", "emissores": "Emissores de debêntures (CVM)",
+                  "insiders": "Insiders (CVM)", "empresas": "Fatos relevantes e resultados trimestrais (CVM)", "bancos": "Bancos (IF.data)", "emissores": "Emissores de debêntures (CVM)",
                   "aluguel": "Aluguel de ações (B3)", "opcoes": "Opções (B3)", "saude": "Saúde das fontes"}
 
 

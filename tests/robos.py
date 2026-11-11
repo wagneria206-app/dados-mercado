@@ -243,6 +243,25 @@ confere("Focus: segunda comum antes das 10h30 ainda vale a semana anterior", sau
 confere("saúde: sexta até terça depois de feriado na segunda = 1 dia útil", saude.dias_uteis(dt.date(2026, 10, 30), dt.date(2026, 11, 3)), 1)
 confere("saúde: sexta até segunda comum = 1 dia útil", saude.dias_uteis(dt.date(2026, 10, 23), dt.date(2026, 10, 26)), 1)
 
+# ---------------- companhias: fatos relevantes e resultados trimestrais (CVM)
+import empresas  # noqa: E402
+confere("fatos: recompra não é aquisição", empresas.classificar("Programa de aquisição de ações de emissão própria (recompra)"), ("recompra", 2))
+confere("fatos: recuperação judicial é nível 1", empresas.classificar("Pedido de Recuperação Judicial"), ("recuperacao", 1))
+confere("fatos: waiver é sinal de crédito", empresas.classificar("Obtenção de waiver junto aos debenturistas"), ("inadimplencia", 1))
+confere("fatos: assunto sem palavra conhecida", empresas.classificar("Esclarecimentos sobre notícia veiculada na mídia"), ("outros", 3))
+_ipe = [{"cnpj": "33.000.167/0001-01", "cat": "Fato Relevante", "data": "2026-11-03", "assunto": "Pagamento de dividendos", "tipo": "", "especie": "", "link": "http://x"},
+        {"cnpj": "33.000.167/0001-01", "cat": "Fato Relevante", "data": "2026-11-03", "assunto": "Pagamento de dividendos", "link": "http://x"},
+        {"cnpj": "33000167000101", "cat": "Assembleia", "data": "2026-11-03", "assunto": "AGE"},
+        {"cnpj": "33000167000101", "cat": "Comunicado ao Mercado", "data": "2025-01-03", "assunto": "antigo"},
+        {"cnpj": "99999999000199", "cat": "Fato Relevante", "data": "2026-11-03", "assunto": "fora da B3"}]
+confere("fatos: tira repetidos, categorias de rotina, antigos e companhias fora da B3",
+        empresas.montar_fatos(_ipe, {"33000167000101": True}, dt.date(2026, 11, 10)),
+        {"33000167000101": [["2026-11-03", "Fato relevante", "proventos", 2, "Pagamento de dividendos", "http://x"]]})
+confere("trimestral: 4º trimestre = ano menos os três primeiros",
+        empresas.trimestres({2025: [400, 80, 40]}, {"2025-03-31": [90, 20, 10], "2025-06-30": [100, 20, 10], "2025-09-30": [100, 20, 10]})["2025-12-31"], [110, 20, 10])
+confere("trimestral: sem os três trimestres, não inventa o 4º",
+        "2025-12-31" in empresas.trimestres({2025: [400, 80, 40]}, {"2025-03-31": [90, 20, 10], "2025-09-30": [100, 20, 10]}), False)
+
 print(f"{certos[0]} conferências certas, {len(falhas)} com problema.")
 if falhas:
     print("\nPROBLEMAS:")

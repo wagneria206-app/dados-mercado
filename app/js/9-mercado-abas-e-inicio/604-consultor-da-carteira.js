@@ -97,6 +97,7 @@ function cdSentinela(c,it){
       else if(z!=null&&z>=2.5)add(3,nm+': alta fora do padrão na semana','+'+fx(r5,1)+'%, '+fx(z,1)+' vezes o normal');
       if(r[C.min52d]!=null&&r[C.min52d]<=1)add(2,nm+': na mínima de 52 semanas','a ação está no menor preço do último ano');
       if(r[C.cruz]===-1)add(2,nm+': média de 50 dias cruzou para baixo a de 200','sinal técnico de piora da tendência')}}
+    try{empBoot();if(x.t==="a"){const cn=empCnpj(x.k);empAlertas(cn,esc(x.k)).forEach(a=>add(a.nv,a.tit,a.det))}else if(/^cr:/.test(x.k||"")&&typeof pcP==="function"){const P=pcP(x.k.slice(3)),cn=P&&P.ficha&&P.ficha.cnpj;if(cn)empAlertas(cn,'Emissor de '+esc(x.k.slice(3))).forEach(a=>add(a.nv,a.tit,a.det))}}catch(e){}
     // fundos: resgates fortes ou queda relevante
     if(x.t==="f"&&typeof FN==="object"&&FN.idx){const r=fnRow(x.k),FC=FN.C;if(r){const cap=r[FC.pl]>0&&r[FC.capt12]!=null?r[FC.capt12]/r[FC.pl]*100:null;
       if(cap!=null&&cap<=-40)add(2,nm+': resgates fortes','saíram '+fx(-cap,0)+'% do patrimônio em 12 meses: fundo encolhendo pode ter de vender ativos em hora ruim');
