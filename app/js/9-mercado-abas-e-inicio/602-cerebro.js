@@ -8,8 +8,8 @@
 const CB={nota:null,notaKey:null};
 const cbPctl=(arr,v)=>{const a=arr.filter(x=>x!=null&&isFinite(x));if(a.length<12||v==null)return null;return a.filter(x=>x<v).length/a.length*100};
 const cbMes=d=>d.slice(0,4)+d.slice(5,7);
-function cbCarrega(){if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
-function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded].join("")}
+function cbCarrega(){if(typeof FN==="object"&&!FN.idx&&!FN.err&&typeof fnBoot==="function")fnBoot();if(typeof RT==="object"&&!RT.r&&typeof rtLoad==="function")rtLoad();if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
+function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded,!!(typeof FN==="object"&&FN.idx),!!(typeof RT==="object"&&RT.r)].join("")}
 function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
 function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
 /* ---- séries mensais de apoio */
@@ -111,7 +111,7 @@ function cbBriefing(Pr,Mp,X){
   return L}
 /* ---- tela */
 function cbHtml(){
-  cbCarrega();if(!/^1{8}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
+  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
   const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),Br=cbBriefing(Pr,Mp,X),out=[];
   out.push('<h3>Briefing</h3><p class="sub">O que os dados de todas as áreas dizem hoje, em poucas linhas.</p><ul style="margin:6px 0 0;padding-left:18px;line-height:1.55">'+Br.map(x=>'<li style="margin:4px 0">'+x+'</li>').join("")+'</ul>');
   out.push('<h3>Mapa tático de alocação</h3><p class="sub">Para cada classe, os sinais que hoje pedem mais ou menos peso que o normal da política da carteira. Dois sinais na mesma direção mudam a leitura; um só, não.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th><th>Leitura</th><th style="text-align:left">Por quê</th></tr></thead><tbody>'
@@ -123,9 +123,12 @@ function cbHtml(){
   out.push('<h3>Quanto cada classe paga pelo risco</h3><p class="sub">O prêmio de hoje contra o histórico mensal desde 2010. Percentil 90 = hoje paga mais que em 90% dos meses.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th><th>Hoje</th><th>Percentil</th><th style="text-align:left">Leitura</th></tr></thead><tbody>'
     +Pr.map(x=>'<tr><td style="text-align:left">'+x.n+(x.sub?'<small style="display:block;color:var(--muted)">'+x.sub+'</small>':'')+'</td><td><b>'+x.fmt+'</b></td><td>'+(x.p==null?'<small>sem histórico</small>':'<b>'+fx(x.p,0)+'</b>')+'</td><td style="text-align:left"><small>'+x.txt+'</small></td></tr>').join("")+'</tbody></table></div>'
     +'<p class="sub" style="font-size:.8rem;margin-top:6px">Juros e inflação implícita: curvas da ANBIMA (5 anos). CDI e IPCA esperado: Banco Central (Focus). Lucro sobre preço: mediana das ações com liquidez acima de R$ 2 milhões por dia, com o último balanço anual publicado (CVM). Câmbio real: dólar × inflação americana (BLS) ÷ IPCA. FIIs e crédito ainda sem histórico guardado: só a leitura de hoje.</p>');
+  {const x=cbCredHtml();if(x)out.push(x)}{const x=cbFnTopHtml();if(x)out.push(x)}
   const N=cbNota();if(N){const L=[...N.values()].sort((a,b)=>b.nota-a.nota),I=AT.idx;
     out.push('<h3>Nota WF das ações</h3><p class="sub">De 0 a 100, a média de cinco pilares, cada um medido contra todas as ações líquidas (valor e qualidade contra o próprio setor): <b>valor</b> (P/L, P/VP, EV/EBIT), <b>qualidade</b> (ROE, margem, dívida), <b>momento</b> (12 meses e média de 200 dias), <b>risco baixo</b> (volatilidade, queda máxima, beta) e <b>dividendos</b>.</p>'
       +'<div class="tablewrap"><table class="ctab"><thead><tr><th style="text-align:left">Ação</th><th>Nota</th>'+CB_PIL.map(p=>'<th>'+p[1]+'</th>').join("")+'</tr></thead><tbody>'
       +L.slice(0,25).map(x=>'<tr><td style="text-align:left"><button type="button" class="link" data-atopen="'+x.t+'">'+x.t+'</button><small style="display:block;color:var(--muted)">'+esc(I.setores[x.s]||"")+'</small></td><td><b style="color:'+cbNotaCor(x.nota)+'">'+x.nota+'</b></td>'+CB_PIL.map(([k])=>'<td>'+(x.P[k]==null?'—':fx(x.P[k],0))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'
       +'<p class="sub" style="font-size:.8rem;margin-top:6px">'+N.size+' ações e units com liquidez acima de R$ 2 milhões por dia. A nota de cada ação aparece também na página dela. Nota alta não é garantia de alta: mostra que a ação reúne características que, em média, o mercado premia.</p>')}
   return out}
+function cbRadarHtml(){cbCarrega();if(!cbPronto())return "";try{const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),B=cbBriefing(Pr,Mp,X);if(!B.length)return "";
+  return '<h3>Visão WF em três linhas</h3><ul style="margin:6px 0 0;padding-left:18px;line-height:1.5">'+[/mapa tático/,/termômetro/,/Lá fora/,/Juro real/].map(r=>B.find(x=>r.test(x))).filter(Boolean).concat(B).filter((x,i,a)=>a.indexOf(x)===i).slice(0,3).map(x=>'<li style="margin:3px 0">'+x+'</li>').join("")+'</ul><p class="sub" style="margin:6px 0 0"><button type="button" class="link" data-mkgo="vw">Ver o briefing completo, o mapa tático e as notas</button></p>'}catch(e){return ""}}

@@ -90,7 +90,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `070-dados-cdi-runs-raw.js` (25 KB)
 - `075-cdi-runs-end.js` (14 KB)
 - `080-credito-privado-interface.js` — Crédito privado: interface (28 KB)
-- `083-ficha-do-titulo.js` (7 KB)
+- `083-ficha-do-titulo.js` (8 KB)
 - `085-cenarios-de-juros.js` — Cenários de juros (17 KB)
 - `090-ir-iof-e-custodia.js` — IR, IOF e custódia (2 KB)
 - `095-vender-agora-x-manter-ate.js` — Vender agora x manter até o vencimento (2 KB)
@@ -206,7 +206,8 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
 - `601-mercado-fora-do-padrao.js` (5 KB)
-- `602-cerebro.js` (25 KB)
+- `602-cerebro.js` (26 KB)
+- `603-cerebro-fundos-credito-carteira.js` (10 KB)
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
