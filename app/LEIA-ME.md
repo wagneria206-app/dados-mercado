@@ -90,7 +90,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `070-dados-cdi-runs-raw.js` (25 KB)
 - `075-cdi-runs-end.js` (14 KB)
 - `080-credito-privado-interface.js` — Crédito privado: interface (28 KB)
-- `083-ficha-do-titulo.js` (7 KB)
+- `083-ficha-do-titulo.js` (8 KB)
 - `085-cenarios-de-juros.js` — Cenários de juros (17 KB)
 - `090-ir-iof-e-custodia.js` — IR, IOF e custódia (2 KB)
 - `095-vender-agora-x-manter-ate.js` — Vender agora x manter até o vencimento (2 KB)
@@ -116,6 +116,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `395-extrato-curva-x-mercado.js` — extrato: curva x mercado e calibragem pelo PU do banco ---------- (3 KB)
 - `415-atualizacao-de-dados.js` — atualização de dados (2 KB)
 - `420-curvas-de-juros-ettj-anbima.js` — Curvas de juros (ETTJ ANBIMA): atual, 1 dia, 1 semana, 1 mês e 1 ano atrás (11 KB)
+- `421-carrego-e-rolagem.js` (5 KB)
 
 **`js/4-fundos/`** — Fundos (CVM)
 
@@ -144,6 +145,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `479-opcoes-e-setores.js` — Opções (volatilidade implícita e puts ÷ calls, robô scripts/opcoes.py) e mapa setorial com força relativa (5 KB)
 - `480-eventos.js` — eventos (2 KB)
 - `481-operacoes-com-opcoes.js` (18 KB)
+- `482-fatores-da-bolsa.js` (6 KB)
 
 **`js/6-comparador-carteiras/`** — Comparador, simulador de carteiras e relatório em PDF
 
@@ -203,6 +205,9 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
+- `601-mercado-fora-do-padrao.js` (5 KB)
+- `602-cerebro.js` (26 KB)
+- `603-cerebro-fundos-credito-carteira.js` (10 KB)
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)
 - `606-buscador-de-credito-privado.js` (9 KB)
 - `607-ideias-da-semana.js` (5 KB)
@@ -215,11 +220,12 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `614-radar.js` (12 KB)
 - `615-dolar-ptax-do-banco-central.js` — Dólar: PTAX do Banco Central (16 KB)
 - `616-curva-de-credito.js` (7 KB)
+- `617-termometro-de-mercado.js` (9 KB)
 - `618-tour-de-boas-vindas.js` (4 KB)
 - `619-ordenar-tabelas.js` (3 KB)
 - `620-pcrebase.js` (2 KB)
 - `621-indice-e-blocos-recolhiveis.js` (6 KB)
 - `622-ganchos-de-teste.js` — ganchos para os testes automáticos (tests/numeros.py): só existem com ?teste=1 no endereço (1 KB)
-- `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (16 KB)
+- `623-busca-ajustes-e-apresentacao.js` — busca única, ajustes (tema, tela inicial, blocos do Resumo) e modo apresentação (17 KB)
 - `624-fontes-e-metodologia.js` — "de onde vem": ícone em cada cartão de indicador com a fonte oficial do número, e a página Metodologia e fontes (12 KB)
 - `625-dados-do-robo-github-lidos.js` — dados do robô (GitHub) lidos direto pela página (12 KB)

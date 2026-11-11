@@ -43,7 +43,7 @@ function fnFa(){
   if(!FN.files.has(k)){b.innerHTML='<section class="panel"><p class="sub">Carregando o fundo '+fnCnpjF(k)+'…</p></section>';
     fnFund(k).then(()=>{if(FN.cur===k&&activeMod==="fa")fnFa()}).catch(e=>{if(FN.cur===k)b.innerHTML='<section class="panel"><p class="warn">Não encontrei o fundo '+fnCnpjF(k)+' na base da CVM ('+esc(e.message)+'). Ele pode estar encerrado ou não informar cota diária.</p></section>'});return}
   const F=FN.files.get(k);
-  try{b.innerHTML=fnHead(F)+fnPerfHtml(F)+fnWinHtml(F)+fnMonHtml(F)+fnRiskHtml(F)+fnJanHtml(F)+fnPeerHtml(F)+fnSimHtml(F)+fnGrossHtml(F)+fnPlHtml(F)+fnCartHtml(F)+fnDocsHtml(F)+fnSrcHtml(F)}
+  try{b.innerHTML=fnHead(F)+cbFnNotaHtml(F.c)+fnPerfHtml(F)+fnWinHtml(F)+fnMonHtml(F)+fnRiskHtml(F)+fnJanHtml(F)+fnPeerHtml(F)+fnSimHtml(F)+fnGrossHtml(F)+fnPlHtml(F)+fnCartHtml(F)+fnDocsHtml(F)+fnSrcHtml(F)}
   catch(e){b.innerHTML='<section class="panel"><p class="err">Não deu para montar a análise: '+esc(e.message)+'</p></section>';console.error(e)}
 }
 function fnHome(){

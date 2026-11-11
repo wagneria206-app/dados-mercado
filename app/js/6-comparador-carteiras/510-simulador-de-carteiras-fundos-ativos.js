@@ -213,7 +213,7 @@ function spResHtml(c,it,R){
     const lab=b==="ipcax"?"IPCA + "+c.ipcax+"%":FN_BM[b].lab,col=b==="ipcax"?"var(--s2)":FN_BM[b].col;
     S.push({lab,col,dash:b==="cdi"||b==="ipcax"?"5 4":null,w:1.5,pts:fnThin(R.pts,800).map(p=>{const v=m.get(p.k);return [p.t,v?(v/b0-1)*100:null]})});bms.push([b,lab,m])});
   h+='<div class="label" style="margin-top:6px">Rentabilidade acumulada (sem efeito dos aportes)</div>'+fnChart(S,{fmt:"pct",zero:true,months:!R.diaria,aria:"Rentabilidade da carteira"});
-  h+='</section>'+spCompHtml(c,it,R)+spItensHtml(c,it,R)+spStressHtml(c,it,R);
+  h+='</section>'+spCompHtml(c,it,R)+spItensHtml(c,it,R)+spStressHtml(c,it,R)+spCerebroHtml(c,it);
   if(+c.aporte>0||R.ir)h+='<section class="panel" data-reltit="Patrimônio e valor investido"><h3>Patrimônio e valor investido</h3>'+fnChart([{lab:"Patrimônio bruto",col:FN_COLS[0],w:2.2,pts:fnThin(R.pts,600).map(p=>[p.t,p.v])}].concat(R.ir?[{lab:"Líquido de IR (se resgatar)",col:"var(--gain)",w:1.8,pts:fnThin(R.pts,600).map(p=>[p.t,p.liq])}]:[]).concat([{lab:"Total investido",col:"var(--flat)",dash:"5 4",w:1.5,pts:fnThin(R.pts,600).map(p=>[p.t,p.inv])}]),{fmt:"money",months:!R.diaria,aria:"Patrimônio"})+'</section>';
   let pk=1,v=1;const dd=[[R.pts[0].t,0]];R.rets.forEach(x=>{v*=1+x.r;pk=Math.max(pk,v);dd.push([x.t,(v/pk-1)*100])});
   h+='<section class="panel" data-reltit="Perda a partir do pico e metodologia"><h3>Perda a partir do pico (drawdown)</h3>'+fnChart([{lab:"Drawdown",col:"var(--loss)",pts:fnThin(dd.map(x=>({t:x[0],v:x[1]})),700).map(x=>[x.t,x.v])}],{fmt:"pct",zero:true,fill:true,h:160,months:!R.diaria,aria:"Drawdown"});

@@ -15,6 +15,7 @@ function atSinaisHtml(A){ // uma linha por tipo de sinal, no topo da página da 
   if(!(A.tipo==="Ação"||A.tipo==="Unit"))return "";const L=[],r=atRow(A.t),C=AT.C;
   const T=tecCalc(A);if(T)L.push(["Técnica",(T.tend===1?'<span class="pos">tendência de alta</span>':T.tend===-1?'<span class="neg">tendência de baixa</span>':'sem tendência')+(T.IFR!=null?' · IFR '+fx(T.IFR,0)+(T.IFR>=70?' (sobrecomprado)':T.IFR<=30?' (sobrevendido)':''):''),"tecnica"]);
   try{const V=vqSerie(A);if(V&&A.ind&&A.ind.pl_r>0){const plv=V.pl.map(x=>x[1]).filter(v=>v>0&&v<100),rk=vqRank(plv,A.ind.pl_r);if(rk!=null)L.push(["Valuation","P/L "+fx(A.ind.pl_r,1)+(rk<=25?' · <span class="pos">barato para a própria história</span>':rk>=75?' · <span class="neg">caro para a própria história</span>':' · na faixa normal da própria história')])}}catch(e){}
+  try{const nw=cbNotaLinha(A.t);if(nw)L.push(["Nota WF",nw+' <button type="button" class="link" data-mkgo="vw">o que é</button>'])}catch(e){}
   if(A.met&&A.met.dy)L.push(["Proventos",fx(A.met.dy,1)+"% em 12 meses"]);
   if(typeof INS==="object"&&INS.d&&A.cnpj&&INS.d.cias[A.cnpj]){const s=insSaldo(INS.d.cias[A.cnpj],3,["ctl","cons","dir","out"]);if(s.cp||s.vd)L.push(["Insiders (3 meses)",(s.s>=0?'<span class="pos">compraram</span> ':'<span class="neg">venderam</span> ')+fnMoney(Math.abs(s.s))+' líquidos'])}
   if(typeof AL==="object"&&AL.d&&AL.d.t[A.t]&&A.ind&&A.ind.acoes){const H=AL.d.t[A.t],u=H[H.length-1];L.push(["Aluguel",fx(u[1]/A.ind.acoes*100,2)+"% das ações alugadas"])}

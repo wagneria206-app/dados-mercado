@@ -15,11 +15,12 @@ const BT_EST={
 function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela()})}
 function btTela(){
   const o=$("fnOut");if(!o)return;
-  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
+  if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel" id="ftBox"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
   {const st=$("btSet");if(st){const x=AT.idx?setoresHtml():"";st.innerHTML=x||'<p class="sub">Carregando os setores…</p>'}}
   if(!AT.idx){$("btFR").innerHTML='<p class="sub">Carregando a base de ativos…</p>';if(!AT.err)atBoot();}
   else btFiltro();
   btTeste();
+  {const f=$("ftBox");if(f)f.innerHTML=ftHtml()}
 }
 function btIn(id,lab,v,ph){return '<div class="field"><label for="'+id+'">'+lab+'</label><input id="'+id+'" data-bt="'+id+'" inputmode="decimal" value="'+esc(v)+'" placeholder="'+esc(ph||"")+'" autocomplete="off"></div>'}
 function btSel(id,lab,opts,v){return '<div class="field"><label for="'+id+'">'+lab+'</label><select id="'+id+'" data-bt="'+id+'">'+opts.map(([a,b])=>'<option value="'+esc(a)+'"'+(String(a)===String(v)?' selected':'')+'>'+esc(b)+'</option>').join("")+'</select></div>'}

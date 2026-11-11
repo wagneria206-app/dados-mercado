@@ -1,0 +1,134 @@
+/* ---------- Cérebro do WF: cruza os dados de todas as áreas e tira conclusões com regras explícitas e estatística do
+   próprio histórico (nada de modelo de linguagem, nada pago). Quatro peças:
+   1) prêmio de risco de cada classe contra o próprio histórico desde 2010;
+   2) mapa tático de alocação: acima, neutro ou abaixo do peso normal, com os motivos e a concordância entre os sinais;
+   3) Nota WF das ações (0 a 100): valor, qualidade, momento, risco e dividendos, contra o mercado e o setor;
+   4) briefing: as frases que resumem o momento, a partir de tudo acima.
+   Nada aqui é recomendação individual: é apoio à decisão, com os motivos à mostra. */
+const CB={nota:null,notaKey:null};
+const cbPctl=(arr,v)=>{const a=arr.filter(x=>x!=null&&isFinite(x));if(a.length<12||v==null)return null;return a.filter(x=>x<v).length/a.length*100};
+const cbMes=d=>d.slice(0,4)+d.slice(5,7);
+function cbCarrega(){if(typeof FN==="object"&&!FN.idx&&!FN.err&&typeof fnBoot==="function")fnBoot();if(typeof RT==="object"&&!RT.r&&typeof rtLoad==="function")rtLoad();if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
+function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded,!!(typeof FN==="object"&&FN.idx),!!(typeof RT==="object"&&RT.r)].join("")}
+function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
+function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
+/* ---- séries mensais de apoio */
+function cbSeries(){
+  const B=tmBase();if(!B)return null;const cm=MC.d.cm||{},fim={};(cm.d||[]).forEach((d,i)=>{fim[cbMes(d)]=i});
+  const cmv=(k,m)=>{const i=fim[m];return i==null?null:(cm[k]||[])[i]};
+  // índice do IPCA e câmbio real (dólar × inflação americana ÷ IPCA)
+  const ip={},m=TM.b.m||{};let f=100;Object.keys(m.ipca||{}).sort().forEach(k=>{f*=1+m.ipca[k]/100;ip[k]=f});
+  const us={};((MC.d.us||{}).cpi||[]).forEach(p=>{us[p[0].replace("-","")]=p[1]});
+  // P/L agregado (mediana do lucro sobre preço das ações líquidas) por mês, do painel mensal
+  const ey={};if(typeof BT==="object"&&BT.pn){const pn=BT.pn,M=pn.meses,A=Object.values(pn.a);M.forEach((mm,i)=>{const v=A.filter(a=>(a.liq[i]||0)>=2e6&&a.pl[i]>0&&a.pl[i]<80).map(a=>100/a.pl[i]).sort((x,y)=>x-y);if(v.length>=30)ey[mm.replace("-","")]=v[v.length>>1]})}
+  const fo={};((MC.d.focus||{}).ipca12||[]).forEach(p=>{fo[cbMes(p[0])]=p[1]});
+  return {B,cmv,ip,us,ey,fo,M:B.M}}
+/* ---- 1) prêmio de risco de cada classe */
+function cbPremios(){
+  const S=cbSeries();if(!S)return null;const {M,cmv,ip,us,ey,fo,B}=S,ult=M[M.length-1],H=M.filter(k=>k>="201001"),out=[];
+  const serie=f=>H.map(k=>f(k)),atual=f=>{for(let i=M.length-1;i>=M.length-3;i--){const v=f(M[i]);if(v!=null)return v}return null};
+  // IPCA+: juro real de 5 anos
+  {const f=k=>cmv("real5",k),v=atual(f),p=cbPctl(serie(f),v);if(v!=null)out.push({k:"ipca",n:"IPCA+ (juro real de 5 anos)",v,fmt:fx(v,2)+'% + IPCA',p,txt:p==null?'':p>=80?'juro real entre os mais altos desde 2010':p<=20?'juro real entre os mais baixos desde 2010':'juro real dentro do normal'})}
+  // Prefixado: inflação implícita de 5 anos (prêmio que o prefixado paga sobre o IPCA+)
+  {const f=k=>{const a=cmv("pre5",k),b=cmv("real5",k);return a!=null&&b!=null?((1+a/100)/(1+b/100)-1)*100:null},v=atual(f),p=cbPctl(serie(f),v);if(v!=null)out.push({k:"pre",n:"Prefixado (inflação implícita de 5 anos)",v,fmt:fx(v,2)+'% ao ano',p,txt:p==null?'':p>=80?'o prefixado embute uma inflação alta: paga bem se o IPCA convergir':p<=20?'inflação implícita baixa: o IPCA+ protege barato':'inflação implícita no normal'})}
+  // Pós-fixado: CDI acima da inflação esperada para 12 meses
+  {const cdiA=k=>{const x=B.cdi[k];return x==null?null:(Math.pow(1+x/100,12)-1)*100},f=k=>{const c=cdiA(k),e=fo[k];return c!=null&&e!=null?((1+c/100)/(1+e/100)-1)*100:null};
+    const H2=M.slice(0,-1),v=(()=>{const sm=MK.inf&&MK.inf.selic_meta?MK.inf.selic_meta.valor:null,e=atual(k=>fo[k]);return sm!=null&&e!=null?((1+(sm-0.1)/100)/(1+e/100)-1)*100:f(H2[H2.length-1])})(),p=cbPctl(H.filter(k=>k<ult).map(f),v);
+    if(v!=null)out.push({k:"pos",n:"Pós-fixado (CDI acima do IPCA esperado)",v,fmt:fx(v,2)+'% real',p,txt:p==null?'':p>=80?'o CDI paga um juro real alto sem risco de mercado':p<=20?'o CDI rende pouco acima da inflação':'juro real do CDI no normal'})}
+  // Ações: lucro sobre preço (mediana) menos o juro real de 5 anos
+  {const f=k=>ey[k]!=null&&cmv("real5",k)!=null?ey[k]-cmv("real5",k):null,v=atual(f),p=cbPctl(serie(f),v),e=atual(k=>ey[k]);
+    if(v!=null)out.push({k:"acoes",n:"Ações (lucro sobre preço menos o juro real)",v,ey:e,fmt:(v>=0?'+':'−')+fx(Math.abs(v),2)+' p.p.',sub:'lucro equivalente a '+fx(e,1)+'% do preço; P/L mediano de '+fx(100/e,1),p,txt:p==null?'':p>=70?'Bolsa barata em relação aos juros':p<=30?'Bolsa cara em relação aos juros':'Bolsa no preço normal em relação aos juros'})}
+  // FIIs: rendimento mediano contra o juro real (sem histórico guardado: só a leitura de hoje)
+  {const C=AT.C,R=AT.idx?AT.idx.rows.filter(r=>r[C.tipo]==="FII"&&(r[C.liq]||0)>=1e6&&r[C.dy]>0&&r[C.dy]<30):[];if(R.length>=20){const dy=R.map(r=>r[C.dy]).sort((a,b)=>a-b)[R.length>>1],pv=R.map(r=>r[C.pvp]).filter(x=>x>0).sort((a,b)=>a-b),pvm=pv[pv.length>>1],r5=atual(k=>cmv("real5",k));
+    out.push({k:"fii",n:"FIIs (rendimento menos o juro real)",v:dy-r5,fmt:(dy-r5>=0?'+':'−')+fx(Math.abs(dy-r5),2)+' p.p.',sub:'rendimento mediano de '+fx(dy,1)+'% · P/VP mediano '+fx(pvm,2),p:null,pvm,txt:pvm<0.9?'cotas abaixo do valor patrimonial: desconto relevante':pvm>1.05?'cotas acima do valor patrimonial':'cotas perto do valor patrimonial'})}}
+  // Crédito privado: spread mediano das debêntures IPCA+ comuns (sem histórico suficiente guardado)
+  if(CRB.L){const a=CRB.L.filter(x=>x.tipo==="Debênture"&&x.rf==="ipca"&&!x.isento&&x.sp!=null&&x.dur>1).map(x=>x.sp).sort((a,b)=>a-b);if(a.length>=10){const v=a[a.length>>1];out.push({k:"cred",n:"Crédito privado (spread das debêntures IPCA+ comuns)",v,fmt:fx(v,2)+' p.p. sobre a NTN-B',p:null,txt:v>=1.5?'spread largo: o crédito paga bem pelo risco':v<=0.7?'spread apertado: pouco prêmio pelo risco de crédito':'spread intermediário'})}}
+  // Dólar: câmbio real contra o histórico (alto = real barato, dólar caro)
+  {const f=k=>{const u=B.usd[k],c=us[k],i=ip[k];return u&&c&&i?u*c/i:null},v=atual(f),p=cbPctl(serie(f),v);if(v!=null&&p!=null)out.push({k:"usd",n:"Dólar (câmbio real, descontada a inflação dos dois países)",v,fmt:'R$ '+fx(B.usd[ult]||B.usd[M[M.length-2]],2)+' hoje',p,txt:p>=80?'dólar caro em termos reais: proteção cara':p<=20?'dólar barato em termos reais: proteção barata':'dólar no meio da faixa histórica'})}
+  return out}
+/* ---- cenário externo e como ele chega ao Brasil */
+function cbExterno(){
+  if(!EU.S||!MC.d)return null;const ser=k=>mcSer(k)||[],last=a=>{for(let i=a.length-1;i>=0;i--)if(a[i][1]!=null)return a[i];return null};
+  const ago=(a,dias)=>{const l=last(a);if(!l)return null;const t=l[0]-dias*DAY;for(let i=a.length-1;i>=0;i--)if(a[i][0]<=t&&a[i][1]!=null)return a[i][1];return null};
+  const desde=(a,t0)=>a.filter(p=>p[0]>=t0&&p[1]!=null).map(p=>p[1]),t2010=Date.UTC(2010,0,1),S=[],add=(n,v,sc,txt)=>S.push({n,v,sc,txt});
+  {const a=ser("t10"),l=last(a),b=ago(a,30);if(l&&b!=null){const d=l[1]-b,p=cbPctl(desde(a,t2010),l[1]);add("Juros dos EUA (10 anos)",fx(l[1],2)+'% · '+(d>=0?'+':'−')+fx(Math.abs(d),2)+' p.p. em 1 mês',d>0.25?-1:d<-0.25?1:0,(p!=null?'nível mais alto que em '+fx(p,0)+'% dos dias desde 2010; ':'')+(d>0.25?'alta rápida pressiona o dólar e os juros longos aqui':d<-0.25?'queda alivia o dólar e os juros longos aqui':'estável no mês'))}}
+  {const a=ser("t10"),b=ser("t2"),x=last(a),y=last(b);if(x&&y){const c=x[1]-y[1];add("Curva americana (10 anos − 2 anos)",(c>=0?'+':'−')+fx(Math.abs(c),2)+' p.p.',0,c<0?'invertida: sinal histórico de desaceleração nos EUA':c<0.3?'quase plana':'positiva, normal')}}
+  {const a=ser("vix"),l=last(a);if(l){const p=cbPctl(desde(a,t2010),l[1]);add("Medo no mercado americano (VIX)",fx(l[1],1),l[1]>=25?-1:l[1]<=15?1:0,(l[1]>=30?'aversão a risco alta: dinheiro sai de emergentes como o Brasil':l[1]>=25?'aversão a risco elevada':l[1]<=15?'calmaria: favorece emergentes':'dentro do normal')+(p!=null?' (percentil '+fx(p,0)+' desde 2010)':''))}}
+  {const a=ser("dxy"),l=last(a),b=ago(a,91);if(l&&b){const c=(l[1]/b-1)*100;add("Dólar no mundo (DXY, 3 meses)",(c>=0?'+':'−')+fx(Math.abs(c),1)+'%',c>2?-1:c<-2?1:0,c>2?'dólar forte no mundo pesa sobre o real':c<-2?'dólar fraco no mundo favorece o real':'estável')}}
+  {const a=ser("brent"),l=last(a),b=ago(a,91);if(l&&b){const c=(l[1]/b-1)*100;add("Petróleo (Brent, 3 meses)",'US$ '+fx(l[1],1)+' · '+(c>=0?'+':'−')+fx(Math.abs(c),1)+'%',c>15?-1:0,c>15?'alta forte: pressiona a inflação aqui (combustíveis), ajuda Petrobras e petroleiras':c<-15?'queda forte: alivia a inflação, pesa sobre petroleiras':'sem choque relevante')}}
+  {const a=ser("spx");if(a.length>220){const l=last(a),m=a.slice(-200).reduce((s,p)=>s+(p[1]||0),0)/200,x=l[1]>m;add("Bolsa americana (S&P 500)",(x?'acima':'abaixo')+' da média de 200 dias ('+((l[1]/m-1)*100>=0?'+':'−')+fx(Math.abs((l[1]/m-1)*100),1)+'%)',x?1:-1,x?'tendência de alta lá fora ajuda a Bolsa aqui':'tendência de baixa lá fora pesa sobre a Bolsa aqui')}}
+  {const F=MC.d.fed,t3=last(ser("t3m"));if(F&&F.mediana&&F.mediana.ffr&&t3){const f=F.mediana.ffr[0];add("Fed (juro projetado para o fim do ano × juro de 3 meses)",fx(f,2)+'% × '+fx(t3[1],2)+'%',0,f<t3[1]-0.2?'o Fed projeta cortes à frente: tende a aliviar emergentes':f>t3[1]+0.2?'o Fed projeta alta de juros: pressão sobre emergentes':'sem mudança relevante projetada')}}
+  {const C=(MC.d.us||{}).cpi||[];if(C.length>13){const a=C[C.length-1],b=C[C.length-13],c=C[C.length-4],d=C[C.length-16];if(a&&b&&c&&d){const y=(a[1]/b[1]-1)*100,y0=(c[1]/d[1]-1)*100;add("Inflação nos EUA (12 meses)",fx(y,1)+'%',0,(y>y0+0.2?'acelerando':'sem aceleração')+' (há 3 meses: '+fx(y0,1)+'%)'+(y>3?'; acima de 3%, dificulta cortes do Fed':''))}}}
+  const sc=S.reduce((a,x)=>a+x.sc,0);
+  // choques: efeito estimado aqui pelas regressões semanais de 2 anos
+  const cen=[["spx","p","ibov","p",-10,"S&P 500 cai 10%","Ibovespa",v=>mcSig(v,1)],["t10","b","pre5","b",0.5,"Juros dos EUA sobem 0,5 p.p.","Prefixado de 5 anos",v=>(v>=0?'+':'−')+fx(Math.abs(v),2)+' p.p.'],["t10","b","real10","b",0.5,"Juros dos EUA sobem 0,5 p.p.","Juro real de 10 anos",v=>(v>=0?'+':'−')+fx(Math.abs(v),2)+' p.p.'],["dxy","p","usd","p",5,"Dólar no mundo sobe 5%","Dólar/real",v=>mcSig(v,1)],["vix","n","usd","p",10,"VIX sobe 10 pontos","Dólar/real",v=>mcSig(v,1)],["brent","p","ibov","p",20,"Petróleo sobe 20%","Ibovespa",v=>mcSig(v,1)]]
+    .map(([kx,tx,ky,ty,ch,n,alvo,f])=>{const g=mcReg(kx,ky,tx,ty,104);if(!g)return null;const ef=tx==="b"&&ty==="b"?g.b*ch:g.b*ch;return Math.abs(g.r)<0.1?null:{n,alvo,ef:f(ef),r:g.r}}).filter(Boolean);
+  return {S,sc,cen,lado:sc>=2?["a favor","var(--gain)"]:sc<=-2?["contra","var(--loss)"]:["neutros","var(--warn)"]}}
+/* ---- 2) mapa tático */
+function cbMapa(Pr,X){
+  const g=k=>Pr.find(x=>x.k===k),reg=(()=>{const B=tmBase();if(!B)return null;const H=tmHist(B),hj=tmSinais(B,B.M.length-1),r=tmReg(hj.s),L=H.filter(x=>tmReg(x.s)===r);return {r,L,hj}})();
+  let di1=null,cdi=null;try{const w=curvWins()[0];di1=nssY(w.b.pre,1)}catch(e){}if(MK.inf&&MK.inf.selic_meta)cdi=MK.inf.selic_meta.valor-0.1;
+  const ev=k=>{if(!reg||reg.L.length<12)return null;const v=reg.L.filter(x=>x.r[k]!=null&&x.r.cdi!=null);if(v.length<12)return null;return v.reduce((s,x)=>s+(x.r[k]-x.r.cdi),0)/v.length};
+  const C=[],add=(k,n,sin)=>{const s=sin.filter(x=>x),sc=s.reduce((a,x)=>a+x[0],0);C.push({k,n,s,sc,t:sc>=2?1:sc<=-2?-1:0,conc:s.length?Math.round(Math.abs(s.filter(x=>Math.sign(x[0])===Math.sign(sc)&&sc!==0).length)/s.length*100):0})};
+  const pc=(x,hi,lo,th,tl)=>x&&x.p!=null?(x.p>=95?[2,th+' (extremo: percentil '+fx(x.p,0)+')']:x.p<=5?[-2,tl+' (extremo: percentil '+fx(x.p,0)+')']:x.p>=hi?[1,th]:x.p<=lo?[-1,tl]:null):null,evs=(k,nm)=>{const e=ev(k);return e==null?null:e>0.25?[1,'depois de leituras "'+reg.r[1].toLowerCase()+'" do termômetro, '+nm+' rendeu em média '+fx(e,2)+' p.p. ao mês acima do CDI']:e<-0.25?[-1,'depois de leituras "'+reg.r[1].toLowerCase()+'" do termômetro, '+nm+' rendeu em média '+fx(-e,2)+' p.p. ao mês abaixo do CDI']:null};
+  const corte=di1!=null&&cdi!=null?di1-cdi:null,xs=X?X.sc:0,t10=X&&X.S.find(x=>/Juros dos EUA/.test(x.n));
+  add("pos","Pós-fixado (CDI)",[pc(g("pos"),80,20,'juro real do CDI entre os mais altos desde 2012','juro real do CDI baixo'),corte!=null?(corte<-0.75?[-1,'a curva já precifica cortes da Selic (DI de 1 ano '+fx(di1,2)+'% × CDI '+fx(cdi,2)+'%)']:corte>0.75?[1,'a curva precifica altas da Selic: o CDI vai subir']:null):null]);
+  add("pre","Prefixado",[pc(g("pre"),80,20,'inflação implícita alta: o prefixado embute prêmio grande','inflação implícita baixa: pouco prêmio no prefixado'),corte!=null&&corte<-0.75?[1,'cortes de juros à frente favorecem quem trava a taxa']:null,evs("irfm","o IRF-M"),t10&&t10.sc<0?[-1,'juros americanos subindo rápido pressionam os juros longos daqui']:null]);
+  add("ipca","IPCA+",[pc(g("ipca"),80,20,'juro real de 5 anos entre os mais altos desde 2010','juro real de 5 anos baixo'),g("pre")&&g("pre").p!=null&&g("pre").p<=20?[1,'proteção contra inflação barata']:null,evs("imab","o IMA-B")]);
+  add("acoes","Ações",[pc(g("acoes"),70,30,'Bolsa barata em relação aos juros (prêmio no percentil '+fx(g("acoes")&&g("acoes").p||0,0)+')','Bolsa cara em relação aos juros'),evs("ibov","o Ibovespa"),g("pos")&&g("pos").p>=90?[-1,'o CDI paga muito sem risco: a Bolsa disputa com ele']:null,xs<=-2?[-1,'ventos externos contra (placar '+xs+'): aversão a risco lá fora costuma tirar dinheiro de emergentes']:xs>=2?[1,'ventos externos a favor (placar +'+xs+')']:null]);
+  add("fii","FIIs",[g("fii")?(g("fii").pvm<0.9?[1,'cotas com desconto sobre o valor patrimonial (P/VP '+fx(g("fii").pvm,2)+')']:g("fii").pvm>1.05?[-1,'cotas com ágio sobre o valor patrimonial']:null):null,g("fii")&&g("fii").v<0?[-1,'rendimento dos FIIs abaixo do juro real da NTN-B']:null,evs("ifix","o IFIX")]);
+  add("cred","Crédito privado",[g("cred")?(g("cred").v>=1.5?[1,'spread largo sobre a NTN-B']:g("cred").v<=0.7?[-1,'spread apertado: o risco de crédito paga pouco']:null):null]);
+  add("usd","Dólar e exterior",[pc(g("usd"),80,20,'dólar caro em termos reais','dólar barato em termos reais: proteção barata')?(x=>[-x[0],x[1]])(pc(g("usd"),80,20,'dólar caro em termos reais','dólar barato em termos reais: proteção barata')):null,reg&&reg.r===TM_REG[2]?[1,'momento defensivo: o dólar protege a carteira']:null,xs<=-2?[1,'cenário externo adverso: dólar e ativos lá fora protegem a carteira']:null]);
+  return {C,reg}}
+/* ---- 3) Nota WF das ações */
+function cbNota(){
+  if(!AT.idx)return null;const key=AT.idx.dt||AT.T.length;if(CB.nota&&CB.notaKey===key)return CB.nota;
+  const C=AT.C,R=AT.idx.rows.filter(r=>(r[C.tipo]==="Ação"||r[C.tipo]==="Unit")&&(r[C.liq]||0)>=2e6&&r[C.preco]>0);
+  const rk=(vals)=>{const a=vals.filter(v=>v!=null&&isFinite(v)).sort((x,y)=>x-y);return v=>{if(v==null||!isFinite(v)||a.length<5)return null;let lo=0,hi=a.length;while(lo<hi){const m=(lo+hi)>>1;if(a[m]<v)lo=m+1;else hi=m}return lo/(a.length-1)*100}};
+  const F={ey:r=>r[C.pl]>0?1/r[C.pl]:-1,bp:r=>r[C.pvp]>0?1/r[C.pvp]:null,ee:r=>r[C.evebit]>0?1/r[C.evebit]:null,roe:r=>r[C.roe],ml:r=>r[C.ml],dv:r=>r[C.dlebit]!=null?-r[C.dlebit]:null,r12:r=>r[C.r12],mm:r=>r[C.mm200d],vol:r=>r[C.v12]!=null?-r[C.v12]:null,dd:r=>r[C.dd36],beta:r=>r[C.beta]!=null?-Math.abs(r[C.beta]-0.8):null,dy:r=>r[C.dy]};
+  const porSet=new Map();R.forEach(r=>{const s=r[C.setor];(porSet.get(s)||porSet.set(s,[]).get(s)).push(r)});
+  const RK={};Object.keys(F).forEach(k=>{RK[k]=rk(R.map(F[k]))});const RS={};["ey","bp","ee","roe","ml","dv"].forEach(k=>{RS[k]=new Map();porSet.forEach((L,s)=>{if(L.length>=5)RS[k].set(s,rk(L.map(F[k])))})});
+  const pr=(k,r,set)=>{const f=set&&RS[k]&&RS[k].get(r[C.setor]);return (f||RK[k])(F[k](r))},med=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null};
+  const out=new Map();R.forEach(r=>{const P={valor:med([pr("ey",r,1),pr("bp",r,1),pr("ee",r,1)]),qual:med([pr("roe",r,1),pr("ml",r,1),pr("dv",r,1)]),mom:med([pr("r12",r),pr("mm",r)]),risco:med([pr("vol",r),pr("dd",r),pr("beta",r)]),div:r[C.dy]>0?pr("dy",r):0};
+    const v=Object.values(P).filter(x=>x!=null);if(v.length>=4)out.set(r[0],{t:r[0],n:r[1],s:r[C.setor],P,nota:Math.round(v.reduce((s,x)=>s+x,0)/v.length)})});
+  CB.nota=out;CB.notaKey=key;return out}
+const CB_PIL=[["valor","Valor"],["qual","Qualidade"],["mom","Momento"],["risco","Risco baixo"],["div","Dividendos"]];
+function cbNotaCor(n){return n>=70?"var(--gain)":n<=35?"var(--loss)":"var(--warn)"}
+function cbNotaLinha(t){const N=cbNota();const x=N&&N.get(t);if(!x)return null;
+  return '<b style="color:'+cbNotaCor(x.nota)+'">'+x.nota+'/100</b> · '+CB_PIL.map(([k,n])=>n.toLowerCase()+' '+(x.P[k]==null?'—':fx(x.P[k],0))).join(' · ')}
+/* ---- 4) briefing */
+function cbBriefing(Pr,Mp,X){
+  const L=[],g=k=>Pr.find(x=>x.k===k);
+  if(X&&X.S.length){const ruim=X.S.filter(x=>x.sc<0).map(x=>x.n.replace(/ \(.*\)/,'').toLowerCase()),bom=X.S.filter(x=>x.sc>0).map(x=>x.n.replace(/ \(.*\)/,'').toLowerCase());L.push('Lá fora, os ventos estão <b style="color:'+X.lado[1]+'">'+(X.lado[0]==='neutros'?'neutros para o Brasil':X.lado[0]+' do Brasil')+'</b>'+(ruim.length?': pesam '+ruim.join(', '):'')+(bom.length?(ruim.length?'; ajudam ':': ajudam ')+bom.join(', '):'')+'.')}
+  if(Mp.reg)L.push('O termômetro está em <b style="color:'+Mp.reg.r[2]+'">'+Mp.reg.r[1].toLowerCase()+'</b> (placar '+(Mp.reg.hj.s>0?'+':'')+Mp.reg.hj.s+'): '+Mp.reg.hj.S.filter(x=>x[1]!==0).map(x=>x[0].replace(/ \(.*\)/,'').toLowerCase()+(x[1]>0?' a favor':' contra')).join(', ')+'.');
+  const ip=g("ipca"),pe=g("pre"),po=g("pos");if(ip&&ip.p!=null)L.push('Juro real de 5 anos em <b>'+fx(ip.v,2)+'%</b>, '+(ip.p>=80?'mais alto que em '+fx(ip.p,0)+'% dos meses desde 2010: momento historicamente bom para travar IPCA+.':ip.p<=20?'entre os mais baixos desde 2010.':'na faixa normal desde 2010.'));
+  if(pe&&pe.p!=null)L.push('A inflação implícita de 5 anos está em <b>'+fx(pe.v,2)+'%</b> ('+(pe.p>=80?'alta para o histórico: o prefixado paga um prêmio grande, e só perde se o IPCA médio passar disso':pe.p<=20?'baixa: a proteção do IPCA+ está barata':'na média histórica')+').');
+  const ac=g("acoes");if(ac&&ac.p!=null)L.push('Na Bolsa, o lucro das empresas equivale a <b>'+fx(ac.ey,1)+'%</b> do preço (P/L mediano de '+fx(100/ac.ey,1)+'), '+ac.fmt+' acima do juro real: '+ac.txt.toLowerCase()+' (percentil '+fx(ac.p,0)+' desde 2010).');
+  if(po&&po.p!=null&&po.p>=80)L.push('O CDI paga <b>'+fx(po.v,2)+'% acima da inflação esperada</b>, um dos juros reais mais altos desde 2012: qualquer risco precisa pagar mais que isso.');
+  const tilt=Mp.C.filter(c=>c.t!==0);if(tilt.length)L.push('Pelo mapa tático: '+tilt.map(c=>'<b>'+c.n+'</b> '+(c.t>0?'acima':'abaixo')+' do peso normal').join('; ')+'.');
+  try{const fp=fpBase();if(fp&&fp.length>=30){const C=AT.C,a=fp.filter(r=>r[C.mm200d]>0).length/fp.length*100;L.push('Só <b>'+fx(a,0)+'%</b> das ações líquidas estão acima da média de 200 dias'+(a<=30?': mercado amplamente em queda, típico de fundo de ciclo ou de piora em curso.':a>=70?': alta espalhada pelo mercado.':'.'))}}catch(e){}
+  const N=cbNota();if(N){const at=typeof rdAtivos==="function"?rdAtivos():new Map(),ruins=[...at.keys()].map(t=>N.get(t)).filter(x=>x&&x.nota<=30);if(ruins.length)L.push('Na sua carteira e favoritos, Nota WF baixa em: '+ruins.slice(0,6).map(x=>'<button type="button" class="link" data-atopen="'+x.t+'">'+x.t+'</button> ('+x.nota+')').join(', ')+'. Vale revisar a tese.')}
+  return L}
+/* ---- tela */
+function cbHtml(){
+  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
+  const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),Br=cbBriefing(Pr,Mp,X),out=[];
+  out.push('<h3>Briefing</h3><p class="sub">O que os dados de todas as áreas dizem hoje, em poucas linhas.</p><ul style="margin:6px 0 0;padding-left:18px;line-height:1.55">'+Br.map(x=>'<li style="margin:4px 0">'+x+'</li>').join("")+'</ul>');
+  out.push('<h3>Mapa tático de alocação</h3><p class="sub">Para cada classe, os sinais que hoje pedem mais ou menos peso que o normal da política da carteira. Dois sinais na mesma direção mudam a leitura; um só, não.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th><th>Leitura</th><th style="text-align:left">Por quê</th></tr></thead><tbody>'
+    +Mp.C.map(c=>'<tr><td style="text-align:left"><b>'+c.n+'</b></td><td><b style="color:'+(c.t>0?'var(--gain)':c.t<0?'var(--loss)':'var(--muted)')+'">'+(c.t>0?'acima do peso':c.t<0?'abaixo do peso':'neutro')+'</b><small style="display:block;color:var(--muted)">'+(c.s.length?c.s.length+' sinal'+(c.s.length>1?'is':''):'sem sinal')+'</small></td><td style="text-align:left"><small>'+(c.s.length?c.s.map(x=>(x[0]>0?'▲ ':'▼ ')+x[1]).join('<br>'):'nenhum sinal forte nos dados de hoje')+'</small></td></tr>').join("")+'</tbody></table></div>'
+    +'<p class="sub" style="font-size:.8rem;margin-top:6px">Leitura acima ou abaixo do peso quando o saldo dos sinais é de pelo menos 2. Ajuste fino dentro dos limites da política e do perfil de cada cliente; não substitui a análise de adequação.</p>');
+  if(X)out.push('<h3>Cenário externo e o efeito no Brasil</h3><p class="sub">O que acontece lá fora e por onde chega aqui: dólar, juros, Bolsa e inflação. Placar externo <b style="color:'+X.lado[1]+'">'+(X.sc>0?'+':'')+X.sc+' ('+X.lado[0]+')</b>.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Indicador</th><th>Hoje</th><th style="text-align:left">O que significa para o Brasil</th></tr></thead><tbody>'
+    +X.S.map(x=>'<tr><td style="text-align:left">'+x.n+'</td><td><b class="'+(x.sc>0?'pos':x.sc<0?'neg':'')+'">'+x.v+'</b></td><td style="text-align:left"><small>'+x.txt+'</small></td></tr>').join("")+'</tbody></table></div>'
+    +(X.cen.length?'<div class="label" style="margin-top:12px">Se acontecer lá fora, o que costuma acontecer aqui</div><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Choque lá fora</th><th style="text-align:left">Aqui</th><th>Efeito médio</th><th>Força da ligação</th></tr></thead><tbody>'+X.cen.map(c=>'<tr><td style="text-align:left">'+c.n+'</td><td style="text-align:left">'+c.alvo+'</td><td><b>'+c.ef+'</b></td><td>'+mcForca(c.r)+' ('+fx(c.r,2)+')</td></tr>').join("")+'</tbody></table></div><p class="sub" style="font-size:.8rem;margin-top:6px">Efeito médio pelas variações semanais dos últimos 2 anos, proporcional ao tamanho do choque. Em crises a ligação costuma ficar mais forte que a média. Fontes: Tesouro americano, Cboe, Federal Reserve, BLS, B3 e ANBIMA.</p>':''));
+  out.push('<h3>Quanto cada classe paga pelo risco</h3><p class="sub">O prêmio de hoje contra o histórico mensal desde 2010. Percentil 90 = hoje paga mais que em 90% dos meses.</p><div class="tablewrap" style="max-height:none"><table class="ctab"><thead><tr><th style="text-align:left">Classe</th><th>Hoje</th><th>Percentil</th><th style="text-align:left">Leitura</th></tr></thead><tbody>'
+    +Pr.map(x=>'<tr><td style="text-align:left">'+x.n+(x.sub?'<small style="display:block;color:var(--muted)">'+x.sub+'</small>':'')+'</td><td><b>'+x.fmt+'</b></td><td>'+(x.p==null?'<small>sem histórico</small>':'<b>'+fx(x.p,0)+'</b>')+'</td><td style="text-align:left"><small>'+x.txt+'</small></td></tr>').join("")+'</tbody></table></div>'
+    +'<p class="sub" style="font-size:.8rem;margin-top:6px">Juros e inflação implícita: curvas da ANBIMA (5 anos). CDI e IPCA esperado: Banco Central (Focus). Lucro sobre preço: mediana das ações com liquidez acima de R$ 2 milhões por dia, com o último balanço anual publicado (CVM). Câmbio real: dólar × inflação americana (BLS) ÷ IPCA. FIIs e crédito ainda sem histórico guardado: só a leitura de hoje.</p>');
+  {const x=cbCredHtml();if(x)out.push(x)}{const x=cbFnTopHtml();if(x)out.push(x)}
+  const N=cbNota();if(N){const L=[...N.values()].sort((a,b)=>b.nota-a.nota),I=AT.idx;
+    out.push('<h3>Nota WF das ações</h3><p class="sub">De 0 a 100, a média de cinco pilares, cada um medido contra todas as ações líquidas (valor e qualidade contra o próprio setor): <b>valor</b> (P/L, P/VP, EV/EBIT), <b>qualidade</b> (ROE, margem, dívida), <b>momento</b> (12 meses e média de 200 dias), <b>risco baixo</b> (volatilidade, queda máxima, beta) e <b>dividendos</b>.</p>'
+      +'<div class="tablewrap"><table class="ctab"><thead><tr><th style="text-align:left">Ação</th><th>Nota</th>'+CB_PIL.map(p=>'<th>'+p[1]+'</th>').join("")+'</tr></thead><tbody>'
+      +L.slice(0,25).map(x=>'<tr><td style="text-align:left"><button type="button" class="link" data-atopen="'+x.t+'">'+x.t+'</button><small style="display:block;color:var(--muted)">'+esc(I.setores[x.s]||"")+'</small></td><td><b style="color:'+cbNotaCor(x.nota)+'">'+x.nota+'</b></td>'+CB_PIL.map(([k])=>'<td>'+(x.P[k]==null?'—':fx(x.P[k],0))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'
+      +'<p class="sub" style="font-size:.8rem;margin-top:6px">'+N.size+' ações e units com liquidez acima de R$ 2 milhões por dia. A nota de cada ação aparece também na página dela. Nota alta não é garantia de alta: mostra que a ação reúne características que, em média, o mercado premia.</p>')}
+  return out}
+function cbRadarHtml(){cbCarrega();if(!cbPronto())return "";try{const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),B=cbBriefing(Pr,Mp,X);if(!B.length)return "";
+  return '<h3>Visão WF em três linhas</h3><ul style="margin:6px 0 0;padding-left:18px;line-height:1.5">'+[/mapa tático/,/termômetro/,/Lá fora/,/Juro real/].map(r=>B.find(x=>r.test(x))).filter(Boolean).concat(B).filter((x,i,a)=>a.indexOf(x)===i).slice(0,3).map(x=>'<li style="margin:3px 0">'+x+'</li>').join("")+'</ul><p class="sub" style="margin:6px 0 0"><button type="button" class="link" data-mkgo="vw">Ver o briefing completo, o mapa tático e as notas</button></p>'}catch(e){return ""}}

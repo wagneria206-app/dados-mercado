@@ -27,6 +27,7 @@ function ftSpark(pts){ // gráfico compacto para a coluna estreita da ficha (des
 function pcFicha(P,code){
   if(!P||P.type!=="DEB")return "";ftLoad();
   const f=P.ficha||{},it=[],row=(a,b)=>'<div class="row"><dt>'+a+'</dt><dd>'+b+'</dd></div>';
+  try{if(!CRB.L)crbCarrega();const L=typeof cbCredNota==="function"?cbCredNota():null,d=L&&L.find(o=>o.cod===String(code||"").toUpperCase());if(d&&d.dif!=null)it.push(row("Nota de crédito WF",'<b style="color:'+cbNotaCor(d.est?0:d.nota)+'">'+(d.est?'estresse':d.nota+'/100')+'</b><small style="display:block;color:var(--muted)">spread '+(d.dif>=0?'+':'−')+fx(Math.abs(d.dif),2)+' p.p. contra papéis parecidos'+(d.est?': o mercado cobra como risco alto de calote':d.dif<-0.5?': paga menos que os pares':d.dif>1.5?': paga bem acima dos pares; confira o porquê':'')+'</small>'))}catch(e){}
   const g=ftGar(f.garantia);if(g)it.push(row("Garantia",'<b class="'+g[2]+'">'+esc(g[0])+'</b>'+(g[1]?'<small style="display:block;color:var(--muted)">'+g[1]+'</small>':'')));
   if(f.classe)it.push(row("Classe",esc(f.classe)+(/convers/i.test(f.classe)?' <small>(pode virar ações)</small>':'')));
   if(f.resgateAntecipado!=null)it.push(row("Resgate antecipado pelo emissor",f.resgateAntecipado?'<span class="warn">previsto</span><small style="display:block;color:var(--muted)">o emissor pode devolver o dinheiro antes do vencimento, em geral quando os juros caem</small>':'não previsto'));
