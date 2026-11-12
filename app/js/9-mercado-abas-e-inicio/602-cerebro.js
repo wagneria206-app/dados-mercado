@@ -10,7 +10,14 @@ const cbPctl=(arr,v)=>{const a=arr.filter(x=>x!=null&&isFinite(x));if(a.length<1
 const cbMes=d=>d.slice(0,4)+d.slice(5,7);
 function cbCarrega(){if(typeof FN==="object"&&!FN.idx&&!FN.err&&typeof fnBoot==="function")fnBoot();if(typeof RT==="object"&&!RT.r&&typeof rtLoad==="function")rtLoad();if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
 function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded,!!(typeof FN==="object"&&FN.idx),!!(typeof RT==="object"&&RT.r)].join("")}
-function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw"&&activeMod!=="opo")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
+function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw"&&activeMod!=="opo")return;n=(n||0)+1;if(cbSinal()!==s0||n===30||n===90){CB.nota=null;mkCalc()}else if(n<900)cbEspera(n)},700);cbEspera.n=n||0}
+/* bases essenciais que falharam: a tela mostra o motivo e um botão para tentar de novo, em vez de ficar esperando para sempre */
+function cbFalhas(op){const L=[];if(!MC.d&&MC.err&&!MC.load)L.push(["economia",MC.err]);if(!TM.b&&TM.err&&!TM.load)L.push(["índices de referência",TM.err]);if(!AT.idx&&AT.err&&!AT.load)L.push(["Bolsa",AT.err]);if(op&&typeof BT==="object"&&!BT.pn&&BT.err&&!BT.load)L.push(["histórico de múltiplos (painel)",BT.err]);return L}
+function cbAguarde(tit,txt,op){const F=cbFalhas(op);if(F.length)return ['<h3>'+tit+'</h3><p class="warn">Não consegui carregar: '+F.map(([n,e])=>'<b>'+n+'</b> ('+esc(String(e&&e.message||e))+')').join('; ')+'.</p><p><button type="button" class="btn sec" data-cbretry="1">Tentar de novo</button></p>'];
+  const ok=[!!MC.d,!!TM.b,!!AT.idx].concat(op?[!!(typeof BT==="object"&&BT.pn)]:[]),q=ok.filter(Boolean).length;
+  return ['<h3>'+tit+'</h3><p class="sub">'+txt+' <b>'+q+' de '+ok.length+'</b> bases prontas.'+((cbEspera.n||0)>=30?' Está demorando mais que o normal; a conexão pode estar lenta. <button type="button" class="link" data-cbretry="1">Recarregar as bases</button>':'')+'</p>']}
+function cbRetry(){try{AT_MEMO.clear()}catch(e){}if(!MC.d){MC.err=null;MC.load=null}if(!TM.b){TM.err=null;TM.load=null}if(!AT.idx){AT.err=null;AT.load=null}if(typeof BT==="object"&&!BT.pn){BT.err=null;BT.load=null}CB.nota=null;cbCarrega();mkCalc()}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-cbretry]");if(x)cbRetry()});
 function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
 /* ---- séries mensais de apoio */
 function cbSeries(){
@@ -114,7 +121,7 @@ function cbBriefing(Pr,Mp,X){
   return L}
 /* ---- tela */
 function cbHtml(){
-  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
+  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return cbAguarde("Visão WF","Juntando os dados de todas as áreas…");
   const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),Br=cbBriefing(Pr,Mp,X),out=[];
   out.push(pgHtml());
   out.push('<h3>Briefing</h3><p class="sub">O que os dados de todas as áreas dizem hoje, em poucas linhas.</p><ul style="margin:6px 0 0;padding-left:18px;line-height:1.55">'+Br.map(x=>'<li style="margin:4px 0">'+x+'</li>').join("")+'</ul>');

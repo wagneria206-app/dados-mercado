@@ -214,7 +214,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `598-pergunte-ao-wf.js` (10 KB)
 - `599-parecer-do-titulo.js` (5 KB)
 - `601-mercado-fora-do-padrao.js` (5 KB)
-- `602-cerebro.js` (28 KB)
+- `602-cerebro.js` (29 KB)
 - `603-cerebro-fundos-credito-carteira.js` (10 KB)
 - `604-consultor-da-carteira.js` (17 KB)
 - `605-mercado-dados-das-abas-resumo.js` — Mercado: dados das abas Resumo, Juros, Crédito, Inflação e Índices (29 KB)

@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-OX4rjW9hK1My/KKuRTCbu2nFW46yi+YjoHu/QGE8sMw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-MmWehshh7T5/FhtbwjLUgqcXm5dQkk4rPvViIHEbT5Y='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -5027,7 +5027,7 @@ const BT_EST={
   magica:["Fórmula mágica","melhor soma de posições em P/L baixo e ROE alto (adaptação da fórmula de Greenblatt)"],
   qual:["Qualidade a preço justo","ROE acima de 15% e P/L abaixo de 15, ordenadas pelo maior ROE"],
   perso:["Personalizada","os critérios do filtro combinado acima (rendimento, P/L, P/VP, ROE, alta de 12 meses) aplicados mês a mês"]};
-function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela()})}
+function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela();else if((activeMod==="opo"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela();else if((activeMod==="opo"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()})}
 function btTela(){
   const o=$("fnOut");if(!o)return;
   if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel" id="ftBox"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
@@ -8316,7 +8316,7 @@ function opoOutras(){
   try{const N=cbFnNota();if(N){const I=FN.idx,b=[...N.values()].filter(x=>x.cot>=500&&x.nota>=85).sort((a,b)=>b.nota-a.nota).slice(0,3);b.forEach(x=>L.push(["Fundo bem avaliado","<button type=\"button\" class=\"link\" data-cbfn=\""+x.c+"\">"+esc(String(x.n).slice(0,46))+"</button>",'Nota WF '+x.nota+' entre '+x.np+' fundos de '+esc(I.anbima[x.a]),"fa"]))}}catch(e){}
   return L}
 function opoHtml(){
-  cbCarrega();if(!cbPronto()||typeof BT!=="object"||!BT.pn){if(typeof cbEspera==="function")cbEspera();return ['<h3>Oportunidades</h3><p class="sub">Analisando as ações do IBrX-100 e as outras classes…</p>']}
+  cbCarrega();if(!cbPronto()||typeof BT!=="object"||!BT.pn){cbEspera();return cbAguarde("Oportunidades","Analisando as ações do IBrX-100 e as outras classes…",1)}
   const A=opoAcoes();if(!A)return ['<h3>Oportunidades</h3><p class="sub">Carregando…</p>'];const out=[],ok=A.L.filter(x=>!x.fl.length),T=ok.slice(0,10);
   const bar=v=>'<span style="display:inline-block;width:46px;height:6px;border-radius:9px;background:var(--line);vertical-align:middle;overflow:hidden"><i style="display:block;height:100%;width:'+(v==null?0:v)+'%;background:'+(v==null?'var(--line)':cbNotaCor(v))+'"></i></span>';
   const motivo=x=>{const m=[];if(x.hist!=null&&x.hist>=70)m.push('P/L de '+fx(x.pl,1)+', abaixo da própria mediana de 5 anos (equivalente a '+fx(x.med,1)+' hoje)');if(x.P.valor>=70)m.push('barata contra o setor');if(x.P.qual>=70)m.push('alta qualidade');if(x.P.mom>=70)m.push('em tendência de alta');if(x.P.risco>=70)m.push('oscila pouco');if(x.dy>=7)m.push('proventos de '+fx(x.dy,1)+'%');return m.slice(0,3).join('; ')||'conjunto equilibrado'};
@@ -8759,7 +8759,14 @@ const cbPctl=(arr,v)=>{const a=arr.filter(x=>x!=null&&isFinite(x));if(a.length<1
 const cbMes=d=>d.slice(0,4)+d.slice(5,7);
 function cbCarrega(){if(typeof FN==="object"&&!FN.idx&&!FN.err&&typeof fnBoot==="function")fnBoot();if(typeof RT==="object"&&!RT.r&&typeof rtLoad==="function")rtLoad();if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
 function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded,!!(typeof FN==="object"&&FN.idx),!!(typeof RT==="object"&&RT.r)].join("")}
-function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw"&&activeMod!=="opo")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
+function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw"&&activeMod!=="opo")return;n=(n||0)+1;if(cbSinal()!==s0||n===30||n===90){CB.nota=null;mkCalc()}else if(n<900)cbEspera(n)},700);cbEspera.n=n||0}
+/* bases essenciais que falharam: a tela mostra o motivo e um botão para tentar de novo, em vez de ficar esperando para sempre */
+function cbFalhas(op){const L=[];if(!MC.d&&MC.err&&!MC.load)L.push(["economia",MC.err]);if(!TM.b&&TM.err&&!TM.load)L.push(["índices de referência",TM.err]);if(!AT.idx&&AT.err&&!AT.load)L.push(["Bolsa",AT.err]);if(op&&typeof BT==="object"&&!BT.pn&&BT.err&&!BT.load)L.push(["histórico de múltiplos (painel)",BT.err]);return L}
+function cbAguarde(tit,txt,op){const F=cbFalhas(op);if(F.length)return ['<h3>'+tit+'</h3><p class="warn">Não consegui carregar: '+F.map(([n,e])=>'<b>'+n+'</b> ('+esc(String(e&&e.message||e))+')').join('; ')+'.</p><p><button type="button" class="btn sec" data-cbretry="1">Tentar de novo</button></p>'];
+  const ok=[!!MC.d,!!TM.b,!!AT.idx].concat(op?[!!(typeof BT==="object"&&BT.pn)]:[]),q=ok.filter(Boolean).length;
+  return ['<h3>'+tit+'</h3><p class="sub">'+txt+' <b>'+q+' de '+ok.length+'</b> bases prontas.'+((cbEspera.n||0)>=30?' Está demorando mais que o normal; a conexão pode estar lenta. <button type="button" class="link" data-cbretry="1">Recarregar as bases</button>':'')+'</p>']}
+function cbRetry(){try{AT_MEMO.clear()}catch(e){}if(!MC.d){MC.err=null;MC.load=null}if(!TM.b){TM.err=null;TM.load=null}if(!AT.idx){AT.err=null;AT.load=null}if(typeof BT==="object"&&!BT.pn){BT.err=null;BT.load=null}CB.nota=null;cbCarrega();mkCalc()}
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-cbretry]");if(x)cbRetry()});
 function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
 /* ---- séries mensais de apoio */
 function cbSeries(){
@@ -8863,7 +8870,7 @@ function cbBriefing(Pr,Mp,X){
   return L}
 /* ---- tela */
 function cbHtml(){
-  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return ['<h3>Visão WF</h3><p class="sub">Juntando os dados de todas as áreas…</p>'];
+  cbCarrega();if(!/^1{10}$/.test(cbSinal()))cbEspera();if(!cbPronto())return cbAguarde("Visão WF","Juntando os dados de todas as áreas…");
   const Pr=cbPremios()||[],X=cbExterno(),Mp=cbMapa(Pr,X),Br=cbBriefing(Pr,Mp,X),out=[];
   out.push(pgHtml());
   out.push('<h3>Briefing</h3><p class="sub">O que os dados de todas as áreas dizem hoje, em poucas linhas.</p><ul style="margin:6px 0 0;padding-left:18px;line-height:1.55">'+Br.map(x=>'<li style="margin:4px 0">'+x+'</li>').join("")+'</ul>');
@@ -9889,7 +9896,7 @@ document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest
    fluxo de estrangeiros em ações (balanço de pagamentos do Banco Central). */
 const TM={b:null,fl:null,err:null,load:null};
 function tmBoot(){if(TM.load||(TM.b&&TM.fl))return;TM.load=Promise.all([atGet("bench.json"),roboGet("fluxo_estrangeiro.json").catch(()=>null)]).then(([b,f])=>{TM.b=b;TM.fl=f||{mensal:{}};TM.load=null;tmRefaz()}).catch(e=>{TM.err=e;TM.load=null;tmRefaz()})}
-function tmRefaz(){if(typeof activeMod!=="undefined"&&(activeMod==="rs"||activeMod==="rd"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()}
+function tmRefaz(){if(typeof activeMod!=="undefined"&&(activeMod==="rs"||activeMod==="rd"||activeMod==="vw"||activeMod==="opo")&&typeof mkCalc==="function")mkCalc()}
 const TM_REG=[[2,"Apetite a risco","var(--gain)"],[-1,"Neutro","var(--warn)"],[-99,"Defensivo","var(--loss)"]];
 function tmReg(s){return s>=2?TM_REG[0]:s<=-2?TM_REG[2]:TM_REG[1]}
 function tmBase(){ // séries mensais alinhadas (AAAAMM), com o mês corrente parcial no fim

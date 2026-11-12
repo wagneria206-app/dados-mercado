@@ -59,7 +59,7 @@ function opoOutras(){
   try{const N=cbFnNota();if(N){const I=FN.idx,b=[...N.values()].filter(x=>x.cot>=500&&x.nota>=85).sort((a,b)=>b.nota-a.nota).slice(0,3);b.forEach(x=>L.push(["Fundo bem avaliado","<button type=\"button\" class=\"link\" data-cbfn=\""+x.c+"\">"+esc(String(x.n).slice(0,46))+"</button>",'Nota WF '+x.nota+' entre '+x.np+' fundos de '+esc(I.anbima[x.a]),"fa"]))}}catch(e){}
   return L}
 function opoHtml(){
-  cbCarrega();if(!cbPronto()||typeof BT!=="object"||!BT.pn){if(typeof cbEspera==="function")cbEspera();return ['<h3>Oportunidades</h3><p class="sub">Analisando as ações do IBrX-100 e as outras classes…</p>']}
+  cbCarrega();if(!cbPronto()||typeof BT!=="object"||!BT.pn){cbEspera();return cbAguarde("Oportunidades","Analisando as ações do IBrX-100 e as outras classes…",1)}
   const A=opoAcoes();if(!A)return ['<h3>Oportunidades</h3><p class="sub">Carregando…</p>'];const out=[],ok=A.L.filter(x=>!x.fl.length),T=ok.slice(0,10);
   const bar=v=>'<span style="display:inline-block;width:46px;height:6px;border-radius:9px;background:var(--line);vertical-align:middle;overflow:hidden"><i style="display:block;height:100%;width:'+(v==null?0:v)+'%;background:'+(v==null?'var(--line)':cbNotaCor(v))+'"></i></span>';
   const motivo=x=>{const m=[];if(x.hist!=null&&x.hist>=70)m.push('P/L de '+fx(x.pl,1)+', abaixo da própria mediana de 5 anos (equivalente a '+fx(x.med,1)+' hoje)');if(x.P.valor>=70)m.push('barata contra o setor');if(x.P.qual>=70)m.push('alta qualidade');if(x.P.mom>=70)m.push('em tendência de alta');if(x.P.risco>=70)m.push('oscila pouco');if(x.dy>=7)m.push('proventos de '+fx(x.dy,1)+'%');return m.slice(0,3).join('; ')||'conjunto equilibrado'};
