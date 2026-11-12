@@ -1512,6 +1512,22 @@ def principal():
                  "liq", "dy", "mcap", "pl", "pvp", "roe", "ml", "dlebit", "evebit", "cot", "sharpe"],
         "setores": inv, "rows": rows,
         "fonte": "B3 (cotações, proventos, cadastro) e CVM (balanços, informe dos FIIs)"})
+    # carteiras teóricas dos índices da B3 (composição oficial do dia: código e participação %)
+    cart = {}
+    for ix in ("IBOV", "IBXX", "IBXL", "IDIV", "SMLL", "IFIX"):
+        try:
+            j = b3get("indexProxy/indexCall/GetPortfolioDay", {"language": "pt-br", "pageNumber": 1, "pageSize": 150, "index": ix, "segment": "1"})
+            res = (j or {}).get("results") or []
+            L = [[str(x.get("cod") or "").strip().upper(), num(x.get("part"))] for x in res if x.get("cod")]
+            if len(L) >= 10:
+                cart[ix] = {"L": L, "dt": dbr(((j or {}).get("header") or {}).get("date") or "") or HOJE.isoformat()}
+            else:
+                DIAG.setdefault("indices", []).append(f"{ix}: {len(L)} ativos")
+        except Exception as e:  # noqa: BLE001
+            DIAG.setdefault("indices", []).append(f"{ix}: {str(e)[:80]}")
+    if cart:
+        FU.gravar(os.path.join(sai, "indices.json"), {"geradoEm": dt.datetime.now().isoformat(timespec="seconds"), "c": cart,
+                                                       "fonte": "B3: carteira teórica do dia de cada índice"})
     FU.gravar(os.path.join(sai, "cal.json"), {"d": CAL})
     FU.gravar(os.path.join(sai, "bench.json"), bench)
     FU.gravar(os.path.join(sai, "emp.json"), emp)

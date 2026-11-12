@@ -10,7 +10,7 @@ const cbPctl=(arr,v)=>{const a=arr.filter(x=>x!=null&&isFinite(x));if(a.length<1
 const cbMes=d=>d.slice(0,4)+d.slice(5,7);
 function cbCarrega(){if(typeof FN==="object"&&!FN.idx&&!FN.err&&typeof fnBoot==="function")fnBoot();if(typeof RT==="object"&&!RT.r&&typeof rtLoad==="function")rtLoad();if(!EU.S&&!EU.err)euBoot();if(!MC.d)mcBoot();if(!TM.b)tmBoot();if(!CURV)curvasLoad();if(!AT.idx&&!AT.err)atBoot();if(typeof BT==="object"&&!BT.pn&&typeof btBoot==="function")btBoot();if(!CRB.L)crbCarrega();if(!MK.loaded)mkLoad()}
 function cbSinal(){return [!!MC.d,!!TM.b,!!AT.idx,!!EU.S,!!CURV,!!CRB.L,!!(typeof BT==="object"&&BT.pn),!!MK.loaded,!!(typeof FN==="object"&&FN.idx),!!(typeof RT==="object"&&RT.r)].join("")}
-function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
+function cbEspera(n){clearTimeout(cbEspera.t);const s0=cbSinal();cbEspera.t=setTimeout(()=>{if(activeMod!=="vw"&&activeMod!=="opo")return;if(cbSinal()!==s0){CB.nota=null;mkCalc()}else if((n||0)<40)cbEspera((n||0)+1)},700)}
 function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
 /* ---- séries mensais de apoio */
 function cbSeries(){

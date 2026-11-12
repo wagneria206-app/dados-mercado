@@ -109,7 +109,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `221-conversor-entre-indexadores.js` (7 KB)
 - `225-12-escada-de-vencimentos.js` — 12. escada de vencimentos (12 KB)
 - `260-projecao-de-inflacao-implicita-anbima.js` — Projeção de inflação: implícita (ANBIMA) ou média dos últimos 12 meses (1 KB)
-- `275-painel-de-mercado.js` — Painel de mercado (8 KB)
+- `275-painel-de-mercado.js` — Painel de mercado (9 KB)
 - `310-fundos-de-investimento-e-previdencia.js` — Fundos de investimento e previdência (pelo CNPJ) (6 KB)
 - `315-fundos-e-previdencia-calculo.js` — aba ---------- (6 KB)
 - `345-situacao-dos-dados-no-cabecalho.js` — ================= Rotina: Meu dia, saúde dos dados, importação de documentos ================= (7 KB)
@@ -205,6 +205,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
+- `591-oportunidades.js` (14 KB)
 - `592-fatos-e-trimestres.js` (7 KB)
 - `593-veredito-do-comparador.js` (3 KB)
 - `594-placar-dos-sinais.js` (4 KB)
