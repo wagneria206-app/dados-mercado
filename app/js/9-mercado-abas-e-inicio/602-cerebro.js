@@ -18,6 +18,8 @@ function cbAguarde(tit,txt,op){const F=cbFalhas(op);if(F.length)return ['<h3>'+t
   return ['<h3>'+tit+'</h3><p class="sub">'+txt+' <b>'+q+' de '+ok.length+'</b> bases prontas.'+((cbEspera.n||0)>=30?' Está demorando mais que o normal; a conexão pode estar lenta. <button type="button" class="link" data-cbretry="1">Recarregar as bases</button>':'')+'</p>']}
 function cbRetry(){try{AT_MEMO.clear()}catch(e){}if(!MC.d){MC.err=null;MC.load=null}if(!TM.b){TM.err=null;TM.load=null}if(!AT.idx){AT.err=null;AT.load=null}if(typeof BT==="object"&&!BT.pn){BT.err=null;BT.load=null}CB.nota=null;cbCarrega();mkCalc()}
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-cbretry]");if(x)cbRetry()});
+/* links de ações nas telas do Radar, Visão WF e Oportunidades (fora da área da Bolsa, que tem o próprio tratamento) */
+document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-atopen]");if(!x||x.closest("#modFn"))return;e.preventDefault();atOpen(x.dataset.atopen)});
 function cbPronto(){return !!(MC.d&&TM.b&&AT.idx)}
 /* ---- séries mensais de apoio */
 function cbSeries(){
