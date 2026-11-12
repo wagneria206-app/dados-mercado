@@ -1,5 +1,14 @@
 /* ---------- Parecer WF: pontos fortes, pontos de atenção e uma leitura em uma frase para cada ação e cada fundo,
    escritos por regras a partir das notas, dos múltiplos, da técnica e da comparação com o setor ou a categoria. */
+/* proventos por ação em janelas de 12 meses (valores de hoje, descontando desdobramentos posteriores): o último ano contra
+   a mediana dos 4 anteriores. Quando o último passa de 1,6 vez o padrão, parte do rendimento deve ser extraordinária. */
+function prProv(A){if(!A||!A.adj||!A.I||!A.I.length||!AT.T)return null;const T=AT.T,tl=T[A.I[A.I.length-1]],Y=365.25*864e5,px=A.R[A.R.length-1];if(!(px>0))return null;
+  if(tl-T[A.I[0]]<4.9*Y)return null;const S=A.adj.filter(e=>String(e[2]).startsWith("S")),s=[0,0,0,0,0];if(!A.adj.some(e=>/^[DJRE]$/.test(String(e[2]))&&tl-T[e[0]]>3.5*Y))return null; // sem proventos antigos na base: histórico incompleto ou empresa nova
+  A.adj.forEach(e=>{if(!/^[DJRE]$/.test(String(e[2])))return;const k=Math.floor((tl-T[e[0]])/Y);if(k<0||k>4)return;let m=1;S.forEach(z=>{if(z[0]>e[0])m*=z[1]});s[k]+=e[3]*m});
+  const ant=s.slice(1).sort((a,b)=>a-b),pad=(ant[1]+ant[2])/2,dy=s[0]/px*100,dyp=pad/px*100;
+  return {dy,dyp,anos:s.map(v=>v/px*100),atip:pad>0&&dy>=dyp*1.6&&dy-dyp>=2}}
+/* lucro atípico na ficha e no parecer: mesmo critério da tela de Oportunidades (painel mensal) */
+function prLucro(t){const pn=typeof BT==="object"&&BT.pn;if(!pn){if(typeof btBoot==="function")btBoot();return null}const a=pn.a[t];if(!a||typeof opoNorm!=="function")return null;const nz=opoNorm(a,pn.meses.length-1);if(!nz)return null;const r=atRow(t),pl=r&&r[AT.C.pl];return Object.assign({pl,pln:pl>0?pl*nz.f:null},nz)}
 function prAcao(t){
   if(!AT.idx)return null;const r=atRow(t),C=AT.C,N=cbNota(),n=N&&N.get(t);if(!r||!n)return null;const F=[],X=[],v=k=>r[C[k]];
   const set=AT.idx.rows.filter(q=>q[C.setor]===r[C.setor]&&(q[C.tipo]==="Ação"||q[C.tipo]==="Unit")&&(q[C.liq]||0)>=2e6),med=k=>{const a=set.map(q=>q[C[k]]).filter(x=>x!=null&&isFinite(x)&&(k!=="pl"||x>0)).sort((x,y)=>x-y);return a.length>=4?a[a.length>>1]:null},sn=esc(AT.idx.setores[r[C.setor]]||"setor");
@@ -7,7 +16,8 @@ function prAcao(t){
   if(v("pvp")>0&&v("pvp")<1)F.push('negocia abaixo do valor patrimonial (P/VP '+fx(v("pvp"),2)+')');
   const roe=v("roe");if(roe!=null){if(roe>=18)F.push('retorno sobre o patrimônio alto ('+fx(roe,0)+'%)');else if(roe<6)X.push('retorno sobre o patrimônio baixo ('+fx(roe,0)+'%)')}
   const dl=v("dlebit");if(dl!=null){if(dl>3.5)X.push('dívida alta: '+fx(dl,1)+' vezes o lucro operacional');else if(dl<1)F.push(dl<0?'caixa maior que a dívida':'dívida baixa ('+fx(dl,1)+' vez o lucro operacional)')}
-  const dy=v("dy");if(dy>=7)F.push('proventos de '+fx(dy,1)+'% em 12 meses');
+  const dy=v("dy"),pv=prProv(AT.files.get(t));if(pv&&pv.atip)X.push('proventos de '+fx(pv.dy,1)+'% em 12 meses, bem acima do padrão da empresa ('+fx(pv.dyp,1)+'% ao ano nos 4 anos anteriores): parte deve ser extraordinária e não se repetir');else if(dy>=7)F.push('proventos de '+fx(dy,1)+'% em 12 meses'+(pv?' (padrão de '+fx(pv.dyp,1)+'% nos 4 anos anteriores)':''));
+  const lz=prLucro(t);if(lz)X.unshift('lucro atípico: ROE de '+fx(lz.now,0)+'% contra '+fx(lz.mp,0)+'% nos 4 anos anteriores (ganho extraordinário ou salto de rentabilidade); com o lucro normalizado, o P/L de '+fx(lz.pl,1)+' iria para '+fx(lz.pln,1)+'. Confira os balanços abaixo');
   const r12=v("r12"),mm=v("mm200d"),td=v("tend");if(td===1)F.push('tendência de alta (acima das médias de 50 e 200 dias)');else if(td===-1)X.push('tendência de baixa (abaixo das médias de 50 e 200 dias)');
   if(r12!=null&&r12<-25)X.push('queda de '+fx(-r12,0)+'% em 12 meses');else if(r12!=null&&r12>40)F.push('alta de '+fx(r12,0)+'% em 12 meses');
   const ifr=v("ifr");if(ifr!=null){if(ifr>=75)X.push('IFR em '+fx(ifr,0)+': esticada no curto prazo');else if(ifr<=25)F.push('IFR em '+fx(ifr,0)+': muito vendida no curto prazo')}
@@ -18,12 +28,14 @@ function prAcao(t){
   const P=n.P,barato=P.valor!=null&&P.valor>=65,bom=P.qual!=null&&P.qual>=65,sobe=P.mom!=null&&P.mom>=60,cai=P.mom!=null&&P.mom<=30,caro=P.valor!=null&&P.valor<=30,ruim=P.qual!=null&&P.qual<=30;
   const ver=barato&&bom&&sobe?'Reúne preço, qualidade e momento: perfil raro, dos mais completos do mercado hoje.':barato&&bom&&cai?'Empresa boa e barata, mas o mercado ainda vende: quem compra precisa de paciência e de tese.':barato&&bom?'Empresa de qualidade negociando barato em relação ao setor.':barato&&ruim?'Barata por um motivo: os fundamentos são fracos. Risco de "armadilha de valor".':caro&&bom?'Empresa de qualidade, mas o preço já reconhece isso: pouco espaço para erro.':caro&&ruim?'Cara e com fundamentos fracos: combinação desfavorável.':sobe&&P.qual!=null&&P.qual<45?'Sobe mais pelo momento que pelos fundamentos: acompanhe de perto.':n.nota>=65?'Conjunto acima da média do mercado.':n.nota<=35?'Conjunto abaixo da média do mercado em quase todos os pilares.':'Perfil mediano: sem destaque claro, nem para o bem, nem para o mal.';
   return {t,n,F:F.slice(0,5),X:X.slice(0,5),ver,sn}}
-function prAcaoHtml(A){if(!(A.tipo==="Ação"||A.tipo==="Unit"))return "";let p=null;try{p=prAcao(A.t)}catch(e){}if(!p)return "";
+function prAcaoHtml(A){if(!(A.tipo==="Ação"||A.tipo==="Unit"))return "";let p=null;try{p=prAcao(A.t)}catch(e){}if(!p)return "";PR_T=A.t;
   const li=(L,c,s)=>L.length?L.map(x=>'<li style="margin:3px 0"><b style="color:'+c+'">'+s+'</b> '+x.charAt(0).toUpperCase()+x.slice(1)+'</li>').join(""):'';
-  return '<section class="panel"><div class="label">Parecer WF</div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:1.9rem;line-height:1;color:'+cbNotaCor(p.n.nota)+'">'+p.n.nota+'<small style="font-size:.9rem;color:var(--muted)">/100</small></b><p style="margin:0;flex:1;min-width:220px"><b>'+p.ver+'</b></p></div>'
+  return '<section class="panel" id="prBox"><div class="label">Parecer WF</div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:1.9rem;line-height:1;color:'+cbNotaCor(p.n.nota)+'">'+p.n.nota+'<small style="font-size:.9rem;color:var(--muted)">/100</small></b><p style="margin:0;flex:1;min-width:220px"><b>'+p.ver+'</b></p></div>'
     +'<p class="sub" style="margin:0 0 6px">'+CB_PIL.map(([k,l])=>l+' <b style="color:'+(p.n.P[k]==null?'var(--muted)':cbNotaCor(p.n.P[k]))+'">'+(p.n.P[k]==null?'—':fx(p.n.P[k],0))+'</b>').join(' · ')+'</p>'
     +((p.F.length||p.X.length)?'<ul style="margin:0;padding-left:4px;list-style:none;line-height:1.45">'+li(p.F,"var(--gain)","+")+li(p.X,"var(--loss)","−")+'</ul>':'')
     +'<p class="sub" style="font-size:.8rem;margin:8px 0 0">Escrito por regras a partir dos dados da B3 e da CVM: notas contra todas as ações líquidas (valor e qualidade contra o setor de '+p.sn+'). Não é recomendação de compra ou venda. <button type="button" class="link" data-mkgo="vw">Como a nota é calculada</button></p></section>'}
+let PR_T=null;
+function prRefaz(){const b=document.getElementById("prBox"),A=PR_T&&AT.files.get(PR_T);if(!b||!A)return;try{const h=prAcaoHtml(A);if(h)b.outerHTML=h}catch(e){}}
 function prFundo(c){
   if(typeof FN!=="object"||!FN.idx)return null;const N=cbFnNota(),n=N&&N.get(c),r=fnRow(c),C=FN.C,I=FN.idx;if(!n||!r)return null;const F=[],X=[],cdi=I.cdi12;
   const pc=r[C.r12]!=null&&cdi>0?r[C.r12]/cdi*100:null;if(pc!=null){if(pc>=110)F.push('rendeu '+fx(pc,0)+'% do CDI em 12 meses');else if(pc<85)X.push('rendeu '+fx(pc,0)+'% do CDI em 12 meses')}

@@ -1,6 +1,7 @@
 /* ---------- atualização de dados ---------- */
 const rstat=$("rstat"),btn=$("refresh");
-function setStat(text,cls){rstat.textContent=text;rstat.className="rstat"+(cls?" "+cls:"")}
+const WF_VER=((document.querySelector('meta[name="wf-versao"]')||{}).content||"").trim();
+function setStat(text,cls){rstat.textContent=text+(WF_VER?" · versão do app: "+WF_VER:"");rstat.className="rstat"+(cls?" "+cls:"")}
 function refreshAll(){buildOptions();applyFam();renderMkt();pcMemo.clear();RAWC.clear();PIF_CACHE.clear();if(MKM.has(activeMod))return mkCalc();if(activeMod==='pub')calc();else if(activeMod==='pc')pcCalc();else if(activeMod==='bank')bkCalc();else if(activeMod==='fund')fdCalc();else if(activeMod==='sim')simCalc();else if(activeMod==='tx'){oppRender();txCalc()}else if(activeMod==='fx')fxCalc();else{scRefreshSources();scCalc()}}
 let requestedAt=0;
 function onDoc(doc){
