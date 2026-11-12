@@ -14,6 +14,7 @@ function atBoot(){
   if(AT.idx||AT.load)return AT.load;AT.err=null;
   AT.load=Promise.all([atGet("idx.json"),atGet("cal.json"),atGet("bench.json")]).then(([i,c,b])=>{
     AT.idx=i;AT.C={};i.cols.forEach((n,k)=>AT.C[n]=k);i.setores=(i.setores||[]).map(atNm);i.rows.forEach(r=>{r[1]=nomeCx(atNm(r[1]))});
+    {const cp=AT.C.pvp,ct=AT.C.tipo;AT.pvpSusp=new Set();if(cp!=null)i.rows.forEach(r=>{if((r[ct]==="FII"||r[ct]==="Fiagro")&&r[cp]!=null&&!(r[cp]>=0.5&&r[cp]<3)){AT.pvpSusp.add(r[0]);r[cp]=null}})} // P/VP fora da faixa plausível: informe da CVM inconsistente com a cotação
     AT.sk=i.rows.map(r=>fnNorm(r[0]+" "+r[1]+" "+(i.setores[r[AT.C.setor]]||"")));
     AT.cal=c.d;AT.B=b;AT.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));AT.L=lvBuild(AT.cal,b);AT.load=null;atHash();if(FNM.has(activeMod))fnCalc();extApply();
   }).catch(e=>{AT.err=e;AT.load=null;if(FNM.has(activeMod))fnCalc()});
