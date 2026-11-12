@@ -205,7 +205,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 **`js/9-mercado-abas-e-inicio/`** — Mercado: abas Juros, Crédito, Inflação, Índices e Dólar; dados dos robôs; busca, ajustes e apresentação; inicialização
 
-- `591-oportunidades.js` (14 KB)
+- `591-oportunidades.js` (16 KB)
 - `592-fatos-e-trimestres.js` (7 KB)
 - `593-veredito-do-comparador.js` (3 KB)
 - `594-placar-dos-sinais.js` (4 KB)
