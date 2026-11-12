@@ -28,7 +28,7 @@ function atHead(A){
   const px=l?A.R[A.R.length-1]:null;
   let k=kp("Cotação","R$ "+(px!=null?fx(px,2):"—"),(l?fdate(l.t):"")+(m.d1!=null?' · '+fnPctT(m.d1)+' no dia':''))+kp("12 meses (com proventos)",fnPct(m.r12),m.ra!=null?"no ano "+fnPctT(m.ra):"");
   if(A.tipo==="Ação"||A.tipo==="Unit")k+=kp("Dividend yield 12m",fnPctT(m.dy),m.prov12?"R$ "+fx(m.prov12,2)+" por ação":"")+kp("P/L · P/VP",(ind.pl_r!=null?fx(ind.pl_r,1):"—")+" · "+(ind.pvp!=null?fx(ind.pvp,2):"—"),ind.roe!=null?"ROE "+fnPctT(ind.roe,1):"")+kp("Valor de mercado",fnMoney(ind.mcap),m.liq?"liquidez "+fnMoney(m.liq)+"/dia":"");
-  else if(isF){const u=atFiiLast(A);k+=kp("Dividend yield 12m",fnPctT(m.dy),m.prov12?"R$ "+fx(m.prov12,2)+" por cota":"")+kp("P/VP",u&&u.vpc&&px?fx(px/u.vpc,2):"—",u&&u.vpc?"VP/cota R$ "+fx(u.vpc,2):"")+kp("Patrimônio líquido",fnMoney(u&&u.pl),u&&u.cot?fnInt(u.cot)+" cotistas":"")}
+  else if(isF){const u=atFiiLast(A);k+=kp("Dividend yield 12m",fnPctT(m.dy),m.prov12?"R$ "+fx(m.prov12,2)+" por cota":"")+kp("P/VP",u&&u.vpc&&px?fx(px/u.vpc,2):"—",u&&u.vpc?"VP/cota R$ "+fx(u.vpc,2):u&&u.susp?"<span class=\"neg\">dado suspeito</span>: cotação de R$ "+fx(px,2)+" contra VP/cota de R$ "+fx(u.vpcInf,2)+" no informe da CVM; pode haver desdobramento não refletido ou informe em revisão. Confira no relatório do fundo":"")+kp("Patrimônio líquido",fnMoney(u&&u.pl),u&&u.cot?fnInt(u.cot)+" cotistas":"")}
   else k+=kp("Volatilidade 12m",m.v12!=null?fx(m.v12,2)+"%":"—",m.beta!=null?"beta "+fx(m.beta,2):"")+kp("Liquidez média",m.liq?fnMoney(m.liq):"—","por dia, 3 meses")+kp("Perda máxima 36m",fnPct(m.dd),"");
   h+='<div class="fnkpis">'+k+'</div>';
   const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
@@ -39,7 +39,7 @@ function atHead(A){
   if(it.length)h+='<dl class="fninfo">'+it.join("")+'</dl>';
   return h+'</section>';
 }
-function atFiiLast(A){const f=A.fii;if(!f||!f.m)return null;const px=A.R&&A.R.length?A.R[A.R.length-1]:null;for(let k=f.m.length-1;k>=0;k--){const v=f.m[k];if(v&&v[0]){const ok=!px||(px/v[0]>0.2&&px/v[0]<5);return {vpc:ok?v[0]:null,pl:v[1],cot:v[2]>1?v[2]:null,dy:v[3],k:+f.m0.slice(0,4)*12+(+f.m0.slice(4))-1+k}}}return null}
+function atFiiLast(A){const f=A.fii;if(!f||!f.m)return null;const px=A.R&&A.R.length?A.R[A.R.length-1]:null;for(let k=f.m.length-1;k>=0;k--){const v=f.m[k];if(v&&v[0]){let ok=!px||(px/v[0]>=0.5&&px/v[0]<3);const v0=f.m[k-1];if(ok&&v0&&v0[0]&&Math.abs(v[0]/v0[0]-1)>0.4)ok=false;return {susp:!ok&&!!px,vpcInf:v[0],vpc:ok?v[0]:null,pl:v[1],cot:v[2]>1?v[2]:null,dy:v[3],k:+f.m0.slice(0,4)*12+(+f.m0.slice(4))-1+k}}}return null}
 function atPriceHtml(A){
   const per=FN.per,p0=fnStart(A,per);let h='<section class="panel"><h3>Cotação</h3>'+fnSeg("fnper",FN_PER.filter(x=>x[0]!=="mes"),per);
   if(!p0)return h+'<p class="sub">Sem histórico para o período.</p></section>';

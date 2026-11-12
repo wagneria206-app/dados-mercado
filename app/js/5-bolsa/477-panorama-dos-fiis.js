@@ -38,7 +38,7 @@ function fiiTela(){
   const segDy=new Map(S.map(x=>[x.k,x.dy]));
   const linha=r=>'<button type="button" class="fnri" data-atopen="'+r[0]+'"><b>'+r[0]+' · '+esc(r[1])+'</b><small>'+esc(seg(r))+' · rendimento '+(r[C.dy]!=null?fx(r[C.dy],2)+'%':'—')+' · P/VP '+(r[C.pvp]!=null?fx(r[C.pvp],2):'—')+(C.vac!=null&&r[C.vac]!=null?' · vacância '+fx(r[C.vac],1)+'%':'')+' · liquidez '+fnMoney(r[C.liq])+'/dia</small></button>';
   const bloco=(tt,sub,L)=>'<section class="panel"><div class="label">'+tt+'</div><p class="sub" style="font-size:.82rem;margin:2px 0 6px">'+sub+'</p><div class="fnlist">'+(L.length?L.map(linha).join(""):'<p class="sub">Nenhum fundo com esses critérios.</p>')+'</div></section>';
-  const desc=R.filter(r=>r[C.pvp]!=null&&r[C.pvp]<=0.95&&dyOk(r)&&segDy.get(seg(r))!=null&&r[C.dy]>=segDy.get(seg(r))).sort((a,b)=>a[C.pvp]-b[C.pvp]).slice(0,10);
+  const desc=R.filter(r=>r[C.pvp]!=null&&r[C.pvp]>=0.5&&r[C.pvp]<=0.95&&dyOk(r)&&segDy.get(seg(r))!=null&&r[C.dy]>=segDy.get(seg(r))).sort((a,b)=>a[C.pvp]-b[C.pvp]).slice(0,10);
   const agio=R.filter(r=>r[C.pvp]!=null&&r[C.pvp]>=1.1).sort((a,b)=>b[C.pvp]-a[C.pvp]).slice(0,10);
   const topDy=R.filter(dyOk).sort((a,b)=>b[C.dy]-a[C.dy]).slice(0,10);
   h+='</section>'+bloco("Com desconto e rendimento acima do segmento","P/VP de até 0,95 e rendimento de 12 meses maior que a mediana do próprio segmento. Desconto grande pode refletir risco (vacância, inadimplência, dívida): leia os relatórios do fundo.",desc)

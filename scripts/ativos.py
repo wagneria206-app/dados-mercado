@@ -1463,8 +1463,14 @@ def principal():
                     u = a.fii["m"][ms2[-1]]
                     cotas = info.get("cotas") or a.fii.get("cotas")      # B3 primeiro; o informe pode vir defasado
                     pvp = a.c[-1] / u[0] if u[0] else None
-                    if pvp is not None and not 0.2 < pvp < 5:      # informe inconsistente com a cotação
+                    if pvp is not None and not 0.5 <= pvp < 3:      # informe inconsistente com a cotação (desdobramento não refletido, informe atrasado)
+                        DIAG.setdefault("fii_pvp_suspeito", []).append(f"{t}: {round(pvp, 2)}")
                         pvp = None
+                    if pvp is not None and len(ms2) >= 2:            # valor da cota saltou mais de 40% num mês: informe em revisão
+                        u0 = a.fii["m"][ms2[-2]]
+                        if u0 and u0[0] and abs(u[0] / u0[0] - 1) > 0.4:
+                            DIAG.setdefault("fii_vp_salto", []).append(f"{t}: {round(u0[0], 2)} → {round(u[0], 2)}")
+                            pvp = None
                     extra = {"vpc": u[0] if pvp else None, "pvp": pvp, "plf": u[1], "cot": u[2] if (u[2] or 0) > 1 else None,
                              "mcap": a.c[-1] * cotas if cotas else None}
             else:
