@@ -12,7 +12,7 @@ const BT_EST={
   magica:["Fórmula mágica","melhor soma de posições em P/L baixo e ROE alto (adaptação da fórmula de Greenblatt)"],
   qual:["Qualidade a preço justo","ROE acima de 15% e P/L abaixo de 15, ordenadas pelo maior ROE"],
   perso:["Personalizada","os critérios do filtro combinado acima (rendimento, P/L, P/VP, ROE, alta de 12 meses) aplicados mês a mês"]};
-function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela()})}
+function btBoot(){if(BT.pn||BT.load||BT.err)return;BT.load=atGet("painel.json").then(d=>{BT.pn=d;BT.load=null;if(activeMod==="ab")btTela();else if((activeMod==="opo"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()}).catch(e=>{BT.err=e;BT.load=null;if(activeMod==="ab")btTela();else if((activeMod==="opo"||activeMod==="vw")&&typeof mkCalc==="function")mkCalc()})}
 function btTela(){
   const o=$("fnOut");if(!o)return;
   if(FN.view!=="ab"){FN.view="ab";o.innerHTML='<section class="panel" id="btSet"></section><section class="panel" id="ftBox"></section><section class="panel"><h3>Filtro combinado</h3><p class="sub">Ações que passam ao mesmo tempo nos critérios de fundamentos e de análise técnica, com os dados mais recentes. Deixe em branco o que não quiser filtrar.</p><div id="btF"></div><div id="btFR"></div></section><section class="panel"><h3>Teste histórico de estratégias</h3><p class="sub">Como uma regra simples de escolha de ações teria se saído mês a mês desde 2006, contra o Ibovespa e o CDI. A cada rebalanceamento o teste usa só o que se sabia naquela data.</p><div id="btT"></div><div id="btTR"></div></section>'}
