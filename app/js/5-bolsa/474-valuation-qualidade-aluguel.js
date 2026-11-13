@@ -12,12 +12,16 @@ function vqAcoesEm(A,ano,fim,t){const H=A.fund&&A.fund.caph,now=A.ind&&A.ind.aco
   const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));let ft=1,fh=1;
   spl.forEach(e=>{const te=AT.T[e[0]];if(te>fim&&te<=t)ft/=e[1];if(te>fim)fh/=e[1]});
   const hoje=q*fh/now;return hoje>0.33&&hoje<3?q*ft:null}   // incoerente com a quantidade atual: descarta
+function vqFu(A){ // units: ações por unit = 1/fu (valor de mercado do índice ÷ preço da unit × quantidade de ações); ações comuns: 1
+  try{const ac=A.ind&&A.ind.acoes,r=atRow(A.t),mc=r&&r[AT.C.mcap],x=mc&&ac&&A.R.length?mc/(A.R[A.R.length-1]*ac):null;if(A.tipo==="Unit"&&x>0.05&&x<0.95)return x}catch(e){}return 1}
 function vqSerie(A){ // P/L e P/VP mensais nos últimos 10 anos, com o último balanço anual publicado em cada mês
   const f=A.fund&&A.fund.a,acoes=A.ind&&A.ind.acoes;if(!f||!acoes)return null;
   const anos=Object.keys(f).sort().map(y=>({ano:String(f[y][7]).slice(0,4),fim:Date.parse(f[y][7]+"T00:00:00Z"),ll:f[y][2],pl:f[y][3]})).filter(x=>isFinite(x.fim));let nh=0;
   const S=tecSerie(A),pl=[],pvp=[],t0=Date.now()-10*365.25*DAY;let ult=-1;
+  // units: o preço é de uma unit (várias ações) e a quantidade é de ações; o valor de mercado do índice dá a proporção
+  const fu=vqFu(A);
   for(let k=0;k<S.t.length;k++){const t=S.t[k];if(t<t0)continue;const d=new Date(t),nx=k+1<S.t.length?new Date(S.t[k+1]):null;if(nx&&nx.getUTCMonth()===d.getUTCMonth())continue;
-    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const qt=vqAcoesEm(A,b.ano,b.fim,t),mc=qt?A.R[k]*qt:S.c[k]*acoes;if(qt)nh++;
+    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const qt=vqAcoesEm(A,b.ano,b.fim,t),mc=(qt?A.R[k]*qt:S.c[k]*acoes)*fu;if(qt)nh++;
     if(b.ll>0)pl.push([t,mc/b.ll]);if(b.pl>0)pvp.push([t,mc/b.pl]);ult=k}
   return pl.length>=12?{pl,pvp,hist:nh>=pl.length/2}:null;
 }
@@ -30,7 +34,7 @@ function vqFscore(f){ // F-score de Piotroski simplificado: 6 dos 9 critérios (
 }
 function atValHtml(A){
   if(!(A.tipo==="Ação"||A.tipo==="Unit")||!A.fund||!A.fund.a||!A.ind)return "";
-  const i=A.ind,f=A.fund.a,ys=Object.keys(f).sort(),p=A.R[A.R.length-1],V=vqSerie(A),pct=(v,d)=>v==null||!isFinite(v)?'—':fx(v,d==null?1:d)+'%';
+  const fu=vqFu(A),i=fu===1?A.ind:Object.assign({},A.ind,{lpa:A.ind.lpa!=null?A.ind.lpa/fu:null,vpa:A.ind.vpa!=null?A.ind.vpa/fu:null}),f=A.fund.a,ys=Object.keys(f).sort(),p=A.R[A.R.length-1],V=vqSerie(A),pct=(v,d)=>v==null||!isFinite(v)?'—':fx(v,d==null?1:d)+'%';
   let h='<section class="panel"><h3>Valuation e qualidade</h3>';
   // valuation histórico
   if(V){const plv=V.pl.map(x=>x[1]).filter(v=>v>0&&v<100),med=vqPct(plv,.5),p25=vqPct(plv,.25),p75=vqPct(plv,.75),cur=i.pl_r>0?i.pl_r:null,rk=cur!=null?vqRank(plv,cur):null;
@@ -42,6 +46,7 @@ function atValHtml(A){
       +tecKp("Preço justo pelo P/L mediano",med!=null&&i.lpa>0?'R$ '+fx(med*i.lpa,2):'—',med!=null&&i.lpa>0?pct((med*i.lpa/p-1)*100)+' sobre o preço':'')+'</div>';
     if(leit)h+='<p style="margin:2px 0 8px">Pelo P/L, a ação está '+leit+'.</p>';
     const lin=v=>({lab:"",col:"var(--muted)",w:1,dash:"4 4",pts:[[V.pl[0][0],v],[V.pl[V.pl.length-1][0],v]]});
+    {const la=V.pl.length?V.pl[V.pl.length-1][1]:null;if(cur!=null&&la>0&&Math.abs(la/cur-1)>0.25)h+='<p class="sub" style="margin:4px 0 8px"><b style="color:var(--warn)">⚠ Bases diferentes:</b> o P/L de hoje usa o lucro dos últimos 12 meses ('+fx(cur,1)+'); pelo último balanço anual, como no histórico, seria '+fx(la,1)+'. O lucro recente está '+(la>cur?'acima':'abaixo')+' do último ano fechado, e a comparação com a própria história pode '+(la>cur?'exagerar o desconto':'exagerar o prêmio')+'.</p>'}
     h+='<div class="label">P/L mês a mês (preço × ações ÷ lucro do último balanço anual publicado)</div>'+fnChart([{lab:"P/L",col:FN_COLS[0],w:2,pts:V.pl.filter(x=>x[1]>0&&x[1]<Math.max(30,(p75||20)*2.5))},lin(med),lin(p25),lin(p75)],{fmt:"num",h:190,noLegend:true,aria:"P/L histórico"})
       +'<p class="sub" style="font-size:.8rem">Linhas tracejadas: mediana e faixa normal (metade dos meses ficou entre elas). Anos de prejuízo ficam fora do gráfico.</p>'}
   // preços de referência

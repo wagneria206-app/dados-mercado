@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-PjhAFNaEtgBmbTPEaKcDsyH5ZI/I/HVeWlMZi3zztXQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-2a69jKAAkkWRQBaN/4ZGidtG+RxOA/eKRfvViPIiNkY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://dados.wfinvestimentos.com.br https://raw.githubusercontent.com https://api.github.com https://servicodados.ibge.gov.br; frame-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="wf-dados" content="github"><meta name="wf-senha" content=""><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12294A"><link rel="apple-touch-icon" href="icone-192.png"><link rel="icon" href="icone-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WF Investimentos"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}[hidden]{display:none!important}</style></head><body><title>WF Investimentos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3980,7 +3980,7 @@ function fnBoot(){
   if(FN.idx||FN.load)return FN.load;
   FN.err=null;
   FN.load=Promise.all([fnGet("idx_p.json").catch(()=>fnGet("idx.json")),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
-    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);i.rows.forEach(r=>{r[1]=nomeCx(r[1])});i.gestores=(i.gestores||[]).map(nomeCx);if(i.adms)i.adms=i.adms.map(nomeCx);FN.full=!i.resto;FN.more=null;
+    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);i.rows.forEach(r=>{r[1]=nomeCx(r[1]);fnTaxaOk(r)});i.gestores=(i.gestores||[]).map(nomeCx);if(i.adms)i.adms=i.adms.map(nomeCx);FN.full=!i.resto;FN.more=null;
     FN.sk=i.rows.map(r=>fnNorm(r[1]+" "+r[0]+" "+(i.gestores[r[FN.C.gestor]]||"")));
     FN.cal=c.d;FN.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));FN.B=b;fnLevels();
     FN.load=null;fnHash();fnCalc();extApply();if(!FN.full)setTimeout(fnMore,2500);
@@ -3995,7 +3995,7 @@ function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada dep
   return FN.more;
 }
 function fnMoreAdd(rows){
-  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
+  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);fnTaxaOk(r);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
   if(!FNM.has(activeMod))return;
   if(activeMod==="fr"||activeMod==="fg"||activeMod==="fc"||activeMod==="sp"||(activeMod==="fa"&&miss))fnCalc(); // a 2ª parte da lista (previdência, exclusivos…) completa as tabelas já abertas
   const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
@@ -4043,7 +4043,9 @@ function fnDecode(j){
 }
 const fnMk=t=>{const d=new Date(t);return d.getUTCFullYear()*12+d.getUTCMonth()};
 const fnMt=k=>Date.UTC(Math.floor(k/12),k%12+1,0);
-
+/* taxa de administração fora de 0–10% ao ano (o cadastro da CVM às vezes traz o valor em R$ ou em pontos-base): vira "sem dado"
+   em vez de distorcer ranking, filtros e notas */
+function fnTaxaOk(r){const C=FN.C;if(C.tadm!=null&&r[C.tadm]!=null&&!(r[C.tadm]>=0&&r[C.tadm]<=10))r[C.tadm]=null;if(C.tperf!=null&&r[C.tperf]!=null&&!(r[C.tperf]>=0&&r[C.tperf]<=50))r[C.tperf]=null}
 /* ---------- séries e retornos */
 function fnLast(F){if(F.I.length)return {t:FN.T[F.I[F.I.length-1]],i:F.I[F.I.length-1],k:fnMk(FN.T[F.I[F.I.length-1]]),q:F.Q[F.Q.length-1]};const k=F.MK[F.MK.length-1];return k==null?null:{t:fnMt(k),i:null,k,q:F.M.get(k).q}}
 function fnPtAt(F,t){ // último ponto do fundo com data <= t (diário quando houver; senão fim de mês)
@@ -4228,7 +4230,7 @@ function fnHead(F){
   const it=[];const add=(a,b)=>{if(b!=null&&b!=="")it.push('<div><dt>'+a+'</dt><dd>'+b+'</dd></div>')};
   add("Gestora",esc(F.ges||""));add("Administradora",esc(F.adm||""));add("Custodiante",esc(F.cus||""));add("Auditoria",esc(F.aud||""));
   {const k0=F.MK&&F.MK[0],ti=F.ini?Date.parse(F.ini.slice(0,10)+"T00:00:00Z"):null,tc=k0!=null?Date.UTC(Math.floor(k0/12),k0%12,1):null;add("Início das atividades",ti?fdate(ti)+(tc&&tc<ti-31*DAY?' <small>(cotas na CVM desde '+mname(k0)+(k0===2005*12?' ou antes':'')+')</small>':''):tc?'cotas na CVM desde '+mname(k0):"")}add("Índice de referência",esc(F.bm||""));
-  add("Taxa de administração",F.tadm!=null?fx(F.tadm,2)+"% a.a."+(F.tadm_fte?" <small>(do "+esc(F.tadm_fte)+"; pode ter mudado)</small>":""):"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
+  add("Taxa de administração",F.tadm!=null&&F.tadm>=0&&F.tadm<=10?fx(F.tadm,2)+"% a.a."+(F.tadm_fte?" <small>(do "+esc(F.tadm_fte)+"; pode ter mudado)</small>":""):"");add("Taxa de performance",F.tperf!=null?(F.tperf?fx(F.tperf,0)+"%"+(F.itperf?" <small>"+esc(String(F.itperf).slice(0,80))+"</small>":""):"Não cobra"):"");
   add("Aplicação mínima",F.amin!=null?(F.amin?brl(F.amin):"Sem mínimo"):"");
   add("Resgate",F.dcot!=null||F.dpag!=null?(F.dcot!=null?"cotização D+"+fx(F.dcot,0):"")+(F.dpag!=null?" · pagamento D+"+fx(F.dpag,0):""):"");
   add("Taxa de saída",F.tsai?fx(F.tsai,2)+"%":"");add("Carência",F.car?fx(F.car,0)+" dias":"");
@@ -4622,7 +4624,7 @@ function atFundHtml(A){
   {const rc=f.receb||{},ks=Object.keys(rc).sort(),r=AT.C.res!=null?atRow(A.t):null,px=r?r[AT.C.res]:null;if(px)add("Próximo resultado",fdate(Date.parse(px+"T00:00:00Z")),"data prevista pelo ano anterior");else if(ks.length)add("Último resultado entregue",fdate(Date.parse(rc[ks[ks.length-1]]+"T00:00:00Z")),"referente a "+fdate(Date.parse(ks[ks.length-1]+"T00:00:00Z")))}
   add("P/L",n1(i.pl_r,1),"preço ÷ lucro por ação");add("P/VP",n1(i.pvp),"preço ÷ valor patrimonial");add("EV/EBIT",n1(i.ev_ebit,1));add("Dividend yield",fnPctT(A.met&&A.met.dy),"12 meses");
   add("ROE",fnPctT(i.roe,1),"lucro ÷ patrimônio");add("Margem líquida",fnPctT(i.ml,1));add("Margem EBIT",fnPctT(i.me,1));add("Dívida líquida ÷ EBIT",n1(i.dl_ebit));
-  add("LPA",i.lpa!=null?"R$ "+fx(i.lpa,2):"—");add("VPA",i.vpa!=null?"R$ "+fx(i.vpa,2):"—");add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
+  {const fu=typeof vqFu==="function"?vqFu(A):1,u=fu!==1?" (por unit)":"";add("LPA"+u,i.lpa!=null?"R$ "+fx(i.lpa/fu,2):"—");add("VPA"+u,i.vpa!=null?"R$ "+fx(i.vpa/fu,2):"—")}add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
   add("Receita (12 meses)",fnMoney(i.rec));add("EBIT (12 meses)",fnMoney(i.ebit));add("Lucro líquido (12 meses)",fnMoney(i.ll));add("Patrimônio líquido",fnMoney(i.pl));
   h+='<dl class="fninfo fnrisk">'+it.join("")+'</dl>';
   const an=f.a||{},ys=Object.keys(an).sort();
@@ -4854,12 +4856,16 @@ function vqAcoesEm(A,ano,fim,t){const H=A.fund&&A.fund.caph,now=A.ind&&A.ind.aco
   const spl=(A.adj||[]).filter(e=>String(e[2]).startsWith("S"));let ft=1,fh=1;
   spl.forEach(e=>{const te=AT.T[e[0]];if(te>fim&&te<=t)ft/=e[1];if(te>fim)fh/=e[1]});
   const hoje=q*fh/now;return hoje>0.33&&hoje<3?q*ft:null}   // incoerente com a quantidade atual: descarta
+function vqFu(A){ // units: ações por unit = 1/fu (valor de mercado do índice ÷ preço da unit × quantidade de ações); ações comuns: 1
+  try{const ac=A.ind&&A.ind.acoes,r=atRow(A.t),mc=r&&r[AT.C.mcap],x=mc&&ac&&A.R.length?mc/(A.R[A.R.length-1]*ac):null;if(A.tipo==="Unit"&&x>0.05&&x<0.95)return x}catch(e){}return 1}
 function vqSerie(A){ // P/L e P/VP mensais nos últimos 10 anos, com o último balanço anual publicado em cada mês
   const f=A.fund&&A.fund.a,acoes=A.ind&&A.ind.acoes;if(!f||!acoes)return null;
   const anos=Object.keys(f).sort().map(y=>({ano:String(f[y][7]).slice(0,4),fim:Date.parse(f[y][7]+"T00:00:00Z"),ll:f[y][2],pl:f[y][3]})).filter(x=>isFinite(x.fim));let nh=0;
   const S=tecSerie(A),pl=[],pvp=[],t0=Date.now()-10*365.25*DAY;let ult=-1;
+  // units: o preço é de uma unit (várias ações) e a quantidade é de ações; o valor de mercado do índice dá a proporção
+  const fu=vqFu(A);
   for(let k=0;k<S.t.length;k++){const t=S.t[k];if(t<t0)continue;const d=new Date(t),nx=k+1<S.t.length?new Date(S.t[k+1]):null;if(nx&&nx.getUTCMonth()===d.getUTCMonth())continue;
-    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const qt=vqAcoesEm(A,b.ano,b.fim,t),mc=qt?A.R[k]*qt:S.c[k]*acoes;if(qt)nh++;
+    let b=null;for(const a of anos)if(a.fim+90*DAY<=t)b=a;if(!b)continue;const qt=vqAcoesEm(A,b.ano,b.fim,t),mc=(qt?A.R[k]*qt:S.c[k]*acoes)*fu;if(qt)nh++;
     if(b.ll>0)pl.push([t,mc/b.ll]);if(b.pl>0)pvp.push([t,mc/b.pl]);ult=k}
   return pl.length>=12?{pl,pvp,hist:nh>=pl.length/2}:null;
 }
@@ -4872,7 +4878,7 @@ function vqFscore(f){ // F-score de Piotroski simplificado: 6 dos 9 critérios (
 }
 function atValHtml(A){
   if(!(A.tipo==="Ação"||A.tipo==="Unit")||!A.fund||!A.fund.a||!A.ind)return "";
-  const i=A.ind,f=A.fund.a,ys=Object.keys(f).sort(),p=A.R[A.R.length-1],V=vqSerie(A),pct=(v,d)=>v==null||!isFinite(v)?'—':fx(v,d==null?1:d)+'%';
+  const fu=vqFu(A),i=fu===1?A.ind:Object.assign({},A.ind,{lpa:A.ind.lpa!=null?A.ind.lpa/fu:null,vpa:A.ind.vpa!=null?A.ind.vpa/fu:null}),f=A.fund.a,ys=Object.keys(f).sort(),p=A.R[A.R.length-1],V=vqSerie(A),pct=(v,d)=>v==null||!isFinite(v)?'—':fx(v,d==null?1:d)+'%';
   let h='<section class="panel"><h3>Valuation e qualidade</h3>';
   // valuation histórico
   if(V){const plv=V.pl.map(x=>x[1]).filter(v=>v>0&&v<100),med=vqPct(plv,.5),p25=vqPct(plv,.25),p75=vqPct(plv,.75),cur=i.pl_r>0?i.pl_r:null,rk=cur!=null?vqRank(plv,cur):null;
@@ -4884,6 +4890,7 @@ function atValHtml(A){
       +tecKp("Preço justo pelo P/L mediano",med!=null&&i.lpa>0?'R$ '+fx(med*i.lpa,2):'—',med!=null&&i.lpa>0?pct((med*i.lpa/p-1)*100)+' sobre o preço':'')+'</div>';
     if(leit)h+='<p style="margin:2px 0 8px">Pelo P/L, a ação está '+leit+'.</p>';
     const lin=v=>({lab:"",col:"var(--muted)",w:1,dash:"4 4",pts:[[V.pl[0][0],v],[V.pl[V.pl.length-1][0],v]]});
+    {const la=V.pl.length?V.pl[V.pl.length-1][1]:null;if(cur!=null&&la>0&&Math.abs(la/cur-1)>0.25)h+='<p class="sub" style="margin:4px 0 8px"><b style="color:var(--warn)">⚠ Bases diferentes:</b> o P/L de hoje usa o lucro dos últimos 12 meses ('+fx(cur,1)+'); pelo último balanço anual, como no histórico, seria '+fx(la,1)+'. O lucro recente está '+(la>cur?'acima':'abaixo')+' do último ano fechado, e a comparação com a própria história pode '+(la>cur?'exagerar o desconto':'exagerar o prêmio')+'.</p>'}
     h+='<div class="label">P/L mês a mês (preço × ações ÷ lucro do último balanço anual publicado)</div>'+fnChart([{lab:"P/L",col:FN_COLS[0],w:2,pts:V.pl.filter(x=>x[1]>0&&x[1]<Math.max(30,(p75||20)*2.5))},lin(med),lin(p25),lin(p75)],{fmt:"num",h:190,noLegend:true,aria:"P/L histórico"})
       +'<p class="sub" style="font-size:.8rem">Linhas tracejadas: mediana e faixa normal (metade dos meses ficou entre elas). Anos de prejuízo ficam fora do gráfico.</p>'}
   // preços de referência
@@ -8577,7 +8584,7 @@ document.addEventListener("change",e=>{if(e.target&&e.target.id==="wsPct"){const
    escritos por regras a partir das notas, dos múltiplos, da técnica e da comparação com o setor ou a categoria. */
 /* proventos por ação em janelas de 12 meses (valores de hoje, descontando desdobramentos posteriores): o último ano contra
    a mediana dos 4 anteriores. Quando o último passa de 1,6 vez o padrão, parte do rendimento deve ser extraordinária. */
-function prProv(A){if(!A||!A.adj||!A.I||!A.I.length||!AT.T)return null;const T=AT.T,tl=T[A.I[A.I.length-1]],Y=365.25*864e5,px=A.R[A.R.length-1];if(!(px>0))return null;
+function prProv(A){if(!A||!A.adj||!A.I||!A.I.length||!AT.T)return null;const T=AT.T,dd=AT.idx&&Date.parse(String(AT.idx.dt).slice(0,10)+"T00:00:00Z"),tl=Math.max(T[A.I[A.I.length-1]],isFinite(dd)?dd:0),Y=365.25*864e5,px=A.R[A.R.length-1];if(!(px>0))return null;
   if(tl-T[A.I[0]]<4.9*Y)return null;const S=A.adj.filter(e=>String(e[2]).startsWith("S")),s=[0,0,0,0,0];if(!A.adj.some(e=>/^[DJRE]$/.test(String(e[2]))&&tl-T[e[0]]>3.5*Y))return null; // sem proventos antigos na base: histórico incompleto ou empresa nova
   A.adj.forEach(e=>{if(!/^[DJRE]$/.test(String(e[2])))return;const k=Math.floor((tl-T[e[0]])/Y);if(k<0||k>4)return;let m=1;S.forEach(z=>{if(z[0]>e[0])m*=z[1]});s[k]+=e[3]*m});
   const ant=s.slice(1).sort((a,b)=>a-b),pad=(ant[1]+ant[2])/2,dy=s[0]/px*100,dyp=pad/px*100;

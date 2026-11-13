@@ -122,7 +122,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 
 - `425-fundos-analise-ranking-e-comparador.js` — Fundos: análise, ranking e comparador com os dados oficiais da CVM (3 KB)
 - `427-nomes-em-caixa-normal.js` (2 KB)
-- `430-carga.js` — carga (5 KB)
+- `430-carga.js` — carga (6 KB)
 - `435-series-e-retornos.js` — séries e retornos (3 KB)
 - `440-indicadores-de-risco.js` — indicadores de risco (3 KB)
 - `445-graficos.js` — gráficos (6 KB)
@@ -138,7 +138,7 @@ Lista refeita pela montagem (`python app/build.py`) a cada mudança.
 - `471-barra-de-acoes-e-sinais.js` — Barra de ações comum (incluir na carteira, anotar no diário) e quadro de sinais no topo da página da ação (4 KB)
 - `472-analise-tecnica.js` — análise técnica do ativo: médias móveis, IFR, MACD, tendência, suportes e resistências (9 KB)
 - `473-insiders.js` — Insiders: compras e vendas de controladores, conselheiros e diretores (CVM, Resolução 44) (5 KB)
-- `474-valuation-qualidade-aluguel.js` (12 KB)
+- `474-valuation-qualidade-aluguel.js` (13 KB)
 - `475-ranking.js` — ranking (6 KB)
 - `477-panorama-dos-fiis.js` — Bolsa › FIIs: panorama dos fundos imobiliários, Fiagros e FI-Infra por segmento, descontos e prêmio sobre o Tesouro IPCA+ (8 KB)
 - `478-estrategias.js` (14 KB)
