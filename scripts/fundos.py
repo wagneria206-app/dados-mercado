@@ -100,6 +100,9 @@ def ym_add(a, n):
     return f"{y + m // 12}{m % 12 + 1:02d}"
 
 
+TAXA_MAX = {"tadm": 10, "tperf": 50}   # % ao ano; acima disso o cadastro da CVM trouxe outra unidade ou erro de digitação
+
+
 def outro_ramo(ramo, arquivo, timeout=(10, 120)):
     """JSON publicado por outro robô. No servidor próprio (variável WF_DADOS = pasta exportada, como /srv/wf/www)
     lê do disco; sem ela, como antes, do ramo de dados no GitHub."""
@@ -376,6 +379,9 @@ def cadastro(ativos):
             b = (b or "").strip() if isinstance(b, str) else b
             if b in (None, "", "-"):
                 continue
+            if a in ("tadm", "tperf") and isinstance(b, (int, float)) and not 0 <= b <= TAXA_MAX[a]:
+                DIAG.setdefault("taxa_fora_da_faixa", {})[k] = [a, b]   # valor em R$, em pontos-base ou digitado errado no cadastro
+                continue
             if a == "ini":
                 b = b[:10]
                 if re.match(r"\d{4}-\d\d-\d\d$", b) and (a not in d or b < d[a]):
@@ -496,7 +502,7 @@ def cadastro(ativos):
     # último recurso: taxa do cadastro antigo (fundos que migraram para a nova regra da CVM e ainda não têm extrato nem lâmina)
     for k, v in anterior.items():
         d = info.setdefault(k, {})
-        if d.get("tadm") is None and v.get("tadm") is not None:
+        if d.get("tadm") is None and v.get("tadm") is not None and 0 <= v["tadm"] <= TAXA_MAX["tadm"]:
             d["tadm"], d["tadm_fte"] = v["tadm"], "cadastro anterior à Resolução CVM 175"
             if d.get("tperf") is None and v.get("tperf") is not None:
                 d["tperf"] = v["tperf"]
@@ -836,6 +842,24 @@ def anbima_historico(estado, max_dias=450):
     log("ANBIMA IMA:", len(ANB), "datas no histórico;", pedidos, "consultas")
 
 
+def cdi_no_calendario(cdi, cal):
+    """CDI diário (% ao dia) em cada data do calendário. O CDI rende em todo dia útil bancário; quando o calendário
+    não tem esse dia (a B3 fecha em 24/12 e 31/12, os bancos não), o rendimento dele entra composto no dia seguinte do
+    calendário, para o acumulado não perder dias. Dia ainda sem CDI publicado = 0."""
+    out, pend, j = [], 1.0, 0
+    ds = sorted(cdi)
+    for d in cal:
+        while j < len(ds) and ds[j] < d:
+            pend *= 1 + cdi[ds[j]] / 100
+            j += 1
+        f = pend * (1 + cdi[d] / 100 if d in cdi else 1)
+        if j < len(ds) and ds[j] == d:
+            j += 1
+        out.append(round((f - 1) * 100, 6))
+        pend = 1.0
+    return out
+
+
 def indices():
     global ANB
     b = {"d": {}, "m": {}, "fonte": "BCB (CDI, IPCA, dólar PTAX), B3 (Ibovespa, IFIX) e ANBIMA (IMA)"}
@@ -845,6 +869,16 @@ def indices():
         except Exception:  # noqa: BLE001
             ANB = {}
     if ANB:
+        # a cópia lida do outro robô pode estar um ou dois dias atrás do calendário: busca os dias que faltam na ANBIMA,
+        # em vez de repetir o último valor (o que zeraria o retorno desses dias e desalinharia as duas cópias do índice)
+        falta = [d for d in CAL if d > max(ANB)][-7:]
+        for d in falta:
+            try:
+                v = anbima_dia(dt.date.fromisoformat(d))
+                if v:
+                    ANB[d] = v
+            except Exception as e:  # noqa: BLE001
+                DIAG["anbima_dia_" + d] = str(e)[:120]
         ds = sorted(ANB)
         for nome in ANB_IDX.values():
             serie = [(d, ANB[d][nome]) for d in ds if ANB[d].get(nome)]
@@ -863,7 +897,7 @@ def indices():
     ini = dt.date(INI_MENSAL, 1, 1)
     try:
         cdi = dict(sgs(12, dt.date(int(INI_DIARIO[:4]), 1, 1), HOJE))
-        b["d"]["cdi"] = [round(cdi.get(d, 0.0), 6) for d in CAL]
+        b["d"]["cdi"] = cdi_no_calendario(cdi, CAL)
     except Exception as e:  # noqa: BLE001
         DIAG["cdi"] = str(e)
     for nome, serie in (("cdi", 4391), ("ipca", 433)):

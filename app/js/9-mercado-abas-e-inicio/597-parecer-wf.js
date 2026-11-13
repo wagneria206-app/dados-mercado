@@ -2,7 +2,7 @@
    escritos por regras a partir das notas, dos múltiplos, da técnica e da comparação com o setor ou a categoria. */
 /* proventos por ação em janelas de 12 meses (valores de hoje, descontando desdobramentos posteriores): o último ano contra
    a mediana dos 4 anteriores. Quando o último passa de 1,6 vez o padrão, parte do rendimento deve ser extraordinária. */
-function prProv(A){if(!A||!A.adj||!A.I||!A.I.length||!AT.T)return null;const T=AT.T,tl=T[A.I[A.I.length-1]],Y=365.25*864e5,px=A.R[A.R.length-1];if(!(px>0))return null;
+function prProv(A){if(!A||!A.adj||!A.I||!A.I.length||!AT.T)return null;const T=AT.T,dd=AT.idx&&Date.parse(String(AT.idx.dt).slice(0,10)+"T00:00:00Z"),tl=Math.max(T[A.I[A.I.length-1]],isFinite(dd)?dd:0),Y=365.25*864e5,px=A.R[A.R.length-1];if(!(px>0))return null;
   if(tl-T[A.I[0]]<4.9*Y)return null;const S=A.adj.filter(e=>String(e[2]).startsWith("S")),s=[0,0,0,0,0];if(!A.adj.some(e=>/^[DJRE]$/.test(String(e[2]))&&tl-T[e[0]]>3.5*Y))return null; // sem proventos antigos na base: histórico incompleto ou empresa nova
   A.adj.forEach(e=>{if(!/^[DJRE]$/.test(String(e[2])))return;const k=Math.floor((tl-T[e[0]])/Y);if(k<0||k>4)return;let m=1;S.forEach(z=>{if(z[0]>e[0])m*=z[1]});s[k]+=e[3]*m});
   const ant=s.slice(1).sort((a,b)=>a-b),pad=(ant[1]+ant[2])/2,dy=s[0]/px*100,dyp=pad/px*100;

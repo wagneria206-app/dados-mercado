@@ -74,7 +74,7 @@ function atFundHtml(A){
   {const rc=f.receb||{},ks=Object.keys(rc).sort(),r=AT.C.res!=null?atRow(A.t):null,px=r?r[AT.C.res]:null;if(px)add("Próximo resultado",fdate(Date.parse(px+"T00:00:00Z")),"data prevista pelo ano anterior");else if(ks.length)add("Último resultado entregue",fdate(Date.parse(rc[ks[ks.length-1]]+"T00:00:00Z")),"referente a "+fdate(Date.parse(ks[ks.length-1]+"T00:00:00Z")))}
   add("P/L",n1(i.pl_r,1),"preço ÷ lucro por ação");add("P/VP",n1(i.pvp),"preço ÷ valor patrimonial");add("EV/EBIT",n1(i.ev_ebit,1));add("Dividend yield",fnPctT(A.met&&A.met.dy),"12 meses");
   add("ROE",fnPctT(i.roe,1),"lucro ÷ patrimônio");add("Margem líquida",fnPctT(i.ml,1));add("Margem EBIT",fnPctT(i.me,1));add("Dívida líquida ÷ EBIT",n1(i.dl_ebit));
-  add("LPA",i.lpa!=null?"R$ "+fx(i.lpa,2):"—");add("VPA",i.vpa!=null?"R$ "+fx(i.vpa,2):"—");add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
+  {const fu=typeof vqFu==="function"?vqFu(A):1,u=fu!==1?" (por unit)":"";add("LPA"+u,i.lpa!=null?"R$ "+fx(i.lpa/fu,2):"—");add("VPA"+u,i.vpa!=null?"R$ "+fx(i.vpa/fu,2):"—")}add("Valor de mercado",fnMoney(i.mcap));add("Dívida líquida",fnMoney(i.dl));
   add("Receita (12 meses)",fnMoney(i.rec));add("EBIT (12 meses)",fnMoney(i.ebit));add("Lucro líquido (12 meses)",fnMoney(i.ll));add("Patrimônio líquido",fnMoney(i.pl));
   h+='<dl class="fninfo fnrisk">'+it.join("")+'</dl>';
   const an=f.a||{},ys=Object.keys(an).sort();

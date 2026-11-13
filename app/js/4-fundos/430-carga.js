@@ -3,7 +3,7 @@ function fnBoot(){
   if(FN.idx||FN.load)return FN.load;
   FN.err=null;
   FN.load=Promise.all([fnGet("idx_p.json").catch(()=>fnGet("idx.json")),fnGet("cal.json"),fnGet("bench.json")]).then(([i,c,b])=>{
-    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);i.rows.forEach(r=>{r[1]=nomeCx(r[1])});i.gestores=(i.gestores||[]).map(nomeCx);if(i.adms)i.adms=i.adms.map(nomeCx);FN.full=!i.resto;FN.more=null;
+    FN.idx=i;FN.C={};i.cols.forEach((n,k)=>FN.C[n]=k);i.rows.forEach(r=>{r[1]=nomeCx(r[1]);fnTaxaOk(r)});i.gestores=(i.gestores||[]).map(nomeCx);if(i.adms)i.adms=i.adms.map(nomeCx);FN.full=!i.resto;FN.more=null;
     FN.sk=i.rows.map(r=>fnNorm(r[1]+" "+r[0]+" "+(i.gestores[r[FN.C.gestor]]||"")));
     FN.cal=c.d;FN.T=c.d.map(d=>Date.parse(d+"T00:00:00Z"));FN.B=b;fnLevels();
     FN.load=null;fnHash();fnCalc();extApply();if(!FN.full)setTimeout(fnMore,2500);
@@ -18,7 +18,7 @@ function fnMore(){ // segunda parte do índice: fundos exclusivos (carregada dep
   return FN.more;
 }
 function fnMoreAdd(rows){
-  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
+  const I=FN.idx,miss=FN.cur&&!fnRow(FN.cur);rows.forEach(r=>{r[1]=nomeCx(r[1]);fnTaxaOk(r);I.rows.push(r);FN.sk.push(fnNorm(r[1]+" "+r[0]+" "+(I.gestores[r[FN.C.gestor]]||"")))});FN.full=true;
   if(!FNM.has(activeMod))return;
   if(activeMod==="fr"||activeMod==="fg"||activeMod==="fc"||activeMod==="sp"||(activeMod==="fa"&&miss))fnCalc(); // a 2ª parte da lista (previdência, exclusivos…) completa as tabelas já abertas
   const q=$("fnQ");if(activeMod==="fa"&&q&&q.value.trim())q.dispatchEvent(new Event("input",{bubbles:true}));
@@ -66,4 +66,6 @@ function fnDecode(j){
 }
 const fnMk=t=>{const d=new Date(t);return d.getUTCFullYear()*12+d.getUTCMonth()};
 const fnMt=k=>Date.UTC(Math.floor(k/12),k%12+1,0);
-
+/* taxa de administração fora de 0–10% ao ano (o cadastro da CVM às vezes traz o valor em R$ ou em pontos-base): vira "sem dado"
+   em vez de distorcer ranking, filtros e notas */
+function fnTaxaOk(r){const C=FN.C;if(C.tadm!=null&&r[C.tadm]!=null&&!(r[C.tadm]>=0&&r[C.tadm]<=10))r[C.tadm]=null;if(C.tperf!=null&&r[C.tperf]!=null&&!(r[C.tperf]>=0&&r[C.tperf]<=50))r[C.tperf]=null}

@@ -113,6 +113,13 @@ def calcular(pasta):
         fund = ((j.get("fund") or {}).get("a")) or {}
         anos = sorted((v[7], v[2], v[3]) for v in fund.values() if v and v[7])
         acoes = (j.get("ind") or {}).get("acoes")
+        # units: a quantidade é de ações, mas o preço é de uma unit (que reúne várias ações); o valor de mercado oficial do
+        # índice (quantidade de units × preço) dá a proporção, que corrige o valor de mercado em todos os meses
+        fu = 1.0
+        if r[C["tipo"]] == "Unit" and acoes and R[-1] and r[C["mcap"]]:
+            x = r[C["mcap"]] / (R[-1] * acoes)
+            if 0.05 < x < 0.95:
+                fu = x
         caph = (j.get("fund") or {}).get("caph") or {}
         spl = [(cal[e[0]] if e[0] < len(cal) else "9999", e[1]) for e in adj if str(e[2]).startswith("S")]
 
@@ -160,7 +167,7 @@ def calcular(pasta):
                     bal = (ll, plq, fim)
             if bal and acoes:
                 qt = acoes_em(bal[2], dref)
-                mc = R[p] * qt if qt else S[p] * acoes
+                mc = (R[p] * qt if qt else S[p] * acoes) * fu
                 pl.append(r2(mc / bal[0], 1) if bal[0] and bal[0] > 0 else None)
                 pvp.append(r2(mc / bal[1]) if bal[1] and bal[1] > 0 else None)
                 roe.append(r2(bal[0] / bal[1] * 100, 1) if bal[1] and bal[1] > 0 and bal[0] is not None else None)
