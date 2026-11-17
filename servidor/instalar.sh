@@ -31,13 +31,17 @@ if [ "$ADMIN" = wf ] || { id wf >/dev/null 2>&1 && { [ "$(id -u wf)" -ge 1000 ] 
   echo "  sudo loginctl terminate-user wf; sudo deluser --remove-home wf"
   exit 1
 fi
+# Acesso de administração: com a chave do seu computador em ~/.ssh/authorized_keys, SSH só da rede de casa e só com
+# a chave; sem chave, o SSH fica DESLIGADO e o servidor é administrado só no teclado e na tela dele (o mais seguro).
+AK=$(getent passwd "$ADMIN" | cut -d: -f6)/.ssh/authorized_keys
+if [ -s "$AK" ] && grep -qE '^(ssh-ed25519|ecdsa-sha2|ssh-rsa) ' "$AK"; then USA_SSH=1; else USA_SSH=0; fi
 
 info "1/11 Fuso horário e atualizações do sistema"
 timedatectl set-timezone America/Sao_Paulo
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
 apt-get -y -q full-upgrade
-apt-get -y -q install git rsync ufw fail2ban unattended-upgrades smartmontools restic gnupg curl ca-certificates \
+apt-get -y -q install git rsync ufw fail2ban unattended-upgrades smartmontools restic gnupg curl ca-certificates hdparm \
   python3 python3-requests python3-pypdf python3-systemd nodejs npm
 ok "pacotes instalados (Python e Node do próprio Ubuntu, que recebem correções de segurança automáticas)"
 
@@ -89,7 +93,10 @@ if [ "$(swapon --show=SIZE --bytes --noheadings | awk '{s+=$1} END{print s+0}')"
   swapoff -a 2>/dev/null || true; fallocate -l 4G /swap.img && chmod 600 /swap.img && mkswap /swap.img >/dev/null && swapon /swap.img
   grep -q '^/swap.img' /etc/fstab || echo '/swap.img none swap sw 0 0' >> /etc/fstab
 fi
-ok "núcleo protegido; fechar a tampa não suspende; memória de troca de 4 GB"
+# HD de notebook estaciona a cabeça de leitura a cada pausa (economia de energia); num servidor isso gasta o disco à toa
+install -m 644 $WF/codigo/servidor/sistema/69-wf-hd.rules /etc/udev/rules.d/69-wf-hd.rules
+for d in /sys/block/sd?; do [ "$(cat $d/queue/rotational 2>/dev/null)" = 1 ] && hdparm -B 254 /dev/${d##*/} >/dev/null 2>&1 || true; done
+ok "núcleo protegido; fechar a tampa não suspende; memória de troca de 4 GB; HD sem estacionar a cabeça"
 
 info "7/11 Dados: começa com o histórico já coletado (cópia única do GitHub)"
 if [ ! -d $WF/dados.git ]; then
@@ -118,7 +125,7 @@ case "$LAN" in 10.*|172.1[6-9].*|172.2[0-9].*|172.3[01].*|192.168.*) ;; *) echo 
 regras() {  # regras <dns>: dns = seguro (porta 853, Quad9) ou roteador (porta 53, só para a rede de casa)
   ufw --force reset >/dev/null
   ufw default deny incoming >/dev/null; ufw default deny outgoing >/dev/null; ufw default deny routed >/dev/null
-  ufw limit in on "$dev" from "$LAN" to any port 22 proto tcp comment 'SSH so da rede de casa' >/dev/null
+  [ "$USA_SSH" = 1 ] && ufw limit in on "$dev" from "$LAN" to any port 22 proto tcp comment 'SSH so da rede de casa' >/dev/null
   ufw allow out 443/tcp comment 'web segura' >/dev/null
   ufw allow out 80/tcp comment 'web (atualizacoes do Ubuntu e ipeadata)' >/dev/null
   ufw allow out 123/udp comment 'hora certa (NTP)' >/dev/null
@@ -143,7 +150,8 @@ else
   systemctl restart systemd-resolved; regras roteador; DNS=roteador
   testa_rede || { echo "Sem acesso à internet depois do firewall. Desliguei o firewall para você não ficar sem rede; me avise."; ufw --force disable; exit 1; }
 fi
-ok "firewall: entrada só SSH da rede $LAN; saída só web, DNS ($DNS) e hora"
+if [ "$USA_SSH" = 1 ]; then ok "firewall: entrada só SSH da rede $LAN; saída só web, DNS ($DNS) e hora"
+else ok "firewall: nenhuma entrada; saída só web, DNS ($DNS) e hora"; fi
 
 info "10/11 SSH, bloqueio de tentativas e atualizações automáticas"
 install -m 644 $WF/codigo/servidor/sistema/jail-wf.local /etc/fail2ban/jail.d/wf.local
@@ -151,15 +159,16 @@ systemctl enable --now fail2ban >/dev/null 2>&1; systemctl restart fail2ban
 install -m 644 $WF/codigo/servidor/sistema/52-wf-atualizacoes /etc/apt/apt.conf.d/52-wf-atualizacoes
 systemctl enable --now unattended-upgrades >/dev/null 2>&1 || true
 systemctl enable --now smartmontools >/dev/null 2>&1 || systemctl enable --now smartd >/dev/null 2>&1 || true
-AK=$(getent passwd "$ADMIN" | cut -d: -f6)/.ssh/authorized_keys
-if [ -s "$AK" ] && grep -qE '^(ssh-ed25519|ecdsa-sha2|ssh-rsa) ' "$AK"; then
+if [ "$USA_SSH" = 1 ]; then
+  systemctl enable --now ssh >/dev/null 2>&1 || true
   install -m 644 $WF/codigo/servidor/sistema/50-wf-ssh.conf /etc/ssh/sshd_config.d/50-wf-ssh.conf
   echo "AllowUsers $ADMIN" >> /etc/ssh/sshd_config.d/50-wf-ssh.conf
   sshd -t && systemctl try-reload-or-restart ssh
   ok "SSH só com a chave do seu computador, só para o usuário $ADMIN, senha desligada"
 else
-  aviso "a chave do seu computador ainda não está no servidor: o SSH continua aceitando senha."
-  aviso "Siga o passo da chave no guia e rode este instalador de novo."
+  rm -f /etc/ssh/sshd_config.d/50-wf-ssh.conf
+  systemctl disable --now ssh.socket ssh.service >/dev/null 2>&1 || true
+  ok "SSH desligado: o servidor só é administrado no teclado e na tela dele"
 fi
 
 info "11/11 Robôs, publicação e cópia de segurança"
