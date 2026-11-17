@@ -23,6 +23,14 @@ aviso(){ printf '\033[33m!\033[0m %s\n' "$*"; }
 ADMIN=${SUDO_USER:-}
 [ -n "$ADMIN" ] && [ "$ADMIN" != root ] || { echo "Rode com sudo a partir do seu usuário (não como root direto)."; exit 1; }
 . /etc/os-release; [ "$ID" = ubuntu ] || { echo "Este instalador é para o Ubuntu Server."; exit 1; }
+# "wf" é reservado para o usuário dos robôs (sem senha, sem login, sem sudo). Se for uma pessoa, para aqui.
+if [ "$ADMIN" = wf ] || { id wf >/dev/null 2>&1 && { [ "$(id -u wf)" -ge 1000 ] || id -nG wf | grep -qwE 'sudo|admin'; }; }; then
+  echo "O nome 'wf' é reservado para os robôs, mas já é um usuário de pessoa neste servidor."
+  echo "Crie outro usuário administrador (ex.: wfadmin), entre com ele, apague o 'wf' e rode de novo:"
+  echo "  sudo adduser wfadmin && sudo usermod -aG sudo,adm wfadmin   (depois saia e entre como wfadmin)"
+  echo "  sudo loginctl terminate-user wf; sudo deluser --remove-home wf"
+  exit 1
+fi
 
 info "1/11 Fuso horário e atualizações do sistema"
 timedatectl set-timezone America/Sao_Paulo
