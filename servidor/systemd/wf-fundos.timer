@@ -1,0 +1,12 @@
+[Unit]
+Description=Fundos (CVM)
+
+[Timer]
+OnCalendar=*-*-* 08:17
+OnCalendar=Mon..Fri 20:47
+Unit=wf@fundos.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Negociações de administradores (CVM)
+
+[Timer]
+OnCalendar=Sat 06:10
+Unit=wf@insiders.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

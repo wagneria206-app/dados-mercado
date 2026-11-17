@@ -1,0 +1,11 @@
+[Unit]
+Description=Limpeza semanal dos dados antigos
+
+[Timer]
+OnCalendar=Sun 03:00
+Unit=wf@manutencao.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

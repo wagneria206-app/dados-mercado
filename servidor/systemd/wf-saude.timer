@@ -1,0 +1,11 @@
+[Unit]
+Description=Saúde dos dados
+
+[Timer]
+OnCalendar=*-*-* 00/3:41
+Unit=wf@saude.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Opções de ações (B3)
+
+[Timer]
+OnCalendar=Mon..Fri 20:40
+Unit=wf@opcoes.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

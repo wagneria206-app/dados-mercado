@@ -1,0 +1,12 @@
+[Unit]
+Description=Bolsa (B3): cotações e indicadores
+
+[Timer]
+OnCalendar=Tue..Sat 07:37
+OnCalendar=Mon..Fri 20:07
+Unit=wf@ativos.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

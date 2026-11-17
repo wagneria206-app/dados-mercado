@@ -1,0 +1,7 @@
+# Bloqueia por 1 dia quem errar o acesso SSH 3 vezes em 10 minutos (mesmo vindo da rede de casa)
+[sshd]
+enabled = true
+backend = systemd
+maxretry = 3
+findtime = 10m
+bantime = 1d

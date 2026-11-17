@@ -99,7 +99,16 @@ def main():
         os.makedirs(os.path.join(saida, "dados"))
         html = open(index, encoding="utf-8").read()
         assert '<meta name="wf-dados" content="github">' in html
-        open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html.replace('<meta name="wf-dados" content="github">', f'<meta name="wf-dados" content="{meta}"><meta name="wf-gz" content="1">'))
+        html = html.replace('<meta name="wf-dados" content="github">', f'<meta name="wf-dados" content="{meta}"><meta name="wf-gz" content="1">')
+        senha = os.environ.get("WF_SENHA", "").strip()   # hash da senha de acesso (o hash, nunca a senha)
+        if senha:
+            assert re.fullmatch(r"v1:\d+:[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+", senha), "WF_SENHA fora do formato v1:iterações:sal:hash"
+            assert '<meta name="wf-senha" content="">' in html
+            html = html.replace('<meta name="wf-senha" content="">', f'<meta name="wf-senha" content="{senha}">')
+        versao = os.environ.get("WF_VERSAO", "").strip()
+        if versao:
+            html = html.replace('<meta name="wf-dados"', f'<meta name="wf-versao" content="{versao}"><meta name="wf-dados"', 1)
+        open(os.path.join(saida, "index.html"), "w", encoding="utf-8").write(html)
         raiz = os.path.dirname(os.path.abspath(index))
         for f in ["manifest.webmanifest", "sw.js", "icone-192.png", "icone-512.png"]:
             shutil.copy(os.path.join(raiz, f), saida)

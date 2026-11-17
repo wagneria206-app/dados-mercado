@@ -1,0 +1,11 @@
+[Unit]
+Description=Saúde dos bancos (Banco Central)
+
+[Timer]
+OnCalendar=Sun 06:10
+Unit=wf@bancos.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

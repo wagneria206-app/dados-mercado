@@ -1,0 +1,12 @@
+[Unit]
+Description=Fatos relevantes e resultados (CVM)
+
+[Timer]
+OnCalendar=*-*-* 07:20
+OnCalendar=Mon..Fri 19:50
+Unit=wf@empresas.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

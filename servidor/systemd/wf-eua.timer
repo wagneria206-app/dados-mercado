@@ -1,0 +1,12 @@
+[Unit]
+Description=EUA (Cboe, SEC, BLS, Fed)
+
+[Timer]
+OnCalendar=Tue..Sat 07:45
+OnCalendar=Mon..Fri 19:25
+Unit=wf@eua.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

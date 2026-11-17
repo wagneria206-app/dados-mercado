@@ -1,0 +1,11 @@
+[Unit]
+Description=Saúde dos emissores de debêntures (CVM)
+
+[Timer]
+OnCalendar=Sun 06:40
+Unit=wf@emissores.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
