@@ -161,8 +161,14 @@ for t in ativos atualizar rapido fundos eua macro saude empresas aluguel opcoes 
   systemctl enable --now "wf-$t.timer" >/dev/null 2>&1
 done
 ok "robôs agendados (horário de Brasília)"
-[ -f $ETC/app.env ] || { read -r -p "Cole o código da senha do app (começa com v1:) e tecle Enter: " h; printf 'WF_SENHA=%s\n' "$h" > $ETC/app.env; }
-chmod 600 $ETC/app.env
+if [ ! -s $ETC/app.env ]; then
+  # a senha de acesso do app continua a mesma: o código dela (o hash, nunca a senha) é lido do próprio site publicado
+  h=$(curl -fsS -m 30 https://wfinvestimentos.com.br/ | grep -oE '<meta name="wf-senha" content="v1:[^"]+"' | head -1 | sed -E 's/.*content="([^"]+)"/\1/' || true)
+  if [ -n "$h" ]; then ok "senha de acesso do app: a mesma do site atual"
+  else read -r -p "Não encontrei a senha no site. Cole o código da senha do app (começa com v1:): " h; fi
+  case "$h" in v1:*) printf 'WF_SENHA=%s\n' "$h" > $ETC/app.env ;; *) aviso "código da senha inválido: rode o instalador de novo" ;; esac
+fi
+[ -f $ETC/app.env ] && chmod 600 $ETC/app.env
 if [ ! -s $ETC/cloudflare.env ]; then
   echo; echo "Chave da Cloudflare (crie seguindo o guia). Ela não aparece na tela enquanto você cola."
   read -r -p "Número da conta (Account ID): " cid
