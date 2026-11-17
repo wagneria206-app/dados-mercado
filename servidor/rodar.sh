@@ -4,20 +4,27 @@
 #   robôs: ativos, eua, fundos, macro, insiders, bancos, aluguel, opcoes, empresas, emissores (pasta de entrada → pasta de saída), atualizar, rapido (dados do site),
 #          saude (confere tudo), exportar (só republica)
 # Os dados ficam num repositório git local (um ramo por robô, como no GitHub). Depois de cada coleta bem-sucedida o
-# ramo é trocado de uma vez e exportado para a pasta que o servidor web entrega ao app.
+# ramo é trocado de uma vez e exportado para a pasta de trabalho ($WF/www), de onde os robôs leem os dados uns dos
+# outros. Essa pasta não é servida a ninguém: o app recebe os dados pelo publicar.sh, que envia o pacote à Cloudflare.
+# No servidor, quem chama este arquivo é o systemd (wf@<robô>.service), com o usuário wf e o sistema protegido.
 set -uo pipefail
 WF=${WF:-/srv/wf}
 CODIGO=$WF/codigo            # cópia do código (repositório no GitLab)
 DADOS=$WF/dados.git          # ramos de dados
 TRAB=$WF/trabalho            # pasta de trabalho do robô do site (scripts + data/)
-WWW=$WF/www                  # o que o servidor web entrega (https://dados.wfinvestimentos.com.br/)
+WWW=$WF/www                  # dados exportados, lidos pelos robôs (não é servido pela rede)
 export WF_DADOS="$WWW"       # os robôs leem os dados uns dos outros daqui, não do GitHub
 LOGS=$WF/logs
 export WF_LOGS="$LOGS"       # o robô de saúde conta as execuções por aqui (no GitHub era pela API)
-PY=$WF/venv/bin/python
+PY=${PY:-/usr/bin/python3}    # Python do Ubuntu, com requests e pypdf dos pacotes oficiais (atualizados pelo sistema)
+export TMPDIR=${TMPDIR:-$WF/tmp}; mkdir -p "$TMPDIR"   # arquivos temporários grandes no disco, não na memória
 ROBO=${1:?informe o robô}; shift || true
 mkdir -p "$LOGS" "$WWW"
-exec 9>"$WF/.trava-$ROBO"; flock -n 9 || { echo "$(date '+%F %T') $ROBO já está rodando; esta vez fica de fora"; exit 0; }
+mkdir -p "$WF/run"; exec 9>"$WF/run/trava-$ROBO"; flock -n 9 || { echo "$(date '+%F %T') $ROBO já está rodando; esta vez fica de fora"; exit 0; }
+# os robôs pesados (muitos arquivos e muita memória) rodam um de cada vez; os outros esperam até 2 horas na fila
+case "$ROBO" in ativos|fundos|eua|empresas|emissores|insiders|bancos)
+  exec 8>"$WF/run/trava-pesados"; flock -w 7200 8 || { echo "$(date '+%F %T') $ROBO esperou 2 horas por outro robô pesado; esta vez fica de fora"; exit 75; } ;;
+esac
 export TZ=America/Sao_Paulo PYTHONUNBUFFERED=1
 
 publicar() {  # publicar <ramo> <pasta> [prefixo]: grava o conteúdo da pasta como o ramo (sem histórico, como antes)
@@ -70,6 +77,10 @@ case "$ROBO" in
     [ -n "$(ls -A "$sai")" ] && publicar saude "$sai" && exportar saude
     rm -rf "$sai" ;;
   exportar) exportar "$@" ;;
+  manutencao)  # cada coleta grava os ramos de novo, sem histórico: as versões antigas são apagadas uma vez por semana
+    git --git-dir "$DADOS" reflog expire --expire=now --all && git --git-dir "$DADOS" gc --prune=now --quiet; st=$?
+    find "$TMPDIR" -mindepth 1 -mtime +2 -delete 2>/dev/null
+    find "$LOGS" -name '*.log' -mtime +90 -delete 2>/dev/null ;;
   *) echo "robô desconhecido: $ROBO"; exit 2 ;;
 esac
 echo "$(date '+%F %T') $ROBO terminou com código $st em $(( $(date +%s) - inicio )) s"

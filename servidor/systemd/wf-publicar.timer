@@ -1,0 +1,16 @@
+[Unit]
+Description=Publicar na Cloudflare
+
+[Timer]
+OnCalendar=Mon..Fri 07:55
+OnCalendar=Mon..Fri 09..18:50
+OnCalendar=Mon..Fri 20:30
+OnCalendar=Mon..Fri 22:15
+OnCalendar=Sat,Sun 08:45
+OnCalendar=Sat,Sun 21:00
+Unit=wf-publicar.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

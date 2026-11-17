@@ -1,0 +1,13 @@
+[Unit]
+Description=Site: Tesouro, ANBIMA, B3, Banco Central, IBGE
+
+[Timer]
+OnCalendar=Mon..Sat 08:00
+OnCalendar=Mon..Fri 19:30
+OnCalendar=Mon..Fri 21:40
+Unit=wf@atualizar.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Cópia de segurança diária
+
+[Timer]
+OnCalendar=*-*-* 03:30
+Unit=wf-backup.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

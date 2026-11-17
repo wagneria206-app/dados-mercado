@@ -1,0 +1,11 @@
+[Unit]
+Description=Aluguel de ações (B3)
+
+[Timer]
+OnCalendar=Mon..Fri 21:10
+Unit=wf@aluguel.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

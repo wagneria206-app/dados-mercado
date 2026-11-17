@@ -1,0 +1,11 @@
+[Unit]
+Description=Tesouro Direto e PTAX durante o pregão
+
+[Timer]
+OnCalendar=Mon..Fri 09..18:05,35
+Unit=wf@rapido.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

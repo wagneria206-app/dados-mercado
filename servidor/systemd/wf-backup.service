@@ -1,0 +1,19 @@
+# Cópia de segurança diária, criptografada, no disco USB de etiqueta WFBACKUP (precisa de root para montar o disco).
+[Unit]
+Description=WF Investimentos: cópia de segurança
+After=local-fs.target
+
+[Service]
+Type=oneshot
+Environment=WF=/srv/wf
+ExecStart=/srv/wf/codigo/servidor/backup.sh
+Nice=15
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX
+IPAddressDeny=any

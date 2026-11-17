@@ -1,0 +1,12 @@
+[Unit]
+Description=Economia (Focus, IBGE)
+
+[Timer]
+OnCalendar=Mon..Sat 09:20
+OnCalendar=Mon..Fri 18:50
+Unit=wf@macro.service
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
