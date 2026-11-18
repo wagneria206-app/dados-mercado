@@ -36,9 +36,12 @@ publicar() {  # publicar <ramo> <pasta> [prefixo]: grava o conteúdo da pasta co
   git --git-dir "$DADOS" update-ref "refs/remotes/origin/$ramo" "$c"   # o robô de saúde lê origin/<ramo>
   rm -f "$idx"
 }
+registra() { printf '%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$ROBO" "$1" "$(( $(date +%s) - inicio ))" >> "$LOGS/execucoes.tsv"; }
 entrada() {  # entrada <ramo> <pasta>: copia o ramo atual para a pasta de entrada do robô
+  # Se a cópia falhar, o robô NÃO roda: rodar sem o histórico gravaria por cima dele um ramo incompleto.
   if git --git-dir "$DADOS" rev-parse -q --verify "refs/heads/$1" >/dev/null; then
-    git --git-dir "$DADOS" archive "refs/heads/$1" | tar -x -C "$2"
+    git --git-dir "$DADOS" archive "refs/heads/$1" | tar -x -C "$2" || {
+      echo "$(date '+%F %T') $ROBO cancelado: não consegui copiar o ramo $1 (nada foi gravado)"; registra 3; exit 3; }
   fi
 }
 exportar() { "$PY" "$CODIGO/servidor/exportar.py" "$DADOS" "$WWW" "$@"; }
@@ -84,5 +87,5 @@ case "$ROBO" in
   *) echo "robô desconhecido: $ROBO"; exit 2 ;;
 esac
 echo "$(date '+%F %T') $ROBO terminou com código $st em $(( $(date +%s) - inicio )) s"
-printf '%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$ROBO" "$st" "$(( $(date +%s) - inicio ))" >> "$LOGS/execucoes.tsv"
+registra "$st"
 exit $st

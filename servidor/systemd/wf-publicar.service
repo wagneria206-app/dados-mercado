@@ -34,7 +34,8 @@ ProtectControlGroups=yes
 ProtectClock=yes
 ProtectHostname=yes
 ProtectProc=invisible
-RestrictSUIDSGID=yes
+# RestrictSUIDSGID fica de fora: ele bloqueia a chamada openat2, e o tar do Ubuntu 26.04 falha sem ela
+# ("Function not implemented"). A proteção continua: NoNewPrivileges e nenhuma capacidade de sistema.
 RestrictRealtime=yes
 RestrictNamespaces=yes
 LockPersonality=yes
